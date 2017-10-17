@@ -5,9 +5,8 @@
   "version": "1.0.0",
   "license": "MIT",
   "main": "dist/core-components.min.js",
-  "scripts": {
-
-  },
+  "scripts": {},
   "devDependencies": {
+    "standard": "^10.0.3"
   }
 }
