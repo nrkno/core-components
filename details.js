@@ -1,38 +1,42 @@
-require('a11y.js')
+require('./a11y.js')
 
-const HAS_OPEN = 'open' in document.createElement('details')
-
-function closest (el, tag) {
-  for (; el; el = el.parentElement) {
-    if (el.nodeName.toLowerCase() === tag) {
-      return el
-    }
-  }
-}
-
-function toggleOpen (details, open) {
-  if (!HAS_OPEN) {
-    open ? details.removeAttribute('open') : details.setAttribute('open', '')
-  }
-}
+const DETAILS = 'detail'
+const SUMMARY = 'summar'
+const IS_BROWSER = typeof document !== 'undefined'
+const HAS_OPEN = IS_BROWSER && ('open' in document.createElement(DETAILS))
 
 function onClick (event) {
-  const summary = closest(event.target, 'summary')
-  if (summary) {
-    const open = summary.getAttribute('aria-expanded') === 'false'
-    const details = closest(summary, 'details')
-
-    summary.setAttribute('role', 'button')
-    summary.setAttribute('aria-expanded', open)
-    toggleOpen(details, open)
+  let el = event.target
+  for (; el; el = el.parentElement) {
+    if (el.nodeName.toLowerCase() === SUMMARY) break
+  }
+  if (el) {
+    console.log(el.parentElement.open)
+    el.parentElement.open = !el.parentElement.open
   }
 }
 
-if (typeof document !== 'undefined') {
+if (IS_BROWSER && !HAS_OPEN) {
   document.addEventListener('click', onClick)
   document.documentElement.appendChild(document.createElement('style')).textContent = `
-    details{display:block}
-    summary{display:block;cursor:pointer;touch-action:manipulation}
-    summary[aria-expanded="false"]~*{display:none}
+    ${DETAILS}{display:block}
+    ${SUMMARY}{display:block;cursor:pointer;touch-action:manipulation}
+    ${SUMMARY}::-webkit-details-marker{display:none}
+    ${SUMMARY}::before{content:'\\25BC';padding-right:.5em;font-size:.8em}
+    ${SUMMARY}[aria-expanded="false"]::before{content:'\\25B6'}
+    ${SUMMARY}[aria-expanded="false"]~*{display:none}
   `
+
+  Object.defineProperty(window.Element.prototype, 'open', {
+    enumerable: true,
+    configurable: true,
+    get: function () {
+      return this.nodeName.toLowerCase() === DETAILS && this.hasAttribute('open')
+    },
+    set: function (open) {
+      if (this.nodeName.toLowerCase() !== DETAILS) return void 0;
+      (this[open ? 'setAttribute' : 'removeAttribute'])('open', '')
+      return open
+    }
+  })
 }
