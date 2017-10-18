@@ -5,9 +5,27 @@
   "version": "1.0.0",
   "license": "MIT",
   "main": "dist/core-components.min.js",
-  "scripts": {},
+  "scripts": {
+    "build": "webpack",
+    "prebuild": "cp index.html dist/index.html",
+    "prepare": "npm run build",
+    "publish:patch": "npm version patch -m 'Release patch %s' && npm run push",
+    "publish:minor": "npm version minor -m 'Release minor %s' && npm run push",
+    "publish:major": "npm version major -m 'Release major %s' && npm run push",
+    "push": "git push && git push --tags && npm publish",
+    "start": "NODE_ENV=development webpack-dev-server -d",
+    "static-publish": "static-publish publish --directory ./dist --package ./package.json --verbose --latest",
+    "lint": "standard **/*.js"
+  },
   "devDependencies": {
     "standard": "^10.0.3"
   },
-  "dependencies": {}
+  "dependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-env": "^1.6.0",
+    "standard": "^10.0.3",
+    "webpack": "^3.0.0",
+    "webpack-dev-server": "^2.5.0"
+  }
 }
