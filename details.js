@@ -1,42 +1,38 @@
-require('./a11y.js')
+const DETAILS = 'details'
+const SUMMARY = 'summary'
 
-const DETAILS = 'detail'
-const SUMMARY = 'summar'
-const IS_BROWSER = typeof document !== 'undefined'
-const HAS_OPEN = IS_BROWSER && ('open' in document.createElement(DETAILS))
-
-function onClick (event) {
-  let el = event.target
-  for (; el; el = el.parentElement) {
-    if (el.nodeName.toLowerCase() === SUMMARY) break
-  }
-  if (el) {
-    console.log(el.parentElement.open)
-    el.parentElement.open = !el.parentElement.open
+function closest (elem, tagName) {
+  for (let el = elem; el; el = el.parentElement) {
+    if (el.nodeName.toLowerCase() === tagName) return el
   }
 }
 
-if (IS_BROWSER && !HAS_OPEN) {
-  document.addEventListener('click', onClick)
-  document.documentElement.appendChild(document.createElement('style')).textContent = `
-    ${DETAILS}{display:block}
-    ${SUMMARY}{display:block;cursor:pointer;touch-action:manipulation}
-    ${SUMMARY}::-webkit-details-marker{display:none}
-    ${SUMMARY}::before{content:'\\25BC';padding-right:.5em;font-size:.8em}
-    ${SUMMARY}[aria-expanded="false"]::before{content:'\\25B6'}
-    ${SUMMARY}[aria-expanded="false"]~*{display:none}
-  `
+function onKey (event) {
+  if (event.keyCode === 13 || event.keyCode === 32) onClick(event)
+}
 
-  Object.defineProperty(window.Element.prototype, 'open', {
-    enumerable: true,
-    configurable: true,
-    get: function () {
-      return this.nodeName.toLowerCase() === DETAILS && this.hasAttribute('open')
-    },
-    set: function (open) {
-      if (this.nodeName.toLowerCase() !== DETAILS) return void 0;
-      (this[open ? 'setAttribute' : 'removeAttribute'])('open', '')
-      return open
-    }
-  })
+function onClick (event) {
+  const summary = closest(event.target, SUMMARY)
+  const details = closest(summary, DETAILS)
+
+  if (details) {
+    const isOpen = details.hasAttribute('open')
+    const isSupported = 'open' in details
+
+    summary.setAttribute('aria-expanded', !isOpen)
+    isSupported || details[`${isOpen ? 'remove' : 'set'}Attribute`]('open', '')
+    isSupported || event.preventDefault()   // Prevents scroll on keydown
+  }
+}
+
+if (typeof document !== 'undefined') {
+  document.addEventListener('keydown', onKey)
+  document.addEventListener('click', onClick)
+  document.head.appendChild(document.createElement('style')).textContent = `
+    ${SUMMARY}{display:block;cursor:pointer;touch-action:manipulation}
+    ${SUMMARY}::before{content:'\\25BC';font-size:.8em;padding-right:.5em}
+    ${SUMMARY}::-webkit-details-marker{display:none}
+    ${SUMMARY}[aria-expanded="false"]~*{display:none}
+    ${SUMMARY}[aria-expanded="false"]::before{content:'\\25BA'}
+  `
 }
