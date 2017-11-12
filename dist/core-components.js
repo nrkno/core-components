@@ -81,7 +81,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 module.exports = {
-  details: __webpack_require__(1)
+  details: __webpack_require__(1),
+  dialog: __webpack_require__(2)
 };
 
 /***/ }),
@@ -91,18 +92,38 @@ module.exports = {
 "use strict";
 
 
-document.addEventListener('click', function (_ref) {
-  var target = _ref.target;
+function onKey(event) {
+  if (event.keyCode === 13 || event.keyCode === 32) onClick(event);
+}
 
-  if (target.nodeName === 'SUMMARY') {
-    target.setAttribute('aria-expanded', 'true');
+function onClick(event) {
+  for (var el = event.target; el; el = el.parentElement) {
+    if (el.nodeName.toLowerCase() === 'summary') break;
   }
-});
-/*
-details { display: block }
-summary { display: inline-block; cursor: pointer; touch-action: manipulation }
-summary[aria-expanded="false"] ~ * { display: none }
-*/
+
+  if (el) {
+    var details = el.parentElement;
+    var isOpen = details.hasAttribute('open');
+    var isSupported = 'open' in details;
+
+    el.setAttribute('aria-expanded', !isOpen);
+    isSupported || details[(isOpen ? 'remove' : 'set') + 'Attribute']('open', '');
+    isSupported || event.preventDefault(); // Prevents scroll on keydown
+  }
+}
+
+if (typeof document !== 'undefined') {
+  document.addEventListener('keydown', onKey);
+  document.addEventListener('click', onClick);
+  document.head.appendChild(document.createElement('style')).textContent = '\n    summary{display:block;cursor:pointer;touch-action:manipulation}\n    summary::before{content:\'\\25BC\';font-size:.8em;padding-right:.5em}\n    summary::-webkit-details-marker{display:none}\n    summary[aria-expanded="false"]~*{display:none}\n    summary[aria-expanded="false"]::before{content:\'\\25BA\'}\n  ';
+}
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
 
 /***/ })
 /******/ ]);
