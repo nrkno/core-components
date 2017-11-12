@@ -18,6 +18,9 @@
     "lint": "standard **/*.js"
   },
   "devDependencies": {
+    "standard": "^10.0.3"
+  },
+  "dependencies": {
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
     "babel-preset-env": "^1.6.0",

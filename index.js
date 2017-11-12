@@ -1,3 +1,4 @@
 module.exports = {
-  details: require('./details')
+  details: require('./details'),
+  dialog: require('./dialog')
 }

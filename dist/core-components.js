@@ -81,7 +81,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 module.exports = {
-  details: __webpack_require__(1)
+  details: __webpack_require__(1),
+  dialog: __webpack_require__(2)
 };
 
 /***/ }),
@@ -91,18 +92,45 @@ module.exports = {
 "use strict";
 
 
-document.addEventListener('click', function (_ref) {
-  var target = _ref.target;
+var DETAILS = 'details';
+var SUMMARY = 'summary';
 
-  if (target.nodeName === 'SUMMARY') {
-    target.setAttribute('aria-expanded', 'true');
+function closest(elem, tagName) {
+  for (var el = elem; el; el = el.parentElement) {
+    if (el.nodeName.toLowerCase() === tagName) return el;
   }
-});
-/*
-details { display: block }
-summary { display: inline-block; cursor: pointer; touch-action: manipulation }
-summary[aria-expanded="false"] ~ * { display: none }
-*/
+}
+
+function onKey(event) {
+  if (event.keyCode === 13 || event.keyCode === 32) onClick(event);
+}
+
+function onClick(event) {
+  var summary = closest(event.target, SUMMARY);
+  var details = closest(summary, DETAILS);
+
+  if (details) {
+    var isOpen = details.hasAttribute('open');
+    var isSupported = 'open' in details;
+
+    summary.setAttribute('aria-expanded', !isOpen);
+    isSupported || details[(isOpen ? 'remove' : 'set') + 'Attribute']('open', '');
+    isSupported || event.preventDefault(); // Prevents scroll on keydown
+  }
+}
+
+if (typeof document !== 'undefined') {
+  document.addEventListener('keydown', onKey);
+  document.addEventListener('click', onClick);
+  document.head.appendChild(document.createElement('style')).textContent = '\n    ' + SUMMARY + '{display:block;cursor:pointer;touch-action:manipulation}\n    ' + SUMMARY + '::before{content:\'\\25BC\';font-size:.8em;padding-right:.5em}\n    ' + SUMMARY + '::-webkit-details-marker{display:none}\n    ' + SUMMARY + '[aria-expanded="false"]~*{display:none}\n    ' + SUMMARY + '[aria-expanded="false"]::before{content:\'\\25BA\'}\n  ';
+}
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
 
 /***/ })
 /******/ ]);
