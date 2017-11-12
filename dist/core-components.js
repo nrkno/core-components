@@ -92,28 +92,21 @@ module.exports = {
 "use strict";
 
 
-var DETAILS = 'details';
-var SUMMARY = 'summary';
-
-function closest(elem, tagName) {
-  for (var el = elem; el; el = el.parentElement) {
-    if (el.nodeName.toLowerCase() === tagName) return el;
-  }
-}
-
 function onKey(event) {
   if (event.keyCode === 13 || event.keyCode === 32) onClick(event);
 }
 
 function onClick(event) {
-  var summary = closest(event.target, SUMMARY);
-  var details = closest(summary, DETAILS);
+  for (var el = event.target; el; el = el.parentElement) {
+    if (el.nodeName.toLowerCase() === 'summary') break;
+  }
 
-  if (details) {
+  if (el) {
+    var details = el.parentElement;
     var isOpen = details.hasAttribute('open');
     var isSupported = 'open' in details;
 
-    summary.setAttribute('aria-expanded', !isOpen);
+    el.setAttribute('aria-expanded', !isOpen);
     isSupported || details[(isOpen ? 'remove' : 'set') + 'Attribute']('open', '');
     isSupported || event.preventDefault(); // Prevents scroll on keydown
   }
@@ -122,7 +115,7 @@ function onClick(event) {
 if (typeof document !== 'undefined') {
   document.addEventListener('keydown', onKey);
   document.addEventListener('click', onClick);
-  document.head.appendChild(document.createElement('style')).textContent = '\n    ' + SUMMARY + '{display:block;cursor:pointer;touch-action:manipulation}\n    ' + SUMMARY + '::before{content:\'\\25BC\';font-size:.8em;padding-right:.5em}\n    ' + SUMMARY + '::-webkit-details-marker{display:none}\n    ' + SUMMARY + '[aria-expanded="false"]~*{display:none}\n    ' + SUMMARY + '[aria-expanded="false"]::before{content:\'\\25BA\'}\n  ';
+  document.head.appendChild(document.createElement('style')).textContent = '\n    summary{display:block;cursor:pointer;touch-action:manipulation}\n    summary::before{content:\'\\25BC\';font-size:.8em;padding-right:.5em}\n    summary::-webkit-details-marker{display:none}\n    summary[aria-expanded="false"]~*{display:none}\n    summary[aria-expanded="false"]::before{content:\'\\25BA\'}\n  ';
 }
 
 /***/ }),
