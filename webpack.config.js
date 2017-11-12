@@ -3,8 +3,8 @@ const webpack = require('webpack')
 
 const config = {
   entry: {
-    'core-components': './all.js',
-    'core-components.min': './all.js'
+    'core-components': './index.js',
+    'core-components.min': './index.js'
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
