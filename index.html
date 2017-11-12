@@ -30,6 +30,7 @@
   <ul class="docs-menu nrk-color-shade-1">
     <li><a href="#">Getting started</a></li>
     <li><a href="#details">Details</a></li>
+    <li><a href="#input">Input</a></li>
     <li><a href="#faq">FAQ</a></li>
   </ul>
   <article class="docs-page">
@@ -58,19 +59,40 @@
     </p>
 
     <h2 id="details">Details</h2>
+    <p>
+      <em>Todo: Document tabindex="0", role="button", aria-expanded="false", open-attribute, FOUT, and lacking polyfill for details.open, make react-bridge, auto attribute on DOMReady?</em>
+    </p>
     <details>
-      <summary role="button" tabindex="0" aria-expanded="false">Even more details</summary>
-      <p>Here are even more details about the details.</p>
+      <summary class="nrk-button" role="button" tabindex="0" aria-expanded="false">Even more details</summary>
+      <div>
+        <p>Here are even more details about the details.</p>
+      </div>
     </details>
 
-    <h2 id="faq">Details</h2>
+    <h2 id="input">Input</h2>
+    <label>Choose a browser from this list:
+      <input type="text"
+        role="combobox"
+        list="browsers"
+        aria-owns="browsers"
+        aria-expanded="false"
+        aria-autocomplete="list"
+        aria-haspopup="false">
+    </label>
+    <datalist id="browsers">
+      <option value="Chrome">
+      <option value="Firefox">
+      <option value="Internet Explorer">
+      <option value="Opera">
+      <option value="Safari">
+      <option value="Microsoft Edge">
+    </datalist>
+
+    <h2 id="faq">FAQ</h2>
     <h3>Wait what?</h3>
     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut libero mauris, consectetur in congue et, facilisis eu felis. In varius dictum ligula, vitae volutpat nisi vulputate a. Ut consectetur augue quis ante congue, sit amet consequat nibh eleifend. Fusce tempor convallis venenatis. Duis sit amet felis feugiat, malesuada sem ut, pulvinar est. Donec tempus dapibus est eget semper. Donec maximus porta elementum. Curabitur eget sem suscipit, posuere turpis et, mollis tortor.</p>
   </article>
-  <script src="core-components.min.js"></script>
-  <script>
-
-  </script>
+  <script async defer src="core-components.min.js"></script>
   <script async src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
   <script async src="https://static.nrk.no/core-icons/2.4.1/core-icons.min.js"></script>
 </body>
