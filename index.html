@@ -19,6 +19,28 @@
 
     .docs-support > * { margin: 1em 1px; min-width: 80px; padding: 1em; font-size: 13px; text-align: center }
 
+    .docs-input { font: inherit; padding: 10px; border: 1px solid #c8c8c8; border-radius: 3px }
+    .docs-select::-ms-expand { display: none }
+    .docs-select {
+      box-sizing: border-box;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      background: none;
+      color: inherit;
+      font: inherit;
+      margin: 0;
+      border: 0;
+      padding: 0 2em 0 .4em;
+      background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='10'%3E%3Cpath d='M0 0h10L5 10'/%3E%3C/svg%3E") 100% 45%/1em no-repeat
+    }
+
+    .docs-choice { display: none }
+    .docs-choice + span::before { content: ''; display: inline-block; width: 7px; height: 7px; border: 2px solid; margin: 0 5px }
+    .docs-choice:checked + span::before { background: currentcolor }
+    .docs-choice:focus + span { border-color: transparent; box-shadow: 0 0 2px 1px #00b9f2 }
+    .docs-choice[type="radio"] + span::before { border-radius: 100% }
+
     @media(min-width:720px){
       .docs-menu { position: fixed; width: 160px; height: 100vh; padding-top: 90px }
       .docs-menu ~ iframe { position: fixed; width: calc(100% - 200px); height: 100% }
@@ -27,18 +49,29 @@
   </style>
 </head>
 <body>
-  <ul class="docs-menu nrk-color-shade-1">
+  <ul class="docs-menu nrk-color-shade-1" aria-hidden="true">
     <li><a href="#">Getting started</a></li>
     <li><a href="#details">Details</a></li>
+    <li><a href="#dropdown">Dropdown</a></li>
+    <li><a href="#input">Input</a></li>
+    <li><a href="#select">Select</a></li>
+    <li><a href="#choice">Choice</a></li>
+    <li><a href="#progress">Progress</a></li>
     <li><a href="#faq">FAQ</a></li>
   </ul>
   <article class="docs-page">
+    <div aria-hidden="true">
     <h2>@nrk/core-components <!--version--></h2>
     <h3>Getting started</h3>
-    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut libero mauris, consectetur in congue et, facilisis eu felis. In varius dictum ligula, vitae volutpat nisi vulputate a. Ut consectetur augue quis ante congue, sit amet consequat nibh eleifend. Fusce tempor convallis venenatis. Duis sit amet felis feugiat, malesuada sem ut, pulvinar est. Donec tempus dapibus est eget semper. Donec maximus porta elementum. Curabitur eget sem suscipit, posuere turpis et, mollis tortor.</p>
+    <p>
+      core-components does not style any elements.
+      It is purely a layer of functionality around some basic components,
+      making sure accessibility is and extensibility is easy.
+    </p>
     <h3>Use from <a href="https://npmjs.nrk.no/package/@nrk/core-components" target="_blank">npmjs.nrk.no</a></h3>
     <pre class="prettyprint">npm install @nrk/core-components --save</pre>
-    <pre class="prettyprint">import components from '@nrk/core-components';</pre>
+    <pre class="prettyprint">import components from '@nrk/core-components' // import all comonents...</pre>
+    <pre class="prettyprint">import input from '@nrk/core-components/input' // ...or individual (recommended)</pre>
     <h3>Use from static.nrk.no</h3>
     <pre class="prettyprint">&lt;script defer src="https://static.nrk.no/core-components/X.X.X/core-components.min.js"&gt;&lt;/script&gt;</pre>
     <h3>Browser support</h3>
@@ -57,22 +90,142 @@
       <a class="nrk-button" target="_top" href="https://github.com/nrkno/core-components/releases/latest">View latest release</a>
     </p>
 
-    <h2 id="picker">Details</h2>
+    <h2 id="details">Details</h2>
     <p>
-      <em>Todo: Document tabindex="0", role="button", aria-expanded="false", open-attribute, FOUT, and lacking polyfill for details.open, make react-bridge</em>
+      <em>Todo: Document tabindex="0", role="button", aria-expanded="false", FOUT, and lacking polyfill for details.open, make react-bridge</em>
     </p>
     <details>
-      <summary class="nrk-button" role="button" tabindex="0" aria-expanded="false">Even more details</summary>
-      <div>
-        <p>Here are even more details about the details.</p>
-      </div>
+      <summary role="button" tabindex="0" aria-expanded="false">VanillaJS</summary>
+      <div><p>Even more details.</p></div>
     </details>
+    <div id="docs-react-details"></div>
+    <h3>Usage: Javascript</h3>
+    <pre class="prettyprint">import '@nrk/core-components/details'</pre>
+    <h3>Usage: React</h3>
+    <pre class="prettyprint">import Details from '@nrk/core-components/details'</pre>
+    <pre class="prettyprint">&lt;Details summary="React" open="false"&gt;
+  Even more details.
+&lt;/Details&gt;</pre>
 
-    <h2 id="faq">Details</h2>
+    <h2 id="dropdown">Dropdown</h2>
+    <p>
+      <em>Todo: aria-expanded + sibling. See also select</em>
+    </p>
+    </div>
+
+    <h2 id="input">Input</h2>
+    <div class="nrk-grid">
+      <div style="padding-right:15px">
+        <h3>Suggestions</h3>
+        <p>
+          <label>
+            <span class="nrk-sr">Write the letter C to test</span>
+            <input type="text" data-core-input="browsers" placeholder="Type &quot;C&quot;...">
+          </label>
+        </p>
+      </div>
+      <div style="padding-right:15px">
+        <h3>Results</h3>
+        <p>
+          <label>
+            <span class="nrk-sr">Write the letter C to test</span>
+            <input type="text" placeholder="Type &quot;C&quot;...">
+          </label>
+        </p>
+      </div>
+      <div aria-hidden="true" style="pointer-events:none;opacity:.3">
+        <h3>Tags (work in progress)</h3>
+        <p>
+          <label>
+            <span class="nrk-sr">Write the letter C to test</span>
+            <input type="text" class="docs-input" data-core-input="browsers" disabled placeholder="Separate with comma">
+          </label>
+        </p>
+      </div>
+    </div>
+    <datalist id="browsers">
+      <option value="Chrome" selected>
+      <option value="Firefox">
+      <option value="Internet Explorer">
+      <option value="Opera">
+      <option value="Safari">
+      <option value="Microsoft Edge">
+    </datalist>
+    <h3>Usage</h3>
+    <pre class="prettyprint">import input from '@nrk/core-components/input'</pre>
+
+    <div aria-hidden="true"><br>
+
+    <h2 id="select">Select</h2>
+    <p>
+      <em>Todo: Styling, men open styling må være native. See also dropdown</em>
+    </p>
+    <p>
+      <label>
+        <span class="nrk-sr">Velg nettleser</span>
+        <select class="docs-select">
+          <option>Chrome</option>
+          <option>Firefox</option>
+          <option>Internet Explorer</option>
+          <option>Opera</option>
+          <option>Safari</option>
+          <option>Microsoft Edge</option>
+        </select>
+      </label>
+    </p>
+
+    <h2 id="choice">Choice</h2>
+    <p>
+      <em>Todo: Document why this is not a component and how to make your own</em>
+    </p>
+    <div class="nrk-grid">
+      <div class="nrk-xs-12of12 nrk-md-5of12" style="padding-right:15px">
+        <h3>Checkbox (multiple choice)</h3><br>
+        <fieldset>
+          <legend>Topping</legend>
+          <label><input type="checkbox" class="docs-choice"><span>Peperoni</span></label>
+          <label><input type="checkbox" class="docs-choice"><span>Ham</span></label>
+          <label><input type="checkbox" class="docs-choice"><span>Pineapple</span></label>
+          <label><input type="checkbox" class="docs-choice"><span>Mushroom</span></label>
+        </fieldset>
+      </div>
+      <div class="nrk-xs-12of12 nrk-md-5of12" style="padding-right:15px">
+        <h3>Radio (single choice)</h3><br>
+        <fieldset>
+          <legend>Coffee or tea?</legend>
+          <label><input type="radio" name="drink" class="docs-choice"><span>Coffee</span></label>
+          <label><input type="radio" name="drink" class="docs-choice"><span>Tea</span></label>
+        </fieldset>
+      </div>
+    </div>
+
+    <h2 id="progress">Progress</h2>
+    <p>
+      <em>Todo: Document why this is not a component and how to make your own</em>
+    </p>
+    <progress role="progressbar" aria-valuemin="0" aria-valuenow="22" value="22" aria-valuemax="100" max="100" aria-valuetext="Saving changes..."></progress>
+
+    <h2 id="faq">FAQ</h2>
     <h3>Wait what?</h3>
     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut libero mauris, consectetur in congue et, facilisis eu felis. In varius dictum ligula, vitae volutpat nisi vulputate a. Ut consectetur augue quis ante congue, sit amet consequat nibh eleifend. Fusce tempor convallis venenatis. Duis sit amet felis feugiat, malesuada sem ut, pulvinar est. Donec tempus dapibus est eget semper. Donec maximus porta elementum. Curabitur eget sem suscipit, posuere turpis et, mollis tortor.</p>
+    </div>
   </article>
-  <script async defer src="core-components.min.js"></script>
+  <script src="core-components.min.js"></script>
+  <script>
+    (function({details, dialog, input}){
+
+    })(window['core-components'])
+  </script>
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+  <script src="core-components.jsx.js"></script>
+  <script type="text/babel">
+    const {React, ReactDOM, Details} = window['core-components'];
+
+    ReactDOM.render(
+      <Details summary={<mark>Hei</mark>} open="false">
+        <p>Even more details.</p>
+      </Details>, document.getElementById('docs-react-details'))
+  </script>
   <script async src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
   <script async src="https://static.nrk.no/core-icons/2.4.1/core-icons.min.js"></script>
 </body>

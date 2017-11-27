@@ -1,29 +1,35 @@
-const path = require('path')
+// const isDev = process.env.NODE_ENV === 'development'
 const webpack = require('webpack')
+const name = require('./package.json').name.replace(/[^/]+\//, '') // RegEx to remove package name scope
+const path = require('path')
+const fs = require('fs')
 
 const config = {
-  entry: {
-    'core-components': './index.js',
-    'core-components.min': './index.js'
-  },
+  context: __dirname,
+  entry: () =>
+    fs.readdirSync(__dirname).reduce((files, file) => {
+      const [base, ext] = file.replace('index', name).split('.')
+      if (ext === 'js') files[base] = files[`${base}.min`] = `./${file}`
+      if (ext === 'jsx') files[`${base}.${ext}`] = `./${file}`            // No jsx in dist
+      return files
+    }, {}),
   output: {
     path: path.resolve(__dirname, 'dist'),
     publicPath: '/',
     filename: '[name].js',
-    library: 'core-components',
-    libraryTarget: 'umd'
+    libraryTarget: 'umd',
+    library: name
   },
-  context: __dirname,
   devServer: {
     contentBase: [__dirname]
   },
   module: {
     rules: [{
-      test: /\.js?$/,
+      test: /\.jsx?$/,
       exclude: [/node_modules/],
       use: [{
         loader: 'babel-loader',
-        options: { presets: ['env'] }
+        options: { presets: ['env', 'react'] }
       }]
     }]
   },
