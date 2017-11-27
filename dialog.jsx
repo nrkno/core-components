@@ -1,3 +1,5 @@
-module.exports = () => {
-  return (<div>Testing dialog</div>)
-}
+import React from 'react'
+
+module.exports = () => (
+  <div>Testing dialog</div>
+)

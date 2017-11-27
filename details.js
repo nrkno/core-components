@@ -23,9 +23,9 @@ if (typeof document !== 'undefined') {
   document.addEventListener('click', onClick)
   document.head.appendChild(document.createElement('style')).textContent = `
     summary{display:block;cursor:pointer;touch-action:manipulation}
-    summary::before{content:'\\25BC';font-size:.8em;padding-right:.5em}
     summary::-webkit-details-marker{display:none}
+    summary::before{content:'';padding-right:1em;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Cpath d='M0 0h10L5 10'/%3E%3C/svg%3E") 0 45%/50% no-repeat}
+    summary[aria-expanded="false"]::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Cpath d='M0 0l10 5-10 5'/%3E%3C/svg%3E")}
     summary[aria-expanded="false"]~*{display:none}
-    summary[aria-expanded="false"]::before{content:'\\25BA'}
   `
 }
