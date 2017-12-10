@@ -7,14 +7,14 @@
   "main": "dist/core-components.min.js",
   "scripts": {
     "build": "rimraf dist/ && cpx 'index.html' dist/ && webpack",
+    "lint": "standard **/*.js",
     "prepare": "npm run build",
     "publish:patch": "npm version patch -m 'Release patch %s' && npm run push",
     "publish:minor": "npm version minor -m 'Release minor %s' && npm run push",
     "publish:major": "npm version major -m 'Release major %s' && npm run push",
     "push": "git push && git push --tags && npm publish",
     "start": "NODE_ENV=development webpack-dev-server -d",
-    "static-publish": "static-publish publish --directory ./dist --package ./package.json --verbose --latest",
-    "lint": "standard **/*.js"
+    "static-publish": "static-publish publish --directory ./dist --package ./package.json --verbose --latest"
   },
   "dependencies": {
     "react": "^15.6.1",
@@ -23,12 +23,16 @@
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
-    "babel-preset-env": "^1.6.0",
+    "babel-preset-env": "^1.6.1",
     "babel-preset-react": "^6.24.1",
     "cpx": "^1.5.0",
     "rimraf": "^2.6.2",
     "standard": "^10.0.3",
-    "webpack": "^3.0.0",
-    "webpack-dev-server": "^2.5.0"
+    "webpack": "^3.10.0",
+    "webpack-dev-server": "^2.9.7"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nrkno/core-components.git"
   }
 }
