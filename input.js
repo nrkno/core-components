@@ -19,9 +19,9 @@ function render (elem) {
   attr(elem, 'aria-haspopup', Boolean(state.hits.length))
   attr(elem, 'aria-expanded', Boolean(state.hits.length))
 
-  LIST.innerHTML = state.hits.map(({value}, i) => `
-    <li role="option" aria-selected="${i === state.index}">${value}</li>
-  `).join('')
+  LIST.innerHTML = state.hits.map(({value}, i) =>
+    `<li role="option" aria-selected="${i === state.index}">${value}</li>`
+  ).join('')
 }
 
 function onFocus (event) {
@@ -87,7 +87,7 @@ function onKey (event) {
       render(event.target)
       const value = (state.hits[state.index] || state).value
       if (state.mode === 'results') {
-        LIVE.textContent = value || 'Tomt tekstfelt' // Hits (autohits) (TODO: test empty)
+        LIVE.textContent = value || 'Tomt tekstfelt'
       } else {
         elem.value = value
       }
