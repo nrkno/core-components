@@ -105,15 +105,7 @@ if (typeof document !== 'undefined') {
   document.addEventListener('blur', onBlur, true)   // Use capture to ensure event bubling
 
   document.documentElement.appendChild(LIVE)
-  document.head.appendChild(document.createElement('style')).textContent = `
-    datalist{display:none}
-    .${KEY}{position:relative}
-    .${KEY} ul{position:absolute;z-index:2;list-style:none;margin:0;padding:0;width:100%;background:#fff;color:#333;box-shadow:0 5px 15px rgba(0,0,0,.3);animation:drop .2s forwards}
-    .${KEY} li{padding:3px 7px}
-    .${KEY} li[aria-selected="true"],
-    .${KEY} li:hover {background:#c8c8c8}
-    @keyframes drop{from{opacity:0;transform:translateY(2px)}}
-  `
+  document.head.appendChild(document.createElement('style')).textContent = `datalist{display:none}`
 }
 
 module.exports = () => console.log('input')

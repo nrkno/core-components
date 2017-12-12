@@ -1,10 +1,10 @@
 import React from 'react'
 
-module.exports = (props) => (
+module.exports = ({summary, children, open = false}) => (
   <details>
-    <summary role='button' tabIndex='0' aria-expanded={String(props.open || 'false') !== 'false'}>
-      {props.summary}
+    <summary role='button' tabIndex='0' aria-expanded={String(open) !== 'false'}>
+      {summary}
     </summary>
-    <div>{props.children}</div>
+    <div>{children}</div>
   </details>
 )
