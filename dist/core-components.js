@@ -70,7 +70,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 61);
+/******/ 	return __webpack_require__(__webpack_require__.s = 63);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -151,7 +151,7 @@ function render(elem) {
 
   LIST.innerHTML = state.hits.map(function (_ref, i) {
     var value = _ref.value;
-    return '\n    <li role="option" aria-selected="' + (i === state.index) + '">' + value + '</li>\n  ';
+    return '<li role="option" aria-selected="' + (i === state.index) + '">' + value + '</li>';
   }).join('');
 }
 
@@ -225,7 +225,7 @@ function onKey(event) {
       render(event.target);
       var value = (state.hits[state.index] || state).value;
       if (state.mode === 'results') {
-        LIVE.textContent = value || 'Tomt tekstfelt'; // Hits (autohits) (TODO: test empty)
+        LIVE.textContent = value || 'Tomt tekstfelt';
       } else {
         elem.value = value;
       }
@@ -243,7 +243,7 @@ if (typeof document !== 'undefined') {
   document.addEventListener('blur', onBlur, true); // Use capture to ensure event bubling
 
   document.documentElement.appendChild(LIVE);
-  document.head.appendChild(document.createElement('style')).textContent = '\n    datalist{display:none}\n    .' + KEY + '{position:relative}\n    .' + KEY + ' ul{position:absolute;z-index:2;list-style:none;margin:0;padding:0;width:100%;background:#fff;color:#333;box-shadow:0 5px 15px rgba(0,0,0,.3);animation:drop .2s forwards}\n    .' + KEY + ' li{padding:3px 7px}\n    .' + KEY + ' li[aria-selected="true"],\n    .' + KEY + ' li:hover {background:#c8c8c8}\n    @keyframes drop{from{opacity:0;transform:translateY(2px)}}\n  ';
+  document.head.appendChild(document.createElement('style')).textContent = 'datalist{display:none}';
 }
 
 module.exports = function () {
@@ -252,7 +252,7 @@ module.exports = function () {
 
 /***/ }),
 
-/***/ 61:
+/***/ 63:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";

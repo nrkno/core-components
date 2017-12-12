@@ -70,7 +70,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 59);
+/******/ 	return __webpack_require__(__webpack_require__.s = 60);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -4710,7 +4710,8 @@ module.exports = onlyChild;
 /* 56 */,
 /* 57 */,
 /* 58 */,
-/* 59 */
+/* 59 */,
+/* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4722,19 +4723,23 @@ var _react2 = _interopRequireDefault(_react);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-module.exports = function (props) {
+module.exports = function (_ref) {
+  var summary = _ref.summary,
+      children = _ref.children,
+      _ref$open = _ref.open,
+      open = _ref$open === undefined ? false : _ref$open;
   return _react2.default.createElement(
     'details',
     null,
     _react2.default.createElement(
       'summary',
-      { role: 'button', tabIndex: '0', 'aria-expanded': String(props.open || 'false') !== 'false' },
-      props.summary
+      { role: 'button', tabIndex: '0', 'aria-expanded': String(open) !== 'false' },
+      summary
     ),
     _react2.default.createElement(
       'div',
       null,
-      props.children
+      children
     )
   );
 };
