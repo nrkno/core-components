@@ -4,9 +4,9 @@
 	else if(typeof define === 'function' && define.amd)
 		define([], factory);
 	else if(typeof exports === 'object')
-		exports["core-components"] = factory();
+		exports["coreComponents"] = factory();
 	else
-		root["core-components"] = factory();
+		root["coreComponents"] = factory();
 })(typeof self !== 'undefined' ? self : this, function() {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
@@ -70,46 +70,12 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 63);
+/******/ 	return __webpack_require__(__webpack_require__.s = 40);
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ 28:
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-function onKey(event) {
-  if (event.keyCode === 13 || event.keyCode === 32) onClick(event);
-}
-
-function onClick(event) {
-  for (var el = event.target; el; el = el.parentElement) {
-    if (el.nodeName.toLowerCase() === 'summary') break;
-  }
-
-  if (el) {
-    var details = el.parentElement;
-    var isOpen = details.hasAttribute('open');
-    var isSupported = 'open' in details;
-
-    el.setAttribute('aria-expanded', !isOpen);
-    isSupported || details[(isOpen ? 'remove' : 'set') + 'Attribute']('open', '');
-    isSupported || event.preventDefault(); // Prevents scroll on keydown
-  }
-}
-
-if (typeof document !== 'undefined') {
-  document.addEventListener('keydown', onKey);
-  document.addEventListener('click', onClick);
-  document.head.appendChild(document.createElement('style')).textContent = '\n    summary{display:block;cursor:pointer;touch-action:manipulation}\n    summary::-webkit-details-marker{display:none}\n    summary::before{content:\'\';padding-right:1em;background:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'10\' height=\'10\'%3E%3Cpath d=\'M0 0h10L5 10\'/%3E%3C/svg%3E") 0 45%/50% no-repeat}\n    summary[aria-expanded="false"]::before{background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'10\' height=\'10\'%3E%3Cpath d=\'M0 0l10 5-10 5\'/%3E%3C/svg%3E")}\n    summary[aria-expanded="false"]~*{display:none}\n  ';
-}
-
-/***/ }),
-
-/***/ 44:
+/***/ 20:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -117,7 +83,7 @@ if (typeof document !== 'undefined') {
 
 /***/ }),
 
-/***/ 45:
+/***/ 21:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -252,17 +218,122 @@ module.exports = function () {
 
 /***/ }),
 
-/***/ 63:
+/***/ 40:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-module.exports = {
-  details: __webpack_require__(28),
-  dialog: __webpack_require__(44),
-  input: __webpack_require__(45)
+var components = {
+  version: "1.0.0", // eslint-disable-line
+  details: __webpack_require__(9),
+  dialog: __webpack_require__(20),
+  input: __webpack_require__(21)
 };
+
+if (typeof window !== 'undefined') {
+  __webpack_require__(8);
+  window.dispatchEvent(new window.CustomEvent('core-components', {
+    detail: components
+  }));
+}
+
+module.exports = components;
+
+/***/ }),
+
+/***/ 8:
+/***/ (function(module, exports) {
+
+// Polyfill for creating CustomEvents on IE9/10/11
+
+// code pulled from:
+// https://github.com/d4tocchini/customevent-polyfill
+// https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent#Polyfill
+
+try {
+    var ce = new window.CustomEvent('test');
+    ce.preventDefault();
+    if (ce.defaultPrevented !== true) {
+        // IE has problems with .preventDefault() on custom events
+        // http://stackoverflow.com/questions/23349191
+        throw new Error('Could not prevent default');
+    }
+} catch(e) {
+  var CustomEvent = function(event, params) {
+    var evt, origPrevent;
+    params = params || {
+      bubbles: false,
+      cancelable: false,
+      detail: undefined
+    };
+
+    evt = document.createEvent("CustomEvent");
+    evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
+    origPrevent = evt.preventDefault;
+    evt.preventDefault = function () {
+      origPrevent.call(this);
+      try {
+        Object.defineProperty(this, 'defaultPrevented', {
+          get: function () {
+            return true;
+          }
+        });
+      } catch(e) {
+        this.defaultPrevented = true;
+      }
+    };
+    return evt;
+  };
+
+  CustomEvent.prototype = window.Event.prototype;
+  window.CustomEvent = CustomEvent; // expose definition to window
+}
+
+
+/***/ }),
+
+/***/ 9:
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+function onKey(event) {
+  if (event.keyCode === 13 || event.keyCode === 32) onClick(event);
+}
+
+function onClick(event) {
+  for (var el = event.target; el; el = el.parentElement) {
+    if (el.nodeName.toLowerCase() === 'summary') break; //  Travese DOM tree and find closest summary
+  }
+
+  if (el) {
+    var details = el.parentElement;
+    var hasToggle = 'ontoggle' in details; // Snitt support since toggle event and details element is independent
+    var hasDetails = 'open' in details; // Sniff support since preventDefault does not stop expand in Firefox
+    var isOpen = details.hasAttribute('open');
+
+    el.setAttribute('aria-expanded', !isOpen);
+
+    hasDetails || event.preventDefault(); // Prevent scroll on keydown
+    hasDetails || details[(isOpen ? 'remove' : 'set') + 'Attribute']('open', '');
+    hasToggle || details.dispatchEvent(new window.CustomEvent('toggle'));
+  }
+}
+
+// Make sure we are in a browser and have not allready loaded the polyfill
+if (typeof document !== 'undefined' && !document.getElementById('details-polyfill')) {
+  __webpack_require__(8); // Polyfill CustomEvent
+  document.createElement('details'); // HTML5 shiv details for IE
+  document.createElement('summary'); // HTML5 shiv summary for IE
+  document.addEventListener('keydown', onKey);
+  document.addEventListener('click', onClick);
+  var style = document.createElement('style');
+  style.id = 'details-polyfill';
+  style.textContent = '\n    summary{display:block;cursor:pointer;touch-action:manipulation}\n    summary::-webkit-details-marker{display:none}\n    summary::before{content:\'\';padding-right:1em;background:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 10 10\'%3E%3Cpath d=\'M0 0h10L5 10\'/%3E%3C/svg%3E") 0 45%/50% no-repeat}\n    summary[aria-expanded="false"]::before{background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 10 10\'%3E%3Cpath d=\'M0 0l10 5-10 5\'/%3E%3C/svg%3E")}\n    summary[aria-expanded="false"]~* { display: none }\n  ';
+  document.head.appendChild(style);
+}
 
 /***/ })
 

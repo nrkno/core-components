@@ -1,7 +1,5 @@
 module.exports = {
-  React: require('react'),
-  ReactDOM: require('react-dom'),
-
+  version: __VERSION__, // eslint-disable-line
   Details: require('./details.jsx'),
   Dialog: require('./dialog.jsx'),
   Input: require('./input.jsx')

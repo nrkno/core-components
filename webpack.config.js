@@ -1,16 +1,16 @@
-// const isDev = process.env.NODE_ENV === 'development'
 const webpack = require('webpack')
-const name = require('./package.json').name.replace(/[^/]+\//, '') // RegEx to remove package name scope
+const config = require('./package.json')
 const path = require('path')
 const fs = require('fs')
 
-const config = {
+module.exports = {
   context: __dirname,
   entry: () =>
     fs.readdirSync(__dirname).reduce((files, file) => {
-      const [base, ext] = file.replace('index', name).split('.')
+      const [base, ext] = file.split('.')
+      if (base === 'date') return files
       if (ext === 'js') files[base] = files[`${base}.min`] = `./${file}`
-      if (ext === 'jsx') files[`${base}.${ext}`] = `./${file}`            // No jsx in dist
+      if (ext === 'jsx') files[`${base}.${ext}`] = `./${file}`
       return files
     }, {}),
   output: {
@@ -18,7 +18,7 @@ const config = {
     publicPath: '/',
     filename: '[name].js',
     libraryTarget: 'umd',
-    library: name
+    library: 'coreComponents' // TODO: make sure it does not polute global NS
   },
   devServer: {
     contentBase: [__dirname]
@@ -29,7 +29,10 @@ const config = {
       exclude: [/node_modules/],
       use: [{
         loader: 'babel-loader',
-        options: { presets: ['env', 'react'] }
+        options: {
+          presets: ['env', 'react'],
+          plugins: ['transform-object-rest-spread']
+        }
       }]
     }]
   },
@@ -38,8 +41,9 @@ const config = {
     new webpack.optimize.UglifyJsPlugin({
       include: /(\.min)\.js$/,
       sourceMap: true
+    }),
+    new webpack.DefinePlugin({
+      __VERSION__: JSON.stringify(config.version)
     })
   ]
 }
-
-module.exports = config
