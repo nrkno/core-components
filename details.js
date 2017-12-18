@@ -1,4 +1,4 @@
-import {closest, factory, hasState, setAttributes, setState, queryAll} from './utils'
+import {attr, closest, getElements, queryAll} from './utils'
 
 const DETAILS = 'details'
 const SUMMARY = 'summary'
@@ -6,17 +6,36 @@ const STYLE_ID = `${DETAILS}-polyfill`
 const ENTER_KEY = 13
 const SPACE_KEY = 32
 
-function toggle (details, open) {
+export class details {
+  constructor (elements) {
+    this.elements = getElements(elements)
+    this.elements.forEach((el, i) => toggle(el, i, el.getAttribute('open')))
+    return this
+  }
+  open (fn = true) {
+    this.elements.forEach((el, i) => toggle(el, i, fn))
+    return this
+  }
+  close (fn = false) {
+    this.elements.forEach((el, i) => toggle(el, i, fn))
+    return this
+  }
+}
+
+function toggle (el, index, fn) {
+  const open = typeof fn === 'function' ? fn(el, index) : Boolean(fn)
   const hasToggleSupport = 'ontoggle' in details
+  // const hasOpenSupport = 'open' in details
   const summaryAttribute = {
     tabindex: 0,
     role: 'button',
     'aria-expanded': Boolean(open)
   }
 
-  queryAll(SUMMARY, details).forEach((summary) => setAttributes(summary, summaryAttribute))
-  setAttributes(details, {open: open ? '' : null})
+  queryAll(SUMMARY, details).forEach((summary) => attr(summary, summaryAttribute))
+  attr(details, {open: open ? '' : null})
 
+  // hasOpenSupport || details.
   hasToggleSupport || details.dispatchEvent(new window.CustomEvent('toggle'))
 }
 
@@ -26,7 +45,7 @@ function onKey (event) {
 
 function onClick (event) {
   const summary = closest(event.target, SUMMARY)
-  const details = hasState(summary && summary.parentElement)
+  const details = summary && summary.parentElement
 
   if (details) {
     event.preventDefault()     // Prevent scroll
@@ -34,19 +53,12 @@ function onClick (event) {
   }
 }
 
-module.exports = factory((element, state) => {
-  const open = element.hasAttribute('open')
-  const next = setState(element, state, {open})
-  toggle(element, next.open)
-  return next
-})
-
-// Make sure we are in a browser and have not allready loaded the polyfill
+// Make sure we are in a browser and have not already loaded the component
 if (typeof document !== 'undefined' && !document.getElementById(STYLE_ID)) {
   require('custom-event-polyfill')                          // Polyfill CustomEvent
-  document.createElement(DETAILS)                           // HTML5 shiv details for IE
-  document.createElement(SUMMARY)                           // HTML5 shiv summary for IE
-  document.addEventListener('keydown', onKey)               // Polyfill role button
+  document.createElement(DETAILS)                           // HTML5 shiv <details> for IE
+  document.createElement(SUMMARY)                           // HTML5 shiv <summary> for IE
+  document.addEventListener('keydown', onKey)               // Make role="button" behave like <button>
   document.addEventListener('click', onClick)               // Polyfill click to toggle
   document.head.insertAdjacentHTML('afterbegin',            // Insert css in top for easy overwriting
     `<style id="${STYLE_ID}">

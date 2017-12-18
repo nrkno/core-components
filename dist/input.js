@@ -228,10 +228,20 @@ Object.defineProperty(exports, "__esModule", {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
+exports.attr = attr;
 exports.closest = closest;
 var KEY = 'core-components-' + Date.now();
 var STATES = {};
 var UUID = 0;
+
+function attr(elements, attributes) {
+  getElements(elements).forEach(function (element) {
+    Object.keys(attributes).forEach(function (name) {
+      element[(attributes[name] === null ? 'remove' : 'set') + 'Attribute'](name, attributes[name]);
+    });
+  });
+  return elements;
+}
 
 function closest(element, nodeName) {
   for (var el = element; el; el = el.parentElement) {
@@ -239,32 +249,14 @@ function closest(element, nodeName) {
   }
 }
 
-var factory = exports.factory = function factory(fn) {
-  return function self(element) {
-    for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-      args[_key - 1] = arguments[_key];
-    }
-
-    if (typeof element === 'string') return self.apply(undefined, [document.querySelectorAll(element)].concat(args));
-    if (element.length) return [].map.call(element, function (el) {
-      return self.apply(undefined, [el].concat(args));
-    });
-    if (element.nodeType) return fn.apply(undefined, [element].concat(args));
-  };
+var getElements = exports.getElements = function getElements(elements) {
+  if (typeof elements === 'string') return getElements(document.querySelectorAll(elements));
+  if (elements.length) return [].slice.call(elements);
+  if (elements.nodeType) return [elements];
+  throw new Error('"elements" must be of type nodeList, array, selector string or single HTMLElement');
 };
 
-var hasState = exports.hasState = function hasState(element) {
-  return element && element[KEY] && element;
-};
-
-var setAttributes = exports.setAttributes = factory(function (element, attributes) {
-  Object.keys(attributes).forEach(function (name) {
-    element[(attributes[name] === null ? 'remove' : 'set') + 'Attribute'](name, attributes[name]);
-  });
-  return element;
-});
-
-var setState = exports.setState = function setState(element, object) {
+var weakState = exports.weakState = function weakState(element, object) {
   var initial = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
   var uuid = element[KEY] || (element[KEY] = ++UUID);

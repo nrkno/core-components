@@ -405,10 +405,20 @@ Object.defineProperty(exports, "__esModule", {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
+exports.attr = attr;
 exports.closest = closest;
 var KEY = 'core-components-' + Date.now();
 var STATES = {};
 var UUID = 0;
+
+function attr(elements, attributes) {
+  getElements(elements).forEach(function (element) {
+    Object.keys(attributes).forEach(function (name) {
+      element[(attributes[name] === null ? 'remove' : 'set') + 'Attribute'](name, attributes[name]);
+    });
+  });
+  return elements;
+}
 
 function closest(element, nodeName) {
   for (var el = element; el; el = el.parentElement) {
@@ -416,32 +426,14 @@ function closest(element, nodeName) {
   }
 }
 
-var factory = exports.factory = function factory(fn) {
-  return function self(element) {
-    for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-      args[_key - 1] = arguments[_key];
-    }
-
-    if (typeof element === 'string') return self.apply(undefined, [document.querySelectorAll(element)].concat(args));
-    if (element.length) return [].map.call(element, function (el) {
-      return self.apply(undefined, [el].concat(args));
-    });
-    if (element.nodeType) return fn.apply(undefined, [element].concat(args));
-  };
+var getElements = exports.getElements = function getElements(elements) {
+  if (typeof elements === 'string') return getElements(document.querySelectorAll(elements));
+  if (elements.length) return [].slice.call(elements);
+  if (elements.nodeType) return [elements];
+  throw new Error('"elements" must be of type nodeList, array, selector string or single HTMLElement');
 };
 
-var hasState = exports.hasState = function hasState(element) {
-  return element && element[KEY] && element;
-};
-
-var setAttributes = exports.setAttributes = factory(function (element, attributes) {
-  Object.keys(attributes).forEach(function (name) {
-    element[(attributes[name] === null ? 'remove' : 'set') + 'Attribute'](name, attributes[name]);
-  });
-  return element;
-});
-
-var setState = exports.setState = function setState(element, object) {
+var weakState = exports.weakState = function weakState(element, object) {
   var initial = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
   var uuid = element[KEY] || (element[KEY] = ++UUID);
@@ -908,7 +900,16 @@ module.exports = reactProdInvariant;
 "use strict";
 
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.details = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 var _utils = __webpack_require__(3);
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var DETAILS = 'details';
 var SUMMARY = 'summary';
@@ -916,8 +917,46 @@ var STYLE_ID = DETAILS + '-polyfill';
 var ENTER_KEY = 13;
 var SPACE_KEY = 32;
 
-function toggle(details, open) {
+var details = exports.details = function () {
+  function details(elements) {
+    _classCallCheck(this, details);
+
+    this.elements = (0, _utils.getElements)(elements);
+    this.elements.forEach(function (el, i) {
+      return toggle(el, i, el.getAttribute('open'));
+    });
+    return this;
+  }
+
+  _createClass(details, [{
+    key: 'open',
+    value: function open() {
+      var fn = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+
+      this.elements.forEach(function (el, i) {
+        return toggle(el, i, fn);
+      });
+      return this;
+    }
+  }, {
+    key: 'close',
+    value: function close() {
+      var fn = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
+      this.elements.forEach(function (el, i) {
+        return toggle(el, i, fn);
+      });
+      return this;
+    }
+  }]);
+
+  return details;
+}();
+
+function toggle(el, index, fn) {
+  var open = typeof fn === 'function' ? fn(el, index) : Boolean(fn);
   var hasToggleSupport = 'ontoggle' in details;
+  // const hasOpenSupport = 'open' in details
   var summaryAttribute = {
     tabindex: 0,
     role: 'button',
@@ -925,10 +964,11 @@ function toggle(details, open) {
   };
 
   (0, _utils.queryAll)(SUMMARY, details).forEach(function (summary) {
-    return (0, _utils.setAttributes)(summary, summaryAttribute);
+    return (0, _utils.attr)(summary, summaryAttribute);
   });
-  (0, _utils.setAttributes)(details, { open: open ? '' : null });
+  (0, _utils.attr)(details, { open: open ? '' : null });
 
+  // hasOpenSupport || details.
   hasToggleSupport || details.dispatchEvent(new window.CustomEvent('toggle'));
 }
 
@@ -938,7 +978,7 @@ function onKey(event) {
 
 function onClick(event) {
   var summary = (0, _utils.closest)(event.target, SUMMARY);
-  var details = (0, _utils.hasState)(summary && summary.parentElement);
+  var details = summary && summary.parentElement;
 
   if (details) {
     event.preventDefault(); // Prevent scroll
@@ -946,19 +986,12 @@ function onClick(event) {
   }
 }
 
-module.exports = (0, _utils.factory)(function (element, state) {
-  var open = element.hasAttribute('open');
-  var next = (0, _utils.setState)(element, state, { open: open });
-  toggle(element, next.open);
-  return next;
-});
-
-// Make sure we are in a browser and have not allready loaded the polyfill
+// Make sure we are in a browser and have not already loaded the component
 if (typeof document !== 'undefined' && !document.getElementById(STYLE_ID)) {
   __webpack_require__(4); // Polyfill CustomEvent
-  document.createElement(DETAILS); // HTML5 shiv details for IE
-  document.createElement(SUMMARY); // HTML5 shiv summary for IE
-  document.addEventListener('keydown', onKey); // Polyfill role button
+  document.createElement(DETAILS); // HTML5 shiv <details> for IE
+  document.createElement(SUMMARY); // HTML5 shiv <summary> for IE
+  document.addEventListener('keydown', onKey); // Make role="button" behave like <button>
   document.addEventListener('click', onClick); // Polyfill click to toggle
   document.head.insertAdjacentHTML('afterbegin', // Insert css in top for easy overwriting
   '<style id="' + STYLE_ID + '">\n      ' + SUMMARY + '{display:block;cursor:pointer;touch-action:manipulation}\n      ' + SUMMARY + '::-webkit-details-marker{display:none}\n      ' + SUMMARY + '::before{content:\'\';padding-right:1em;background:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 10 10\'%3E%3Cpath d=\'M0 0h10L5 10\'/%3E%3C/svg%3E") 0 45%/50% no-repeat}\n      ' + SUMMARY + '[aria-expanded="false"]::before{background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 10 10\'%3E%3Cpath d=\'M0 0l10 5-10 5\'/%3E%3C/svg%3E")}\n      ' + SUMMARY + '[aria-expanded="false"]~*{display:none}\n    </style>');

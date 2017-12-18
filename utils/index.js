@@ -2,30 +2,29 @@ const KEY = `core-components-${Date.now()}`
 const STATES = {}
 let UUID = 0
 
+export function attr (elements, attributes) {
+  getElements(elements).forEach((element) => {
+    Object.keys(attributes).forEach((name) => {
+      element[`${attributes[name] === null ? 'remove' : 'set'}Attribute`](name, attributes[name])
+    })
+  })
+  return elements
+}
+
 export function closest (element, nodeName) {
   for (var el = element; el; el = el.parentElement) {
     if (el.nodeName.toLowerCase() === nodeName) return el
   }
 }
 
-export const factory = (fn) =>
-  function self (element, ...args) {
-    if (typeof element === 'string') return self(document.querySelectorAll(element), ...args)
-    if (element.length) return [].map.call(element, (el) => self(el, ...args))
-    if (element.nodeType) return fn(element, ...args)
-  }
+export const getElements = (elements) => {
+  if (typeof elements === 'string') return getElements(document.querySelectorAll(elements))
+  if (elements.length) return [].slice.call(elements)
+  if (elements.nodeType) return [elements]
+  throw new Error('"elements" must be of type nodeList, array, selector string or single HTMLElement')
+}
 
-export const hasState = (element) =>
-  element && element[KEY] && element
-
-export const setAttributes = factory((element, attributes) => {
-  Object.keys(attributes).forEach((name) => {
-    element[`${attributes[name] === null ? 'remove' : 'set'}Attribute`](name, attributes[name])
-  })
-  return element
-})
-
-export const setState = (element, object, initial = {}) => {
+export const weakState = (element, object, initial = {}) => {
   const uuid = element[KEY] || (element[KEY] = ++UUID)
   const state = STATES[uuid] || (STATES[uuid] = initial)
 
