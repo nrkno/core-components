@@ -70,7 +70,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 46);
+/******/ 	return __webpack_require__(__webpack_require__.s = 48);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -278,7 +278,7 @@ process.umask = function() { return 0; };
 
 
 
-var emptyFunction = __webpack_require__(10);
+var emptyFunction = __webpack_require__(13);
 
 /**
  * Similar to invariant but only logs a warning if the condition is not met.
@@ -397,6 +397,128 @@ module.exports = invariant;
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+exports.closest = closest;
+var KEY = 'core-components-' + Date.now();
+var STATES = {};
+var UUID = 0;
+
+function closest(element, nodeName) {
+  for (var el = element; el; el = el.parentElement) {
+    if (el.nodeName.toLowerCase() === nodeName) return el;
+  }
+}
+
+var factory = exports.factory = function factory(fn) {
+  return function self(element) {
+    for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+      args[_key - 1] = arguments[_key];
+    }
+
+    if (typeof element === 'string') return self.apply(undefined, [document.querySelectorAll(element)].concat(args));
+    if (element.length) return [].map.call(element, function (el) {
+      return self.apply(undefined, [el].concat(args));
+    });
+    if (element.nodeType) return fn.apply(undefined, [element].concat(args));
+  };
+};
+
+var hasState = exports.hasState = function hasState(element) {
+  return element && element[KEY] && element;
+};
+
+var setAttributes = exports.setAttributes = factory(function (element, attributes) {
+  Object.keys(attributes).forEach(function (name) {
+    element[(attributes[name] === null ? 'remove' : 'set') + 'Attribute'](name, attributes[name]);
+  });
+  return element;
+});
+
+var setState = exports.setState = function setState(element, object) {
+  var initial = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+  var uuid = element[KEY] || (element[KEY] = ++UUID);
+  var state = STATES[uuid] || (STATES[uuid] = initial);
+
+  if (object === false) {
+    delete element[KEY];
+    delete STATES[uuid];
+  } else if ((typeof object === 'undefined' ? 'undefined' : _typeof(object)) === 'object') {
+    Object.keys(state).forEach(function (key) {
+      return state[key] = object[key];
+    });
+  }
+
+  return state;
+};
+
+var queryAll = exports.queryAll = function queryAll(selector) {
+  var context = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : document;
+  return [].slice.call(context.querySelectorAll(selector));
+};
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports) {
+
+// Polyfill for creating CustomEvents on IE9/10/11
+
+// code pulled from:
+// https://github.com/d4tocchini/customevent-polyfill
+// https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent#Polyfill
+
+try {
+    var ce = new window.CustomEvent('test');
+    ce.preventDefault();
+    if (ce.defaultPrevented !== true) {
+        // IE has problems with .preventDefault() on custom events
+        // http://stackoverflow.com/questions/23349191
+        throw new Error('Could not prevent default');
+    }
+} catch(e) {
+  var CustomEvent = function(event, params) {
+    var evt, origPrevent;
+    params = params || {
+      bubbles: false,
+      cancelable: false,
+      detail: undefined
+    };
+
+    evt = document.createEvent("CustomEvent");
+    evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
+    origPrevent = evt.preventDefault;
+    evt.preventDefault = function () {
+      origPrevent.call(this);
+      try {
+        Object.defineProperty(this, 'defaultPrevented', {
+          get: function () {
+            return true;
+          }
+        });
+      } catch(e) {
+        this.defaultPrevented = true;
+      }
+    };
+    return evt;
+  };
+
+  CustomEvent.prototype = window.Event.prototype;
+  window.CustomEvent = CustomEvent; // expose definition to window
+}
+
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
 /* WEBPACK VAR INJECTION */(function(process) {/**
  * Copyright (c) 2014-present, Facebook, Inc.
  *
@@ -407,15 +529,15 @@ module.exports = invariant;
 
 
 
-var _assign = __webpack_require__(5);
+var _assign = __webpack_require__(8);
 
-var ReactCurrentOwner = __webpack_require__(7);
+var ReactCurrentOwner = __webpack_require__(10);
 
 var warning = __webpack_require__(1);
-var canDefineProperty = __webpack_require__(6);
+var canDefineProperty = __webpack_require__(9);
 var hasOwnProperty = Object.prototype.hasOwnProperty;
 
-var REACT_ELEMENT_TYPE = __webpack_require__(16);
+var REACT_ELEMENT_TYPE = __webpack_require__(19);
 
 var RESERVED_PROPS = {
   key: true,
@@ -738,7 +860,7 @@ module.exports = ReactElement;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 4 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -780,7 +902,70 @@ function reactProdInvariant(code) {
 module.exports = reactProdInvariant;
 
 /***/ }),
-/* 5 */
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _utils = __webpack_require__(3);
+
+var DETAILS = 'details';
+var SUMMARY = 'summary';
+var STYLE_ID = DETAILS + '-polyfill';
+var ENTER_KEY = 13;
+var SPACE_KEY = 32;
+
+function toggle(details, open) {
+  var hasToggleSupport = 'ontoggle' in details;
+  var summaryAttribute = {
+    tabindex: 0,
+    role: 'button',
+    'aria-expanded': Boolean(open)
+  };
+
+  (0, _utils.queryAll)(SUMMARY, details).forEach(function (summary) {
+    return (0, _utils.setAttributes)(summary, summaryAttribute);
+  });
+  (0, _utils.setAttributes)(details, { open: open ? '' : null });
+
+  hasToggleSupport || details.dispatchEvent(new window.CustomEvent('toggle'));
+}
+
+function onKey(event) {
+  if (event.keyCode === ENTER_KEY || event.keyCode === SPACE_KEY) onClick(event);
+}
+
+function onClick(event) {
+  var summary = (0, _utils.closest)(event.target, SUMMARY);
+  var details = (0, _utils.hasState)(summary && summary.parentElement);
+
+  if (details) {
+    event.preventDefault(); // Prevent scroll
+    toggle(details, !details.hasAttribute('open'));
+  }
+}
+
+module.exports = (0, _utils.factory)(function (element, state) {
+  var open = element.hasAttribute('open');
+  var next = (0, _utils.setState)(element, state, { open: open });
+  toggle(element, next.open);
+  return next;
+});
+
+// Make sure we are in a browser and have not allready loaded the polyfill
+if (typeof document !== 'undefined' && !document.getElementById(STYLE_ID)) {
+  __webpack_require__(4); // Polyfill CustomEvent
+  document.createElement(DETAILS); // HTML5 shiv details for IE
+  document.createElement(SUMMARY); // HTML5 shiv summary for IE
+  document.addEventListener('keydown', onKey); // Polyfill role button
+  document.addEventListener('click', onClick); // Polyfill click to toggle
+  document.head.insertAdjacentHTML('afterbegin', // Insert css in top for easy overwriting
+  '<style id="' + STYLE_ID + '">\n      ' + SUMMARY + '{display:block;cursor:pointer;touch-action:manipulation}\n      ' + SUMMARY + '::-webkit-details-marker{display:none}\n      ' + SUMMARY + '::before{content:\'\';padding-right:1em;background:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 10 10\'%3E%3Cpath d=\'M0 0h10L5 10\'/%3E%3C/svg%3E") 0 45%/50% no-repeat}\n      ' + SUMMARY + '[aria-expanded="false"]::before{background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 10 10\'%3E%3Cpath d=\'M0 0l10 5-10 5\'/%3E%3C/svg%3E")}\n      ' + SUMMARY + '[aria-expanded="false"]~*{display:none}\n    </style>');
+}
+
+/***/ }),
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -877,7 +1062,7 @@ module.exports = shouldUseNative() ? Object.assign : function (target, source) {
 
 
 /***/ }),
-/* 6 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -907,7 +1092,7 @@ module.exports = canDefineProperty;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 7 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -939,100 +1124,9 @@ var ReactCurrentOwner = {
 module.exports = ReactCurrentOwner;
 
 /***/ }),
-/* 8 */
-/***/ (function(module, exports) {
-
-// Polyfill for creating CustomEvents on IE9/10/11
-
-// code pulled from:
-// https://github.com/d4tocchini/customevent-polyfill
-// https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent#Polyfill
-
-try {
-    var ce = new window.CustomEvent('test');
-    ce.preventDefault();
-    if (ce.defaultPrevented !== true) {
-        // IE has problems with .preventDefault() on custom events
-        // http://stackoverflow.com/questions/23349191
-        throw new Error('Could not prevent default');
-    }
-} catch(e) {
-  var CustomEvent = function(event, params) {
-    var evt, origPrevent;
-    params = params || {
-      bubbles: false,
-      cancelable: false,
-      detail: undefined
-    };
-
-    evt = document.createEvent("CustomEvent");
-    evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
-    origPrevent = evt.preventDefault;
-    evt.preventDefault = function () {
-      origPrevent.call(this);
-      try {
-        Object.defineProperty(this, 'defaultPrevented', {
-          get: function () {
-            return true;
-          }
-        });
-      } catch(e) {
-        this.defaultPrevented = true;
-      }
-    };
-    return evt;
-  };
-
-  CustomEvent.prototype = window.Event.prototype;
-  window.CustomEvent = CustomEvent; // expose definition to window
-}
-
-
-/***/ }),
-/* 9 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-function onKey(event) {
-  if (event.keyCode === 13 || event.keyCode === 32) onClick(event);
-}
-
-function onClick(event) {
-  for (var el = event.target; el; el = el.parentElement) {
-    if (el.nodeName.toLowerCase() === 'summary') break; //  Travese DOM tree and find closest summary
-  }
-
-  if (el) {
-    var details = el.parentElement;
-    var hasToggle = 'ontoggle' in details; // Snitt support since toggle event and details element is independent
-    var hasDetails = 'open' in details; // Sniff support since preventDefault does not stop expand in Firefox
-    var isOpen = details.hasAttribute('open');
-
-    el.setAttribute('aria-expanded', !isOpen);
-
-    hasDetails || event.preventDefault(); // Prevent scroll on keydown
-    hasDetails || details[(isOpen ? 'remove' : 'set') + 'Attribute']('open', '');
-    hasToggle || details.dispatchEvent(new window.CustomEvent('toggle'));
-  }
-}
-
-// Make sure we are in a browser and have not allready loaded the polyfill
-if (typeof document !== 'undefined' && !document.getElementById('details-polyfill')) {
-  __webpack_require__(8); // Polyfill CustomEvent
-  document.createElement('details'); // HTML5 shiv details for IE
-  document.createElement('summary'); // HTML5 shiv summary for IE
-  document.addEventListener('keydown', onKey);
-  document.addEventListener('click', onClick);
-  var style = document.createElement('style');
-  style.id = 'details-polyfill';
-  style.textContent = '\n    summary{display:block;cursor:pointer;touch-action:manipulation}\n    summary::-webkit-details-marker{display:none}\n    summary::before{content:\'\';padding-right:1em;background:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 10 10\'%3E%3Cpath d=\'M0 0h10L5 10\'/%3E%3C/svg%3E") 0 45%/50% no-repeat}\n    summary[aria-expanded="false"]::before{background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 10 10\'%3E%3Cpath d=\'M0 0l10 5-10 5\'/%3E%3C/svg%3E")}\n    summary[aria-expanded="false"]~* { display: none }\n  ';
-  document.head.appendChild(style);
-}
-
-/***/ }),
-/* 10 */
+/* 11 */,
+/* 12 */,
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1074,7 +1168,7 @@ emptyFunction.thatReturnsArgument = function (arg) {
 module.exports = emptyFunction;
 
 /***/ }),
-/* 11 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1143,7 +1237,7 @@ module.exports = lowPriorityWarning;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 12 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1158,9 +1252,9 @@ module.exports = lowPriorityWarning;
 
 
 
-var _prodInvariant = __webpack_require__(4);
+var _prodInvariant = __webpack_require__(6);
 
-var ReactCurrentOwner = __webpack_require__(7);
+var ReactCurrentOwner = __webpack_require__(10);
 
 var invariant = __webpack_require__(2);
 var warning = __webpack_require__(1);
@@ -1526,7 +1620,7 @@ module.exports = ReactComponentTreeHook;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 13 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1540,15 +1634,15 @@ module.exports = ReactComponentTreeHook;
 
 
 
-var _prodInvariant = __webpack_require__(4),
-    _assign = __webpack_require__(5);
+var _prodInvariant = __webpack_require__(6),
+    _assign = __webpack_require__(8);
 
-var ReactNoopUpdateQueue = __webpack_require__(14);
+var ReactNoopUpdateQueue = __webpack_require__(17);
 
-var canDefineProperty = __webpack_require__(6);
-var emptyObject = __webpack_require__(15);
+var canDefineProperty = __webpack_require__(9);
+var emptyObject = __webpack_require__(18);
 var invariant = __webpack_require__(2);
-var lowPriorityWarning = __webpack_require__(11);
+var lowPriorityWarning = __webpack_require__(14);
 
 /**
  * Base class helpers for the updating state of a component.
@@ -1673,7 +1767,7 @@ module.exports = {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 14 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1772,7 +1866,7 @@ module.exports = ReactNoopUpdateQueue;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 15 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1796,7 +1890,7 @@ module.exports = emptyObject;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 16 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1819,7 +1913,7 @@ var REACT_ELEMENT_TYPE = typeof Symbol === 'function' && Symbol['for'] && Symbol
 module.exports = REACT_ELEMENT_TYPE;
 
 /***/ }),
-/* 17 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1863,7 +1957,7 @@ function getIteratorFn(maybeIterable) {
 module.exports = getIteratorFn;
 
 /***/ }),
-/* 18 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1884,16 +1978,16 @@ module.exports = getIteratorFn;
 
 
 
-var ReactCurrentOwner = __webpack_require__(7);
-var ReactComponentTreeHook = __webpack_require__(12);
-var ReactElement = __webpack_require__(3);
+var ReactCurrentOwner = __webpack_require__(10);
+var ReactComponentTreeHook = __webpack_require__(15);
+var ReactElement = __webpack_require__(5);
 
-var checkReactTypeSpec = __webpack_require__(29);
+var checkReactTypeSpec = __webpack_require__(33);
 
-var canDefineProperty = __webpack_require__(6);
-var getIteratorFn = __webpack_require__(17);
+var canDefineProperty = __webpack_require__(9);
+var getIteratorFn = __webpack_require__(20);
 var warning = __webpack_require__(1);
-var lowPriorityWarning = __webpack_require__(11);
+var lowPriorityWarning = __webpack_require__(14);
 
 function getDeclarationErrorAddendum() {
   if (ReactCurrentOwner.current) {
@@ -2122,7 +2216,7 @@ module.exports = ReactElementValidator;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 19 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2141,19 +2235,75 @@ module.exports = ReactPropTypesSecret;
 
 
 /***/ }),
-/* 20 */,
-/* 21 */,
-/* 22 */
+/* 23 */,
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-module.exports = __webpack_require__(23);
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+__webpack_require__(7); // Load polyfill
+
+module.exports = function (props) {
+  var open = props.open !== 'false' && Boolean(props.open);
+  var aria = { role: 'button', tabIndex: 0, 'aria-expanded': String(open) };
+  var children = props.children;
+
+  // Loop though children and augment <summary> with aria attributes
+  if (Array.isArray(props.children)) {
+    children = children.map(function (child, key) {
+      var attr = child.type === 'summary' ? aria : {};
+      if (!child.type) return React.createElement(
+        'div',
+        { key: key },
+        child
+      ); // Child is text or function, wrap'it'up
+      return React.createElement(child.type, _extends({}, child.props, attr, { ref: child.ref, key: key }));
+    });
+  }
+
+  return React.createElement(
+    'details',
+    _extends({}, props, { open: open }),
+    children
+  );
+};
+
+/***/ }),
+/* 25 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _react = __webpack_require__(26);
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+module.exports = function () {
+  return _react2.default.createElement(
+    'div',
+    null,
+    'Testing dialog'
+  );
+};
+
+/***/ }),
+/* 26 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = __webpack_require__(27);
 
 
 /***/ }),
-/* 23 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2167,26 +2317,26 @@ module.exports = __webpack_require__(23);
 
 
 
-var _assign = __webpack_require__(5);
+var _assign = __webpack_require__(8);
 
-var ReactBaseClasses = __webpack_require__(13);
-var ReactChildren = __webpack_require__(24);
-var ReactDOMFactories = __webpack_require__(28);
-var ReactElement = __webpack_require__(3);
-var ReactPropTypes = __webpack_require__(32);
-var ReactVersion = __webpack_require__(36);
+var ReactBaseClasses = __webpack_require__(16);
+var ReactChildren = __webpack_require__(28);
+var ReactDOMFactories = __webpack_require__(32);
+var ReactElement = __webpack_require__(5);
+var ReactPropTypes = __webpack_require__(36);
+var ReactVersion = __webpack_require__(40);
 
-var createReactClass = __webpack_require__(37);
-var onlyChild = __webpack_require__(39);
+var createReactClass = __webpack_require__(41);
+var onlyChild = __webpack_require__(43);
 
 var createElement = ReactElement.createElement;
 var createFactory = ReactElement.createFactory;
 var cloneElement = ReactElement.cloneElement;
 
 if (process.env.NODE_ENV !== 'production') {
-  var lowPriorityWarning = __webpack_require__(11);
-  var canDefineProperty = __webpack_require__(6);
-  var ReactElementValidator = __webpack_require__(18);
+  var lowPriorityWarning = __webpack_require__(14);
+  var canDefineProperty = __webpack_require__(9);
+  var ReactElementValidator = __webpack_require__(21);
   var didWarnPropTypesDeprecated = false;
   createElement = ReactElementValidator.createElement;
   createFactory = ReactElementValidator.createFactory;
@@ -2289,7 +2439,7 @@ module.exports = React;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 24 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2303,11 +2453,11 @@ module.exports = React;
 
 
 
-var PooledClass = __webpack_require__(25);
-var ReactElement = __webpack_require__(3);
+var PooledClass = __webpack_require__(29);
+var ReactElement = __webpack_require__(5);
 
-var emptyFunction = __webpack_require__(10);
-var traverseAllChildren = __webpack_require__(26);
+var emptyFunction = __webpack_require__(13);
+var traverseAllChildren = __webpack_require__(30);
 
 var twoArgumentPooler = PooledClass.twoArgumentPooler;
 var fourArgumentPooler = PooledClass.fourArgumentPooler;
@@ -2483,7 +2633,7 @@ var ReactChildren = {
 module.exports = ReactChildren;
 
 /***/ }),
-/* 25 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2498,7 +2648,7 @@ module.exports = ReactChildren;
 
 
 
-var _prodInvariant = __webpack_require__(4);
+var _prodInvariant = __webpack_require__(6);
 
 var invariant = __webpack_require__(2);
 
@@ -2599,7 +2749,7 @@ module.exports = PooledClass;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 26 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2613,14 +2763,14 @@ module.exports = PooledClass;
 
 
 
-var _prodInvariant = __webpack_require__(4);
+var _prodInvariant = __webpack_require__(6);
 
-var ReactCurrentOwner = __webpack_require__(7);
-var REACT_ELEMENT_TYPE = __webpack_require__(16);
+var ReactCurrentOwner = __webpack_require__(10);
+var REACT_ELEMENT_TYPE = __webpack_require__(19);
 
-var getIteratorFn = __webpack_require__(17);
+var getIteratorFn = __webpack_require__(20);
 var invariant = __webpack_require__(2);
-var KeyEscapeUtils = __webpack_require__(27);
+var KeyEscapeUtils = __webpack_require__(31);
 var warning = __webpack_require__(1);
 
 var SEPARATOR = '.';
@@ -2779,7 +2929,7 @@ module.exports = traverseAllChildren;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 27 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2841,7 +2991,7 @@ var KeyEscapeUtils = {
 module.exports = KeyEscapeUtils;
 
 /***/ }),
-/* 28 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2855,7 +3005,7 @@ module.exports = KeyEscapeUtils;
 
 
 
-var ReactElement = __webpack_require__(3);
+var ReactElement = __webpack_require__(5);
 
 /**
  * Create a factory that creates HTML tag elements.
@@ -2864,7 +3014,7 @@ var ReactElement = __webpack_require__(3);
  */
 var createDOMFactory = ReactElement.createFactory;
 if (process.env.NODE_ENV !== 'production') {
-  var ReactElementValidator = __webpack_require__(18);
+  var ReactElementValidator = __webpack_require__(21);
   createDOMFactory = ReactElementValidator.createFactory;
 }
 
@@ -3014,7 +3164,7 @@ module.exports = ReactDOMFactories;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 29 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3028,10 +3178,10 @@ module.exports = ReactDOMFactories;
 
 
 
-var _prodInvariant = __webpack_require__(4);
+var _prodInvariant = __webpack_require__(6);
 
-var ReactPropTypeLocationNames = __webpack_require__(30);
-var ReactPropTypesSecret = __webpack_require__(31);
+var ReactPropTypeLocationNames = __webpack_require__(34);
+var ReactPropTypesSecret = __webpack_require__(35);
 
 var invariant = __webpack_require__(2);
 var warning = __webpack_require__(1);
@@ -3044,7 +3194,7 @@ if (typeof process !== 'undefined' && process.env && process.env.NODE_ENV === 't
   // https://github.com/facebook/react/issues/7240
   // Remove the inline requires when we don't need them anymore:
   // https://github.com/facebook/react/pull/7178
-  ReactComponentTreeHook = __webpack_require__(12);
+  ReactComponentTreeHook = __webpack_require__(15);
 }
 
 var loggedTypeFailures = {};
@@ -3086,7 +3236,7 @@ function checkReactTypeSpec(typeSpecs, values, location, componentName, element,
 
         if (process.env.NODE_ENV !== 'production') {
           if (!ReactComponentTreeHook) {
-            ReactComponentTreeHook = __webpack_require__(12);
+            ReactComponentTreeHook = __webpack_require__(15);
           }
           if (debugID !== null) {
             componentStackInfo = ReactComponentTreeHook.getStackAddendumByID(debugID);
@@ -3105,7 +3255,7 @@ module.exports = checkReactTypeSpec;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 30 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3134,7 +3284,7 @@ module.exports = ReactPropTypeLocationNames;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 31 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3154,7 +3304,7 @@ var ReactPropTypesSecret = 'SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED';
 module.exports = ReactPropTypesSecret;
 
 /***/ }),
-/* 32 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3168,15 +3318,15 @@ module.exports = ReactPropTypesSecret;
 
 
 
-var _require = __webpack_require__(3),
+var _require = __webpack_require__(5),
     isValidElement = _require.isValidElement;
 
-var factory = __webpack_require__(33);
+var factory = __webpack_require__(37);
 
 module.exports = factory(isValidElement);
 
 /***/ }),
-/* 33 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3193,7 +3343,7 @@ module.exports = factory(isValidElement);
 // Therefore we re-export development-only version with all the PropTypes checks here.
 // However if one is migrating to the `prop-types` npm library, they will go through the
 // `index.js` entry point, and it will branch depending on the environment.
-var factory = __webpack_require__(34);
+var factory = __webpack_require__(38);
 module.exports = function(isValidElement) {
   // It is still allowed in 15.5.
   var throwOnDirectAccess = false;
@@ -3202,7 +3352,7 @@ module.exports = function(isValidElement) {
 
 
 /***/ }),
-/* 34 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3215,13 +3365,13 @@ module.exports = function(isValidElement) {
 
 
 
-var emptyFunction = __webpack_require__(10);
+var emptyFunction = __webpack_require__(13);
 var invariant = __webpack_require__(2);
 var warning = __webpack_require__(1);
-var assign = __webpack_require__(5);
+var assign = __webpack_require__(8);
 
-var ReactPropTypesSecret = __webpack_require__(19);
-var checkPropTypes = __webpack_require__(35);
+var ReactPropTypesSecret = __webpack_require__(22);
+var checkPropTypes = __webpack_require__(39);
 
 module.exports = function(isValidElement, throwOnDirectAccess) {
   /* global Symbol */
@@ -3752,7 +3902,7 @@ module.exports = function(isValidElement, throwOnDirectAccess) {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 35 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3768,7 +3918,7 @@ module.exports = function(isValidElement, throwOnDirectAccess) {
 if (process.env.NODE_ENV !== 'production') {
   var invariant = __webpack_require__(2);
   var warning = __webpack_require__(1);
-  var ReactPropTypesSecret = __webpack_require__(19);
+  var ReactPropTypesSecret = __webpack_require__(22);
   var loggedTypeFailures = {};
 }
 
@@ -3819,7 +3969,7 @@ module.exports = checkPropTypes;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 36 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3836,7 +3986,7 @@ module.exports = checkPropTypes;
 module.exports = '15.6.2';
 
 /***/ }),
-/* 37 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3850,19 +4000,19 @@ module.exports = '15.6.2';
 
 
 
-var _require = __webpack_require__(13),
+var _require = __webpack_require__(16),
     Component = _require.Component;
 
-var _require2 = __webpack_require__(3),
+var _require2 = __webpack_require__(5),
     isValidElement = _require2.isValidElement;
 
-var ReactNoopUpdateQueue = __webpack_require__(14);
-var factory = __webpack_require__(38);
+var ReactNoopUpdateQueue = __webpack_require__(17);
+var factory = __webpack_require__(42);
 
 module.exports = factory(Component, isValidElement, ReactNoopUpdateQueue);
 
 /***/ }),
-/* 38 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3876,9 +4026,9 @@ module.exports = factory(Component, isValidElement, ReactNoopUpdateQueue);
 
 
 
-var _assign = __webpack_require__(5);
+var _assign = __webpack_require__(8);
 
-var emptyObject = __webpack_require__(15);
+var emptyObject = __webpack_require__(18);
 var _invariant = __webpack_require__(2);
 
 if (process.env.NODE_ENV !== 'production') {
@@ -4740,7 +4890,7 @@ module.exports = factory;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 39 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4753,9 +4903,9 @@ module.exports = factory;
  */
 
 
-var _prodInvariant = __webpack_require__(4);
+var _prodInvariant = __webpack_require__(6);
 
-var ReactElement = __webpack_require__(3);
+var ReactElement = __webpack_require__(5);
 
 var invariant = __webpack_require__(2);
 
@@ -4782,88 +4932,25 @@ module.exports = onlyChild;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 40 */,
-/* 41 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-__webpack_require__(9); // Load polyfill
-
-module.exports = function (props) {
-  var open = props.open !== 'false' && Boolean(props.open);
-  var aria = { role: 'button', tabIndex: 0, 'aria-expanded': String(open) };
-  var children = props.children;
-
-  // Loop though children and augment <summary> with aria attributes
-  if (Array.isArray(props.children)) {
-    children = children.map(function (child, key) {
-      var attr = child.type === 'summary' ? aria : {};
-      if (!child.type) return React.createElement(
-        'span',
-        { key: key },
-        child
-      );
-      return React.createElement(child.type, _extends({}, child.props, attr, { ref: child.ref, key: key }));
-    });
-  }
-
+module.exports = function () {
   return React.createElement(
-    'details',
-    _extends({}, props, { open: open }),
-    children
-  );
-};
-
-/***/ }),
-/* 42 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _react = __webpack_require__(22);
-
-var _react2 = _interopRequireDefault(_react);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-module.exports = function () {
-  return _react2.default.createElement(
-    'div',
+    "div",
     null,
-    'Testing dialog'
+    "Testing input"
   );
 };
 
 /***/ }),
-/* 43 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _react = __webpack_require__(22);
-
-var _react2 = _interopRequireDefault(_react);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-module.exports = function () {
-  return _react2.default.createElement(
-    'div',
-    null,
-    'Testing input'
-  );
-};
-
-/***/ }),
-/* 44 */,
 /* 45 */,
-/* 46 */
+/* 46 */,
+/* 47 */,
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4871,9 +4958,9 @@ module.exports = function () {
 
 module.exports = {
   version: "1.0.0", // eslint-disable-line
-  Details: __webpack_require__(41),
-  Dialog: __webpack_require__(42),
-  Input: __webpack_require__(43)
+  Details: __webpack_require__(24),
+  Dialog: __webpack_require__(25),
+  Input: __webpack_require__(44)
 };
 
 /***/ })

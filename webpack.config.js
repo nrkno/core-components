@@ -18,7 +18,7 @@ module.exports = {
     publicPath: '/',
     filename: '[name].js',
     libraryTarget: 'umd',
-    library: 'coreComponents' // TODO: make sure it does not polute global NS
+    library: 'coreComponents'
   },
   devServer: {
     contentBase: [__dirname]

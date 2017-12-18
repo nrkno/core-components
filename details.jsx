@@ -9,7 +9,7 @@ module.exports = (props) => {
   if (Array.isArray(props.children)) {
     children = children.map((child, key) => {
       const attr = child.type === 'summary' ? aria : {}
-      if (!child.type) return <span key={key}>{child}</span>
+      if (!child.type) return <div key={key}>{child}</div> // Child is text or function, wrap'it'up
       return <child.type {...child.props} {...attr} ref={child.ref} key={key} />
     })
   }

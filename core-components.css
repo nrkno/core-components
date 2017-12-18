@@ -24,7 +24,6 @@
   padding-right: 2em;
 }
 
-.core-input { position: relative }
 .core-input ul {
   list-style: none;
   position: absolute;
@@ -32,7 +31,6 @@
   z-index: 2;
   margin: 0;
   padding: 0;
-  width: 100%;
   color: #333;
   background: #fff;
   border-radius: 3px;
@@ -52,6 +50,18 @@
 .nrk-choice:focus + span { border-color: transparent; box-shadow: 0 0 2px 1px #00b9f2 }
 .nrk-choice[type="radio"] + span::before { border-radius: 100% }
 
+.nrk-dropdown {
+  position: absolute;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  transition: .2s;
+  background: #fff;
+}
+[aria-expanded="false"] + .nrk-dropdown {
+  opacity: 0;
+  transform: translateY(-5px);
+}
 
 .nrk-progress:not(value) {}  /* Styling indeterminate progress bar */
 .nrk-progress[value] {       /* Styling determinate progress bar */
@@ -103,3 +113,44 @@ span.progress-bar span {
 	display: block;
 	text-indent: -9999px;
 }
+
+.nrk-table {
+  position: relative;
+  white-space: nowrap;
+  border-collapse: collapse;
+}
+
+.nrk-table th,
+.nrk-table td {
+  position: relative;
+  padding: 1em;
+}
+
+.nrk-table th::after,
+.nrk-table td::after {
+  content: ''; pointer-events: none;
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  border: 1px solid; opacity: .1;
+}
+
+.nrk-table th {
+  background-color: #eee;
+  position: -webkit-sticky;
+  position: sticky;
+  z-index: 2;
+}
+.nrk-table thead th { top: -1px }
+.nrk-table thead th:first-child { left: 0; z-index: 3 }
+.nrk-table th:first-child { left: 0 }
+
+/*.nrk-table thead th:first-child {
+  left: 0;
+  z-index: 3;
+}
+.nrk-table tbody th:first-of-type {
+  position: -webkit-sticky;
+  position: sticky;
+  left: -1px;
+  text-align: left;
+  background-color: #eee;
+}*/

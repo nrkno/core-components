@@ -14,6 +14,8 @@
     "publish:major": "npm version major -m 'Release major %s' && npm run push",
     "push": "git push && git push --tags && npm publish",
     "start": "NODE_ENV=development webpack-dev-server -d",
+    "test": "npm run lint && mocha test/**/*.spec.js*",
+    "test:watch": "mocha --watch test/**/*.spec.js*",
     "static-publish": "static-publish publish --directory ./dist --package ./package.json --verbose --latest"
   },
   "dependencies": {
@@ -28,6 +30,9 @@
     "babel-preset-env": "^1.6.1",
     "babel-preset-react": "^6.24.1",
     "cpx": "^1.5.0",
+    "expect.js": "0.3.1",
+    "jsdom": "11.4.0",
+    "mocha": "4.0.1",
     "rimraf": "^2.6.2",
     "standard": "^10.0.3",
     "webpack": "^3.10.0",
@@ -36,5 +41,18 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nrkno/core-components.git"
+  },
+  "standard": {
+    "globals": [
+      "describe",
+      "it",
+      "beforeEach",
+      "afterEach",
+      "before",
+      "after"
+    ],
+    "ignore": [
+      "dist"
+    ]
   }
 }

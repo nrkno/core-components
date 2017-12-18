@@ -1,8 +1,16 @@
-const KEY = 'core-input'
-let LIST, LIVE
+import {setAttributes} from './utils'
 
+const COMPONENT_ID = 'core-input'
+let LIST // Element to contain list
+let LIVE // Element to contain screen reader text
+
+/**
+* attr (utility)
+* @param  {Element|String} elem Element or nodeName (will createElement)
+* @param  {String} prop Accepts ID strings, gfx-urls or derviate-urls
+* @return {Element} Element with manipulated attributes
+*/
 function attr (elem, prop, value) {
-  if (typeof elem === 'string') elem = document.createElement(elem)
   if (typeof prop === 'object') Object.keys(prop).forEach((k) => attr(elem, k, prop[k]))
   else if (value === null) elem.removeAttribute(prop)
   else if (prop) elem.setAttribute(prop, value)
@@ -10,15 +18,15 @@ function attr (elem, prop, value) {
 }
 
 function render (elem) {
-  const state = elem[KEY]
+  const state = elem[COMPONENT_ID]
   const value = state.value.trim().toLowerCase()
   state.hits = state.items.filter((item) => item.value.toLowerCase().indexOf(value) !== -1)
 
-  attr(LIVE, 'aria-hidden', false)
-  attr(LIST, 'hidden', state.hits.length ? null : true)
-  attr(elem, 'aria-haspopup', Boolean(state.hits.length))
-  attr(elem, 'aria-expanded', Boolean(state.hits.length))
+  setAttributes(LIVE, {'aria-hidden': false})
+  setAttributes(LIST, {'hidden': state.hits.length ? null : true})
+  setAttributes(elem, {'aria-expanded': Boolean(state.hits.length)})
 
+  LIST.style.width = `${elem.offsetWidth}px`
   LIST.innerHTML = state.hits.map(({value}, i) =>
     `<li role="option" aria-selected="${i === state.index}">${value}</li>`
   ).join('')
@@ -26,35 +34,35 @@ function render (elem) {
 
 function onFocus (event) {
   const elem = event.target
-  const owns = elem.getAttribute(`data-${KEY}`)
+  const controls = elem.getAttribute(`data-${COMPONENT_ID}`)
 
-  if (owns && !elem[KEY]) {
-    const mode = elem.getAttribute(`data-${KEY}-mode`) || 'suggestions'
-    const items = [].map.call(document.querySelectorAll(`#${owns} > *`), ({value}) => ({value}))
+  if (controls && !elem[COMPONENT_ID]) {
+    const mode = elem.getAttribute(`data-${COMPONENT_ID}-mode`) || 'suggestions'
+    const items = [].map.call(document.querySelectorAll(`#${controls} > *`), ({value}) => ({value}))
     const parent = elem.parentElement
 
     attr(elem, {
       'role': 'combobox',
       'autocomplete': 'off',
-      'aria-owns': `${KEY}-${owns}`,
+      'aria-controls': `${COMPONENT_ID}-${controls}`,
       'aria-autocomplete': 'list',
-      'aria-haspopup': false,
+      'aria-haspopup': true,
       'aria-expanded': false
     })
 
-    parent.className = parent.className.split(' ').concat(KEY).join(' ')
-    elem[KEY] = {items, mode}
+    parent.className = parent.className.split(' ').concat(COMPONENT_ID).join(' ')
+    elem[COMPONENT_ID] = {items, mode, list: elem.nextElementSibling} // TODO: list
   }
 
-  if (owns) {
-    LIST.id = `${KEY}-${owns}`
+  if (controls) {
+    LIST.id = `${COMPONENT_ID}-${controls}`
     elem.insertAdjacentElement('afterend', LIST)
     onInput(event)
   }
 }
 
 function onBlur ({target}) {
-  if (target[KEY]) {
+  if (target[COMPONENT_ID]) {
     attr(LIST, 'hidden', 'hidden')
     attr(LIVE, {'aria-hidden': 'true', 'aria-live': 'polite'})
   }
@@ -62,7 +70,7 @@ function onBlur ({target}) {
 
 function onInput (event) {
   const elem = event.target
-  const state = elem[KEY]
+  const state = elem[COMPONENT_ID]
 
   if (state) {
     state.index = -1
@@ -73,9 +81,9 @@ function onInput (event) {
 }
 
 function onKey (event) {
-  if (event.target[KEY]) {
+  if (event.target[COMPONENT_ID]) {
     const elem = event.target
-    const state = elem[KEY]
+    const state = elem[COMPONENT_ID]
     if (event.keyCode === 27) onBlur(event)
     if (event.keyCode === 38 || event.keyCode === 40) {
       event.preventDefault()
@@ -95,17 +103,15 @@ function onKey (event) {
   }
 }
 
-if (typeof document !== 'undefined') {
-  LIST = attr('ul', {'role': 'listbox'})
-  LIVE = attr('span', {'aria-hidden': 'true', 'aria-live': 'polite'})
+if (typeof document !== 'undefined' && !document.getElementById(COMPONENT_ID)) {
+  LIST = setAttributes(document.createElement('ul'), {role: 'listbox'})
+  LIVE = setAttributes(document.createElement('span'), {'aria-hidden': 'true', 'aria-live': 'polite', id: COMPONENT_ID})
 
   document.addEventListener('keydown', onKey)
   document.addEventListener('input', onInput)
   document.addEventListener('focus', onFocus, true) // Use capture to ensure event bubling
   document.addEventListener('blur', onBlur, true)   // Use capture to ensure event bubling
-
   document.documentElement.appendChild(LIVE)
-  document.head.appendChild(document.createElement('style')).textContent = `datalist{display:none}`
 }
 
 module.exports = () => console.log('input')

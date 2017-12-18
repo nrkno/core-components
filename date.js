@@ -3146,8 +3146,6 @@ div.datepicker-calendar div.datepicker-month-next.enabled:hover,
 div.datepicker-calendar div.datepicker-month-next.enabled:focus {
 	margin-top: 2px;
 	border: 1px solid #800;
-	-webkit-border-radius: 4px;
-	-moz-border-radius: 4px;
 	border-radius: 4px;
 }
 div.datepicker-calendar div.datepicker-month {
