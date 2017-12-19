@@ -100,7 +100,7 @@ const keepFocus = (e) => {
 const exitOnEscape = (e) => {
   if (e.keyCode === 27) {
     const activeDialog = ACTIVE_DIALOG_STACK.pop()
-    activeDialog && window.test.dialog(activeDialog).close()
+    activeDialog && window.coreComponents.dialog(activeDialog).close()
   }
 }
 
@@ -129,17 +129,12 @@ function dialog (selector, options) {
   return this
 }
 
-// @TODO TEMPORARY CODE. Doing the same as details just to make sure this code is
-// not called multiple times
-if (typeof document !== 'undefined' && !document.getElementById(`${KEY}-style`)) {
-  document.head.insertAdjacentHTML('afterbegin',            // Insert css in top for easy overwriting
-    `<style id="${KEY}-style">`)
-  document.addEventListener('focusin', keepFocus)
-  document.addEventListener('keydown', exitOnEscape)
-}
+// @TODO Should I ensure this is not called everytime this component is required?
+// The functions are scoped to the data accessible to the component, which means
+// that two separate components technically don't interfere with each other
+document.addEventListener('focusin', keepFocus)
+document.addEventListener('keydown', exitOnEscape)
 
-window.test = {}
-window.test.dialog = dialog
 module.exports = dialog
 // dialog('dette er selected').open('test')
 

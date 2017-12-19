@@ -392,7 +392,7 @@ summary[aria-expanded="true"]::before { /* Style open details marker */ }</pre>
       showModalBtn.addEventListener('click', (e) => {
         e.preventDefault();
         // dialogInstance.showModal();
-        window.test.dialog('#docs-react-dialog').open()
+        window.coreComponents.dialog('#docs-react-dialog').open()
       });
       // showBtn.addEventListener('click', (e) => {
       //   e.preventDefault();
@@ -401,7 +401,7 @@ summary[aria-expanded="true"]::before { /* Style open details marker */ }</pre>
       closeBtn.addEventListener('click', (e) => {
         e.preventDefault();
         // dialogInstance.close();
-        window.test.dialog('#docs-react-dialog').close()
+        window.coreComponents.dialog('#docs-react-dialog').close()
       });
     // })
   </script>
@@ -428,9 +428,10 @@ summary[aria-expanded="true"]::before { /* Style open details marker */ }</pre>
   <!-- RequireJS setup -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.5/require.js"></script>
   <script>
-    // requirejs(['core-components.min.js'], function (components) {
-    //   console.log('RequireJS', components)
-    // })
+    requirejs(['core-components.min.js'], function (components) {
+      console.log('RequireJS', components)
+
+    })
   </script>
 
   <!-- Docs setup -->
