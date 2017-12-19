@@ -32,10 +32,14 @@ export const weakState = (element, object, initial = {}) => {
     delete element[KEY]
     delete STATES[uuid]
   } else if (typeof object === 'object') {
-    Object.keys(state).forEach((key) => (state[key] = object[key]))
+    Object.keys(object).forEach((key) => (state[key] = object[key]))
   }
 
   return state
+}
+
+export const getWeakState = (element) => {
+  return STATES[element[KEY]]
 }
 
 export const queryAll = (selector, context = document) =>

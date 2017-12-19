@@ -70,12 +70,60 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 45);
+/******/ 	return __webpack_require__(__webpack_require__.s = 46);
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ 4:
+/***/ 46:
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var COMPONENT_ID = 'details-polyfill';
+var ENTER_KEY = 13;
+var SPACE_KEY = 32;
+
+function onKey(event) {
+  if (event.keyCode === ENTER_KEY || event.keyCode === SPACE_KEY) onClick(event);
+}
+
+function onClick(event) {
+  for (var el = event.target; el; el = el.parentElement) {
+    if (el.nodeName.toLowerCase() === 'summary') break; //  Travese DOM tree and find closest summary
+  }
+
+  if (el) {
+    var details = el.parentElement;
+    var hasToggle = 'ontoggle' in details; // Snitt support since toggle event and details element is independent
+    var hasDetails = 'open' in details; // Sniff support since preventDefault does not stop expand in Firefox
+    var isOpen = details.hasAttribute('open');
+
+    el.setAttribute('aria-expanded', !isOpen);
+
+    hasDetails || event.preventDefault(); // Prevent scroll on keydown
+    hasDetails || details[(isOpen ? 'remove' : 'set') + 'Attribute']('open', '');
+    hasToggle || details.dispatchEvent(new window.CustomEvent('toggle'));
+  }
+}
+
+// Make sure we are in a browser and have not allready loaded the polyfill
+if (typeof document !== 'undefined' && !document.getElementById(COMPONENT_ID)) {
+  __webpack_require__(6); // Polyfill CustomEvent
+  document.createElement('details'); // HTML5 shiv details for IE
+  document.createElement('summary'); // HTML5 shiv summary for IE
+  document.addEventListener('keydown', onKey);
+  document.addEventListener('click', onClick);
+  var style = document.createElement('style');
+  style.id = COMPONENT_ID;
+  style.textContent = '\n    summary{display:block;cursor:pointer;touch-action:manipulation}\n    summary::-webkit-details-marker{display:none}\n    summary::before{content:\'\';padding-right:1em;background:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 10 10\'%3E%3Cpath d=\'M0 0h10L5 10\'/%3E%3C/svg%3E") 0 45%/50% no-repeat}\n    summary[aria-expanded="false"]::before{background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 10 10\'%3E%3Cpath d=\'M0 0l10 5-10 5\'/%3E%3C/svg%3E")}\n    summary[aria-expanded="false"]~*{display:none}\n  ';
+  document.head.insertAdjacentElement('afterbegin', style); // Inject in top to let other css files overwrite
+}
+
+/***/ }),
+
+/***/ 6:
 /***/ (function(module, exports) {
 
 // Polyfill for creating CustomEvents on IE9/10/11
@@ -123,54 +171,6 @@ try {
   window.CustomEvent = CustomEvent; // expose definition to window
 }
 
-
-/***/ }),
-
-/***/ 45:
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var COMPONENT_ID = 'details-polyfill';
-var ENTER_KEY = 13;
-var SPACE_KEY = 32;
-
-function onKey(event) {
-  if (event.keyCode === ENTER_KEY || event.keyCode === SPACE_KEY) onClick(event);
-}
-
-function onClick(event) {
-  for (var el = event.target; el; el = el.parentElement) {
-    if (el.nodeName.toLowerCase() === 'summary') break; //  Travese DOM tree and find closest summary
-  }
-
-  if (el) {
-    var details = el.parentElement;
-    var hasToggle = 'ontoggle' in details; // Snitt support since toggle event and details element is independent
-    var hasDetails = 'open' in details; // Sniff support since preventDefault does not stop expand in Firefox
-    var isOpen = details.hasAttribute('open');
-
-    el.setAttribute('aria-expanded', !isOpen);
-
-    hasDetails || event.preventDefault(); // Prevent scroll on keydown
-    hasDetails || details[(isOpen ? 'remove' : 'set') + 'Attribute']('open', '');
-    hasToggle || details.dispatchEvent(new window.CustomEvent('toggle'));
-  }
-}
-
-// Make sure we are in a browser and have not allready loaded the polyfill
-if (typeof document !== 'undefined' && !document.getElementById(COMPONENT_ID)) {
-  __webpack_require__(4); // Polyfill CustomEvent
-  document.createElement('details'); // HTML5 shiv details for IE
-  document.createElement('summary'); // HTML5 shiv summary for IE
-  document.addEventListener('keydown', onKey);
-  document.addEventListener('click', onClick);
-  var style = document.createElement('style');
-  style.id = COMPONENT_ID;
-  style.textContent = '\n    summary{display:block;cursor:pointer;touch-action:manipulation}\n    summary::-webkit-details-marker{display:none}\n    summary::before{content:\'\';padding-right:1em;background:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 10 10\'%3E%3Cpath d=\'M0 0h10L5 10\'/%3E%3C/svg%3E") 0 45%/50% no-repeat}\n    summary[aria-expanded="false"]::before{background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 10 10\'%3E%3Cpath d=\'M0 0l10 5-10 5\'/%3E%3C/svg%3E")}\n    summary[aria-expanded="false"]~*{display:none}\n  ';
-  document.head.insertAdjacentElement('afterbegin', style); // Inject in top to let other css files overwrite
-}
 
 /***/ })
 

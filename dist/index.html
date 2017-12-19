@@ -31,6 +31,7 @@
       .docs-menu ~ iframe { position: fixed; width: calc(100% - 200px); height: 100% }
       .docs-menu ~ * { margin-left: 200px }
     }
+
   </style>
 </head>
 <body>
@@ -348,12 +349,61 @@ summary[aria-expanded="true"]::before { /* Style open details marker */ }</pre>
     <p>UU. That's why.</p>
     <h3>Why not use web components?</h3>
     <p>They are <a target="_blank" href="https://hacks.mozilla.org/2015/06/the-state-of-web-components/">not mature for production usage</a> yet.</p>
+      
+    <button class="dialog-showModal">Show modal</button>
+    <button class="dialog-show">Show</button>
+    <div role="dialog" tabindex="-1" aria-modal="true" aria-label="dialog test">
+      <h1>Her er en tittel</h1>
+      <p>Her er det kanskje litt mer innhold som beskriver et eller annet valg du må ta.</p>
+      
+      <button>Lukk</button>
+      <input type="text" />
+      <button>Godta</button>
+    </div>
+    <button>Test focus</button>
+
+    <h3>Dialog in React</h3>
+    <div id="docs-react-dialog" class="nrk-dialog">
+        <h1>Her er en tittel</h1>
+        <p>Her er det kanskje litt mer innhold som beskriver et eller annet valg du må ta.</p>
+        
+        <button class="close">Lukk</button>
+        <input type="text" />
+        <button class="accept">Godta</button>
+    </div>
+
+    <button>Test focus</button>
   </article>
 
   <!-- JS setup -->
   <script src="core-components.min.js"></script>
   <script>
-    window.coreComponents.details('details')
+    // window.coreComponents.details('details')
+    // window.addEventListener('core-components', function (event) {
+    //   consol0e.log('core component event: ', event.detail);
+    //   const {details, dialog, input} = event.detail;
+      
+      const showModalBtn = document.querySelector('.dialog-showModal');
+      const showBtn = document.querySelector('.dialog-show');
+      const dialogEl = document.querySelector('[role="dialog"]');
+      const closeBtn = document.querySelector('#docs-react-dialog button');
+
+      // const dialogInstance = new window.coreComponents.dialog(dialogEl);
+      showModalBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        // dialogInstance.showModal();
+        window.test.dialog('#docs-react-dialog').open()
+      });
+      // showBtn.addEventListener('click', (e) => {
+      //   e.preventDefault();
+      //   dialogInstance.show();
+      // });
+      closeBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        // dialogInstance.close();
+        window.test.dialog('#docs-react-dialog').close()
+      });
+    // })
   </script>
 
   <!-- JSX setup -->
@@ -362,20 +412,25 @@ summary[aria-expanded="true"]::before { /* Style open details marker */ }</pre>
   <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
   <script src="core-components.jsx.js"></script>
   <script type="text/babel">
-    const {Details} = window.coreComponents
+    const {Details, Dialog} = window.coreComponents
     ReactDOM.render(
       <Details>
         <summary>React/JSX</summary>
         <p>Even more details.</p>
       </Details>, document.getElementById('docs-react-details'))
+    ReactDOM.render(<Dialog isOpen={true} dialogLabel="Dialog: Dette er en tittel">
+        <h2>React/JSX dialog test</h2>
+        <p>Her er det kanskje litt mer innhold som beskriver et eller annet valg du må ta.</p>
+        <button>Close</button>
+      </Dialog>, document.getElementById('docs-react-dialog'))
   </script> -->
 
   <!-- RequireJS setup -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.5/require.js"></script>
   <script>
-    requirejs(['core-components.min.js'], function (components) {
-      console.log('RequireJS', components)
-    })
+    // requirejs(['core-components.min.js'], function (components) {
+    //   console.log('RequireJS', components)
+    // })
   </script>
 
   <!-- Docs setup -->

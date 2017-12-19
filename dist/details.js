@@ -70,130 +70,12 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 7);
+/******/ 	return __webpack_require__(__webpack_require__.s = 12);
 /******/ })
 /************************************************************************/
-/******/ ([
-/* 0 */,
-/* 1 */,
-/* 2 */,
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
+/******/ ({
 
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-exports.attr = attr;
-exports.closest = closest;
-var KEY = 'core-components-' + Date.now();
-var STATES = {};
-var UUID = 0;
-
-function attr(elements, attributes) {
-  getElements(elements).forEach(function (element) {
-    Object.keys(attributes).forEach(function (name) {
-      element[(attributes[name] === null ? 'remove' : 'set') + 'Attribute'](name, attributes[name]);
-    });
-  });
-  return elements;
-}
-
-function closest(element, nodeName) {
-  for (var el = element; el; el = el.parentElement) {
-    if (el.nodeName.toLowerCase() === nodeName) return el;
-  }
-}
-
-var getElements = exports.getElements = function getElements(elements) {
-  if (typeof elements === 'string') return getElements(document.querySelectorAll(elements));
-  if (elements.length) return [].slice.call(elements);
-  if (elements.nodeType) return [elements];
-  throw new Error('"elements" must be of type nodeList, array, selector string or single HTMLElement');
-};
-
-var weakState = exports.weakState = function weakState(element, object) {
-  var initial = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
-  var uuid = element[KEY] || (element[KEY] = ++UUID);
-  var state = STATES[uuid] || (STATES[uuid] = initial);
-
-  if (object === false) {
-    delete element[KEY];
-    delete STATES[uuid];
-  } else if ((typeof object === 'undefined' ? 'undefined' : _typeof(object)) === 'object') {
-    Object.keys(state).forEach(function (key) {
-      return state[key] = object[key];
-    });
-  }
-
-  return state;
-};
-
-var queryAll = exports.queryAll = function queryAll(selector) {
-  var context = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : document;
-  return [].slice.call(context.querySelectorAll(selector));
-};
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports) {
-
-// Polyfill for creating CustomEvents on IE9/10/11
-
-// code pulled from:
-// https://github.com/d4tocchini/customevent-polyfill
-// https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent#Polyfill
-
-try {
-    var ce = new window.CustomEvent('test');
-    ce.preventDefault();
-    if (ce.defaultPrevented !== true) {
-        // IE has problems with .preventDefault() on custom events
-        // http://stackoverflow.com/questions/23349191
-        throw new Error('Could not prevent default');
-    }
-} catch(e) {
-  var CustomEvent = function(event, params) {
-    var evt, origPrevent;
-    params = params || {
-      bubbles: false,
-      cancelable: false,
-      detail: undefined
-    };
-
-    evt = document.createEvent("CustomEvent");
-    evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
-    origPrevent = evt.preventDefault;
-    evt.preventDefault = function () {
-      origPrevent.call(this);
-      try {
-        Object.defineProperty(this, 'defaultPrevented', {
-          get: function () {
-            return true;
-          }
-        });
-      } catch(e) {
-        this.defaultPrevented = true;
-      }
-    };
-    return evt;
-  };
-
-  CustomEvent.prototype = window.Event.prototype;
-  window.CustomEvent = CustomEvent; // expose definition to window
-}
-
-
-/***/ }),
-/* 5 */,
-/* 6 */,
-/* 7 */
+/***/ 12:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -206,7 +88,7 @@ exports.details = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _utils = __webpack_require__(3);
+var _utils = __webpack_require__(2);
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -287,7 +169,7 @@ function onClick(event) {
 
 // Make sure we are in a browser and have not already loaded the component
 if (typeof document !== 'undefined' && !document.getElementById(STYLE_ID)) {
-  __webpack_require__(4); // Polyfill CustomEvent
+  __webpack_require__(6); // Polyfill CustomEvent
   document.createElement(DETAILS); // HTML5 shiv <details> for IE
   document.createElement(SUMMARY); // HTML5 shiv <summary> for IE
   document.addEventListener('keydown', onKey); // Make role="button" behave like <button>
@@ -296,6 +178,127 @@ if (typeof document !== 'undefined' && !document.getElementById(STYLE_ID)) {
   '<style id="' + STYLE_ID + '">\n      ' + SUMMARY + '{display:block;cursor:pointer;touch-action:manipulation}\n      ' + SUMMARY + '::-webkit-details-marker{display:none}\n      ' + SUMMARY + '::before{content:\'\';padding-right:1em;background:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 10 10\'%3E%3Cpath d=\'M0 0h10L5 10\'/%3E%3C/svg%3E") 0 45%/50% no-repeat}\n      ' + SUMMARY + '[aria-expanded="false"]::before{background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 10 10\'%3E%3Cpath d=\'M0 0l10 5-10 5\'/%3E%3C/svg%3E")}\n      ' + SUMMARY + '[aria-expanded="false"]~*{display:none}\n    </style>');
 }
 
+/***/ }),
+
+/***/ 2:
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+exports.attr = attr;
+exports.closest = closest;
+var KEY = 'core-components-' + Date.now();
+var STATES = {};
+var UUID = 0;
+
+function attr(elements, attributes) {
+  getElements(elements).forEach(function (element) {
+    Object.keys(attributes).forEach(function (name) {
+      element[(attributes[name] === null ? 'remove' : 'set') + 'Attribute'](name, attributes[name]);
+    });
+  });
+  return elements;
+}
+
+function closest(element, nodeName) {
+  for (var el = element; el; el = el.parentElement) {
+    if (el.nodeName.toLowerCase() === nodeName) return el;
+  }
+}
+
+var getElements = exports.getElements = function getElements(elements) {
+  if (typeof elements === 'string') return getElements(document.querySelectorAll(elements));
+  if (elements.length) return [].slice.call(elements);
+  if (elements.nodeType) return [elements];
+  throw new Error('"elements" must be of type nodeList, array, selector string or single HTMLElement');
+};
+
+var weakState = exports.weakState = function weakState(element, object) {
+  var initial = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+  var uuid = element[KEY] || (element[KEY] = ++UUID);
+  var state = STATES[uuid] || (STATES[uuid] = initial);
+
+  if (object === false) {
+    delete element[KEY];
+    delete STATES[uuid];
+  } else if ((typeof object === 'undefined' ? 'undefined' : _typeof(object)) === 'object') {
+    Object.keys(object).forEach(function (key) {
+      return state[key] = object[key];
+    });
+  }
+
+  return state;
+};
+
+var getWeakState = exports.getWeakState = function getWeakState(element) {
+  return STATES[element[KEY]];
+};
+
+var queryAll = exports.queryAll = function queryAll(selector) {
+  var context = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : document;
+  return [].slice.call(context.querySelectorAll(selector));
+};
+
+/***/ }),
+
+/***/ 6:
+/***/ (function(module, exports) {
+
+// Polyfill for creating CustomEvents on IE9/10/11
+
+// code pulled from:
+// https://github.com/d4tocchini/customevent-polyfill
+// https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent#Polyfill
+
+try {
+    var ce = new window.CustomEvent('test');
+    ce.preventDefault();
+    if (ce.defaultPrevented !== true) {
+        // IE has problems with .preventDefault() on custom events
+        // http://stackoverflow.com/questions/23349191
+        throw new Error('Could not prevent default');
+    }
+} catch(e) {
+  var CustomEvent = function(event, params) {
+    var evt, origPrevent;
+    params = params || {
+      bubbles: false,
+      cancelable: false,
+      detail: undefined
+    };
+
+    evt = document.createEvent("CustomEvent");
+    evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
+    origPrevent = evt.preventDefault;
+    evt.preventDefault = function () {
+      origPrevent.call(this);
+      try {
+        Object.defineProperty(this, 'defaultPrevented', {
+          get: function () {
+            return true;
+          }
+        });
+      } catch(e) {
+        this.defaultPrevented = true;
+      }
+    };
+    return evt;
+  };
+
+  CustomEvent.prototype = window.Event.prototype;
+  window.CustomEvent = CustomEvent; // expose definition to window
+}
+
+
 /***/ })
-/******/ ]);
+
+/******/ });
 });

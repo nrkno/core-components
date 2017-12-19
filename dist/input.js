@@ -70,12 +70,81 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 12);
+/******/ 	return __webpack_require__(__webpack_require__.s = 48);
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ 12:
+/***/ 2:
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+exports.attr = attr;
+exports.closest = closest;
+var KEY = 'core-components-' + Date.now();
+var STATES = {};
+var UUID = 0;
+
+function attr(elements, attributes) {
+  getElements(elements).forEach(function (element) {
+    Object.keys(attributes).forEach(function (name) {
+      element[(attributes[name] === null ? 'remove' : 'set') + 'Attribute'](name, attributes[name]);
+    });
+  });
+  return elements;
+}
+
+function closest(element, nodeName) {
+  for (var el = element; el; el = el.parentElement) {
+    if (el.nodeName.toLowerCase() === nodeName) return el;
+  }
+}
+
+var getElements = exports.getElements = function getElements(elements) {
+  if (typeof elements === 'string') return getElements(document.querySelectorAll(elements));
+  if (elements.length) return [].slice.call(elements);
+  if (elements.nodeType) return [elements];
+  throw new Error('"elements" must be of type nodeList, array, selector string or single HTMLElement');
+};
+
+var weakState = exports.weakState = function weakState(element, object) {
+  var initial = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+  var uuid = element[KEY] || (element[KEY] = ++UUID);
+  var state = STATES[uuid] || (STATES[uuid] = initial);
+
+  if (object === false) {
+    delete element[KEY];
+    delete STATES[uuid];
+  } else if ((typeof object === 'undefined' ? 'undefined' : _typeof(object)) === 'object') {
+    Object.keys(object).forEach(function (key) {
+      return state[key] = object[key];
+    });
+  }
+
+  return state;
+};
+
+var getWeakState = exports.getWeakState = function getWeakState(element) {
+  return STATES[element[KEY]];
+};
+
+var queryAll = exports.queryAll = function queryAll(selector) {
+  var context = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : document;
+  return [].slice.call(context.querySelectorAll(selector));
+};
+
+/***/ }),
+
+/***/ 48:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -83,7 +152,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var _utils = __webpack_require__(3);
+var _utils = __webpack_require__(2);
 
 var COMPONENT_ID = 'core-input';
 var LIST = void 0; // Element to contain list
@@ -212,71 +281,6 @@ if (typeof document !== 'undefined' && !document.getElementById(COMPONENT_ID)) {
 
 module.exports = function () {
   return console.log('input');
-};
-
-/***/ }),
-
-/***/ 3:
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-exports.attr = attr;
-exports.closest = closest;
-var KEY = 'core-components-' + Date.now();
-var STATES = {};
-var UUID = 0;
-
-function attr(elements, attributes) {
-  getElements(elements).forEach(function (element) {
-    Object.keys(attributes).forEach(function (name) {
-      element[(attributes[name] === null ? 'remove' : 'set') + 'Attribute'](name, attributes[name]);
-    });
-  });
-  return elements;
-}
-
-function closest(element, nodeName) {
-  for (var el = element; el; el = el.parentElement) {
-    if (el.nodeName.toLowerCase() === nodeName) return el;
-  }
-}
-
-var getElements = exports.getElements = function getElements(elements) {
-  if (typeof elements === 'string') return getElements(document.querySelectorAll(elements));
-  if (elements.length) return [].slice.call(elements);
-  if (elements.nodeType) return [elements];
-  throw new Error('"elements" must be of type nodeList, array, selector string or single HTMLElement');
-};
-
-var weakState = exports.weakState = function weakState(element, object) {
-  var initial = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
-  var uuid = element[KEY] || (element[KEY] = ++UUID);
-  var state = STATES[uuid] || (STATES[uuid] = initial);
-
-  if (object === false) {
-    delete element[KEY];
-    delete STATES[uuid];
-  } else if ((typeof object === 'undefined' ? 'undefined' : _typeof(object)) === 'object') {
-    Object.keys(state).forEach(function (key) {
-      return state[key] = object[key];
-    });
-  }
-
-  return state;
-};
-
-var queryAll = exports.queryAll = function queryAll(selector) {
-  var context = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : document;
-  return [].slice.call(context.querySelectorAll(selector));
 };
 
 /***/ })

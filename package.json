@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "custom-event-polyfill": "^0.3.0",
+    "prop-types": "^15.6.0",
     "react": "^15.6.1",
     "react-dom": "^15.6.1"
   },

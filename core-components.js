@@ -1,8 +1,8 @@
 module.exports = {
   version: __VERSION__, // eslint-disable-line
-  details: require('./details'),
-  dialog: require('./dialog'),
-  input: require('./input')
+  // details: require('./details'),
+  dialog: require('./dialog')
+  // input: require('./input')
 }
 
 /* function details (element, state) {
