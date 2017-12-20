@@ -352,7 +352,7 @@ summary[aria-expanded="true"]::before { /* Style open details marker */ }</pre>
       
     <button class="dialog-showModal">Show modal</button>
     <button class="dialog-show">Show</button>
-    <div role="dialog" tabindex="-1" aria-modal="true" aria-label="dialog test">
+    <div id="docs-dialog" class="nrk-dialog" role="dialog" tabindex="-1" aria-modal="true" aria-label="dialog test">
       <h1>Her er en tittel</h1>
       <p>Her er det kanskje litt mer innhold som beskriver et eller annet valg du må ta.</p>
       
@@ -364,7 +364,7 @@ summary[aria-expanded="true"]::before { /* Style open details marker */ }</pre>
 
     <h3>Dialog in React</h3>
     <div id="docs-react-dialog" class="nrk-dialog">
-        <h1>Her er en tittel</h1>
+        <h1>Her er en React tittel</h1>
         <p>Her er det kanskje litt mer innhold som beskriver et eller annet valg du må ta.</p>
         
         <button class="close">Lukk</button>
@@ -392,7 +392,7 @@ summary[aria-expanded="true"]::before { /* Style open details marker */ }</pre>
       showModalBtn.addEventListener('click', (e) => {
         e.preventDefault();
         // dialogInstance.showModal();
-        window.test.dialog('#docs-react-dialog').open()
+        window.coreComponents.dialog('#docs-react-dialog').open()
       });
       // showBtn.addEventListener('click', (e) => {
       //   e.preventDefault();
@@ -401,7 +401,7 @@ summary[aria-expanded="true"]::before { /* Style open details marker */ }</pre>
       closeBtn.addEventListener('click', (e) => {
         e.preventDefault();
         // dialogInstance.close();
-        window.test.dialog('#docs-react-dialog').close()
+        window.coreComponents.dialog('#docs-react-dialog').close()
       });
     // })
   </script>
@@ -428,9 +428,11 @@ summary[aria-expanded="true"]::before { /* Style open details marker */ }</pre>
   <!-- RequireJS setup -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.5/require.js"></script>
   <script>
-    // requirejs(['core-components.min.js'], function (components) {
-    //   console.log('RequireJS', components)
-    // })
+    requirejs(['core-components.min.js'], function (components) {
+      console.log('RequireJS', components)
+      window.test = {};
+      window.test.components = components;
+    })
   </script>
 
   <!-- Docs setup -->

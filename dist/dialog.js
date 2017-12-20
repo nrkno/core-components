@@ -92,6 +92,8 @@ var KEY = 'nrk-dialog';
 var KEY_BACKDROP = 'nrk-dialog-backdrop';
 var FOCUSABLE_ELEMENTS = ['[tabindex]:not([disabled])', 'button:not([disabled])', 'input:not([disabled])', 'select:not([disabled])', 'textarea:not([disabled])'];
 
+var DEFAULT_Z_INDEX = 10000;
+
 // The stack of active dialogs where the last element should be the dialog
 // that is on "top".
 var ACTIVE_DIALOG_STACK = [];
@@ -109,8 +111,11 @@ var setBackdrop = function setBackdrop() {
 };
 
 var removeBackdrop = function removeBackdrop() {
-  var backdrop = document.querySelector('.' + KEY_BACKDROP);
-  backdrop && backdrop.parentElement.removeChild(backdrop);
+  // Can remove backdrop when we're removing the last dialog
+  if (ACTIVE_DIALOG_STACK.length === 1) {
+    var backdrop = document.querySelector('.' + KEY_BACKDROP);
+    backdrop && backdrop.parentElement.removeChild(backdrop);
+  }
 };
 
 // Attempt to focus on an autofocus target first. If none exists we will focus
@@ -153,6 +158,7 @@ var toggle = function toggle(el, index, fn, invert) {
 
   if (active) {
     ACTIVE_DIALOG_STACK.indexOf(el) >= 0 || ACTIVE_DIALOG_STACK.push(el);
+    el.style.zIndex = DEFAULT_Z_INDEX + ACTIVE_DIALOG_STACK.indexOf(el);
     setActiveStateForElement(el);
     focusOnFirstFocusableElement(el);
   } else {
@@ -185,7 +191,7 @@ var keepFocus = function keepFocus(e) {
 var exitOnEscape = function exitOnEscape(e) {
   if (e.keyCode === 27) {
     var activeDialog = ACTIVE_DIALOG_STACK.pop();
-    activeDialog && window.test.dialog(activeDialog).close();
+    activeDialog && window.coreComponents.dialog(activeDialog).close();
   }
 };
 
@@ -197,46 +203,40 @@ var initialize = function initialize(el, options) {
 };
 
 function dialog(selector, options) {
-  var _this = this;
+  if (!(this instanceof dialog)) return new dialog(selector, options);
 
   this.elements = (0, _utils.getElements)(selector);
   this.elements.forEach(function (el) {
     return initialize(el, options);
   });
 
-  /** -------- PUBLIC FUNCTIONS -------- **/
-  this.open = function () {
-    var fn = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
-
-    _this.elements.forEach(function (el, idx) {
-      return toggle(el, idx, fn);
-    });
-    return _this;
-  };
-
-  this.close = function () {
-    var fn = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
-
-    _this.elements.forEach(function (el, idx) {
-      return toggle(el, idx, fn);
-    });
-    return _this;
-  };
-
   return this;
 }
 
-// @TODO TEMPORARY CODE. Doing the same as details just to make sure this code is
-// not called multiple times
-if (typeof document !== 'undefined' && !document.getElementById(KEY + '-style')) {
-  document.head.insertAdjacentHTML('afterbegin', // Insert css in top for easy overwriting
-  '<style id="' + KEY + '-style">');
-  document.addEventListener('focusin', keepFocus);
-  document.addEventListener('keydown', exitOnEscape);
-}
+dialog.prototype.open = function () {
+  var fn = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
 
-window.test = {};
-window.test.dialog = dialog;
+  this.elements.forEach(function (el, idx) {
+    return toggle(el, idx, fn);
+  });
+  return this;
+};
+
+dialog.prototype.close = function () {
+  var fn = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
+  this.elements.forEach(function (el, idx) {
+    return toggle(el, idx, fn);
+  });
+  return this;
+};
+
+// @TODO Should I ensure this is not called everytime this component is required?
+// The functions are scoped to the data accessible to the component, which means
+// that two separate components technically don't interfere with each other
+document.addEventListener('focusin', keepFocus);
+document.addEventListener('keydown', exitOnEscape);
+
 module.exports = dialog;
 // dialog('dette er selected').open('test')
 

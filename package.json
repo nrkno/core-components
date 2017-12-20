@@ -14,7 +14,7 @@
     "publish:major": "npm version major -m 'Release major %s' && npm run push",
     "push": "git push && git push --tags && npm publish",
     "start": "NODE_ENV=development webpack-dev-server -d",
-    "test": "npm run lint && mocha test/**/*.spec.js*",
+    "test": "npm run lint && NODE_PATH=./ mocha test/**/*.spec.js*",
     "test:watch": "mocha --watch test/**/*.spec.js*",
     "static-publish": "static-publish publish --directory ./dist --package ./package.json --verbose --latest"
   },

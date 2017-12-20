@@ -352,7 +352,7 @@ summary[aria-expanded="true"]::before { /* Style open details marker */ }</pre>
       
     <button class="dialog-showModal">Show modal</button>
     <button class="dialog-show">Show</button>
-    <div role="dialog" tabindex="-1" aria-modal="true" aria-label="dialog test">
+    <div id="docs-dialog" class="nrk-dialog" role="dialog" tabindex="-1" aria-modal="true" aria-label="dialog test">
       <h1>Her er en tittel</h1>
       <p>Her er det kanskje litt mer innhold som beskriver et eller annet valg du må ta.</p>
       
@@ -364,7 +364,7 @@ summary[aria-expanded="true"]::before { /* Style open details marker */ }</pre>
 
     <h3>Dialog in React</h3>
     <div id="docs-react-dialog" class="nrk-dialog">
-        <h1>Her er en tittel</h1>
+        <h1>Her er en React tittel</h1>
         <p>Her er det kanskje litt mer innhold som beskriver et eller annet valg du må ta.</p>
         
         <button class="close">Lukk</button>
@@ -430,7 +430,8 @@ summary[aria-expanded="true"]::before { /* Style open details marker */ }</pre>
   <script>
     requirejs(['core-components.min.js'], function (components) {
       console.log('RequireJS', components)
-
+      window.test = {};
+      window.test.components = components;
     })
   </script>
 

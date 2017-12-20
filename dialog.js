@@ -1,80 +1,59 @@
-import {getElements, weakState, getWeakState} from './utils'
+import {attr, getElements, weakState, getWeakState} from './utils'
 
 // First attempt to focus on the property with autofocus.
 // If no such element exists, set focus to first focusable element.
 
-const KEY = 'nrk-dialog'
-const KEY_BACKDROP = 'nrk-dialog-backdrop'
-const FOCUSABLE_ELEMENTS = [
-  '[tabindex]:not([disabled])',
-  'button:not([disabled])',
-  'input:not([disabled])',
-  'select:not([disabled])',
-  'textarea:not([disabled])'
-]
-
-// The stack of active dialogs where the last element should be the dialog
-// that is on "top".
-const ACTIVE_DIALOG_STACK = []
-
-const setBackdrop = () => {
-  // If a backdrop already exists we do not want to create another one
-  if (document.querySelector(`.${KEY_BACKDROP}`)) { return }
-
-  const backdrop = document.createElement('div')
-  backdrop.setAttribute('aria-hidden', true)
-  backdrop.classList.add(KEY_BACKDROP)
-  document.body.appendChild(backdrop)
-}
-
-const removeBackdrop = () => {
-  const backdrop = document.querySelector(`.${KEY_BACKDROP}`)
-  backdrop && backdrop.parentElement.removeChild(backdrop)
-}
+let BACKDROP
+const KEY = 'dialog-@VERSION'
+const KEY_UNIVERSAL = 'data-dialog-xxx'
+const FOCUSABLE_ELEMENTS = `
+  [tabindex]:not([disabled]),
+  button:not([disabled])',
+  input:not([disabled]),
+  select:not([disabled]),
+  textarea:not([disabled])`
 
 // Attempt to focus on an autofocus target first. If none exists we will focus
 // on the first focusable element.
 const focusOnFirstFocusableElement = (el) => {
-  const autofocusEl = el.querySelector('[autofocus]:not([disabled])')
-  const { firstFocusableElement } = getWeakState(el)
-  if (autofocusEl) {
-    autofocusEl.focus()
-    return
-  }
-  firstFocusableElement && firstFocusableElement.focus()
+  const autofocusElement = el.querySelector('[autofocus]:not([disabled])')
+  const focusableElement = el.querySelector(FOCUSABLE_ELEMENTS)
+  ;(autofocusElement || focusableElement || el).focus()
 }
 
-const findFirstAndLastFocusableElements = (el) => {
-  const targets = el.querySelectorAll(FOCUSABLE_ELEMENTS.join(', '))
-  return {
-    firstFocusableElement: targets[0],
-    lastFocusableElement: targets[targets.length - 1]
-  }
-}
+const getHighestZIndex = () =>
+  getElements('*').reduce((zIndex, el) =>
+    Math.max(zIndex, Number(window.getComputedStyle(el, null).getPropertyValue('z-index')) || 0)
+  , 0)
+
+const getActive = () => document.querySelector(`[${KEY_UNIVERSAL}]`)
 
 const setActiveStateForElement = (el) => {
+  const prevActive = getActive()
+  attr(prevActive, {KEY_UNIVERSAL: null})
+  el.setAttribute(KEY_UNIVERSAL, '')
+
   return weakState(el, {
-    focusBeforeModalOpen: document.activeElement,
-    ...findFirstAndLastFocusableElements(el)
+    prevActive,
+    focusBeforeModalOpen: document.activeElement
   })
 }
 
 // Will toggle the open state of the dialog depending on what the fn function
 // returns or what (Boolean) value fn has.
-const toggle = (el, index, fn, invert) => {
-  let active = typeof fn === 'function' ? fn(el, index) : Boolean(fn)
-  active = invert ? !active : active
+const toggle = (el, index, fn, open = true) => {
+  const active = Boolean(typeof fn === 'function' ? fn(el, index) : fn) === open
 
-  active ? el.setAttribute('open', '') : el.removeAttribute('open')
-  active ? setBackdrop() : removeBackdrop()
+  attr(el, {open: active || null})
+  BACKDROP.hidden = Boolean(weakState(el).get('prevActive'))
 
   if (active) {
-    ACTIVE_DIALOG_STACK.indexOf(el) >= 0 || ACTIVE_DIALOG_STACK.push(el)
+    el.style.zIndex = getHighestZIndex() + 1
     setActiveStateForElement(el)
     focusOnFirstFocusableElement(el)
+    // set focus
   } else {
     // Should be able to pop when removing as the last element is the active dialog
-    ACTIVE_DIALOG_STACK.pop()
     const state = getWeakState(el)
     // Focus on the last focused thing before the dialog modal was opened
     state.focusBeforeModalOpen && state.focusBeforeModalOpen.focus()
@@ -83,57 +62,58 @@ const toggle = (el, index, fn, invert) => {
   }
 }
 
-const keepFocus = (e) => {
-  const activeDialog = ACTIVE_DIALOG_STACK[ACTIVE_DIALOG_STACK.length - 1]
+const keepFocus = (event) => {
+  const activeDialog = getActive()
   // If no dialog is active, we don't need to do anything
   if (!activeDialog) { return }
 
   const state = getWeakState(activeDialog)
+  const focusable = activeDialog.querySelectorAll(FOCUSABLE_ELEMENTS)
+
   // If focus moves us outside the dialog, we need to refocus to inside the dialog
-  if (!activeDialog.contains(e.target)) {
-    state.activeElement === state.lastFocusableElement ? state.firstFocusableElement.focus() : state.lastFocusableElement.focus()
+  if (!activeDialog.contains(event.target)) {
+    state.activeElement === focusable[0] ? focusable[focusable.length - 1].focus() : focusable[0].focus()
   } else {
-    state.activeElement = e.target
+    state.activeElement = event.target
   }
 }
 
-const exitOnEscape = (e) => {
-  if (e.keyCode === 27) {
-    const activeDialog = ACTIVE_DIALOG_STACK.pop()
-    activeDialog && window.coreComponents.dialog(activeDialog).close()
-  }
-}
-
-// Initialize the element with necessary attributes for a dialog
-const initialize = (el, options) => {
-  el.hasAttribute('role') || el.setAttribute('role', 'dialog')
-  el.hasAttribute('tabindex') || el.setAttribute('tabindex', '-1')
-  el.hasAttribute('aria-modal') || el.setAttribute('aria-modal', 'true')
+const exitOnEscape = (event) => {
+  if (event.keyCode === 27) dialog(getActive()).close()
 }
 
 function dialog (selector, options) {
-  this.elements = getElements(selector)
-  this.elements.forEach((el) => initialize(el, options))
+  if (!(this instanceof dialog)) return new dialog(selector, options) //eslint-disable-line
 
-  /** -------- PUBLIC FUNCTIONS -------- **/
-  this.open = (fn = true) => {
-    this.elements.forEach((el, idx) => toggle(el, idx, fn))
-    return this
-  }
+  // Initialize the element with necessary attributes for a dialog
+  this.elements = attr(this.elements, {
+    role: 'dialog',
+    tabindex: -1,
+    'aria-modal': true
+  })
 
-  this.close = (fn = false) => {
-    this.elements.forEach((el, idx) => toggle(el, idx, fn))
-    return this
-  }
+  return this
+}
 
+dialog.prototype.open = function (fn = true) {
+  this.elements.forEach((el, index) => toggle(el, index, fn))
+  return this
+}
+
+dialog.prototype.close = function (fn = false) {
+  this.elements.forEach((el, index) => toggle(el, index, fn, false))
   return this
 }
 
 // @TODO Should I ensure this is not called everytime this component is required?
 // The functions are scoped to the data accessible to the component, which means
 // that two separate components technically don't interfere with each other
-document.addEventListener('focusin', keepFocus)
-document.addEventListener('keydown', exitOnEscape)
+if (typeof document !== 'undefined' && !document.getElementById(KEY)) {
+  attr(BACKDROP = document.createElement('div'), {hidden: true, id: KEY})
+  document.addEventListener('focus', keepFocus, true)
+  document.addEventListener('keydown', exitOnEscape)
+  document.documentElement.appendChild(BACKDROP)
+}
 
 module.exports = dialog
 // dialog('dette er selected').open('test')
