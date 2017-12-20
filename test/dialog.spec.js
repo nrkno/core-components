@@ -52,13 +52,18 @@ describe('dialog', () => {
       element = document.querySelector(`#${DIALOG_ID}`)
     })
 
+    afterEach(() => {
+      // @todo: I know, not pretty - but I need to close to reset state
+      dialog(`#${DIALOG_ID}`).close()
+    })
+
     it('should set the open attribute on the element', () => {
       dialog(`#${DIALOG_ID}`).open()
       expect(element.hasAttribute('open')).to.be.equal(true)
     })
 
     it('should remove attribute hidden from backdrop', () => {
-      // Should initially be no backdrop
+      expect(document.querySelectorAll('.nrk-dialog-backdrop')[0].hasAttribute('hidden')).to.equal(true)
       dialog(`#${DIALOG_ID}`).open()
       expect(document.querySelectorAll('.nrk-dialog-backdrop')[0].hasAttribute('hidden')).to.equal(false)
     })

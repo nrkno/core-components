@@ -355,11 +355,21 @@ summary[aria-expanded="true"]::before { /* Style open details marker */ }</pre>
       <h1>Her er en tittel</h1>
       <p>Her er det kanskje litt mer innhold som beskriver et eller annet valg du må ta.</p>
       
-      <button>Lukk</button>
+      <button class="close">Lukk</button>
       <input type="text" />
       <button>Godta</button>
     </div>
+
+
     <button>Test focus</button>
+
+    <div id="docs-dialog-nested" class="nrk-dialog">
+      <h2>Dette er en dialog som er triggered av noe annet</h2>
+
+      <p>Dette kunne vært noe lorem ipsum text. Det burde være lengere enn tittelen :).</p>
+
+      <button class="close">Lukk</button>
+    </div>
 
     <h3>Dialog in React</h3>
     <div id="docs-react-dialog" class="nrk-dialog">
@@ -383,26 +393,29 @@ summary[aria-expanded="true"]::before { /* Style open details marker */ }</pre>
     //   const {details, dialog, input} = event.detail;
       
       const showModalBtn = document.querySelector('.dialog-showModal');
+      const secondShowModalBtn = document.querySelector('#docs-react-dialog button.accept');
       const showBtn = document.querySelector('.dialog-show');
       const dialogEl = document.querySelector('[role="dialog"]');
-      const closeBtn = document.querySelector('#docs-react-dialog button');
+      const nestedDialogEl = document.querySelector('#docs-dialog-nested');
+      const closeBtns = document.querySelectorAll('.nrk-dialog button.close');
+      
 
-      // const dialogInstance = new window.coreComponents.dialog(dialogEl);
+      secondShowModalBtn.addEventListener('click', (e) => {
+        window.coreComponents.dialog(nestedDialogEl).open();
+      });
+      
       showModalBtn.addEventListener('click', (e) => {
         e.preventDefault();
         // dialogInstance.showModal();
         window.coreComponents.dialog('#docs-react-dialog').open()
       });
-      // showBtn.addEventListener('click', (e) => {
-      //   e.preventDefault();
-      //   dialogInstance.show();
-      // });
-      closeBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        // dialogInstance.close();
-        window.coreComponents.dialog('#docs-react-dialog').close()
+      
+      [].forEach.call(closeBtns, (closeBtn) => {
+        closeBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          window.coreComponents.dialog(e.target.parentElement).close()
+        });
       });
-    // })
     document.addEventListener('toggle', (event) => {
       console.log('toggle', event.target)
     }, true)

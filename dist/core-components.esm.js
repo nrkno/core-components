@@ -287,7 +287,8 @@ var getActive = function () { return document.querySelector(("[" + KEY_UNIVERSAL
 
 var setActiveStateForElement = function (el) {
   var prevActive = getActive();
-  attr(prevActive, {KEY_UNIVERSAL: null});
+  // attr(prevActive, {KEY_UNIVERSAL: null})
+  prevActive && prevActive.removeAttribute(KEY_UNIVERSAL);
   el.setAttribute(KEY_UNIVERSAL, '');
 
   return weakState(el, {
@@ -309,16 +310,20 @@ var toggle$1 = function (el, index, fn, open) {
     el.style.zIndex = getHighestZIndex() + 1;
     setActiveStateForElement(el);
     focusOnFirstFocusableElement(el);
-    BACKDROP.hidden = Boolean(weakState(el).get('prevActive'));
+    BACKDROP.hidden = false;
     // set focus
   } else {
-    BACKDROP.hidden = true;
+    BACKDROP.hidden = !(weakState().get(el).prevActive);
+    el.removeAttribute(KEY_UNIVERSAL);
+    if (!BACKDROP.hidden) {
+      weakState().get(el).prevActive.setAttribute(KEY_UNIVERSAL, '');
+    }
     // Should be able to pop when removing as the last element is the active dialog
     var state = weakState().get(el);
     // Focus on the last focused thing before the dialog modal was opened
     state.focusBeforeModalOpen && state.focusBeforeModalOpen.focus();
     // Delete state for element
-    weakState(el);
+    weakState(el, false);
   }
 };
 
