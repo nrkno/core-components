@@ -150,18 +150,114 @@ function Details (props) {
   return React.createElement( 'details', assign({}, props, { open: isOpen }), children)
 }
 
+var KEY$2 = 'input-@VERSION';
 var LIST; // Element to contain list
 var LIVE; // Element to contain screen reader text
+
+function render (elem) {
+  var state = elem[KEY$2];
+  var value = state.value.trim().toLowerCase();
+  state.hits = state.items.filter(function (item) { return item.value.toLowerCase().indexOf(value) !== -1; });
+
+  attr(LIVE, {'aria-hidden': false});
+  attr(LIST, {'hidden': state.hits.length ? null : true});
+  attr(elem, {'aria-expanded': Boolean(state.hits.length)});
+
+  LIST.style.width = (elem.offsetWidth) + "px";
+  LIST.innerHTML = state.hits.map(function (ref, i) {
+      var value = ref.value;
+
+      return ("<li role=\"option\" aria-selected=\"" + (i === state.index) + "\">" + value + "</li>");
+  }
+  ).join('');
+}
+
+function onFocus (event) {
+  var elem = event.target;
+  var controls = elem.getAttribute(("data-" + KEY$2));
+
+  if (controls && !elem[KEY$2]) {
+    var mode = elem.getAttribute(("data-" + KEY$2 + "-mode")) || 'suggestions';
+    var items = [].map.call(document.querySelectorAll(("#" + controls + " > *")), function (ref) {
+      var value = ref.value;
+
+      return ({value: value});
+    });
+    var parent = elem.parentElement;
+
+    attr(elem, {
+      'role': 'combobox',
+      'autocomplete': 'off',
+      'aria-controls': (KEY$2 + "-" + controls),
+      'aria-autocomplete': 'list',
+      'aria-haspopup': true,
+      'aria-expanded': false
+    });
+
+    parent.className = parent.className.split(' ').concat(KEY$2).join(' ');
+    elem[KEY$2] = {items: items, mode: mode, list: elem.nextElementSibling}; // TODO: list
+  }
+
+  if (controls) {
+    LIST.id = KEY$2 + "-" + controls;
+    elem.insertAdjacentElement('afterend', LIST);
+    onInput(event);
+  }
+}
+
+function onBlur (ref) {
+  var target = ref.target;
+
+  if (target[KEY$2]) {
+    attr(LIST, 'hidden', 'hidden');
+    attr(LIVE, {'aria-hidden': 'true', 'aria-live': 'polite'});
+  }
+}
+
+function onInput (event) {
+  var elem = event.target;
+  var state = elem[KEY$2];
+
+  if (state) {
+    state.index = -1;
+    state.value = elem.value;
+    render(elem);
+    LIVE.textContent = (state.hits.length) + " treff";
+  }
+}
+
+function onKey$1 (event) {
+  if (event.target[KEY$2]) {
+    var elem = event.target;
+    var state = elem[KEY$2];
+    if (event.keyCode === 27) { onBlur(event); }
+    if (event.keyCode === 38 || event.keyCode === 40) {
+      event.preventDefault();
+      var hits = [].slice.call(LIST.children);
+      var selected = hits.filter(function (el) { return el.getAttribute('aria-selected') === 'true'; })[0];
+      state.index = (hits.indexOf(selected) + (event.keyCode === 38 ? -1 : 1)) % hits.length;
+      LIVE.setAttribute('aria-live', 'assertive');
+
+      render(event.target);
+      var value = (state.hits[state.index] || state).value;
+      if (state.mode === 'results') {
+        LIVE.textContent = value || 'Tomt tekstfelt';
+      } else {
+        elem.value = value;
+      }
+    }
+  }
+}
 
 if (typeof document !== 'undefined') {
   attr(LIST = document.createElement('ul'), {role: 'listbox'});
   attr(LIVE = document.createElement('span'), {'aria-hidden': 'true', 'aria-live': 'polite'});
 
-  // document.addEventListener('keydown', onKey)
-  // document.addEventListener('input', onInput)
-  // document.addEventListener('focus', onFocus, true) // Use capture to ensure event bubling
-  // document.addEventListener('blur', onBlur, true)   // Use capture to ensure event bubling
-  // document.documentElement.appendChild(LIVE)
+  document.addEventListener('keydown', onKey$1);
+  document.addEventListener('input', onInput);
+  document.addEventListener('focus', onFocus, true); // Use capture to ensure event bubling
+  document.addEventListener('blur', onBlur, true);   // Use capture to ensure event bubling
+  document.documentElement.appendChild(LIVE);
 }
 
 function input () {
@@ -175,7 +271,7 @@ function Input () {
 var BACKDROP;
 var KEY$3 = 'dialog-@VERSION';
 var KEY_UNIVERSAL = 'data-dialog-xxx';
-var FOCUSABLE_ELEMENTS = "\n  [tabindex]:not([disabled]),\n  button:not([disabled])',\n  input:not([disabled]),\n  select:not([disabled]),\n  textarea:not([disabled])";
+var FOCUSABLE_ELEMENTS = "\n  [tabindex]:not([disabled]),\n  button:not([disabled]),\n  input:not([disabled]),\n  select:not([disabled]),\n  textarea:not([disabled])";
 
 // Attempt to focus on an autofocus target first. If none exists we will focus
 // on the first focusable element.
@@ -197,7 +293,7 @@ var setActiveStateForElement = function (el) {
   return weakState(el, {
     prevActive: prevActive,
     focusBeforeModalOpen: document.activeElement
-  })
+  }).get(el)
 };
 
 // Will toggle the open state of the dialog depending on what the fn function
@@ -205,17 +301,18 @@ var setActiveStateForElement = function (el) {
 var toggle$1 = function (el, index, fn, open) {
   if ( open === void 0 ) open = true;
 
-  var active = Boolean(typeof fn === 'function' ? fn(el, index) : fn) === open;
+  var isOpen = Boolean(typeof fn === 'function' ? fn(el, index) : fn) === open;
 
-  attr(el, {open: active || null});
-  BACKDROP.hidden = Boolean(weakState(el).get('prevActive'));
+  attr(el, {open: isOpen ? '' : null});
 
-  if (active) {
+  if (isOpen) {
     el.style.zIndex = getHighestZIndex() + 1;
     setActiveStateForElement(el);
     focusOnFirstFocusableElement(el);
+    BACKDROP.hidden = Boolean(weakState(el).get('prevActive'));
     // set focus
   } else {
+    BACKDROP.hidden = true;
     // Should be able to pop when removing as the last element is the active dialog
     var state = weakState().get(el);
     // Focus on the last focused thing before the dialog modal was opened
@@ -268,21 +365,17 @@ dialog.prototype.open = function (fn) {
 dialog.prototype.close = function (fn) {
   if ( fn === void 0 ) fn = false;
 
-  this.elements.forEach(function (el, index) { return toggle$1(el, index, fn, false); });
+  this.elements.forEach(function (el, index) { return toggle$1(el, index, fn); });
   return this
 };
 
-// @TODO Should I ensure this is not called everytime this component is required?
-// The functions are scoped to the data accessible to the component, which means
-// that two separate components technically don't interfere with each other
 if (typeof document !== 'undefined' && !document.getElementById(KEY$3)) {
   attr(BACKDROP = document.createElement('div'), {hidden: true, id: KEY$3});
+  // @todo: General styling. Should be removed?
+  BACKDROP.classList.add('nrk-dialog-backdrop');
   document.addEventListener('focus', keepFocus, true);
   document.addEventListener('keydown', exitOnEscape);
   document.documentElement.appendChild(BACKDROP);
-  window.test = {
-    weakState: weakState
-  };
 }
 
 var version = '@VERSION';

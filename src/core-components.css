@@ -175,6 +175,7 @@ span.progress-bar span {
   margin: 0 auto;
   z-index: 10000;
 }
+
 .nrk-dialog-backdrop {
   display: block;
   background: #000;
@@ -186,4 +187,8 @@ span.progress-bar span {
   left: 0;
   right: 0;
   bottom: 0;
+}
+
+.nrk-dialog-backdrop[hidden] {
+  display: none;
 }

@@ -1,14 +1,11 @@
 import {attr, getElements, weakState} from './utils'
 
-// First attempt to focus on the property with autofocus.
-// If no such element exists, set focus to first focusable element.
-
 let BACKDROP
 const KEY = 'dialog-@VERSION'
 const KEY_UNIVERSAL = 'data-dialog-xxx'
 const FOCUSABLE_ELEMENTS = `
   [tabindex]:not([disabled]),
-  button:not([disabled])',
+  button:not([disabled]),
   input:not([disabled]),
   select:not([disabled]),
   textarea:not([disabled])`
@@ -36,23 +33,24 @@ const setActiveStateForElement = (el) => {
   return weakState(el, {
     prevActive,
     focusBeforeModalOpen: document.activeElement
-  })
+  }).get(el)
 }
 
 // Will toggle the open state of the dialog depending on what the fn function
 // returns or what (Boolean) value fn has.
 const toggle = (el, index, fn, open = true) => {
-  const active = Boolean(typeof fn === 'function' ? fn(el, index) : fn) === open
+  const isOpen = Boolean(typeof fn === 'function' ? fn(el, index) : fn) === open
 
-  attr(el, {open: active || null})
-  BACKDROP.hidden = Boolean(weakState(el).get('prevActive'))
+  attr(el, {open: isOpen ? '' : null})
 
-  if (active) {
+  if (isOpen) {
     el.style.zIndex = getHighestZIndex() + 1
     setActiveStateForElement(el)
     focusOnFirstFocusableElement(el)
+    BACKDROP.hidden = Boolean(weakState(el).get('prevActive'))
     // set focus
   } else {
+    BACKDROP.hidden = true
     // Should be able to pop when removing as the last element is the active dialog
     const state = weakState().get(el)
     // Focus on the last focused thing before the dialog modal was opened
@@ -101,19 +99,15 @@ dialog.prototype.open = function (fn = true) {
 }
 
 dialog.prototype.close = function (fn = false) {
-  this.elements.forEach((el, index) => toggle(el, index, fn, false))
+  this.elements.forEach((el, index) => toggle(el, index, fn))
   return this
 }
 
-// @TODO Should I ensure this is not called everytime this component is required?
-// The functions are scoped to the data accessible to the component, which means
-// that two separate components technically don't interfere with each other
 if (typeof document !== 'undefined' && !document.getElementById(KEY)) {
   attr(BACKDROP = document.createElement('div'), {hidden: true, id: KEY})
+  // @todo: General styling. Should be removed?
+  BACKDROP.classList.add('nrk-dialog-backdrop')
   document.addEventListener('focus', keepFocus, true)
   document.addEventListener('keydown', exitOnEscape)
   document.documentElement.appendChild(BACKDROP)
-  window.test = {
-    weakState
-  }
 }

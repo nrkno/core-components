@@ -24,6 +24,9 @@
     "custom-event-polyfill": "^0.3.0"
   },
   "devDependencies": {
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-register": "^6.26.0",
     "clean-css-cli": "^4.1.10",
     "expect.js": "0.3.1",
     "jsdom": "11.4.0",
