@@ -2,6 +2,17 @@ const KEY = `core-components-${Date.now()}`
 const STATES = {}
 let UUID = 0
 
+export function dispatchEvent (element, eventName, options) {
+  console.warn('TODO: polyfill customEvent')
+}
+
+export function assign (target, ...sources) {
+  sources.filter(Boolean).forEach((source) => {
+    Object.keys(source).forEach((key) => (target[key] = source[key]))
+  })
+  return target
+}
+
 export function attr (elements, attributes) {
   getElements(elements).forEach((element) => {
     Object.keys(attributes).forEach((name) => {
@@ -11,20 +22,20 @@ export function attr (elements, attributes) {
   return elements
 }
 
-export function closest (element, nodeName) {
+export const closest = (element, nodeName) => {
   for (var el = element; el; el = el.parentElement) {
     if (el.nodeName.toLowerCase() === nodeName) return el
   }
 }
 
-export const getElements = (elements) => {
+export function getElements (elements) {
   if (typeof elements === 'string') return getElements(document.querySelectorAll(elements))
-  if (elements.length) return [].slice.call(elements)
-  if (elements.nodeType) return [elements]
-  throw new Error('"elements" must be of type nodeList, array, selector string or single HTMLElement')
+  if (elements && elements.length) return [].slice.call(elements)
+  if (elements && elements.nodeType) return [elements]
+  return []
 }
 
-export const weakState = (element, object, initial = {}) => {
+export function weakState (element, object, initial = {}) {
   const uuid = element[KEY] || (element[KEY] = ++UUID)
   const state = STATES[uuid] || (STATES[uuid] = initial)
 
@@ -37,6 +48,3 @@ export const weakState = (element, object, initial = {}) => {
 
   return state
 }
-
-export const queryAll = (selector, context = document) =>
-  [].slice.call(context.querySelectorAll(selector))

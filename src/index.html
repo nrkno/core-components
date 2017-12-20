@@ -60,11 +60,9 @@
     <details>
       <summary><h3>Use from NPM</h3> - recommended</summary>
       <pre class="prettyprint">npm install @nrk/core-components --save</pre>
-      <pre class="prettyprint">import components from '@nrk/core-components'                     // all JS comonents...
-import components from '@nrk/core-components/core-components.jsx' // ...or all JSX comonents
-import input from '@nrk/core-components/input'                    // ...or individual JS component (recommended)
-import Input from '@nrk/core-components/input.jsx'                // ...or individual JSX component (recommended)
-import style from '@nrk/core-components/style'                    // ...and optionally styling</pre>
+      <pre class="prettyprint">import components from '@nrk/core-components'    // all JS comonents...
+import {input} from '@nrk/core-components'       // ...or individual JS component (recommended)
+import {Input} from '@nrk/core-components'       // ...or individual JSX component (recommended)</pre>
     </details>
     <details>
       <summary><h3>Use with Require.js</h3></summary>
@@ -72,9 +70,6 @@ import style from '@nrk/core-components/style'                    // ...and opti
 &lt;script&gt;
 require(['https://static.nrk.no/core-components/X.X.X/core-components.min.js'], function(components) { // all...
   /* use components.input etc. here */
-});
-require(['https://static.nrk.no/core-components/X.X.X/input.min.js'], function(input) { // ...or individual
-  /* use input here */
 });
 &lt;/script&gt;</pre>
     </details>
@@ -119,8 +114,8 @@ require(['https://static.nrk.no/core-components/X.X.X/input.min.js'], function(i
       if a <code class="prettyprint">&lt;details&gt;</code> element is open.
     </p>
     <h3>Demo + usage</h3><br>
-    <details>
-      <summary>Use with JS/HTML</summary>
+    <detail>
+      <summar>Use with JS/HTML</summar>
       <p>
         Since this is an HTML-element, there is no JS methods to call. Simply load <code class="prettyprint">core-components</code>
         or <code class="prettyprint">core-components/details</code>, make sure only HTML-elements are
@@ -139,16 +134,21 @@ require(['https://static.nrk.no/core-components/X.X.X/input.min.js'], function(i
   &lt;summary role="button" tabindex="0" aria-expanded="true"&gt;Open details&lt;/summary&gt;
   &lt;p&gt;Innhold&lt;/p&gt;
 &lt;details&gt;</pre>
-    </details>
-    <details>
-      <summary>Use with JSX</summary>
-      <pre class="prettyprint">import Details from '@nrk/core-components/details.jsx'
+    </detail>
+    <div id="docs-react-details"></div>
+    <script type="text/babel">
+      const {Details} = window.coreComponents
+      ReactDOM.render(
+        <Details>
+          <summary>Use with JSX</summary>
+          <pre className="prettyprint">{`import {Details} from '@nrk/core-components'
 
-&lt;Details open={true|false} onToggle={function(){}}&gt;
-  &lt;summary&gt;React/JSX&lt;/summary&gt;  // Note: aria-attributes are automatically added
-  &lt;p&gt;Even more details.&lt;/p&gt;
-&lt;/Details&gt;</pre>
-    </details>
+<Details open={true|false} onToggle={function(){}}>
+  <summary>React/JSX</summary>  // Note: aria-attributes are automatically added
+  <p>Even more details.</p>
+</Details>`}</pre>
+        </Details>, document.getElementById('docs-react-details'))
+    </script>
 
     <h3>Events</h3>
     <pre class="prettyprint">document.addEventListener('toggle', function (event) {}, true) // true = use capture since toggle event does not bubble</pre>
@@ -353,30 +353,24 @@ summary[aria-expanded="true"]::before { /* Style open details marker */ }</pre>
   <!-- JS setup -->
   <script src="core-components.min.js"></script>
   <script>
-    window.coreComponents.details('details')
+    document.addEventListener('toggle', (event) => {
+      console.log('toggle', event.target)
+    }, true)
+    window.coreComponents.details('detail')
   </script>
 
   <!-- JSX setup -->
-  <!-- <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
   <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
   <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
-  <script src="core-components.jsx.js"></script>
-  <script type="text/babel">
-    const {Details} = window.coreComponents
-    ReactDOM.render(
-      <Details>
-        <summary>React/JSX</summary>
-        <p>Even more details.</p>
-      </Details>, document.getElementById('docs-react-details'))
-  </script> -->
 
   <!-- RequireJS setup -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.5/require.js"></script>
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.5/require.js"></script>
   <script>
-    requirejs(['core-components.min.js'], function (components) {
+    requirejs(['core-components.js'], function (components) {
       console.log('RequireJS', components)
     })
-  </script>
+  </script> -->
 
   <!-- Docs setup -->
   <script async src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>

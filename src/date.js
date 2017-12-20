@@ -1,4 +1,5 @@
 /* eslint-disable */
+// http://eureka2.github.io/ab-datepicker/
 /*!
  * Accessible Datepicker v2.1.9
  * Copyright 2015-2017 Eureka2, Jacques Archimède.

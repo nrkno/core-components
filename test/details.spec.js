@@ -1,6 +1,8 @@
-const details = require('../details')
-const expect = require('expect.js')
-const {JSDOM} = require('jsdom')
+/* globals describe, it, beforeEach, afterEach */
+
+import details from '../src/details'
+import expect from 'expect.js'
+import {JSDOM} from 'jsdom'
 
 const setupDom = () => {
   const dom = new JSDOM(`<!doctype html><head></head><body>mock document</body></html>`)
