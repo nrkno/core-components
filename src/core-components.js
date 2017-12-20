@@ -1,0 +1,6 @@
+export const version = '@VERSION'
+export {details} from './details'
+export {Details} from './details.jsx'
+export {input} from './input'
+export {Input} from './input.jsx'
+export {dialog} from './dialog'

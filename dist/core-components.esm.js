@@ -1,9 +1,3 @@
-(function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
-	typeof define === 'function' && define.amd ? define(['exports'], factory) :
-	(factory((global.coreComponents = {})));
-}(this, (function (exports) { 'use strict';
-
 var KEY$1 = "core-components-" + (Date.now());
 var STATES = {};
 var UUID = 0;
@@ -293,14 +287,4 @@ if (typeof document !== 'undefined' && !document.getElementById(KEY$3)) {
 
 var version = '@VERSION';
 
-exports.version = version;
-exports.details = details;
-exports.Details = Details;
-exports.input = input;
-exports.Input = Input;
-exports.dialog = dialog;
-
-Object.defineProperty(exports, '__esModule', { value: true });
-
-})));
-//# sourceMappingURL=core-components.min.js.map
+export { version, details, Details, input, Input, dialog };

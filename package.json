@@ -4,56 +4,40 @@
   "author": "NRK <opensource@nrk.no> (https://www.nrk.no/)",
   "version": "1.0.0",
   "license": "MIT",
-  "main": "dist/core-components.min.js",
+  "main": "dist/core-components.cjs.js",
+  "module": "dist/core-components.esm.js",
+  "browser": "dist/core-components.min.js",
   "scripts": {
-    "build": "rimraf dist/ && cpx 'index.html' dist/ && webpack",
-    "lint": "standard **/*.js",
+    "build": "cleancss -o dist/core-components.min.css src/core-components.css && rollup --config",
+    "prebuild": "rimraf dist/* && cp src/*.{html,css} dist/",
     "prepare": "npm run build",
     "publish:patch": "npm version patch -m 'Release patch %s' && npm run push",
     "publish:minor": "npm version minor -m 'Release minor %s' && npm run push",
     "publish:major": "npm version major -m 'Release major %s' && npm run push",
     "push": "git push && git push --tags && npm publish",
-    "start": "NODE_ENV=development webpack-dev-server -d",
-    "test": "npm run lint && NODE_PATH=./ mocha test/**/*.spec.js*",
+    "start": "rollup --config --watch",
+    "test": "standard src/*.js && mocha test/**/*.spec.js*",
     "test:watch": "mocha --watch test/**/*.spec.js*",
     "static-publish": "static-publish publish --directory ./dist --package ./package.json --verbose --latest"
   },
   "dependencies": {
-    "custom-event-polyfill": "^0.3.0",
-    "prop-types": "^15.6.0",
-    "react": "^15.6.1",
-    "react-dom": "^15.6.1"
+    "custom-event-polyfill": "^0.3.0"
   },
   "devDependencies": {
-    "babel-core": "^6.26.0",
-    "babel-loader": "^7.1.2",
-    "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "babel-preset-env": "^1.6.1",
-    "babel-preset-react": "^6.24.1",
-    "cpx": "^1.5.0",
+    "clean-css-cli": "^4.1.10",
     "expect.js": "0.3.1",
     "jsdom": "11.4.0",
     "mocha": "4.0.1",
     "rimraf": "^2.6.2",
-    "standard": "^10.0.3",
-    "webpack": "^3.10.0",
-    "webpack-dev-server": "^2.9.7"
+    "rollup": "^0.50.0",
+    "rollup-plugin-buble": "^0.18.0",
+    "rollup-plugin-replace": "^2.0.0",
+    "rollup-plugin-serve": "^0.4.2",
+    "rollup-plugin-uglify": "^2.0.1",
+    "standard": "^10.0.3"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nrkno/core-components.git"
-  },
-  "standard": {
-    "globals": [
-      "describe",
-      "it",
-      "beforeEach",
-      "afterEach",
-      "before",
-      "after"
-    ],
-    "ignore": [
-      "dist"
-    ]
   }
 }
