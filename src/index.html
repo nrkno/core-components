@@ -184,7 +184,7 @@ summary[aria-expanded="true"]::before { /* Style open details marker */ }</pre>
       
       <button class="close">Lukk</button>
       <input type="text" />
-      <button>Godta</button>
+      <button class="accept">Åpne ny dialog</button>
     </div>
 
     <div id="docs-dialog-nested" class="nrk-dialog" aria-label="En nested dialog">
@@ -193,16 +193,6 @@ summary[aria-expanded="true"]::before { /* Style open details marker */ }</pre>
       <p>Dette kunne vært noe lorem ipsum text. Det burde være lengere enn tittelen :).</p>
 
       <button class="close">Lukk</button>
-    </div>
-
-    <h3>Dialog in React</h3>
-    <div id="docs-react-dialog" class="nrk-dialog" aria-label="dialog test">
-        <h1>Her er en React tittel</h1>
-        <p>Her er det kanskje litt mer innhold som beskriver et eller annet valg du må ta.</p>
-        
-        <button class="close">Lukk</button>
-        <input type="text"/>
-        <button class="accept">Godta</button>
     </div>
 
     <pre class="prettyprint">
@@ -421,7 +411,7 @@ window.coreComponents.dialog('.nrk-dialog').close();
     //   const {details, dialog, input} = event.detail;
       
       const showModalBtn = document.querySelector('.dialog-showModal');
-      const secondShowModalBtn = document.querySelector('#docs-react-dialog button.accept');
+      const secondShowModalBtn = document.querySelector('#docs-dialog button.accept');
       const showBtn = document.querySelector('.dialog-show');
       const dialogEl = document.querySelector('[role="dialog"]');
       const nestedDialogEl = document.querySelector('#docs-dialog-nested');
@@ -437,7 +427,7 @@ window.coreComponents.dialog('.nrk-dialog').close();
       showModalBtn.addEventListener('click', (e) => {
         e.preventDefault();
         // dialogInstance.showModal();
-        window.coreComponents.dialog('#docs-react-dialog').open()
+        window.coreComponents.dialog('#docs-dialog').open()
       });
       
       [].forEach.call(closeBtns, (closeBtn) => {
