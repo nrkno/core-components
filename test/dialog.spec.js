@@ -1,8 +1,7 @@
 /* globals describe, it, beforeEach, afterEach */
-// import {dialog} from '../src/dialog'
 import expect from 'expect.js'
 import {JSDOM} from 'jsdom'
-import { dialog, createBackdrop } from '../src/dialog'
+import { dialog, createBackdrop } from '../src/dialog'
 
 /* eslint-disable no-unused-expressions */
 const DIALOG_ID = 'docs-dialog'
@@ -22,7 +21,6 @@ const setupDom = () => {
   global.document = dom.window.document
 }
 
-console.log('starting DIALOG')
 const teardownDom = () => {
   delete global.window
   delete global.document
