@@ -27,7 +27,6 @@ const getActive = () => document.querySelector(`[${KEY_UNIVERSAL}]`)
 
 const setActiveStateForElement = (el) => {
   const prevActive = getActive()
-  // attr(prevActive, {KEY_UNIVERSAL: null})
   prevActive && prevActive.removeAttribute(KEY_UNIVERSAL)
   el.setAttribute(KEY_UNIVERSAL, '')
 

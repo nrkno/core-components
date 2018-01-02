@@ -287,7 +287,6 @@ var getActive = function () { return document.querySelector(("[" + KEY_UNIVERSAL
 
 var setActiveStateForElement = function (el) {
   var prevActive = getActive();
-  // attr(prevActive, {KEY_UNIVERSAL: null})
   prevActive && prevActive.removeAttribute(KEY_UNIVERSAL);
   el.setAttribute(KEY_UNIVERSAL, '');
 
