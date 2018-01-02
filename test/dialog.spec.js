@@ -2,6 +2,7 @@
 // import {dialog} from '../src/dialog'
 import expect from 'expect.js'
 import {JSDOM} from 'jsdom'
+import { dialog, createBackdrop } from '../src/dialog'
 
 /* eslint-disable no-unused-expressions */
 const DIALOG_ID = 'docs-dialog'
@@ -21,16 +22,18 @@ const setupDom = () => {
   global.document = dom.window.document
 }
 
-// const teardownDom = () => {
-//   delete global.window
-//   delete global.document
-// }
-setupDom()
-// @todo: this is stupid. Need to find a better way to ensure that document is defined
-// when initializing dialog and adding backdrop
-let dialog = require('../src/dialog').dialog
+console.log('starting DIALOG')
+const teardownDom = () => {
+  delete global.window
+  delete global.document
+}
 
 describe('dialog', () => {
+  beforeEach(() => {
+    setupDom()
+    createBackdrop()
+  })
+
   it('should exist', () => {
     expect(dialog).to.be.a('function')
   })
@@ -87,7 +90,7 @@ describe('dialog', () => {
     })
   })
 
-  // afterEach(teardownDom)
+  afterEach(teardownDom)
 })
 
 /* eslint-enable no-unused-expressions */

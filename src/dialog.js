@@ -108,11 +108,15 @@ dialog.prototype.close = function (fn = false) {
   return this
 }
 
-if (typeof document !== 'undefined' && !document.getElementById(KEY)) {
+export function createBackdrop () {
   attr(BACKDROP = document.createElement('div'), {hidden: true, id: KEY})
   // @todo: General styling. Should be removed?
   BACKDROP.classList.add('nrk-dialog-backdrop')
   document.addEventListener('focus', keepFocus, true)
   document.addEventListener('keydown', exitOnEscape)
   document.documentElement.appendChild(BACKDROP)
+}
+
+if (typeof document !== 'undefined' && !document.getElementById(KEY)) {
+  createBackdrop()
 }
