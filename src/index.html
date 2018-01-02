@@ -37,6 +37,7 @@
   <ul class="docs-menu nrk-color-shade-1">
     <li><a href="#">Getting started</a></li>
     <li><a href="#details">Details</a></li>
+    <li><a href="#dialog">Dialog</a></li>
     <li><a href="#dropdown">Dropdown</a></li>
     <li><a href="#select">Select</a></li>
     <li><a href="#input">Input</a></li>
@@ -160,7 +161,68 @@ require(['https://static.nrk.no/core-components/X.X.X/core-components.min.js'], 
     <pre class="prettyprint">summary[aria-expanded="false"]::before { /* Style closed details marker */ }
 summary[aria-expanded="true"]::before { /* Style open details marker */ }</pre>
 
+    <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
+    <!-- DIALOG -->
+    <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
 
+    <h2 id="dialog">Dialog</h2>
+    <p>
+        <code class="prettyprint">&lt;dialog&gt;</code> is an element with which the user interacts with to perform some task or descision.
+        Currently <code class="prettyprint">&lt;dialog&gt;</code> is not implemented in all major browsers (by default). In order to provide
+        a consistent experience across browsers our component omits the usage of the <code class="prettyprint">&lt;dialog&gt;</code> element to avoid
+        the implementation done by the browser. 
+  
+        For more information about the dialog element visit the <a href="https://www.w3.org/TR/html52/interactive-elements.html#the-dialog-element">W3C HTML 5.2 specification</a>
+    </p>
+
+    <h3>Demo + usage</h3><br>
+
+    <button class="dialog-showModal">Show modal</button>
+    <div id="docs-dialog" class="nrk-dialog" role="dialog" tabindex="-1" aria-modal="true" aria-label="dialog test">
+      <h1>Her er en tittel</h1>
+      <p>Her er det kanskje litt mer innhold som beskriver et eller annet valg du må ta.</p>
+      
+      <button class="close">Lukk</button>
+      <input type="text" />
+      <button>Godta</button>
+    </div>
+
+    <div id="docs-dialog-nested" class="nrk-dialog" aria-label="En nested dialog">
+      <h2>Dette er en dialog som er triggered av noe annet</h2>
+
+      <p>Dette kunne vært noe lorem ipsum text. Det burde være lengere enn tittelen :).</p>
+
+      <button class="close">Lukk</button>
+    </div>
+
+    <h3>Dialog in React</h3>
+    <div id="docs-react-dialog" class="nrk-dialog" aria-label="dialog test">
+        <h1>Her er en React tittel</h1>
+        <p>Her er det kanskje litt mer innhold som beskriver et eller annet valg du må ta.</p>
+        
+        <button class="close">Lukk</button>
+        <input type="text"/>
+        <button class="accept">Godta</button>
+    </div>
+
+    <pre class="prettyprint">
+// HTML
+&lt;div role="dialog" class="nrk-dialog" aria-label="This is required!"&gt;
+  &lt;h2&gt;Innhold i dialog&lt;/h2&gt;
+  &lt;button&gt;Godta&lt;/button&gt;
+  &lt;button&gt;Avslå&lt;/button&gt;
+&lt;/div&gt;
+
+// CODE
+// Initialize a specific component or multiple components
+window.coreComponents.dialog('.nrk-dialog');
+
+// Open the dialog
+window.coreComponents.dialog('.nrk-dialog').open();
+
+// Close the dialog
+window.coreComponents.dialog('.nrk-dialog').close();
+    </pre>
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
     <!-- DROPDOWN -->
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
@@ -348,40 +410,6 @@ summary[aria-expanded="true"]::before { /* Style open details marker */ }</pre>
     <p>UU. That's why.</p>
     <h3>Why not use web components?</h3>
     <p>They are <a target="_blank" href="https://hacks.mozilla.org/2015/06/the-state-of-web-components/">not mature for production usage</a> yet.</p>
-      
-    <button class="dialog-showModal">Show modal</button>
-    <button class="dialog-show">Show</button>
-    <div id="docs-dialog" class="nrk-dialog" role="dialog" tabindex="-1" aria-modal="true" aria-label="dialog test">
-      <h1>Her er en tittel</h1>
-      <p>Her er det kanskje litt mer innhold som beskriver et eller annet valg du må ta.</p>
-      
-      <button class="close">Lukk</button>
-      <input type="text" />
-      <button>Godta</button>
-    </div>
-
-
-    <button>Test focus</button>
-
-    <div id="docs-dialog-nested" class="nrk-dialog">
-      <h2>Dette er en dialog som er triggered av noe annet</h2>
-
-      <p>Dette kunne vært noe lorem ipsum text. Det burde være lengere enn tittelen :).</p>
-
-      <button class="close">Lukk</button>
-    </div>
-
-    <h3>Dialog in React</h3>
-    <div id="docs-react-dialog" class="nrk-dialog">
-        <h1>Her er en React tittel</h1>
-        <p>Her er det kanskje litt mer innhold som beskriver et eller annet valg du må ta.</p>
-        
-        <button class="close">Lukk</button>
-        <input type="text" />
-        <button class="accept">Godta</button>
-    </div>
-
-    <button>Test focus</button>
   </article>
 
   <!-- JS setup -->
@@ -389,7 +417,7 @@ summary[aria-expanded="true"]::before { /* Style open details marker */ }</pre>
   <script>
     // window.coreComponents.details('details')
     // window.addEventListener('core-components', function (event) {
-    //   consol0e.log('core component event: ', event.detail);
+    //   console.log('core component event: ', event.detail);
     //   const {details, dialog, input} = event.detail;
       
       const showModalBtn = document.querySelector('.dialog-showModal');
@@ -399,6 +427,8 @@ summary[aria-expanded="true"]::before { /* Style open details marker */ }</pre>
       const nestedDialogEl = document.querySelector('#docs-dialog-nested');
       const closeBtns = document.querySelectorAll('.nrk-dialog button.close');
       
+      // Initialize the dialogs
+      window.coreComponents.dialog('.nrk-dialog');
 
       secondShowModalBtn.addEventListener('click', (e) => {
         window.coreComponents.dialog(nestedDialogEl).open();
