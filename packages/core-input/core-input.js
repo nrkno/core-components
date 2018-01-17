@@ -1,4 +1,4 @@
-import {attr} from './utils'
+import {attr} from '../utils'
 
 const KEY = 'input-@VERSION'
 let LIST // Element to contain list
@@ -93,6 +93,10 @@ function onKey (event) {
 if (typeof document !== 'undefined') {
   attr(LIST = document.createElement('ul'), {role: 'listbox'})
   attr(LIVE = document.createElement('span'), {'aria-hidden': 'true', 'aria-live': 'polite'})
+
+  // document.head.insertAdjacentElement('afterbegin', `<style>
+  //   .core-input { background: none }
+  // </style>`)
 
   // document.addEventListener('keydown', onKey)
   // document.addEventListener('input', onInput)

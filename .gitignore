@@ -1,6 +1,7 @@
 .DS_Store
 .npm
-/node_modules
-/npm-debug*
-/yarn-error*
+.DS_Store
+node_modules/*
+packages/**/node_modules/*
+npm-debug.log*
 *.tar
