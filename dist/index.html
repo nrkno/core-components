@@ -36,8 +36,8 @@
 <body>
   <ul class="docs-menu nrk-color-shade-1">
     <li><a href="#">Getting started</a></li>
-    <li><a href="#details">Details</a></li>
-    <li><a href="#dropdown">Dropdown</a></li>
+    <li><a href="#dialog">Dialog</a></li>
+    <li><a href="#expand">Expand/Dropdown</a></li>
     <li><a href="#select">Select</a></li>
     <li><a href="#input">Input</a></li>
     <li><a href="#date">Date</a></li>
@@ -53,9 +53,8 @@
     <h2>@nrk/core-components <!--version--></h2>
     <h3>Getting started</h3>
     <p>
-      core-components does not style any elements.
-      It is purely a layer of functionality around some basic components,
-      making sure accessibility and extensibility is easy.
+      core-components provides a simple and accessbile layer of functionality
+      and basic styling - making often used components a breeze.
     </p>
     <details>
       <summary><h3>Use from NPM</h3> - recommended</summary>
@@ -97,70 +96,60 @@ require(['https://static.nrk.no/core-components/X.X.X/core-components.min.js'], 
       <a class="nrk-button" target="_top" href="https://github.com/nrkno/core-components/releases/latest">View latest release</a>
     </p>
 
-
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
-    <!-- DETAILS -->
+    <!-- DIALOG -->
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
 
-    <h2 id="details">Details <small class="docs-pill">release candidate</small></h2>
+    <h2 id="dialog">Dialog</h2>
     <p>
-      <a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details"><code class="prettyprint">&lt;details&gt;</code></a>
-      is a native HTML element for expanding / collapsing content. Our component
-      <a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details#Example_with_styling">normalizes styling</a> and polyfills
-      <a target="_blank" href="http://accessibleculture.org/articles/2012/03/screen-readers-and-details-summary/">lacking accessibility</a> and
-      <a target="_blank" href="https://caniuse.com/#feat=details">browser support</a>. Since polyfilling the DOM property
-      <a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLDetailsElement"><code class="prettyprint">HTMLDetailsElement.open</code></a>
-      may conflict with other DOM APIs, use instead <code class="prettyprint">detailsElement.hasAttribute('open')</code> to check
-      if a <code class="prettyprint">&lt;details&gt;</code> element is open.
+      <code class="prettyprint">&lt;dialog&gt;</code> is an element with which the user interacts with to perform some task or descision.
+      Currently <code class="prettyprint">&lt;dialog&gt;</code> is not implemented in all major browsers. In order to provide
+      a consistent experience across browsers our component omits the usage of the <code class="prettyprint">&lt;dialog&gt;</code> element to avoid
+      the implementation done by the browser. 
+    </p>  
+    <p>
+      For more information about the dialog element visit the <a href="https://www.w3.org/TR/html52/interactive-elements.html#the-dialog-element">W3C HTML 5.2 specification</a>.<br />
+      For more information about WAI-ARIA practices for the dialog element visit the <a href="https://www.w3.org/TR/wai-aria-practices-1.1/#dialog_modal">W3C WAI-ARIA Authoring Practices 1.1</a>
     </p>
+
     <h3>Demo + usage</h3><br>
-    <detail>
-      <summar>Use with JS/HTML</summar>
-      <p>
-        Since this is an HTML-element, there is no JS methods to call. Simply load <code class="prettyprint">core-components</code>
-        or <code class="prettyprint">core-components/details</code>, make sure only HTML-elements are
-        direct children of <code class="prettyprint">&lt;details&gt;</code>,
-        and add <code class="prettyprint">role</code>, <code class="prettyprint">tabindex</code>
-        and <code class="prettyprint">aria-expanded</code> to <code class="prettyprint">&lt;summary&gt;</code>:
-      </p>
-      <pre class="prettyprint">&lt;!-- Example: closed --&gt;
-&lt;details&gt;
-  &lt;summary role="button" tabindex="0" aria-expanded="false"&gt;Closed details&lt;/summary&gt;
-  &lt;p&gt;Innhold&lt;/p&gt;
-&lt;details&gt;
 
-&lt;!-- Example: open --&gt;
-&lt;details open&gt;
-  &lt;summary role="button" tabindex="0" aria-expanded="true"&gt;Open details&lt;/summary&gt;
-  &lt;p&gt;Innhold&lt;/p&gt;
-&lt;details&gt;</pre>
-    </detail>
-    <div id="docs-react-details"></div>
-    <script type="text/babel">
-      const {Details} = window.coreComponents
-      ReactDOM.render(
-        <Details>
-          <summary>Use with JSX</summary>
-          <pre className="prettyprint">{`import {Details} from '@nrk/core-components'
+    <button class="dialog-showModal">Show modal</button>
+    <div id="docs-dialog" class="nrk-dialog" role="dialog" tabindex="-1" aria-modal="true" aria-label="dialog test">
+      <h1>Her er en tittel</h1>
+      <p>Her er det kanskje litt mer innhold som beskriver et eller annet valg du må ta.</p>
+      
+      <button class="close">Lukk</button>
+      <input type="text" />
+      <button class="accept">Åpne ny dialog</button>
+    </div>
 
-<Details open={true|false} onToggle={function(){}}>
-  <summary>React/JSX</summary>  // Note: aria-attributes are automatically added
-  <p>Even more details.</p>
-</Details>`}</pre>
-        </Details>, document.getElementById('docs-react-details'))
-    </script>
+    <div id="docs-dialog-nested" class="nrk-dialog" aria-label="En nested dialog">
+      <h2>Dette er en dialog som er triggered av noe annet</h2>
 
-    <h3>Events</h3>
-    <pre class="prettyprint">document.addEventListener('toggle', function (event) {}, true) // true = use capture since toggle event does not bubble</pre>
+      <p>Dette kunne vært noe lorem ipsum text. Det burde være lengere enn tittelen :).</p>
 
-    <h3>Styling</h3>
-    <p>
-      Since styling the marker (traingle) of <code class="prettyprint">&lt;details&gt;</code>
-    </p>
-    <pre class="prettyprint">summary[aria-expanded="false"]::before { /* Style closed details marker */ }
-summary[aria-expanded="true"]::before { /* Style open details marker */ }</pre>
+      <button class="close">Lukk</button>
+    </div>
 
+    <pre class="prettyprint">
+// HTML
+&lt;div role="dialog" class="nrk-dialog" aria-label="This is required!"&gt;
+  &lt;h2&gt;Innhold i dialog&lt;/h2&gt;
+  &lt;button&gt;Godta&lt;/button&gt;
+  &lt;button&gt;Avslå&lt;/button&gt;
+&lt;/div&gt;
 
+// CODE
+// Initialize a specific component or multiple components
+window.coreComponents.dialog('.nrk-dialog');
+
+// Open the dialog
+window.coreComponents.dialog('.nrk-dialog').open();
+
+// Close the dialog
+window.coreComponents.dialog('.nrk-dialog').close();
+    </pre>
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
     <!-- DROPDOWN -->
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
@@ -168,7 +157,13 @@ summary[aria-expanded="true"]::before { /* Style open details marker */ }</pre>
     <h2 id="dropdown">Dropdown</h2>
     <p>
       <em>Todo: aria-expanded + sibling. See also select</em>
+      Use the <code class="prettyprint">aria-expanded</code> attribute
+      as well as <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Adjacent_sibling_selectors" target="_blank">adjacent sibiling selector</a>
+      for styling. Example:
     </p>
+    <pre class="prettyprint">.my-expander[aria-expanded="true"]::before { content: '-' }               /* Add minus before open expander */
+.my-expander[aria-expanded="false"]::before { content: '+' }              /* Add pluss before closed expander */
+.my-expander[aria-expanded="false"] + .my-expander-body { display: none } /* Hide closed expand body */</pre>
     <h3>Demo</h3><br>
     <button class="nrk-button" aria-controls="/* TODO */" aria-haspopup="true" aria-expanded="false">Dropdown <svg width="15" height="15" aria-hidden="true"><use xlink:href="#nrk-chevron-down" /></svg></button>
     <ul class="nrk-dropdown">
@@ -348,30 +343,6 @@ summary[aria-expanded="true"]::before { /* Style open details marker */ }</pre>
     <p>UU. That's why.</p>
     <h3>Why not use web components?</h3>
     <p>They are <a target="_blank" href="https://hacks.mozilla.org/2015/06/the-state-of-web-components/">not mature for production usage</a> yet.</p>
-      
-    <button class="dialog-showModal">Show modal</button>
-    <button class="dialog-show">Show</button>
-    <div id="docs-dialog" class="nrk-dialog" role="dialog" tabindex="-1" aria-modal="true" aria-label="dialog test">
-      <h1>Her er en tittel</h1>
-      <p>Her er det kanskje litt mer innhold som beskriver et eller annet valg du må ta.</p>
-      
-      <button>Lukk</button>
-      <input type="text" />
-      <button>Godta</button>
-    </div>
-    <button>Test focus</button>
-
-    <h3>Dialog in React</h3>
-    <div id="docs-react-dialog" class="nrk-dialog">
-        <h1>Her er en React tittel</h1>
-        <p>Her er det kanskje litt mer innhold som beskriver et eller annet valg du må ta.</p>
-        
-        <button class="close">Lukk</button>
-        <input type="text" />
-        <button class="accept">Godta</button>
-    </div>
-
-    <button>Test focus</button>
   </article>
 
   <!-- JS setup -->
@@ -379,34 +350,39 @@ summary[aria-expanded="true"]::before { /* Style open details marker */ }</pre>
   <script>
     // window.coreComponents.details('details')
     // window.addEventListener('core-components', function (event) {
-    //   consol0e.log('core component event: ', event.detail);
+    //   console.log('core component event: ', event.detail);
     //   const {details, dialog, input} = event.detail;
-      
+      console.log('coreComponents: ', coreComponents);
       const showModalBtn = document.querySelector('.dialog-showModal');
+      const secondShowModalBtn = document.querySelector('#docs-dialog button.accept');
       const showBtn = document.querySelector('.dialog-show');
       const dialogEl = document.querySelector('[role="dialog"]');
-      const closeBtn = document.querySelector('#docs-react-dialog button');
+      const nestedDialogEl = document.querySelector('#docs-dialog-nested');
+      const closeBtns = document.querySelectorAll('.nrk-dialog button.close');
+      
+      // Initialize the dialogs
+      coreComponents.dialog('.nrk-dialog');
 
-      // const dialogInstance = new window.coreComponents.dialog(dialogEl);
+      secondShowModalBtn.addEventListener('click', (e) => {
+        coreComponents.dialog(nestedDialogEl).open();
+      });
+      
       showModalBtn.addEventListener('click', (e) => {
         e.preventDefault();
         // dialogInstance.showModal();
-        window.coreComponents.dialog('#docs-react-dialog').open()
+        coreComponents.dialog('#docs-dialog').open()
       });
-      // showBtn.addEventListener('click', (e) => {
-      //   e.preventDefault();
-      //   dialogInstance.show();
-      // });
-      closeBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        // dialogInstance.close();
-        window.coreComponents.dialog('#docs-react-dialog').close()
+      
+      [].forEach.call(closeBtns, (closeBtn) => {
+        closeBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          coreComponents.dialog(e.target.parentElement).close()
+        });
       });
-    // })
     document.addEventListener('toggle', (event) => {
-      console.log('toggle', event.target)
-    }, true)
-    window.coreComponents.details('detail')
+      console.log('toggle')
+    })
+    coreComponents.expand('.nrk-expand')
   </script>
 
   <!-- JSX setup -->

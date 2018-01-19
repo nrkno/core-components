@@ -24,6 +24,11 @@
   padding-right: 2em;
 }
 
+.nrk-expand { display: block; cursor: pointer; touch-action: manipulation }
+.nrk-expand::before { content: ''; padding-right: 1em; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M0 0h10L5 10'/%3E%3C/svg%3E") 0 45%/50% no-repeat }
+.nrk-expand[aria-expanded="false"]::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M0 0l10 5-10 5'/%3E%3C/svg%3E") }
+.nrk-expand[aria-expanded="false"] + * { display: none }
+
 .core-input ul {
   list-style: none;
   position: absolute;
@@ -55,13 +60,17 @@
   list-style: none;
   margin: 0;
   padding: 0;
-  transition: .2s;
+  color: #333;
   background: #fff;
+  border-radius: 3px;
+  box-shadow: 0 5px 15px rgba(0,0,0,.3);
+  transition: .2s;
 }
 [aria-expanded="false"] + .nrk-dropdown {
   opacity: 0;
   transform: translateY(-5px);
 }
+.nrk-dropdown a { display: block; text-decoration: none; padding: 5px 7px; box-shadow: 0 1px #eee }
 
 .nrk-progress:not(value) {}  /* Styling indeterminate progress bar */
 .nrk-progress[value] {       /* Styling determinate progress bar */
@@ -143,14 +152,38 @@ span.progress-bar span {
 .nrk-table thead th:first-child { left: 0; z-index: 3 }
 .nrk-table th:first-child { left: 0 }
 
-/*.nrk-table thead th:first-child {
-  left: 0;
-  z-index: 3;
+.nrk-dialog {
+  background: #fff;
+  border: solid 2px #000;
+  padding: 10px;
+  margin: 0;
+  display: none;
 }
-.nrk-table tbody th:first-of-type {
-  position: -webkit-sticky;
-  position: sticky;
-  left: -1px;
-  text-align: left;
-  background-color: #eee;
-}*/
+.nrk-dialog[open] {
+  display: block;
+  position: fixed;
+  top: 5%;
+  left: 0;
+  right: 0;
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+  z-index: 10000;
+}
+
+.nrk-dialog-backdrop {
+  display: block;
+  background: #000;
+  opacity: 0.3;
+  z-index: 9990;
+  margin: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.nrk-dialog-backdrop[hidden] {
+  display: none;
+}

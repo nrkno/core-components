@@ -2,10 +2,6 @@ const KEY = `core-components-${Date.now()}`
 const STATES = {}
 let UUID = 0
 
-export function dispatchEvent (element, eventName, options) {
-  console.warn('TODO: polyfill customEvent')
-}
-
 export function assign (target, ...sources) {
   sources.filter(Boolean).forEach((source) => {
     Object.keys(source).forEach((key) => (target[key] = source[key]))

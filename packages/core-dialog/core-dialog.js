@@ -1,4 +1,4 @@
-import {attr, getElements, weakState} from './utils'
+import {attr, getElements, weakState} from '../utils'
 
 let BACKDROP
 const KEY = 'dialog-@VERSION'

@@ -1,6 +1,9 @@
-export const version = '@VERSION'
-export {details} from './details'
-export {Details} from './details.jsx'
-export {input} from './input'
-export {Input} from './input.jsx'
-export {dialog} from './dialog'
+export {version} from '../package.json'
+// Commented out this component because currently causing error when run with uglify plugin:
+// "In strict mode code, functions can only be declared at top level or immediately within another function."
+// export {expand} from '../packages/core-expand/core-expand'
+// export {Expand} from '../packages/core-expand/core-expand.jsx'
+export {input} from '../packages/core-input/core-input'
+export {Input} from '../packages/core-input/core-input.jsx'
+export {dialog} from '../packages/core-dialog/core-dialog'
+export {Dialog} from '../packages/core-dialog/core-dialog.jsx'
