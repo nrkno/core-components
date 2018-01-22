@@ -42,14 +42,15 @@ const toggle = (el, index, fn, open = true) => {
   const isOpen = Boolean(typeof fn === 'function' ? fn(el, index) : fn) === open
 
   attr(el, {open: isOpen ? '' : null})
-
   if (isOpen) {
     el.style.zIndex = getHighestZIndex() + 1
     setActiveStateForElement(el)
     focusOnFirstFocusableElement(el)
     BACKDROP.hidden = false
+    weakState().get(el).onOpenCallback && weakState().get(el).onOpenCallback()
     // set focus
   } else {
+    if (!weakState().get(el)) { return }
     BACKDROP.hidden = !(weakState().get(el).prevActive)
     el.removeAttribute(KEY_UNIVERSAL)
     if (!BACKDROP.hidden) {
@@ -60,7 +61,8 @@ const toggle = (el, index, fn, open = true) => {
     // Focus on the last focused thing before the dialog modal was opened
     state.focusBeforeModalOpen && state.focusBeforeModalOpen.focus()
     // Delete state for element
-    weakState(el, false)
+    // weakState(el, false)
+    weakState().get(el).onCloseCallback && weakState().get(el).onCloseCallback()
   }
 }
 
@@ -84,7 +86,7 @@ const exitOnEscape = (event) => {
   if (event.keyCode === 27) dialog(getActive()).close()
 }
 
-export function dialog (selector, options) {
+export function dialog (selector, options = {}) {
   if (!(this instanceof dialog)) return new dialog(selector, options) //eslint-disable-line
 
   // Initialize the element with necessary attributes for a dialog
@@ -92,6 +94,16 @@ export function dialog (selector, options) {
     role: 'dialog',
     tabindex: -1,
     'aria-modal': true
+  })
+
+  // Set the callbacks to each element
+  this.elements.forEach((el) => {
+    if (!weakState().get(el)) {
+      weakState().set(el, {
+        onOpenCallback: options.onOpenCallback,
+        onCloseCallback: options.onCloseCallback
+      })
+    }
   })
 
   return this

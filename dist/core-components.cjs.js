@@ -2,6 +2,10 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
+function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
+
+var React$1 = _interopDefault(require('react'));
+
 var version = "1.0.0";
 
 var KEY$1 = "core-components-" + (Date.now());
@@ -120,14 +124,15 @@ var toggle = function (el, index, fn, open) {
   var isOpen = Boolean(typeof fn === 'function' ? fn(el, index) : fn) === open;
 
   attr(el, {open: isOpen ? '' : null});
-
   if (isOpen) {
     el.style.zIndex = getHighestZIndex() + 1;
     setActiveStateForElement(el);
     focusOnFirstFocusableElement(el);
     BACKDROP.hidden = false;
+    weakState().get(el).onOpenCallback && weakState().get(el).onOpenCallback();
     // set focus
   } else {
+    if (!weakState().get(el)) { return }
     BACKDROP.hidden = !(weakState().get(el).prevActive);
     el.removeAttribute(KEY_UNIVERSAL);
     if (!BACKDROP.hidden) {
@@ -138,7 +143,8 @@ var toggle = function (el, index, fn, open) {
     // Focus on the last focused thing before the dialog modal was opened
     state.focusBeforeModalOpen && state.focusBeforeModalOpen.focus();
     // Delete state for element
-    weakState(el, false);
+    // weakState(el, false)
+    weakState().get(el).onCloseCallback && weakState().get(el).onCloseCallback();
   }
 };
 
@@ -163,6 +169,8 @@ var exitOnEscape = function (event) {
 };
 
 function dialog (selector, options) {
+  if ( options === void 0 ) options = {};
+
   if (!(this instanceof dialog)) { return new dialog(selector, options) } //eslint-disable-line
 
   // Initialize the element with necessary attributes for a dialog
@@ -170,6 +178,16 @@ function dialog (selector, options) {
     role: 'dialog',
     tabindex: -1,
     'aria-modal': true
+  });
+
+  // Set the callbacks to each element
+  this.elements.forEach(function (el) {
+    if (!weakState().get(el)) {
+      weakState().set(el, {
+        onOpenCallback: options.onOpenCallback,
+        onCloseCallback: options.onCloseCallback
+      });
+    }
   });
 
   return this
@@ -202,9 +220,56 @@ if (typeof document !== 'undefined' && !document.getElementById(KEY$2)) {
   createBackdrop();
 }
 
-function Dialog () {
-  return React.createElement( 'div', null, "Testing dialog" )
-}
+var Dialog = (function (superclass) {
+  function Dialog () {
+    superclass.apply(this, arguments);
+  }
+
+  if ( superclass ) Dialog.__proto__ = superclass;
+  Dialog.prototype = Object.create( superclass && superclass.prototype );
+  Dialog.prototype.constructor = Dialog;
+
+  Dialog.prototype.componentDidMount = function componentDidMount () {
+    var this$1 = this;
+
+    this.dialog = dialog(this.dialogEl, {
+      onOpenCallback: function () {
+        this$1.props.onOpenCallback();
+      },
+      onCloseCallback: function () {
+        this$1.props.onCloseCallback();
+      }
+    });
+  };
+
+  Dialog.prototype.componentWillReceiveProps = function componentWillReceiveProps (nextProps) {
+    this.props.open !== nextProps.open && this.toggle(nextProps.open);
+  };
+
+  Dialog.prototype.shouldComponentUpdate = function shouldComponentUpdate () {
+    return false
+  };
+
+  Dialog.prototype.toggle = function toggle (open) {
+    if (open) {
+      this.dialog.open();
+    } else {
+      this.dialog.close();
+    }
+  };
+
+  Dialog.prototype.render = function render () {
+    var this$1 = this;
+
+    return (
+      React$1.createElement( 'div', { className: 'nrk-dialog', role: 'dialog', tabIndex: '-1', ref: function (el) { this$1.dialogEl = el; } },
+        this.props.children
+      )
+    )
+  };
+
+  return Dialog;
+}(React$1.Component));
 
 exports.version = version;
 exports.input = input;

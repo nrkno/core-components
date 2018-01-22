@@ -5,5 +5,9 @@
   "version": "1.0.0",
   "license": "MIT",
   "main": "core-dialog.cjs.js",
-  "module": "core-dialog.esm.js"
+  "module": "core-dialog.esm.js",
+  "dependencies": {
+    "react": "*",
+    "react-dom": "*"
+  }
 }
