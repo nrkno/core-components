@@ -38,7 +38,7 @@
     <li><a href="#expand">Expand/Dropdown</a></li>
     <li><a href="#select">Select</a></li>
     <li><a href="#input">Input</a></li>
-    <li><a href="#date">Date</a></li>
+    <li><a href="#datepicker">Datepicker</a></li>
     <li><a href="#choice">Choice</a></li>
     <li><a href="#progress">Progress</a></li>
     <li><a href="#table">Table</a></li>
@@ -218,16 +218,13 @@ require(['https://static.nrk.no/core-components/X.X.X/core-components.min.js'], 
 
 
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
-    <!-- DATE -->
+    <!-- DATEPICKER -->
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
 
-    <h2 id="date">Date</h2>
+    <h2 id="datepicker">Datepicker</h2>
     <h3>Demo</h3>
     <p>
-      <input type="date" class="nrk-input" value="">
-      <script>
-        document.querySelector('[type="date"]').valueAsNumber = Date.now()
-      </script>
+      <input type="date" class="nrk-input nrk-datepicker" value="">
     </p>
 
 
@@ -320,23 +317,30 @@ require(['https://static.nrk.no/core-components/X.X.X/core-components.min.js'], 
   </article>
 
   <!-- JS setup -->
-  <script src="core-components.min.js"></script>
-  <script>
-    document.addEventListener('toggle', (event) => {
-      console.log('toggle')
-    })
-    coreComponents.expand('.nrk-expand')
-  </script>
-
-  <!-- JSX setup -->
   <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
   <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+  <script src="core-components.min.js"></script>
   <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+  <script>
+    document.addEventListener('toggle', (event) => {
+      console.log(event)
+    })
+    coreComponents.expand('.nrk-expand')
+    coreComponents.datepicker('.nrk-datepicker', {
+      baseClass: 'nrk',
+      value: Date.now(),
+      firstDayOfWeek: 1,
+      disabled: false,
+      required: true,
+      min: false,
+      max: false
+    })
+  </script>
 
   <!-- RequireJS setup -->
   <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.5/require.js"></script>
   <script>
-    requirejs(['core-components.js'], function (components) {
+    requirejs(['core-components.min.js'], function (components) {
       console.log('RequireJS', components)
     })
   </script> -->

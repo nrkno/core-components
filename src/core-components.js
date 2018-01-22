@@ -1,4 +1,6 @@
 export {version} from '../package.json'
+export {datepicker} from '../packages/core-datepicker/core-datepicker'
+export {Datepicker} from '../packages/core-datepicker/core-datepicker.jsx'
 export {expand} from '../packages/core-expand/core-expand'
 export {Expand} from '../packages/core-expand/core-expand.jsx'
 export {input} from '../packages/core-input/core-input'

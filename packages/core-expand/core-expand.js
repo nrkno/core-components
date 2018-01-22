@@ -1,39 +1,32 @@
 import {name, version} from './package.json'
-import {getElements} from '../utils'
+import {getElements, on} from '../utils'
 import 'polyfill-custom-event'
 
-const KEY = `${name}-${version}`
+const KEY = `${name}-${version}`                    // Unique id of component
 
-export function expand (...args) {
+export function expand (...args) {                  // Expose component
   return new Expand(...args)
 }
 
 class Expand {
   constructor (elements) {
-    this.elements = getElements(elements)
-    this.elements.forEach((el) => (el[KEY] = 1))   // Register polyfill
+    this.elements = getElements(elements, KEY)
   }
-  open (open = true) { this.toggle(open) }
-  close (open = false) { this.toggle(open) }
-  toggle (open) {
-    const type = typeof open
+  open (open = true) {
+    this.toggle(open)
+  }
+  close (open = false) {
+    this.toggle(open)
+  }
+  toggle (open = null) {
+    this.elements.forEach((el, index) => {
+      const isExpanded = el.getAttribute('aria-expanded') !== 'false'
+      const willExpand = open === null ? isExpanded : (typeof open === 'function' ? open(el, index) : open)
+      const event = new window.CustomEvent('toggle', {bubbles: true, cancelable: true})
 
-    this.elements.forEach((element, index) => {
-      // const shouldExpand = type === 'function' ? open(element, index) : (type === 'undefined' ? el.getAttribute('aria-expanded') === 'false') : open
-      const toggleEvent = new window.CustomEvent('toggle', {bubbles: true, cancelable: true})
-      el.dispatchEvent(toggleEvent)
-
-      // Only toggle if not event.preventDefault()
-      // toggleEvent.defaultPrevented || el.setAttribute('aria-expanded', Boolean(shouldExpand))
+      if (el.dispatchEvent(event)) el.setAttribute('aria-expanded', Boolean(willExpand)) // Expand if not preventDefault
     })
   }
 }
 
-// Click to toggle (only bind if unbound)
-if (typeof window !== 'undefined' && !window[KEY] && (window[KEY] = 1)) {
-  document.addEventListener('click', function (event) {
-    for (let el = event.target; el; el = el.parentElement) {
-      if (el[KEY]) expand(el).toggle()  // Only handle polyfilled elements
-    }
-  })
-}
+on(KEY, 'click', (el) => expand(el).toggle())

@@ -1,15 +1,27 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
 import {expand as ref} from './core-expand'
 import {assign} from '../utils'
 
-export function Expand (props) {
-  const isExpanded = props.open !== 'false' && Boolean(props.open)
-  const attr = assign({
-    'className': 'nrk-expand',
-    'aria-expanded': isExpanded,
-    ref
-  }, props)
+export class Expand extends React.PureComponent {
+  constructor(props) {
+    super(props)
+    this.toggle = this.toggle.bind(this)
+    this.state = {
+      expanded: this.props.open !== 'false' && Boolean(this.props.open)
+    }
+  }
+  toggle() {
+    // this.setState((prevState, props) => ({
+    //   expanded: !prevState.expanded
+    // }))
+  }
+  render() {
+    const attr = assign({
+      'aria-expanded': this.state.expanded,
+      'onClick': this.toggleExpanded,
+      ref
+    }, this.props)
 
-  return <button {...attr} />
+    return <button {...attr} />
+  }
 }

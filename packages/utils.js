@@ -24,11 +24,27 @@ export const closest = (element, nodeName) => {
   }
 }
 
-export function getElements (elements) {
-  if (typeof elements === 'string') return getElements(document.querySelectorAll(elements))
-  if (elements && elements.length) return [].slice.call(elements)
-  if (elements && elements.nodeType) return [elements]
-  return []
+export function on (key, event, handler) {
+  if (typeof window === 'undefined') return
+  const namespace = window[key] = window[key] || {}
+  const isUnbound = !namespace[event] && (namespace[event] = 1)
+
+  if (isUnbound) {
+    document.addEventListener(event, function (event) {
+      for (let el = event.target; el; el = el.parentElement) {
+        if (el[key]) handler(el, event)
+      }
+    }, true) // Use capture to make sure focus/blur bubbles in old Firefox
+  }
+}
+
+export function getElements (elements, key) {
+  let list = []
+  if (typeof elements === 'string') list = [].slice.call(document.querySelectorAll(elements))
+  else if (elements && elements.length) list = [].slice.call(elements)
+  else if (elements && elements.nodeType) list = [elements]
+  if (key) list.forEach((el) => (el[key] = 1))
+  return list
 }
 
 export function weakState (element, object, initial = {}) {
