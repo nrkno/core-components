@@ -21,11 +21,15 @@ function attr (elements, attributes) {
 
 
 
-function getElements (elements) {
-  if (typeof elements === 'string') { return getElements(document.querySelectorAll(elements)) }
-  if (elements && elements.length) { return [].slice.call(elements) }
-  if (elements && elements.nodeType) { return [elements] }
-  return []
+
+
+function getElements (elements, key) {
+  var list = [];
+  if (typeof elements === 'string') { list = [].slice.call(document.querySelectorAll(elements)); }
+  else if (elements && elements.length) { list = [].slice.call(elements); }
+  else if (elements && elements.nodeType) { list = [elements]; }
+  if (key) { list.forEach(function (el) { return (el[key] = 1); }); }
+  return list
 }
 
 function weakState (element, object, initial) {
@@ -63,16 +67,13 @@ var LIVE; // Element to contain screen reader text
 if (typeof document !== 'undefined') {
   attr(LIST = document.createElement('ul'), {role: 'listbox'});
   attr(LIVE = document.createElement('span'), {'aria-hidden': 'true', 'aria-live': 'polite'});
-
-  // document.head.insertAdjacentElement('afterbegin', `<style>
-  //   .core-input { background: none }
-  // </style>`)
-
-  // document.addEventListener('keydown', onKey)
-  // document.addEventListener('input', onInput)
-  // document.addEventListener('focus', onFocus, true) // Use capture to ensure event bubling
-  // document.addEventListener('blur', onBlur, true)   // Use capture to ensure event bubling
+  // document.head.insertAdjacentElement('afterbegin', '<style>.core-input{background:none}</style>'')
   // document.documentElement.appendChild(LIVE)
+
+  // on(KEY, 'keydown', onKey)
+  // on(KEY, 'input', onInput)
+  // on(KEY, 'focus', onFocus)
+  // on(KEY, 'blur', onBlur)
 }
 
 function input () {

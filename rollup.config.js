@@ -1,5 +1,5 @@
 import buble from 'rollup-plugin-buble'
-import commonjs from 'rollup-plugin-commonjs'
+import cjs from 'rollup-plugin-commonjs'
 import json from 'rollup-plugin-json'
 import pkg from './package.json'
 import resolve from 'rollup-plugin-node-resolve'
@@ -12,7 +12,7 @@ const external = Object.keys(globals)
 const plugins = [
   json(),
   resolve({browser: true}),           // Respect pkg.browser
-  commonjs({ignoreGlobal: true}),     // Do not tamper with `global`
+  cjs({ignoreGlobal: true}),          // Do not tamper with `global`
   buble({objectAssign: 'assign'})     // Buble needed for JSX, Polyfill for Object.assign from utils.js
 ]
 
@@ -33,6 +33,8 @@ export default [{
     name: 'coreComponents',
     sourcemap: true
   },
+  external,                           // Do not include react in out package
+  globals,
   plugins: plugins.concat([
     isBuild && uglify(),              // Minify on build
     isBuild || serve(['src', 'dist']) // Serve on watch

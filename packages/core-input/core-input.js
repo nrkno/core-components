@@ -93,16 +93,13 @@ function onKey (event) {
 if (typeof document !== 'undefined') {
   attr(LIST = document.createElement('ul'), {role: 'listbox'})
   attr(LIVE = document.createElement('span'), {'aria-hidden': 'true', 'aria-live': 'polite'})
-
-  // document.head.insertAdjacentElement('afterbegin', `<style>
-  //   .core-input { background: none }
-  // </style>`)
-
-  // document.addEventListener('keydown', onKey)
-  // document.addEventListener('input', onInput)
-  // document.addEventListener('focus', onFocus, true) // Use capture to ensure event bubling
-  // document.addEventListener('blur', onBlur, true)   // Use capture to ensure event bubling
+  // document.head.insertAdjacentElement('afterbegin', '<style>.core-input{background:none}</style>'')
   // document.documentElement.appendChild(LIVE)
+
+  // on(KEY, 'keydown', onKey)
+  // on(KEY, 'input', onInput)
+  // on(KEY, 'focus', onFocus)
+  // on(KEY, 'blur', onBlur)
 }
 
 export function input () {
