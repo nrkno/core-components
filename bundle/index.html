@@ -75,7 +75,7 @@ require(['https://static.nrk.no/core-components/X.X.X/core-components.min.js'], 
       <pre class="prettyprint">&lt;link rel="stylesheet" src="https://static.nrk.no/core-components/X.X.X/core-components.min.css"&gt; &lt;!-- Optional styling --&gt;
 &lt;script src="https://static.nrk.no/core-components/X.X.X/core-components.min.js"&gt;&lt;/script&gt;
 &lt;script&gt;
-  /* use window.coreComponents.input etc. here */
+  /* use window.components.input etc. here */
 &lt;/script&gt;</pre>
     </details>
     <h3>Browser support</h3>
@@ -122,7 +122,7 @@ require(['https://static.nrk.no/core-components/X.X.X/core-components.min.js'], 
     <p>Group</p>
     <div id="docs-react-toggle"></div>
     <script type="text/babel">
-      const {Toggle} = window.coreComponents
+      const {Toggle} = window.components
       ReactDOM.render(<div>
         <Toggle className="nrk-button nrk-expand">Use with JSX</Toggle>
         <pre className="prettyprint">{`import Toggle from '@nrk/core-toggle'
@@ -219,7 +219,7 @@ require(['https://static.nrk.no/core-components/X.X.X/core-components.min.js'], 
       <option value="Microsoft Edge">
     </datalist>
     <h3>Usage</h3>
-    <pre class="prettyprint">import input from '@nrk/core-components/input'</pre>
+    <pre class="prettyprint">import input from '@nrk/core-input'</pre>
 
 
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
@@ -342,10 +342,10 @@ require(['https://static.nrk.no/core-components/X.X.X/core-components.min.js'], 
     document.addEventListener('toggle', (event) => {
       console.log(event)
     })
-    coreComponents.toggle('.nrk-expand')
-    coreComponents.toggle('.nrk-dropdown')
-    // coreComponents.input('.nrk-input')
-    // coreComponents.datepicker('.nrk-datepicker', {
+    components.toggle('.nrk-expand')
+    components.toggle('.nrk-dropdown')
+    // components.input('.nrk-input')
+    // components.datepicker('.nrk-datepicker', {
     //   baseClass: 'nrk',
     //   value: Date.now(),
     //   firstDayOfWeek: 1,
