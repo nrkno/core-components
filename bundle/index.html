@@ -35,7 +35,7 @@
 <body>
   <ul class="docs-menu nrk-color-shade-1">
     <li><a href="#">Getting started</a></li>
-    <li><a href="#expand">Expand/Dropdown</a></li>
+    <li><a href="#toggle">Toggle</a></li>
     <li><a href="#select">Select</a></li>
     <li><a href="#input">Input</a></li>
     <li><a href="#datepicker">Datepicker</a></li>
@@ -96,34 +96,39 @@ require(['https://static.nrk.no/core-components/X.X.X/core-components.min.js'], 
 
 
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
-    <!-- DROPDOWN -->
+    <!-- Toggle -->
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
 
-    <h2 id="expand">Expand/Dropdown</h2>
-    <p>
-
-      Despite having the native <a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details"><code class="prettyprint">&lt;details&gt;</code></a>
-      element for expanding/collapsing content, <a target="_blank" href="https://caniuse.com/#feat=details">browser support</a>,
-      <a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details#Example_with_styling">styling</a>,
-      <a target="_blank" href="http://accessibleculture.org/articles/2012/03/screen-readers-and-details-summary/">accessibility</a>
-      and polyfillis often conflicting with <code class="prettyprint">&lt;dialog&gt;</code>.
-    </p>
+    <h2 id="toggle">Toggle</h2>
     <h3>Demo + usage</h3><br>
-    <button aria-expanded="false" class="nrk-expand nrk-button">Use with JS/HTML</button>
-    <pre class="prettyprint">&lt;button aria-expanded="false"&gt;Closed example&lt;button&gt;
+    <button class="nrk-expand nrk-button">Use with JS/HTML</button>
+    <p>Hey</p>
+    <!-- Test augmenting these attributes, can menuitem contain clickables, should core-input have aria-haspopup?
+    <ul role="menu">
+      <li role="menuitem" tabindex="-1"><a href="#"></a></li>                Pil opp og ned
+      <li role="menuitem" tabindex="-1"><button type="button"></button></li> Esc for å lukke -> fokus tilbake på knapp
+      <li role="menuitem" tabindex="-1"></li>
+      <li role="menuitem" tabindex="-1"></li>
+      <li role="menuitem" tabindex="-1"></li>
+    </ul>-->
+
+    <button class="nrk-expand nrk-button">Use with JS/HTML</button>
+    <pre class="prettyprint">&lt;button core-expand aria-expanded="false"&gt;Closed example&lt;button&gt;
 &lt;div&gt;Content is hidden on load&lt;/div&gt;
 
-&lt;button aria-expanded="true"&gt;Open example&lt;button&gt;
+&lt;button core-expand aria-expanded="true"&gt;Open example&lt;button&gt;
 &lt;div&gt;Content is visible on load&lt;/div&gt;</pre>
-    <div id="docs-react-expand"></div>
+    <button class="nrk-expand nrk-button">Use with JS/HTML</button>
+    <p>Group</p>
+    <div id="docs-react-toggle"></div>
     <script type="text/babel">
-      const {Expand} = window.coreComponents
+      const {Toggle} = window.coreComponents
       ReactDOM.render(<div>
-        <Expand className="nrk-button nrk-expand">Use with JSX</Expand>
-        <pre className="prettyprint">{`import {Expand} from '@nrk/core-components'
+        <Toggle className="nrk-button nrk-expand">Use with JSX</Toggle>
+        <pre className="prettyprint">{`import Toggle from '@nrk/core-toggle'
 
-<Expand expanded={true|false} onToggle={function(){}}>React/JSX</Expand>
-<p>Content</p>`}</pre></div>, document.getElementById('docs-react-expand'))
+<Toggle open={true|false} onToggle={function(){}}>React/JSX</Toggle>
+<p>Content</p>`}</pre></div>, document.getElementById('docs-react-toggle'))
     </script>
 
     <h3>Events</h3>
@@ -144,13 +149,6 @@ require(['https://static.nrk.no/core-components/X.X.X/core-components.min.js'], 
       <li><a href="#">A link</a></li>
       <li><a href="#">Another link</a></li>
     </ul>
-    <script>
-      document.addEventListener('click', function(event){
-        if(event.target.hasAttribute('aria-haspopup')){
-          event.target.setAttribute('aria-expanded', event.target.getAttribute('aria-expanded') === 'false')
-        }
-      })
-    </script>
 
 
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
@@ -186,22 +184,29 @@ require(['https://static.nrk.no/core-components/X.X.X/core-components.min.js'], 
         <h3>Suggestions</h3><br>
         <label>
           <span class="nrk-sr">Write the letter C to test</span>
-          <input type="text" class="nrk-input" data-core-input="browsers" placeholder="Type &quot;C&quot;...">
+          <input type="text" class="nrk-input" aria-owns="list" placeholder="Type &quot;C&quot;...">
+          <ul id="list" class="nrk-dropdown">
+            <li>Chrome</li>
+            <li>Firefox</li>
+            <li>Internet Explorer</li>
+            <li>Opera</li>
+            <li>Safari</li>
+            <li>Microsoft Edge</li>
+          </ul>
         </label>
       </div>
       <div style="padding-right:15px">
         <h3>Results</h3><br>
         <label>
           <span class="nrk-sr">Write the letter C to test</span>
-          <input type="text" class="nrk-input" data-core-input="browsers" placeholder="Type &quot;C&quot;...">
-          <ul class="nrk-dropdown"></ul>
+          <input type="text" class="nrk-input" aria-owns="drop" placeholder="Type &quot;C&quot;...">
         </label>
       </div>
       <div aria-hidden="true" style="pointer-events:none;opacity:.3">
         <h3>Tags (work in progress)</h3><br>
         <label>
           <span class="nrk-sr">Write the letter C to test</span>
-          <input type="text" class="nrk-input" data-core-input="browsers" disabled placeholder="Separate with comma">
+          <input type="text" class="nrk-input" aria-owns="browsers" disabled placeholder="Separate with comma">
         </label>
       </div>
     </div>
@@ -280,7 +285,7 @@ require(['https://static.nrk.no/core-components/X.X.X/core-components.min.js'], 
     <!-- TABLE -->
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
 
-    <h2 id="table">Table</h2>
+    <!-- <h2 id="table">Table</h2>
     <p>
       <em>Todo: Sorting, filtering, unsticky, etc.</em>
     </p>
@@ -302,7 +307,7 @@ require(['https://static.nrk.no/core-components/X.X.X/core-components.min.js'], 
           <tr><th>Tittle 9</th><td>Kolonne 1</td><td>Kolonne 2</td><td>Kolonne 3</td><td>Kolonne 4</td><td>Kolonne 5</td><td>Kolonne 6</td></tr>
         </tbod>
       </table>
-    </div>
+    </div> -->
 
 
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
@@ -310,6 +315,18 @@ require(['https://static.nrk.no/core-components/X.X.X/core-components.min.js'], 
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
 
     <h2 id="faq">FAQ</h2>
+    <h3>Why no grouped toggle?</h3>
+    <p>
+      Because, loosing scroll-position when expand / collapsing
+    </p>
+    <h3>Why not just use <code class="prettyprint">&lt;details&gt;</code> instead of core-expand?</h3>
+    <p>
+      Despite having a native <a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details"><code class="prettyprint">&lt;details&gt;</code></a>
+      element for expanding/collapsing content, there are several issues regarding <a target="_blank" href="https://caniuse.com/#feat=details">browser support</a>,
+      <a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details#Example_with_styling">styling</a>,
+      <a target="_blank" href="http://accessibleculture.org/articles/2012/03/screen-readers-and-details-summary/">accessibility</a>
+      and polyfillis often conflict with other standards such as <code class="prettyprint">&lt;dialog&gt;</code>
+    </p>
     <h3>Why can I not just use plain progress elements?</h3>
     <p>UU. That's why.</p>
     <h3>Why not use web components?</h3>
@@ -325,16 +342,18 @@ require(['https://static.nrk.no/core-components/X.X.X/core-components.min.js'], 
     document.addEventListener('toggle', (event) => {
       console.log(event)
     })
-    coreComponents.expand('.nrk-expand')
-    coreComponents.datepicker('.nrk-datepicker', {
-      baseClass: 'nrk',
-      value: Date.now(),
-      firstDayOfWeek: 1,
-      disabled: false,
-      required: true,
-      min: false,
-      max: false
-    })
+    coreComponents.toggle('.nrk-expand')
+    coreComponents.toggle('.nrk-dropdown')
+    // coreComponents.input('.nrk-input')
+    // coreComponents.datepicker('.nrk-datepicker', {
+    //   baseClass: 'nrk',
+    //   value: Date.now(),
+    //   firstDayOfWeek: 1,
+    //   disabled: false,
+    //   required: true,
+    //   min: false,
+    //   max: false
+    // })
   </script>
 
   <!-- RequireJS setup -->

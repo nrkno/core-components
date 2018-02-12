@@ -1,46 +1,50 @@
-import buble from 'rollup-plugin-buble'
-import cjs from 'rollup-plugin-commonjs'
-import json from 'rollup-plugin-json'
-import pkg from './package.json'
-import resolve from 'rollup-plugin-node-resolve'
-import serve from 'rollup-plugin-serve'
-import uglify from 'rollup-plugin-uglify'
+const buble = require('rollup-plugin-buble')
+const commonjs = require('rollup-plugin-commonjs')
+const json = require('rollup-plugin-json')
+const resolve = require('rollup-plugin-node-resolve')
+const serve = require('rollup-plugin-serve')
+const uglify = require('rollup-plugin-uglify')
+const {pkgs} = require('./bin/index.js')                   // Find all packages
 
 const isBuild = !process.env.ROLLUP_WATCH
-const globals = {'react-dom': 'ReactDOM', react: 'React'}
-const external = Object.keys(globals)
+const globals = {'react-dom': 'ReactDOM', react: 'React'} // Do not include react in out package
+const external = Object.keys(globals)                     // Do not include react in out package
 const plugins = [
-  json(),
-  resolve({browser: true}),           // Respect pkg.browser
-  cjs({ignoreGlobal: true}),          // Do not tamper with `global`
-  buble({objectAssign: 'assign'})     // Buble needed for JSX, Polyfill for Object.assign from utils.js
+  json(),                                                 // Enable treeshaking json imports
+  resolve({browser: true}),                               // Respect pkg.browser
+  commonjs({ignoreGlobal: true}),                         // Let dependencies use the word `global`
+  buble({objectAssign: 'assign'})                         // Polyfill Object.assign from utils.js
 ]
 
-export default [{
-  input: 'src/core-components.js',
-  output: [
-    {file: pkg.main, format: 'cjs'},  // CommonJS (for Node)
-    {file: pkg.module, format: 'es'}  // ES module (for bundlers)
-  ],
-  external,                           // Do not include react in out package
-  globals,
-  plugins
-}, {
-  input: 'src/core-components.js',
-  output: {
-    file: pkg.browser,                // UDM for browsers
-    format: 'umd',
-    name: 'coreComponents',
-    sourcemap: true
-  },
-  external,                           // Do not include react in out package
-  globals,
-  plugins: plugins.concat([
-    isBuild && uglify(),              // Minify on build
-    isBuild || serve(['src', 'dist']) // Serve on watch
-  ]),
-  watch: {
-    exclude: 'dist/**',
-    chokidar: true
+export default pkgs.concat('.').reduce((acc, path) => {   // Loop all packages and add root bundle
+  const pkg = require(`${path}/package.json`)
+  const src = pkg.main.replace('.cjs.js', '.js')          // Source files is always just .js
+  const config = [{
+    input: `${path}/${src}`,
+    output: [
+      {file: `${path}/${pkg.main}`, format: 'cjs'},       // CommonJS (for Node)
+      {file: `${path}/${pkg.module}`, format: 'es'}       // ES module (for bundlers)
+    ],
+    external,
+    globals,
+    plugins
+  }]
+
+  if (pkg.browser) {
+    config.push({
+      input: `${path}/${src}`,
+      output: {
+        file: pkg.browser,                                  // UDM for browsers
+        format: 'umd',
+        name: 'coreComponents',
+        sourcemap: true
+      },
+      watch: { exclude: '**.*.(min|js)' },
+      plugins: plugins.concat(isBuild ? uglify() : serve('bundle')),
+      external,
+      globals
+    })
   }
-}]
+
+  return acc.concat(config)
+}, [])
