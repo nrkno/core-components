@@ -1,5 +1,6 @@
 const buble = require('rollup-plugin-buble')
 const commonjs = require('rollup-plugin-commonjs')
+const fs = require('fs')
 const json = require('rollup-plugin-json')
 const postcss = require('rollup-plugin-postcss')
 const postcssImport = require('postcss-import')
@@ -18,9 +19,10 @@ const plugins = [
   uglify()
 ]
 
-export default paths.map((path, index) => {                   // Make config for all packages
+export default paths.reduce((acc, path, index) => {           // Make config for all packages
   const pkg = require(`${path}/package.json`)
   const src = pkg.main.replace('.cjs.js', '.js')              // Source files is always just .js
+  const jsx = `${path}/${src.replace('.js', '.jsx')}`         // Potential path to JSX-file
   const name = pkg.name.split('-').pop()
   const watch = !index && process.env.ROLLUP_WATCH            // Only watch if first index
   const config = {
@@ -50,5 +52,21 @@ export default paths.map((path, index) => {                   // Make config for
     })
   }
 
-  return config
-})
+  // Build jsx
+  if (fs.existsSync(jsx)) {
+    acc.push({
+      input: jsx,
+      output: {
+        file: `${path}/jsx/index.js`,
+        format: 'umd',
+        sourcemap: true,
+        globals,
+        name
+      },
+      external: Object.keys(globals),
+      plugins
+    })
+  }
+
+  return acc.concat(config)
+}, [])

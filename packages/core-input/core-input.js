@@ -1,7 +1,7 @@
-import {name, version} from './package.json'
+// import {name, version} from './package.json'
 import {getUUID, registerElements, registerEvent} from '../utils'
 
-const KEY = `${name}-${version}`  // Unique id of component
+const KEY = 'core-input' //`${name}-${version}`  // Unique id of component
 let ARIA_LIVE_EL                  // Element to contain screen reader text
 
 const OPTIONS = {

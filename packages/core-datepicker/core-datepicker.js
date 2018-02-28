@@ -1,8 +1,8 @@
-import {name, version} from './package.json'
+// import {name, version} from './package.json'
 import {registerElements, registerEvent} from '../utils'
 import 'polyfill-custom-event'
 
-const KEY = `${name}-${version}`                    // Unique id of component
+const KEY = 'core-datepicker' //`${name}-${version}`                    // Unique id of component
 
 export default function datepicker (...args) {              // Expose component
   return new Datepicker(...args)

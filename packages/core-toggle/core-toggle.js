@@ -1,7 +1,7 @@
-import {name, version} from './package.json'
+// import {name, version} from './package.json'
 import {ariaConnect, dispatchEvent, registerElements, registerEvent} from '../utils'
 
-const KEY = `${name}-${version}` // Unique id of component
+const KEY = 'core-toggle' //`${name}-${version}` // Unique id of component
 
 function ariaExpanded (master, slave, expanded) {
   master.setAttribute('aria-expanded', expanded)
