@@ -1,32 +1,33 @@
 import {name, version} from './package.json'
-import {addElements, addEvent, CustomEvent} from '../utils'
+import {ariaConnect, dispatchEvent, registerElements, registerEvent} from '../utils'
 
-const KEY = `${name}-${version}`                    // Unique id of component
-const ATTR = 'aria-expanded'
+const KEY = `${name}-${version}` // Unique id of component
+
+function ariaExpanded (master, slave, expanded) {
+  master.setAttribute('aria-expanded', expanded)
+  slave[expanded? 'removeAttribute' : 'setAttribute']('hidden', '')
+}
 
 /**
 * toggle
 * @param {String|NodeList|Array|Element} elements A CSS selector string, nodeList, element array, or single element
-* @param {Boolean} [open] Optional open argument. True will open, false will close
+* @param {Boolean} [open] Optional. True will open, false will close, undefined just updates attribute
 * @return {Array} Array of elements
 */
-export function toggle (elements, open) {
-  const action = typeof open
+export default function toggle (elements, open = null) {
+  return registerElements(KEY, elements).map((el) => {
+    const slave = ariaConnect(el)
+    const prevOpen = el.getAttribute('aria-expanded') === 'true'
+    const wantOpen = open === null ? prevOpen : Boolean(open)
+    ariaExpanded(el, slave, prevOpen)
 
-  return addElements(KEY, elements).map((el, index) => {
-    const prevState = el.getAttribute(ATTR) === 'true'
-    const nextState = action === 'undefined' ? prevState : Boolean(action === 'function' ? open(el, index) : open)
-    const canUpdate = prevState === nextState || el.dispatchEvent(new CustomEvent('toggle', {
-      bubbles: true,
-      cancelable: true,
-      detail: nextState
-    }))
+    const nextOpen = (prevOpen !== wantOpen && dispatchEvent(el, 'toggle')) ? wantOpen : prevOpen
 
-    if (canUpdate) el.setAttribute(ATTR, Boolean(open))
+    ariaExpanded(el, slave, nextOpen)
     return el
   })
 }
 
-addEvent(KEY, 'click', (el) => {
-  toggle(el, el.getAttribute(ATTR) !== 'true')
+registerEvent(KEY, 'click', (el) => {
+  toggle(el, el.getAttribute('aria-expanded') !== 'true')
 })

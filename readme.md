@@ -10,7 +10,8 @@ First clone `@nrk/core-components` and install its dependencies:
 ```bash
 git clone git@github.com:nrkno/core-components.git
 cd core-components
-npm install && npm start
+npm install # Installs dependencies for all packages
+npm start   # Starts localhost:10001
 ```
 
 ## Building and committing
@@ -19,11 +20,18 @@ After having applied changes, remember to build before pushing the changes upstr
 ```bash
 git checkout -b feature/my-changes
 # update the source code
-npm run build
+npm run build # Builds all the packages
 git commit -am "Add my changes"
 git push origin feature/my-changes
 # then make a PR to the master branch,
 # and assign another developer to review your code
+```
+
+## Publishing
+
+WIP
+```bash
+npm run publish:minor core-input core-toggle # Specify packages to publish
 ```
 
 > NOTE! Please also make sure to keep commits small and clean (that the commit message actually refers to the updated files).  

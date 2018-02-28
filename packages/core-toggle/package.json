@@ -6,10 +6,8 @@
   "license": "MIT",
   "main": "core-toggle.cjs.js",
   "module": "core-toggle.esm.js",
-  "browser": "core-toggle.min.js",
   "dependencies": {
     "react": "*",
-    "react-dom": "*",
-    "polyfill-custom-event": "^1.0.5"
+    "react-dom": "*"
   }
 }

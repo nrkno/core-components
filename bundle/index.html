@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>@nrk/core-components</title>
-  <link rel="stylesheet" href="https://static.nrk.no/core-fonts/1.2.0/core-fonts.min.css">
-  <link rel="stylesheet" href="https://static.nrk.no/core-css/1.3.0/core-css.min.css">
-  <link rel="stylesheet" href="core-components.css">
+  <link rel="stylesheet" href="https://static.nrk.no/core-fonts/latest/core-fonts.min.css">
+  <link rel="stylesheet" href="https://static.nrk.no/core-css/latest/core-css.min.css">
+  <link rel="stylesheet" href="core-components.min.css">
   <style>
     html { font: 110%/1.5 'LFT Etica',sans-serif; background: #fcfcfc; color: #26292a }
     .prettyprint.prettyprint { overflow: auto; border: 0; padding: 4px 6px; font-size: 14px; background: #f6f6f6 }
@@ -23,6 +23,10 @@
     .docs-pill { display: inline-block; vertical-align: middle; padding: 3px; font: 12px/1 sans-serif; background: #e0e0e0; border-radius: 3px }
     .docs-support > * { margin: 1em 1px; min-width: 80px; padding: 1em; font-size: 13px; text-align: center }
 
+    .docs-toggle[aria-expanded=true] svg { -webkit-transform: rotate(45deg); transform: rotate(45deg) }
+    .docs-toggle + * { display: block; overflow: hidden; height: 0; transition: .5s }
+    .docs-toggle > svg { transition: .5s }
+
     .nrk-color-invert .docs-pill,
     .nrk-color-invert .nrk-color-shade-1 { background: #26292a; border-color: #141517; color: #fff }
     .nrk-color-invert .prettyprint.prettyprint { -webkit-filter: invert(1); filter: invert(1) }
@@ -36,6 +40,7 @@
   <ul class="docs-menu nrk-color-shade-1">
     <li><a href="#">Getting started</a></li>
     <li><a href="#toggle">Toggle</a></li>
+    <li><a href="#dropdown">Dropdown</a></li>
     <li><a href="#select">Select</a></li>
     <li><a href="#input">Input</a></li>
     <li><a href="#datepicker">Datepicker</a></li>
@@ -47,6 +52,8 @@
       <label><input type="checkbox" onchange="document.body.classList.toggle('nrk-color-invert')"> Invert</label>
     </li>
   </ul>
+
+
   <article class="docs-page">
     <h2>@nrk/core-components <!--version--></h2>
     <h3>Getting started</h3>
@@ -57,9 +64,9 @@
     <details>
       <summary><h3>Use from NPM</h3> - recommended</summary>
       <pre class="prettyprint">npm install @nrk/core-components --save</pre>
-      <pre class="prettyprint">import components from '@nrk/core-components'    // all JS comonents...
-import {input} from '@nrk/core-components'       // ...or individual JS component (recommended)
-import {Input} from '@nrk/core-components'       // ...or individual JSX component (recommended)</pre>
+      <pre class="prettyprint">import components from '@nrk/core-components' // all JS comonents...
+import input from '@nrk/core-input'           // ...or individual JS component (recommended)
+import Input from '@nrk/core-input.jsx'       // ...or individual JSX component (recommended)</pre>
     </details>
     <details>
       <summary><h3>Use with Require.js</h3></summary>
@@ -101,61 +108,98 @@ require(['https://static.nrk.no/core-components/X.X.X/core-components.min.js'], 
 
     <h2 id="toggle">Toggle</h2>
     <h3>Demo + usage</h3><br>
-    <button class="nrk-expand nrk-button">Use with JS/HTML</button>
-    <p>Hey</p>
-    <!-- Test augmenting these attributes, can menuitem contain clickables, should core-input have aria-haspopup?
-    <ul role="menu">
-      <li role="menuitem" tabindex="-1"><a href="#"></a></li>                Pil opp og ned
-      <li role="menuitem" tabindex="-1"><button type="button"></button></li> Esc for å lukke -> fokus tilbake på knapp
-      <li role="menuitem" tabindex="-1"></li>
-      <li role="menuitem" tabindex="-1"></li>
-      <li role="menuitem" tabindex="-1"></li>
-    </ul>-->
+    <button class="docs-toggle nrk-button">
+      <svg width="15" height="15" aria-hidden="true"><use xlink:href="#nrk-plus" /></svg>
+      Use with JS/HTML
+    </button>
+    <div hidden>
+      <pre class="prettyprint">&lt;button aria-expanded="false"&gt;Closed example&lt;button&gt;
+&lt;div&gt;Content is hidden on load&lt;/div&gt;
 
-    <button class="nrk-expand nrk-button">Use with JS/HTML</button>
-    <pre class="prettyprint">&lt;button core-expand aria-expanded="false"&gt;Closed example&lt;button&gt;
+&lt;button aria-expanded="true"&gt;Open example&lt;button&gt;
+&lt;div&gt;Content is visible on load&lt;/div&gt;</pre>
+      <pre class="prettyprint">import </pre>
+    </div>
+    <div id="docs-react-toggle">
+      <script type="text/babel">
+        const {Toggle} = window.components
+        ReactDOM.render(<div>
+          <Toggle className="docs-toggle nrk-button">Use with JSX</Toggle>
+          <pre className="prettyprint">{`import Toggle from '@nrk/core-toggle.jsx'
+
+<Toggle open={true|false} onToggle={function(){}}>React/JSX</Toggle>
+<p>Content</p>`}</pre>
+        </div>, document.getElementById('docs-react-toggle'))
+      </script>
+    </div>
+    <details>
+      <summary><h3>Events</h3></summary>
+      <pre class="prettyprint">document.addEventListener('toggle', function (event) {})</pre>
+    </details>
+    <details>
+      <summary><h3>Styling</h3></summary>
+      <pre class="prettyprint">TODO</pre>
+    </details>
+
+
+    <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
+    <!-- Dropdown -->
+    <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
+
+    <h2 id="dropdown">Dropdown</h2>
+    <h3>Demo + usage</h3><br>
+    <button class="docs-toggle nrk-button">
+      <svg width="15" height="15" aria-hidden="true"><use xlink:href="#nrk-plus" /></svg>
+      Use with JS/HTML
+    </button>
+    <ul hidden role="menu">
+      <li role="none"><a role="menuitem" href="#"></a></li>                <!--Pil opp og ned-->
+      <li role="none"><button role="menuitem" type="button"></button></li> <!--Esc for å lukke -> fokus tilbake på knapp-->
+    </ul>
+    <button class="docs-toggle nrk-button">
+      Use with JS/HTML
+      <svg width="15" height="15" aria-hidden="true"><use xlink:href="#nrk-chevron-down" /></svg>
+    </button>
+    <div hidden>
+      <pre class="prettyprint">&lt;button core-expand aria-expanded="false"&gt;Closed example&lt;button&gt;
 &lt;div&gt;Content is hidden on load&lt;/div&gt;
 
 &lt;button core-expand aria-expanded="true"&gt;Open example&lt;button&gt;
 &lt;div&gt;Content is visible on load&lt;/div&gt;</pre>
-    <button class="nrk-expand nrk-button">Use with JS/HTML</button>
-    <p>Group</p>
-    <div id="docs-react-toggle"></div>
-    <script type="text/babel">
-      const {Toggle} = window.components
-      ReactDOM.render(<div>
-        <Toggle className="nrk-button nrk-expand">Use with JSX</Toggle>
-        <pre className="prettyprint">{`import Toggle from '@nrk/core-toggle'
+    </div>
+    <button class="docs-toggle nrk-button">
+      <svg width="15" height="15" aria-hidden="true"><use xlink:href="#nrk-plus" /></svg>
+      Use with JS/HTML
+    </button>
+    <p hidden>Group</p>
+    <!--<div id="docs-react-toggle">
+      <script type="text/babel">
+        const {Toggle} = window.components
+        ReactDOM.render(<div>
+          <Toggle className="nrk-button nrk-expand">Use with JSX</Toggle>
+          <pre className="prettyprint">{`import Toggle from '@nrk/core-toggle'
 
-<Toggle open={true|false} onToggle={function(){}}>React/JSX</Toggle>
-<p>Content</p>`}</pre></div>, document.getElementById('docs-react-toggle'))
-    </script>
+          <Toggle open={true|false} onToggle={function(){}}>React/JSX</Toggle>
+          <p>Content</p>`}</pre>
+        </div>, document.getElementById('docs-react-toggle'))
+      </script>
+    </div>-->
 
-    <h3>Events</h3>
-    <pre class="prettyprint">document.addEventListener('toggle', function (event) {})</pre>
-
-    <h3>Styling</h3>
-    <p>
-      Use the <code class="prettyprint">aria-expanded</code> attribute
-      as well as <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Adjacent_sibling_selectors" target="_blank">adjacent sibiling selector</a>
-      for styling. Example:
-    </p>
-    <pre class="prettyprint">.my-expander[aria-expanded="true"]::before { content: '-' }               /* Add minus before open expander */
-.my-expander[aria-expanded="false"]::before { content: '+' }              /* Add pluss before closed expander */
-.my-expander[aria-expanded="false"] + .my-expander-body { display: none } /* Hide closed expand body */</pre>
-    <h3>Demo</h3><br>
-    <button class="nrk-button" aria-controls="/* TODO */" aria-haspopup="true" aria-expanded="false">Dropdown <svg width="15" height="15" aria-hidden="true"><use xlink:href="#nrk-chevron-down" /></svg></button>
-    <ul class="nrk-dropdown">
-      <li><a href="#">A link</a></li>
-      <li><a href="#">Another link</a></li>
-    </ul>
+    <details>
+      <summary><h3>Events</h3></summary>
+      <pre class="prettyprint">document.addEventListener('toggle', function (event) {})</pre>
+    </details>
+    <details>
+      <summary><h3>Styling</h3></summary>
+      <pre class="prettyprint">TODO</pre>
+    </details>
 
 
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
     <!-- SELECT -->
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
 
-    <h2 id="select">Select</h2>
+    <!--<h2 id="select">Select</h2>
     <p>
       <em>Todo: Styling, men open styling må være native. See also dropdown</em>
     </p>
@@ -171,7 +215,7 @@ require(['https://static.nrk.no/core-components/X.X.X/core-components.min.js'], 
           <option>Microsoft Edge</option>
         </select>
       </label>
-    </p>
+    </p>-->
 
 
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
@@ -184,8 +228,8 @@ require(['https://static.nrk.no/core-components/X.X.X/core-components.min.js'], 
         <h3>Suggestions</h3><br>
         <label>
           <span class="nrk-sr">Write the letter C to test</span>
-          <input type="text" class="nrk-input" aria-owns="list" placeholder="Type &quot;C&quot;...">
-          <ul id="list" class="nrk-dropdown">
+          <input type="text" class="nrk-input" placeholder="Type &quot;C&quot;...">
+          <ul hidden class="nrk-dropdown">
             <li>Chrome</li>
             <li>Firefox</li>
             <li>Internet Explorer</li>
@@ -199,14 +243,14 @@ require(['https://static.nrk.no/core-components/X.X.X/core-components.min.js'], 
         <h3>Results</h3><br>
         <label>
           <span class="nrk-sr">Write the letter C to test</span>
-          <input type="text" class="nrk-input" aria-owns="drop" placeholder="Type &quot;C&quot;...">
+          <input type="text" class="nrk-input" placeholder="Type &quot;C&quot;...">
         </label>
       </div>
       <div aria-hidden="true" style="pointer-events:none;opacity:.3">
         <h3>Tags (work in progress)</h3><br>
         <label>
           <span class="nrk-sr">Write the letter C to test</span>
-          <input type="text" class="nrk-input" aria-owns="browsers" disabled placeholder="Separate with comma">
+          <input type="text" class="nrk-input" disabled placeholder="Separate with comma">
         </label>
       </div>
     </div>
@@ -226,18 +270,18 @@ require(['https://static.nrk.no/core-components/X.X.X/core-components.min.js'], 
     <!-- DATEPICKER -->
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
 
-    <h2 id="datepicker">Datepicker</h2>
+    <!--<h2 id="datepicker">Datepicker</h2>
     <h3>Demo</h3>
     <p>
       <input type="date" class="nrk-input nrk-datepicker" value="">
-    </p>
+    </p>-->
 
 
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
     <!-- CHOICE -->
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
 
-    <h2 id="choice">Choice</h2>
+    <!--<h2 id="choice">Choice</h2>
     <p>
       <em>Todo: Style and compononentify</em>
     </p>
@@ -260,14 +304,14 @@ require(['https://static.nrk.no/core-components/X.X.X/core-components.min.js'], 
           <label><input type="radio" name="drink" class="nrk-choice"><span>Tea</span></label>
         </fieldset>
       </div>
-    </div>
+    </div>-->
 
 
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
     <!-- PROGRESS -->
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
 
-    <h2 id="progress">Progress</h2>
+    <!--<h2 id="progress">Progress</h2>
     <p>
       <em>Todo: Indeterminate, Determinate</em>
     </p>
@@ -278,7 +322,7 @@ require(['https://static.nrk.no/core-components/X.X.X/core-components.min.js'], 
           <span style="width:22%">Saving changes...</span>
         </span>
       </progress>
-    </p>
+    </p>-->
 
 
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
@@ -340,10 +384,37 @@ require(['https://static.nrk.no/core-components/X.X.X/core-components.min.js'], 
   <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
   <script>
     document.addEventListener('toggle', (event) => {
-      console.log(event)
+      const next = event.target.nextElementSibling
+      const open = next.hasAttribute('hidden')
+
+      next.style.height = `${open? 0 : next.scrollHeight}px`
+      next.clientHeight
+      next.style.height = `${open? next.scrollHeight : 0}px`
     })
-    components.toggle('.nrk-expand')
-    components.toggle('.nrk-dropdown')
+
+    components.input('.nrk-input', {
+      mode: 'list',
+      data: 'https://tv.nrk.no/autocomplete?query={query}',
+      onChange: () => {
+
+      }
+      // item: (item, input) => {
+      //
+      // }
+      // items: 10,
+      // onHits: () => {},
+      // sort: (itemA, itemB) => 0,
+      // item: (item, input) => (item.label || item.value).replace(input.regex, '<b>' + input.query + '</b>'),
+      // filter: (item, input) => item.value.indexOsf(input.query) !== -1,
+      // value: (item) => ({value: item.value, label: 'Hei'}),
+      // list: (query) => {
+      //   return ['gmail.com', 'hotmail.com'].map((provider) => {
+      //     return `${query}@${provider}`
+      //   })
+      // }
+    })
+    components.toggle('.docs-toggle')
+
     // components.input('.nrk-input')
     // components.datepicker('.nrk-datepicker', {
     //   baseClass: 'nrk',

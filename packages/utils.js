@@ -4,11 +4,23 @@
 * @param {String|NodeList|Array|Element} elements A CSS selector string, nodeList, element array, or single element
 * @return {Array} Array of elements
 */
-export function addElements (key, elements) {
-  if (typeof elements === 'string') return addElements(key, document.querySelectorAll(elements))
+export function registerElements (key, elements) {
+  if (typeof elements === 'string') return registerElements(key, document.querySelectorAll(elements))
   if (elements.length) return [].map.call(elements, (el) => (el[key] = 1) && el)
   if (elements.nodeType) return (elements[key] = 1) && [elements]
   return []
+}
+
+export function getUUID (el, attr) {
+  const key = 'core-components-uuid'
+  const uuid = window[key] = (window[key] || 0) + 1
+  return `${key}-${uuid}`
+}
+
+export function ariaConnect (master, slave = master.nextElementSibling, relation = 'controls') {
+  master.setAttribute(`aria-${relation}`, slave.id = slave.id || getUUID())
+  slave.setAttribute('aria-labelledby', master.id = master.id || getUUID())
+  return slave
 }
 
 /**
@@ -17,7 +29,7 @@ export function addElements (key, elements) {
 * @param {String} eventName A case-sensitive string representing the event type to listen for
 * @param {Function} listener The function which receives a notification
 */
-export function addEvent (key, eventName, listener) {
+export function registerEvent (key, eventName, listener) {
   if (typeof window === 'undefined') return
 
   // Store on window to make sure multiple instances is merged
@@ -57,17 +69,28 @@ export function assign (target, ...sources) {
 */
 export const CustomEvent = (() => {
   if (typeof window === 'undefined') return
-  if (window.CustomEvent) return window.CustomEvent
+  if (typeof window.CustomEvent === 'function') return window.CustomEvent
 
-  function CustomEvent (event, params = {}) {
-    const evt = document.createEvent('CustomEvent')
-    evt.initCustomEvent(event, Boolean(params.bubbles), Boolean(params.cancelable), params.detail)
-    return evt
+  function CustomEvent (name, params = {}) {
+    const event = document.createEvent('CustomEvent')
+    event.initCustomEvent(name, Boolean(params.bubbles), Boolean(params.cancelable), params.detail)
+    return event
   }
 
   CustomEvent.prototype = window.Event.prototype
   return CustomEvent
 })()
+
+/**
+* dispatchEvent
+* @param {Element} elem The target object
+* @param {String} name The source object(s)
+* @param {Object} detail Detail object (bubbles and cancelable defaults to true)
+* @return {Boolean} Whether the event was cance
+*/
+export function dispatchEvent (elem, name, detail = {}) {
+  return elem.dispatchEvent(new CustomEvent(name, {detail, bubbles: true, cancelable: true}))
+}
 
 /**
 * debounce

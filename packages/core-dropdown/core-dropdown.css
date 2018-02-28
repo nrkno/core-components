@@ -1,0 +1,26 @@
+.nrk-dropdown {
+  position: absolute;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  color: #333;
+  background: #fff;
+  border-radius: 3px;
+  box-shadow: 0 5px 15px rgba(0,0,0,.3);
+  transition: .2s;
+}
+.nrk-dropdown[hidden] {
+  visibility: hidden;
+  display: none;
+  opacity: 0;
+  transform: translateY(-5px);
+}
+/* .nrk-dropdown a {
+  display: block;
+  text-decoration: none;
+  padding: 5px 7px;
+  box-shadow: 0 1px #eee
+} */
+.nrk-dropdown [aria-selected="true"] {
+  background: rgba(0,0,0,.1);
+}
