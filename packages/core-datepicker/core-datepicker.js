@@ -1,16 +1,17 @@
-import {name, version} from './package.json'
-import {getElements, on} from '../utils'
+// import {name, version} from './package.json'
+import {registerElements, registerEvent} from '../utils'
 import 'polyfill-custom-event'
 
-const KEY = `${name}-${version}`                    // Unique id of component
+const KEY = 'core-datepicker' //`${name}-${version}`                    // Unique id of component
 
-export function datepicker (...args) {              // Expose component
+export default function datepicker (...args) {              // Expose component
   return new Datepicker(...args)
 }
 
 class Datepicker {
   constructor (elements) {
-    this.elements = getElements(elements, KEY)
+    this.elements = registerElements(elements, KEY)
+    // tabindex="0" på datepicker kun lytte til events på disse
   }
   open (open = true) {}
   close (open = false) {}

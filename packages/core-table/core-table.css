@@ -1,0 +1,28 @@
+.nrk-table {
+  position: relative;
+  white-space: nowrap;
+  border-collapse: collapse;
+}
+
+.nrk-table th,
+.nrk-table td {
+  position: relative;
+  padding: 1em;
+}
+
+.nrk-table th::after,
+.nrk-table td::after {
+  content: ''; pointer-events: none;
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  border: 1px solid; opacity: .1;
+}
+
+.nrk-table th {
+  background-color: #eee;
+  position: -webkit-sticky;
+  position: sticky;
+  z-index: 2;
+}
+.nrk-table thead th { top: -1px }
+.nrk-table thead th:first-child { left: 0; z-index: 3 }
+.nrk-table th:first-child { left: 0 }

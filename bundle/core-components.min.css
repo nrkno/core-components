@@ -1,0 +1,2 @@
+.nrk-input{box-sizing:border-box;-webkit-appearance:none;-moz-appearance:none;appearance:none;font:inherit;background:#fff;color:#26292a;margin:0;padding:0 .4em;border:1px solid #c8c8c8;border-radius:3px;line-height:2em;height:2em}
+.nrk-dropdown{position:absolute;list-style:none;margin:0;padding:0;color:#333;background:#fff;border-radius:3px;box-shadow:0 5px 15px rgba(0,0,0,.3);transition:.2s}.nrk-dropdown[hidden]{visibility:hidden;display:none;opacity:0;transform:translateY(-5px)}.nrk-dropdown [aria-selected=true]{background:rgba(0,0,0,.1)}

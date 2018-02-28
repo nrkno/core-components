@@ -1,1 +1,1 @@
-export function Datepicker () {}
+export default function Datepicker () {}

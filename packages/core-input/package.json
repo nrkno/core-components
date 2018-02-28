@@ -1,0 +1,15 @@
+{
+  "name": "@nrk/core-input",
+  "homepage": "https://nrkno.github.io/core-components/",
+  "author": "NRK <opensource@nrk.no> (https://www.nrk.no/)",
+  "version": "1.0.0",
+  "license": "MIT",
+  "main": "core-input.cjs.js",
+  "module": "core-input.esm.js",
+  "style": "core-input.css",
+  "dependencies": {
+    "react": "*",
+    "react-dom": "*",
+    "polyfill-custom-event": "^1.0.5"
+  }
+}
