@@ -6,6 +6,7 @@
   "license": "MIT",
   "main": "core-toggle.cjs.js",
   "module": "core-toggle.esm.js",
+  "style": "core-toggle.css",
   "dependencies": {
     "react": "*",
     "react-dom": "*"

@@ -6,6 +6,7 @@
   "license": "MIT",
   "main": "core-dropdown.cjs.js",
   "module": "core-dropdown.esm.js",
+  "style": "core-dropdown.css",
   "dependencies": {
     "react": "*",
     "react-dom": "*"
