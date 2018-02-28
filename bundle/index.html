@@ -66,7 +66,7 @@
       <pre class="prettyprint">npm install @nrk/core-components --save</pre>
       <pre class="prettyprint">import components from '@nrk/core-components' // all JS comonents...
 import input from '@nrk/core-input'           // ...or individual JS component (recommended)
-import Input from '@nrk/core-input.jsx'       // ...or individual JSX component (recommended)</pre>
+import Input from '@nrk/core-input/jsx'       // ...or individual JSX component (recommended)</pre>
     </details>
     <details>
       <summary><h3>Use with Require.js</h3></summary>
@@ -125,7 +125,7 @@ require(['https://static.nrk.no/core-components/X.X.X/core-components.min.js'], 
         const {Toggle} = window.components
         ReactDOM.render(<div>
           <Toggle className="docs-toggle nrk-button">Use with JSX</Toggle>
-          <pre className="prettyprint">{`import Toggle from '@nrk/core-toggle.jsx'
+          <pre className="prettyprint">{`import Toggle from '@nrk/core-toggle/jsx'
 
 <Toggle open={true|false} onToggle={function(){}}>React/JSX</Toggle>
 <p>Content</p>`}</pre>

@@ -52,7 +52,7 @@ export default paths.reduce((acc, path, index) => {           // Make config for
     })
   }
 
-  // Build jsx
+  // Build jsx if it exists
   if (fs.existsSync(jsx)) {
     acc.push({
       input: jsx,

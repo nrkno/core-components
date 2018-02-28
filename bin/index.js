@@ -42,8 +42,9 @@ if (args.publish) {
     .filter((path) => args[getPackageName(path)])  // Get packages specified by arguments
     .forEach((path) => {
       console.log(`Publishing ${getPackageName(path)}`)
-      execSync(`npm version ${args.publish} -m 'Release ${args.publish} %s'`, {cwd: path, stdio: 'inherit'})
-      execSync(`npm run push && git push && git push --tags && npm publish`, {cwd: path, stdio: 'inherit'})
+      // execSync(`npm version ${args.publish} -m 'Release ${args.publish} %s'`, {cwd: path, stdio: 'inherit'})
+      // execSync(`npm run push && git push && git push --tags && npm publish`, {cwd: path, stdio: 'inherit'})
       console.log('') // Insert new line
     })
+  // console.log(pkgs)
 }
