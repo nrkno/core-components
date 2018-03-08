@@ -7,7 +7,6 @@
   "main": "bundle/core-components.cjs.js",
   "module": "bundle/core-components.esm.js",
   "browser": "bundle/core-components.min.js",
-  "style": "bundle/core-components.css",
   "scripts": {
     "build": "rollup --config",
     "install": "node bin/index.js --install",
@@ -19,15 +18,12 @@
     "test": "standard packages/*.js && npm run build && jest"
   },
   "devDependencies": {
-    "chokidar": "2.0.0",
     "jest": "^22.2.2",
-    "postcss-import": "^11.1.0",
     "rollup": "0.55.5",
     "rollup-plugin-buble": "0.19.1",
     "rollup-plugin-commonjs": "8.3.0",
     "rollup-plugin-json": "2.3.0",
     "rollup-plugin-node-resolve": "3.0.2",
-    "rollup-plugin-postcss": "^1.2.9",
     "rollup-plugin-serve": "0.4.2",
     "rollup-plugin-uglify": "3.0.0",
     "standard": "10.0.3"

@@ -1,30 +1,27 @@
 import React from 'react'
-import toggle from './core-toggle'
-import {assign} from '../utils'
+import coreToggle from '../core-toggle/core-toggle'
+import {ariaTarget, assign, dispatchEvent} from '../utils'
 
-export default class Toggle extends React.PureComponent {
-  constructor (props) {
-    super(props)
-    this.getElement = this.getElement.bind(this)
-    this.toggle = this.toggle.bind(this)
-    this.state = {open: this.props.open}
-  }
-  getElement (element) {
-    this.element = element
-  }
-  toggle () {
-    this.setState((prevState) => {
-      const nextState = {open: !prevState.open}
-      const isUpdate = dispatchEvent(this.element, 'toggle', nextState)
-      return isUpdate? nextState : prevState
-    })
-  }
+function mountToggle (self) {
+  coreToggle(ReactDOM.findDOMNode(self).firstElementChild)      // Button must be first child
+}
+
+export default class Toggle extends React.Component {
+  componentDidMount() { mountToggle(this) }                     // Mount client side only to avoid rerender
+  componentDidUpdate () { mountToggle(this) }                   // Must mount also on update in case content changes
   render () {
-    console.log('hei', this.props)
-    return React.createElement('button', assign({
-      'aria-expanded': this.state.open,
-      onClick: this.toggle,
-      ref: toggle
-    }, this.props))
+    return <div {...assign({}, this.props, {open: null, popup: null})}>
+      {React.Children.map(this.props.children, (child, i) => {  // Augment children with aria-attributes
+        return assign({}, child, {
+          props: assign({}, child.props, i ?
+            {'hidden': !this.props.open} :
+            {
+              'aria-expanded': String(Boolean(this.props.open)),
+              'aria-haspopup': String(Boolean(this.props.popup))
+            }
+          )
+        })
+      })}
+    </div>
   }
 }

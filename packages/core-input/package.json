@@ -4,9 +4,9 @@
   "author": "NRK <opensource@nrk.no> (https://www.nrk.no/)",
   "version": "1.0.0",
   "license": "MIT",
-  "main": "core-input.cjs.js",
-  "module": "core-input.esm.js",
-  "style": "core-input.css",
+  "main": "cjs/index.js",
+  "module": "esm/index.js",
+  "browser": "min/index.js",
   "dependencies": {
     "react": "*",
     "react-dom": "*",

@@ -1,51 +1,4 @@
 /**
-* addElements
-* @param {String} key
-* @param {String|NodeList|Array|Element} elements A CSS selector string, nodeList, element array, or single element
-* @return {Array} Array of elements
-*/
-export function registerElements (key, elements) {
-  if (typeof elements === 'string') return registerElements(key, document.querySelectorAll(elements))
-  if (elements.length) return [].map.call(elements, (el) => (el[key] = 1) && el)
-  if (elements.nodeType) return (elements[key] = 1) && [elements]
-  return []
-}
-
-export function getUUID (el, attr) {
-  const key = 'core-components-uuid'
-  const uuid = window[key] = (window[key] || 0) + 1
-  return `${key}-${uuid}`
-}
-
-export function ariaConnect (master, slave = master.nextElementSibling, relation = 'controls') {
-  master.setAttribute(`aria-${relation}`, slave.id = slave.id || getUUID())
-  slave.setAttribute('aria-labelledby', master.id = master.id || getUUID())
-  return slave
-}
-
-/**
-* addEvent
-* @param {String} key A namespace to ensure no double binding and only triggering on registered elements
-* @param {String} eventName A case-sensitive string representing the event type to listen for
-* @param {Function} listener The function which receives a notification
-*/
-export function registerEvent (key, eventName, listener) {
-  if (typeof window === 'undefined') return
-
-  // Store on window to make sure multiple instances is merged
-  const namespace = window[key] = window[key] || {}
-  const isUnbound = !namespace[eventName] && (namespace[eventName] = 1)
-
-  if (isUnbound) {
-    document.addEventListener(eventName, function (event) {
-      for (let el = event.target; el; el = el.parentElement) {
-        if (el[key]) listener(el, event)
-      }
-    }, true) // Use capture to make sure focus/blur bubbles in old Firefox
-  }
-}
-
-/**
 * assign
 * @param {Object} target The target object
 * @param {Object} sources The source object(s)
@@ -55,6 +8,39 @@ export function assign (target, ...sources) {
   sources.filter(Boolean).forEach((source) => {
     Object.keys(source).forEach((key) => (target[key] = source[key]))
   })
+  return target
+}
+
+/**
+* addEvent
+* @param {String} uuid An unique ID of the event to bind - ensurnes single instance
+* @param {String} type The type of event to bind
+* @param {Function} handler The function to call on event
+*/
+export function addEvent (uuid, type, handler) {
+  if (typeof window === 'undefined' || window[`${uuid}-${type}`]) return        // Ensure single instance
+  document.addEventListener(type, handler, window[`${uuid}-${type}`] = true)    // Use capture for old Firefox
+}
+
+export function ariaExpand (master, open) {
+  const relatedTarget = ariaTarget(master)
+  const prevState = master.getAttribute('aria-expanded') === 'true'
+  const wantState = typeof open === 'boolean' ? open : (open === 'toggle' ? !prevState : prevState)
+  const canUpdate = prevState === wantState || dispatchEvent(master, 'toggle', {relatedTarget, isOpen: prevState})
+  const nextState = canUpdate ? wantState : prevState
+
+  relatedTarget[nextState ? 'removeAttribute' : 'setAttribute']('hidden', '')   // Toggle hidden attribute
+  master.setAttribute('aria-expanded', nextState)                               // Set expand always
+  return nextState
+}
+
+export function ariaTarget (master, relationType, targetElement) {
+  const targetId = master.getAttribute('aria-controls') || master.getAttribute('aria-owns') || master.getAttribute('list')
+  const target = targetElement || document.getElementById(targetId) || master.nextElementSibling
+
+  if (!target) throw new Error(`missing nextElementSibling on ${master.outerHTML}`)
+  if (relationType) master.setAttribute(`aria-${relationType}`, target.id = target.id || getUUID())
+  if (relationType) target.setAttribute(`aria-labelledby`, master.id = master.id || getUUID())
   return target
 }
 
@@ -82,17 +68,6 @@ export const CustomEvent = (() => {
 })()
 
 /**
-* dispatchEvent
-* @param {Element} elem The target object
-* @param {String} name The source object(s)
-* @param {Object} detail Detail object (bubbles and cancelable defaults to true)
-* @return {Boolean} Whether the event was cance
-*/
-export function dispatchEvent (elem, name, detail = {}) {
-  return elem.dispatchEvent(new CustomEvent(name, {detail, bubbles: true, cancelable: true}))
-}
-
-/**
 * debounce
 * @param {Function} callback The function to debounce
 * @param {Number} ms The number of milliseconds to delay
@@ -108,11 +83,47 @@ export function debounce (callback, ms) {
 }
 
 /**
-* escapeHTML
-* @param {String} str A string with potential html tokens
-* @return {String} Escaped HTML string according to OWASP recommendation
+* dispatchEvent
+* @param {Element} elem The target object
+* @param {String} name The source object(s)
+* @param {Object} detail Detail object (bubbles and cancelable defaults to true)
+* @return {Boolean} Whether the event was cance
 */
-const ESCAPE_HTML_MAP = {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', '/': '&#x2F;', '\'': '&#x27;'}
-export function escapeHTML (str) {
-  return String(str || '').replace(/[&<>"'/]/g, (char) => ESCAPE_HTML_MAP[char])
+export function dispatchEvent (elem, name, detail = {}) {
+  return elem.dispatchEvent(new CustomEvent(name, {
+    bubbles: true,
+    cancelable: true,
+    detail
+  }))
+}
+
+/**
+* getUUID
+* @return {String} A generated unique ID
+*/
+export function getUUID (el, attr) {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 5)
+}
+
+/**
+* isVisible
+* @param {Element} el A element to check visibility on
+* @return {Boolean} True of false based on visibility
+*/
+export function isVisible (el) {
+  return el.offsetWidth && el.offsetHeight && window.getComputedStyle(el).getPropertyValue('visibility') !== 'hidden'
+}
+
+/**
+* queryAll
+* @param {String|NodeList|Array|Element} elements A CSS selector string, nodeList, element array, or single element
+* @return {Array} Array of elements
+*/
+const FOCUSABLE = 'a,button,input,select,textarea,iframe,[tabindex],[contenteditable="true"]'
+
+export function queryAll (elements, context = document) {
+  if (elements === ':focusable') return queryAll(FOCUSABLE, context).filter((el) => !el.disabled && isVisible(el))
+  if (typeof elements === 'string') return queryAll(context.querySelectorAll(elements))
+  if (elements.length) return [].slice.call(elements)
+  return elements.nodeType ? [elements] : []
 }

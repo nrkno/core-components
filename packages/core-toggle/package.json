@@ -4,9 +4,9 @@
   "author": "NRK <opensource@nrk.no> (https://www.nrk.no/)",
   "version": "1.0.0",
   "license": "MIT",
-  "main": "core-toggle.cjs.js",
-  "module": "core-toggle.esm.js",
-  "style": "core-toggle.css",
+  "main": "cjs/index.js",
+  "module": "esm/index.js",
+  "browser": "min/index.js",
   "dependencies": {
     "react": "*",
     "react-dom": "*"
