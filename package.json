@@ -13,7 +13,7 @@
     "publish:minor": "node bin/index.js --publish=minor",
     "publish:major": "node bin/index.js --publish=major",
     "start": "rollup --config --watch",
-    "static-publish": "npm run build && static-publish publish --directory ./bundle --package ./package.json --verbose --latest",
+    "static-publish": "static-publish publish --directory ./bundle --package ./package.json --verbose --latest",
     "test": "standard packages/*.js && npm run build && jest"
   },
   "devDependencies": {

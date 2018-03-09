@@ -1,12 +1,2 @@
-(function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-	typeof define === 'function' && define.amd ? define(factory) :
-	(global.Datepicker = factory());
-}(this, (function () { 'use strict';
-
-function Datepicker () {}
-
-return Datepicker;
-
-})));
+!function(e,t){"object"==typeof exports&&"undefined"!=typeof module?module.exports=t():"function"==typeof define&&define.amd?define(t):e.Datepicker=t()}(this,function(){"use strict";return function(){}});
 //# sourceMappingURL=index.js.map
