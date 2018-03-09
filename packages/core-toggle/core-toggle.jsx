@@ -1,6 +1,6 @@
 import React from 'react'
 import coreToggle from '../core-toggle/core-toggle'
-import {ariaTarget, assign, dispatchEvent} from '../utils'
+import {assign} from '../utils'
 
 function mountToggle (self) {
   coreToggle(ReactDOM.findDOMNode(self).firstElementChild)      // Button must be first child

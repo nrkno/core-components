@@ -1,3 +1,6 @@
+const IS_ANDROID = typeof window !== 'undefined' && /(android)/i.test(window.navigator.userAgent) // Bad, but needed
+const FOCUSABLE = 'a,button,input,select,textarea,iframe,[tabindex],[contenteditable="true"]'
+
 /**
 * assign
 * @param {Object} target The target object
@@ -37,10 +40,13 @@ export function ariaExpand (master, open) {
 export function ariaTarget (master, relationType, targetElement) {
   const targetId = master.getAttribute('aria-controls') || master.getAttribute('aria-owns') || master.getAttribute('list')
   const target = targetElement || document.getElementById(targetId) || master.nextElementSibling
+  const label = IS_ANDROID ? 'data' : 'aria'   // Andriod has a bug and reads only label instead of content
 
   if (!target) throw new Error(`missing nextElementSibling on ${master.outerHTML}`)
-  if (relationType) master.setAttribute(`aria-${relationType}`, target.id = target.id || getUUID())
-  if (relationType) target.setAttribute(`aria-labelledby`, master.id = master.id || getUUID())
+  if (relationType) {
+    master.setAttribute(`aria-${relationType}`, target.id = target.id || getUUID())
+    target.setAttribute(`${label}-labelledby`, master.id = master.id || getUUID())
+  }
   return target
 }
 
@@ -119,8 +125,6 @@ export function isVisible (el) {
 * @param {String|NodeList|Array|Element} elements A CSS selector string, nodeList, element array, or single element
 * @return {Array} Array of elements
 */
-const FOCUSABLE = 'a,button,input,select,textarea,iframe,[tabindex],[contenteditable="true"]'
-
 export function queryAll (elements, context = document) {
   if (elements === ':focusable') return queryAll(FOCUSABLE, context).filter((el) => !el.disabled && isVisible(el))
   if (typeof elements === 'string') return queryAll(context.querySelectorAll(elements))

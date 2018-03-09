@@ -29,7 +29,7 @@ function camelCase (str) {
   return str.replace(/-+\w/g, (m) => m.slice(-1).toUpperCase())
 }
 
-export default pkgs.reduce((acc, path, index) => {            // Make config for all packages
+export default pkgs.reduce((acc, path) => {     // Make config for all packages (including root)
   const pkg = require(`${path}/package.json`)
   const file = pkg.name.split('/').pop()                      // Name without scope
   const name = camelCase(file)

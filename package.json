@@ -4,9 +4,7 @@
   "author": "NRK <opensource@nrk.no> (https://www.nrk.no/)",
   "version": "1.0.0",
   "license": "MIT",
-  "main": "bundle/core-components.cjs.js",
-  "module": "bundle/core-components.esm.js",
-  "browser": "bundle/core-components.min.js",
+  "main": "packages/core-components.min.js",
   "scripts": {
     "build": "rollup --config",
     "install": "node bin/index.js --install",

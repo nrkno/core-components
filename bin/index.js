@@ -41,17 +41,16 @@ if (args.publish) {
   // Update packages
   pkgs
     .filter((path) => args[getPackageName(path)])  // Get packages specified by arguments
-    // TODO Add warning when trying to publish an non existing package
     .forEach((path) => {
       console.log(`Publishing ${getPackageName(path)}`)
       execSync(`npm version ${args.publish} -m 'Release ${args.publish} %s'`, {cwd: path, stdio: 'inherit'})
-      execSync(`npm run push && git push && git push --tags && npm publish`, {cwd: path, stdio: 'inherit'})
+      execSync(`git push && git push --tags && npm publish`, {cwd: path, stdio: 'inherit'})
       console.log('') // Insert new line
     })
 
   // Update main package
-  // console.log(`Publishing core-components`)
-  // execSync(`npm version ${args.publish} -m 'Release ${args.publish} %s'`, {cwd: process.cwd(), stdio: 'inherit'})
-  // execSync(`npm run push && git push && git push --tags && npm publish`, {cwd: process.cwd(), stdio: 'inherit'})
-  // console.log('') // Insert new line
+  console.log(`Updating version for core-components`)
+  execSync(`npm version ${args.publish}`, {cwd: process.cwd(), stdio: 'inherit'})
+  execSync(`git push && git push --tags`, {cwd: process.cwd(), stdio: 'inherit'})
+  console.log('') // Insert new line
 }

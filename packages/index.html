@@ -9,69 +9,89 @@
   <link rel="stylesheet" href="https://static.nrk.no/core-css/latest/core-css.min.css">
   <style>
     html { font: 110%/1.5 'LFT Etica',sans-serif; background: #fcfcfc; color: #26292a }
-    .prettyprint.prettyprint { overflow: auto; border: 0; padding: 4px 6px; font-size: 14px; background: #f6f6f6 }
+    .prettyprint.prettyprint { overflow: auto; border: 0; padding: 4px 6px; font-size: 14px; font-weight: 400; text-transform: none; background: #f6f6f6 }
     .docs-menu { list-style: none; margin: 0; padding: 20px; font-size: 14px; line-height: 2 }
     .docs-menu a { display: block; text-decoration: none; opacity: .7; transition: .2s }
     .docs-menu a:hover, .docs-menu a:focus, .docs-menu a.is-active { font-weight: 700; opacity: 1 }
     .docs-page h2:not(:first-child) { margin-top: 3rem; padding-top: 3rem; border-top: 1px solid #ddd }
     .docs-page h3 { font-size: 12px; letter-spacing: .05em; text-transform: uppercase; margin: 2em 0 -1em }
-    .docs-page p { max-width: 700px; -webkit-font-smoothing: antialiased }.docs-page { padding: 4% }
-    .docs-page summary h3 { display: inline-block; margin: 0 }
-    .docs-page summary { font-size: 15px }
-
+    .docs-page p, .docs-page li { max-width: 700px; -webkit-font-smoothing: antialiased }.docs-page { padding: 4% }
+    .docs-page summary { font-size: 15px }.docs-page summary h3 { display: inline-block; margin: 0 }
+    .docs-page details[open] { padding-left: 15px }.docs-page details[open] summary { margin-left: -15px }
     .docs-support > * { margin: 1em 1px; min-width: 80px; padding: 1em; font-size: 13px; text-align: center }
 
-    .docs-toggle::before { content: '\A0'; float: left; width: 20px; transition: .3s; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 15 15'%3E%3Cpath fill='none' stroke='%23000' stroke-linecap='round' d='M1.5 7.5h12m-6-6v12'%3E%3C/path%3E%3C/svg%3E") 50%/15px no-repeat }
-    .docs-toggle[aria-expanded="true"]::before { -webkit-transform: rotate(45deg); transform: rotate(45deg) }
-
-    .docs-dropdown::before { content: '\A0'; float: right; width: 20px; transition: .3s; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 15 15'%3E%3Cpath stroke='%23000' fill='none' stroke-linecap='round' d='M1.5 5l6 6 6-6'%3E%3C/path%3E%3C/svg%3E") 50%/15px no-repeat }
-    .docs-dropdown[aria-expanded="true"]::before { -webkit-transform: rotate(180deg); transform: rotate(180deg) }
-    .docs-drop { position: absolute; z-index: 3; display: block; list-style: none; margin: 0; padding: 0; width: 200px; border-radius: 2px; background: #fff; box-shadow: 0 5px 15px rgba(0,0,0,.3); transition: .3s }
-    .docs-drop[hidden] { visibility: hidden; opacity: 0; transform: translateY(-5px) }
-    .docs-drop a, .docs-drop button { display: block; width: 100%; padding: 0; border: 0; font: inherit; text-align: left; text-decoration: none }
+    /* Toggle */
+    .docs-style .docs-button { background: none; font: inherit; font-size: 14px; padding: 8px 16px; border: 1px solid #ccc; margin: 2px 0 }
+    .docs-style .docs-toggle { box-sizing: border-box; width: 100%; text-align: left }
+    .docs-style .docs-toggle::before { content: '\A0'; float: left; margin: 0 5px 0 -5px; width: 20px; transition: .3s; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 15 15'%3E%3Cpath fill='none' stroke='%23000' stroke-linecap='round' d='M1.5 7.5h12m-6-6v12'%3E%3C/path%3E%3C/svg%3E") 50%/15px no-repeat }
+    .docs-style .docs-toggle[aria-expanded="true"]::before { -webkit-transform: rotate(45deg); transform: rotate(45deg) }
+    .docs-style .docs-toggle + * { padding: 15px; margin: -3px 0 1em; border: 1px solid #ccc; transition: .2s }
+    .docs-style .docs-toggle + *[hidden] { display: block; overflow: hidden; visibility: hidden; opacity: 0; height: 0; margin-bottom: 0; padding-top: 0; padding-bottom: 0 }
+    .docs-style .docs-dropdown::before { content: '\A0'; float: right; margin: 0 -5px 0 5px; width: 20px; transition: .3s; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 15 15'%3E%3Cpath stroke='%23000' fill='none' stroke-linecap='round' d='M1.5 5l6 6 6-6'%3E%3C/path%3E%3C/svg%3E") 50%/15px no-repeat }
+    .docs-style .docs-dropdown:not(.docs-tip)[aria-expanded="true"]::before { -webkit-transform: rotate(180deg); transform: rotate(180deg) }
+    .docs-style .docs-dropdown + * { position: absolute; z-index: 3; display: block; list-style: none; margin: 0; padding: 0; width: 200px; background: #fff; box-shadow: 0 5px 15px rgba(0,0,0,.3); transition: .3s }
+    .docs-style .docs-dropdown + *[hidden] { visibility: hidden; opacity: 0; transform: translateY(-5px) }
+    .docs-style .docs-dropdown + * a, .docs-style .docs-dropdown + ul button { box-sizing: border-box; display: block; width: 100%; border: 0; padding: 7px 14px; margin: 0; font: inherit; color: inherit; background: none; text-decoration: none; text-align: left }
+    .docs-style .docs-tip::before { float: left; margin: -4px 9px 0 -9px; width: 20px; height: 20px; border: 1px solid #666; border-radius: 100%; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 15 15'%3E%3Cpath d='M7.07 9.04a2.2 2.2 0 0 1 .48-1.43l.46-.52a5.47 5.47 0 0 0 .82-1c.1-.2.14-.4.14-.62 0-.42-.12-.74-.36-.97-.24-.24-.6-.35-1.07-.35-.5 0-.87.14-1.15.42-.27.28-.4.68-.4 1.2H5.2c0-.76.2-1.34.62-1.75.4-.4 1-.6 1.76-.6.33 0 .62.03.9.12.27.08.5.2.7.37a1.83 1.83 0 0 1 .61 1.44c0 .3-.06.54-.16.76-.1.23-.22.43-.37.62s-.3.37-.48.54c-.18.17-.34.35-.5.53-.14.17-.26.36-.36.56-.1.2-.15.43-.15.7v.24h-.75v-.28zm-.25 2.03c0-.2.06-.33.17-.44.1-.1.26-.15.44-.15.17 0 .3.05.43.15.12.1.17.24.17.42s-.05.33-.17.43a.65.65 0 0 1-.43.16.68.68 0 0 1-.45-.15.52.52 0 0 1-.18-.4z'/%3E%3C/svg%3E") 50%/contain no-repeat }
+    .docs-style .docs-tip { font-size: 13px; border: 0 }
+    .docs-style .docs-tip + * { padding: 15px }
 
     @media(min-width:720px){
+      .docs-page .nrk-grid > .nrk-xs-12of12 { padding-right: 2em }
       .docs-menu { position: fixed; width: 160px; height: 100vh; padding-top: 90px }
       .docs-page { margin-left: 200px }
     }
   </style>
 </head>
-<body>
+<body class="docs-style">
   <ul class="docs-menu nrk-color-shade-1">
     <li><a href="#">Getting started</a></li>
     <li><a href="#toggle">Toggle</a></li>
     <li><a href="#input">Input</a></li>
+    <li><a href="#dialog">Dialog</a></li>
     <li><a href="#datepicker">Datepicker</a></li>
-    <li><a href="#a11y">Accessibility</a></li>
-    <li><a href="#table">Table</a></li>
-    <li><a href="#faq">FAQ</a></li>
+    <!-- <li><a href="#a11y">Accessibility</a></li> -->
+    <!-- <li><a href="#faq">FAQ</a></li> -->
+    <li><label><input type="checkbox" checked onchange="document.body.classList.toggle('docs-style')"> Example style</label></li>
   </ul>
-
 
   <article class="docs-page">
     <h2>@nrk/core-components <!--version--></h2>
     <h3>Getting started</h3>
     <p>
-      core-components provides a easy, unstyled and accessbile layer of functionality.
-      React/Preact (with preact-compat) or VanillaJS.
+      There are vast differences between screen readers, browsers and how specifications
+      actually affect end users. <code class="prettyprint">core-components</code> provides easy,
+      unstyled, independent and accessible components, taking away the hard work of normalizing basic interactions.
+      All components are bound to version (allowing multiple instances without conflicts) and are available for both <a href="https://stackoverflow.com/questions/20435653/what-is-vanillajs" target="_blank">VanillaJS</a>
+      and <a href="https://reactjs.org/" target="_blank">React</a>
+      (and <a href="https://preactjs.com/" target="_blank">preact</a> with
+      <a href="https://github.com/developit/preact-compat" target="_blank">preact-compat</a>).
+      <small><em>Note: This is the first version of core-components -
+      <a href="https://github.com/nrkno/core-components/issues/" target="_blank">feedback</a>
+      and testing is welcome!</em></small>
+    </p>
+    <p>
+      <small><strong>Note:</strong> Styling in this documentation is only for demonstration purposes.</small>
     </p>
     <details>
       <summary><h3>Use from NPM</h3> - recommended</summary>
-      <pre class="prettyprint">npm install @nrk/core-toggle --save      # Components are individually installed to achieve individual versioning</pre>
-      <pre class="prettyprint">import coreToggle from '@nrk/core-toggle'     // Vanilla JS
-import Toggle from '@nrk/core-toggle/jsx' // ...or React/Preact compatible JSX</pre>
+      <h3>Shell</h3>
+      <pre class="prettyprint">npm install @nrk/<strong>core-toggle</strong> --save         # Components are individually installed to achieve individual versioning</pre>
+      <h3>Javascript</h3>
+      <pre class="prettyprint">import coreToggle from '@nrk/<strong>core-toggle</strong>'   // Vanilla JS
+import Toggle from '@nrk/<strong>core-toggle</strong>/jsx'   // ...or React/Preact compatible JSX</pre>
     </details>
     <details>
-      <summary><h3>Use with Require.js</h3></summary>
+      <summary><h3>Use with Require.js</h3> - old school</summary>
       <pre class="prettyprint">&lt;script&gt;
-  require(['https://static.nrk.no/core-components/latest/core-toggle/core-toggle.min.js'], function(coreToggle) {
+  require(['https://static.nrk.no/core-components/latest/<strong>core-toggle</strong>/min/index.js'], function(coreToggle) {
     // use coreToggle() here
   });
 &lt;/script&gt;</pre>
     </details>
     <details>
       <summary><h3>Use with script tag</h3> - good for prototyping, avoid in production</summary>
-      <pre class="prettyprint">&lt;script src="https://static.nrk.no/core-components/latest/core-toggle/core-toggle.min.js"&gt;&lt;/script&gt;
+      <pre class="prettyprint">&lt;script src="https://static.nrk.no/core-components/latest/<strong>core-toggle</strong>/min/index.js"&gt;&lt;/script&gt;
 &lt;script&gt;
   // use window.coreToggle() here
 &lt;/script&gt;</pre>
@@ -99,39 +119,41 @@ import Toggle from '@nrk/core-toggle/jsx' // ...or React/Preact compatible JSX</
 
     <h2 id="toggle">Toggle</h2>
     <p>
-      Use <code class="prettyprint">core-toggle</code> to hide/show or expand/collapse contents.
-      Has to be a button (use nrk-unset or nrk-button).
-      Should place related element as next adjacent sibling, but can be
-      placed as next screen-reader-reachable element (not same as focusable).
+      <code class="prettyprint">core-toggle</code> simply makes a
+      <code class="prettyprint">&lt;button&gt;</code> toggle visibility of next adjacent element.
+      <code class="prettyprint">core-toggle</code> supports nestability, and can easily be extended with custom animations or behavior manipulation
+      though the <a href="https://www.w3schools.com/jsref/event_ontoggle.asp" target="_blank">toggle event</a>.
+      It has two modes:
     </p>
     <div class="nrk-grid">
       <div class="nrk-xs-12of12 nrk-md-6of12">
-        <h3>Toggle without popup</h3>
-        <br>
-        <button class="docs-toggle js nrk-button">Example toggle</button>
+        <h3>Default toggle</h3>
+        <p><small>
+          Content is only toggled when clicking <code class="prettyprint">&lt;button&gt;</code>.
+          Great for accordions and expand/collapse panels.
+        </small></p>
+        <button class="docs-toggle docs-button js">Example toggle</button>
         <div hidden>Content</div>
         <div id="docs-react-toggle"></div>
         <script type="text/babel">
-          let i = 0
-          document.body.onkeydown = (event) => {
-            if (event.keyCode === 27) i++
-            console.log(i%2)
-            ReactDOM.render(<Toggle open={true}>
-              <button className="docs-toggle nrk-button">Use with JSX</button>
-              {i%2 ? <div>Div Content</div> : <ul><li>Ul Content</li></ul>}
-            </Toggle>, document.getElementById('docs-react-toggle'))
-          }
+          ReactDOM.render(<Toggle>
+            <button className="docs-toggle docs-button">Example toggle JSX</button>
+            <div>Content</div>
+          </Toggle>, document.getElementById('docs-react-toggle'))
         </script>
       </div>
-      <div>
-        <h3>Toggle with popup</h3>
-        <br>
-        <button class="docs-dropdown js nrk-button" aria-expanded="false">Example dropdown</button>
-        <ul class="docs-drop" hidden>
+      <div class="nrk-xs-12of12 nrk-md-6of12">
+        <h3>Popup toggle</h3>
+        <p><small>
+          Content is toggled when clicking <code class="prettyprint">&lt;button&gt;</code>, and
+          closed when clicking outside content. Great for dropdowns and tooltips.
+        </small></p>
+        <button class="docs-dropdown docs-button js" aria-expanded="false">Example dropdown</button>
+        <ul hidden>
           <li><a href="#">Link</a></li>
           <li>
-            <button class="docs-dropdown js">Can also be nested</button>
-            <ul class="docs-drop">
+            <button class="docs-dropdown docs-button js">Can also be nested</button>
+            <ul>
               <li><a href="#">Sub-link</a></li>
               <li><button>Sub-button</button></li>
             </ul>
@@ -139,92 +161,139 @@ import Toggle from '@nrk/core-toggle/jsx' // ...or React/Preact compatible JSX</
         </ul>
         <div id="docs-react-dropdown"></div>
         <script type="text/babel">
-          const Button = (props) => <button {...props}>{props.text}</button>
-          class List extends React.Component {
-            render() {
-              return <ul {...this.props}>
-                <li><a href="#">Sub-link</a></li>
-                <li><button>Sub-button</button></li>
-              </ul>
-            }
-          }
-
-          ReactDOM.render(<Toggle popup={true} onToggle={(e) => console.log(e.type, e)}>
-            <Button className="docs-dropdown nrk-button" text="Use with JSX" />
-            <ul className="docs-drop nrk-unset">
+          ReactDOM.render(<Toggle popup={true}>
+            <button className="docs-dropdown docs-button">Example dropdown JSX</button>
+            <ul>
               <li><a href="#">Link</a></li>
               <li>
                 <Toggle popup={true}>
                   <button className="docs-dropdown">Can also be nested</button>
-                  <List className="docs-drop nrk-unset" />
+                  <ul>
+                    <li><a href="#">Sub-link</a></li>
+                    <li><button>Sub-button</button></li>
+                  </ul>
                 </Toggle>
               </li>
             </ul>
           </Toggle>, document.getElementById('docs-react-dropdown'))
         </script>
+        <button class="docs-dropdown docs-tip js docs-button" aria-expanded="false">Example tooltip</button>
+        <div hidden>Some help text</div>
       </div>
     </div>
-    <div class="nrk-grid">
-      <div class="nrk-xs-12of12 nrk-md-6of12">
-        <h3>Use with JS</h3>
-        <pre class="prettyprint">&lt;button&gt;Closed example&lt;button&gt;
-&lt;div hidden&gt;Content&lt;/div&gt;</pre>
+    <h3>Usage</h3><br>
+    <details>
+      <summary>Use with VanillaJS</summary>
+        <h3>HTML &mdash; CLOSED</h3>
+        <pre class="prettyprint">&lt;button&gt;Closed example&lt;button&gt; &lt;!-- Clickable element must be a &lt;button&gt;. Ease styling with <a href="https://static.nrk.no/core-css/latest/#utilities" target="_blank">.nrk-unset</a> from core-css --&gt;
+&lt;div hidden&gt;Content&lt;/div&gt;      &lt;!-- <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/hidden" target="_blank">hidden attribute</a> is used here to avoid <a href="https://en.wikipedia.org/wiki/Flash_of_unstyled_content" target="_blank">flash of unstyled content</a> --&gt;</pre>
+<h3>HTML &mdash; OPEN</h3>
+<pre class="prettyprint">&lt;button aria-expanded="true"&gt;Open example&lt;button&gt;
+&lt;div&gt;Content&lt;/div&gt;
+</pre>
+        <h3>Javascript</h3>
         <pre class="prettyprint">import coreToggle from '@nrk/core-toggle'
 
-coreToggle(elements, {
-  open: false,
-  popup: false
-})</pre>
-        <p>
-          <small><em><strong>Note:</strong> <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/hidden" target="_blank">hidden attribute</a> to avoid <a href="https://en.wikipedia.org/wiki/Flash_of_unstyled_content" target="_blank">flash of unstyled content</a></em></small>
-        </p>
-      </div>
-      <div class="nrk-xs-12of12 nrk-md-6of12">
-        <h3>Use with JSX</h3>
-        <pre class="prettyprint">import Toggle from '@nrk/core-toggle/jsx'
+coreToggle(String|Element|Elements, { // Accepts a <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors" target="
+">selector string</a>, <a href="https://developer.mozilla.org/en-US/docs/Web/API/NodeList" target="_blank">NodeList</a>, <a href="https://developer.mozilla.org/en-US/docs/Web/API/Element" target="_blank">Element</a> or array of Elements
+  open: null,                         // Defaults to value of aria-expanded or false. Use true|false to force open state
+  popup: null                         // Defaults to value of aria-haspopup or false. Use true|false to force popup mode
+})
 
-&lt;Toggle open={false} popup={false} onToggle={function(){}}&gt;
-  &lt;Toggle.Button className="nrk-button">
-    Use with JSX
-  &lt;/Toggle.Button&gt;
-  &lt;Toggle.Content className="nrk-drop"&gt;
-    Content
-  &lt;/Toggle.Content&gt;
-&lt;/Toggle&gt;</pre>
-      </div>
-    </div>
-    <h3>Events</h3>
-    <pre class="prettyprint">document.addEventListener('toggle', function (event) {}) // Fires before an item is toggled. Can be prevent toggle with event.preventDefault()</pre>
-    <h3>Styling</h3>
-    <pre class="prettyprint">TODO</pre>
-
-
-    <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
-    <!-- Dropdown -->
-    <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
-
-    <!-- <h2 id="dropdown">Dropdown</h2>
-    <h3>Demo + usage</h3><br><div id="docs-react-toggle">
-      <script type="text/babel">
-        const {Toggle} = window.components
-        ReactDOM.render(<div>
-          <Toggle className="nrk-button nrk-expand">Use with JSX</Toggle>
-          <pre className="prettyprint">{`import Toggle from '@nrk/core-toggle'
-
-          <Toggle open={true|false} onToggle={function(){}}>React/JSX</Toggle>
-          <p>Content</p>`}</pre>
-        </div>, document.getElementById('docs-react-toggle'))
-      </script>
-    </div>
-    <details>
-      <summary><h3>Events</h3></summary>
-      <pre class="prettyprint">document.addEventListener('toggle', function (event) {})</pre>
+// Example:
+coreToggle('.my-toggle')
+coreToggle('.my-dropdown', {popup: true})
+</pre>
     </details>
     <details>
-      <summary><h3>Styling</h3></summary>
-      <pre class="prettyprint">TODO</pre>
-    </details>-->
+      <summary>Use with React/Preact</summary>
+        <pre class="prettyprint">import Toggle from '@nrk/core-toggle/jsx'
 
+// All &lt;Toggle&gt; props are optional
+// Non-settings props (like className, style etc.) will be applied as actual attributes
+&lt;Toggle open={false} popup={false} onToggle={function(){}}&gt;
+  &lt;button&gt;Use with JSX&lt;/button&gt;  // First element must result in a &lt;button&gt;-tag. Accepts both elements and components
+  &lt;div&gt;Content&lt;/div&gt;             // Next element will be toggled. Accepts both elements and components
+&lt;/Toggle&gt;</pre>
+    </details>
+    <details>
+      <summary>Events</summary>
+      <p>
+        Before a <code class="prettyprint">core-toggle</code> changes open state,
+        a <a href="https://www.w3schools.com/jsref/event_ontoggle.asp" target="_blank">toggle event</a>
+        is fired (both for VanillaJS and React/Preact components).
+        The toggle event is cancelable, meaning you can use <a href="https://developer.mozilla.org/en-US/docs/Web/API/Event/preventDefault" target="_blank"><code class="prettyprint">event.preventDefault()</code></a>
+        to cancel toggling. The event also <a href="https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Building_blocks/Events#Event_bubbling_and_capture" target="_blank">bubbles</a>,
+        and can therefore be detected both from button element itself, or any parent element (read <a href="https://stackoverflow.com/questions/1687296/what-is-dom-event-delegation" target="_blank">event delegation</a>):
+      </p>
+      <pre class="prettyprint">document.addEventListener('toggle', (event) => {
+  event.target                // The button element triggering toggle event
+  event.detail.relatedTarget  // The content element controled by button
+  event.detail.isOpen         // The current toggle state (before toggle event has run)
+})</pre>
+    </details>
+    <details>
+      <summary>Styling</summary>
+      <p>
+        Both the toggle button and toggle content receive attributes reflecting the current state. Example:
+      </p>
+      <pre class="prettyprint">
+.my-example-toggle-button {}                        // Target button in any state
+.my-example-toggle-button[aria-expanded="true"] {}  // Target only open button
+.my-example-toggle-button[aria-expanded="false"] {} // Target only closed button
+
+.my-example-toggle-content {}                       // Target content in any state
+.my-example-toggle-content:not([hidden]) {}         // Target only open content
+.my-example-toggle-content[hidden] {}               // Target only closed content
+</pre>
+    </details>
+
+    <h3>FAQ</h3><br>
+    <details>
+      <summary>Why not use <code class="prettyprint">&lt;details&gt;</code> instead?</summary>
+      <p>
+        Despite having a native <a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details"><code class="prettyprint">&lt;details&gt;</code></a>
+        element for expanding/collapsing content, there are several issues regarding <a target="_blank" href="https://caniuse.com/#feat=details">browser support</a>,
+        <a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details#Example_with_styling">styling</a>,
+        <a target="_blank" href="http://accessibleculture.org/articles/2012/03/screen-readers-and-details-summary/">accessibility</a>
+        and polyfills often conflict with other standards such as <code class="prettyprint">&lt;dialog&gt;</code>.
+      </p>
+    </details>
+    <details>
+      <summary>Why is there no <code class="prettyprint">role="menu"</code> in dropdowns?</summary>
+      <p>
+        The <a href="https://www.w3.org/TR/wai-aria-practices-1.1/examples/menubar/menubar-1/menubar-1.html" target="_blank">menu role</a>
+        is mainly inteded for context menues and toolbars in <a href="https://www.w3.org/TR/wai-aria-1.1/#application" target="_blank">application interfaces</a>,
+        and has quite complex <a href="https://www.w3.org/TR/wai-aria-practices-1.1/examples/menubar/menubar-1/menubar-1.html#kbd_label">keyboard navigation requirements</a>.
+        As most end users will not expect application behavior in websites and internal web based systems, (implemented)
+        attributes like <code class="prettyprint">aria-controls</code> and <code class="prettyprint">aria-labelledby</code>
+        is sufficient for a good user experience.
+      </p>
+    </details>
+    <details>
+      <summary>Why does dropdowns not open on hover?</summary>
+      <p>
+        Both touch devices and screen readers will have trouble properly
+        interacting with hoverable interfaces (unless more complex fallback logic is implemented).
+        To achieve a consistent and accessible interface, <code class="prettyprint">core-toggle</code>
+        is designed around click interactions.
+      </p>
+    </details>
+    <details>
+      <summary>Why is there no group-option to achieve a single open toggle?</summary>
+      <p>
+        Some expand/collapse interfaces like <a href="https://www.nngroup.com/articles/accordions-complex-content/" target="_blank">accordions</a>
+        behaves like a group - allowing only one expanded area at the time. This pattern however
+        requires more logic and carefully designed animations to avoid confusion over expcted scroll position.
+      </p>
+      <p>
+        <small><em>Example: The user first opens "Toggle-1", and then "Toggle-2" (which closes "Toggle-1").
+        Since "Toggle-1" is placed above, the position "Toggle-2" now changes -
+        potentially outside the viewport on smaller devices.
+        <br>Note: If you do need to implement grouping, you can achieve this by reacting to the
+        <code class="prettyprint">toggle</code> event.</em></small>
+      </p>
+    </details>
 
 
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
@@ -232,7 +301,8 @@ coreToggle(elements, {
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
 
     <h2 id="input">Input</h2>
-    <div class="nrk-grid">
+    <p>Work in progress</p>
+    <!-- <div class="nrk-grid">
       <div style="padding-right:15px">
         <h3>Suggestions</h3><br>
         <label>
@@ -270,25 +340,30 @@ coreToggle(elements, {
       </div>
     </div>
     <h3>Usage</h3>
-    <pre class="prettyprint">import input from '@nrk/core-input'</pre>
+    <pre class="prettyprint">import input from '@nrk/core-input'</pre> -->
 
 
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
     <!-- DATEPICKER -->
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
 
-    <!--<h2 id="datepicker">Datepicker</h2>
-    <h3>Demo</h3>
-    <p>
-      <input type="date" class="nrk-input nrk-datepicker" value="">
-    </p>-->
+    <h2 id="datepicker">Datepicker</h2>
+    <p>Work in progress</p>
 
 
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
-    <!-- CHOICE -->
+    <!-- DIALOG -->
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
 
-    <h2 id="a11y">Accessibility</h2>
+    <h2 id="dialog">Dialog</h2>
+    <p>Work in progress</p>
+
+
+    <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
+    <!-- Accessibility -->
+    <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
+
+    <!--<h2 id="a11y">Accessibility</h2>
     <p>
       <em>Todo: Style and compononentify</em>
     </p>
@@ -324,71 +399,26 @@ coreToggle(elements, {
           <label><input type="radio" name="drink" class="nrk-choice"><span>Tea</span></label>
         </fieldset>
       </div>
-    </div>
-
-
-    <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
-    <!-- TABLE -->
-    <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
-
-    <!-- <h2 id="table">Table</h2>
-    <p>
-      <em>Todo: Sorting, filtering, unsticky, etc.</em>
-    </p>
-    <h3>Usage</h3><br>
-    <div style="max-width:700px;max-height:400px;overflow:scroll">
-      <table class="nrk-table">
-        <thead>
-          <tr><th></th><th>Tittel 1</th><th>Tittel 2</th><th>Tittel 3</th><th>Tittel 4</th><th>Tittel 5</th><th>Tittel 6</td></tr>
-        </thead>
-        <tbod>
-          <tr><th>Tittle 1</th><td>Kolonne 1</td><td>Kolonne 2</td><td>Kolonne 3</td><td>Kolonne 4</td><td>Kolonne 5</td><td>Kolonne 6</td></tr>
-          <tr><th>Tittle 2</th><td>Kolonne 1</td><td>Kolonne 2</td><td>Kolonne 3</td><td>Kolonne 4</td><td>Kolonne 5</td><td>Kolonne 6</td></tr>
-          <tr><th>Tittle 3</th><td>Kolonne 1</td><td>Kolonne 2</td><td>Kolonne 3</td><td>Kolonne 4</td><td>Kolonne 5</td><td>Kolonne 6</td></tr>
-          <tr><th>Tittle 4</th><td>Kolonne 1</td><td>Kolonne 2</td><td>Kolonne 3</td><td>Kolonne 4</td><td>Kolonne 5</td><td>Kolonne 6</td></tr>
-          <tr><th>Tittle 5</th><td>Kolonne 1</td><td>Kolonne 2</td><td>Kolonne 3</td><td>Kolonne 4</td><td>Kolonne 5</td><td>Kolonne 6</td></tr>
-          <tr><th>Tittle 6</th><td>Kolonne 1</td><td>Kolonne 2</td><td>Kolonne 3</td><td>Kolonne 4</td><td>Kolonne 5</td><td>Kolonne 6</td></tr>
-          <tr><th>Tittle 7</th><td>Kolonne 1</td><td>Kolonne 2</td><td>Kolonne 3</td><td>Kolonne 4</td><td>Kolonne 5</td><td>Kolonne 6</td></tr>
-          <tr><th>Tittle 8</th><td>Kolonne 1</td><td>Kolonne 2</td><td>Kolonne 3</td><td>Kolonne 4</td><td>Kolonne 5</td><td>Kolonne 6</td></tr>
-          <tr><th>Tittle 9</th><td>Kolonne 1</td><td>Kolonne 2</td><td>Kolonne 3</td><td>Kolonne 4</td><td>Kolonne 5</td><td>Kolonne 6</td></tr>
-        </tbod>
-      </table>
-    </div> -->
+    </div>-->
 
 
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
     <!-- FAQ -->
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
 
-    <h2 id="faq">FAQ</h2>
-    <h3>Why not role menu etc?</h3>
+    <!-- <h2 id="faq">FAQ</h2>
+    <h3>What mare components are coming?</h3>
     <p>
-      Not that kind of menu https://www.w3.org/TR/wai-aria-practices-1.1/examples/menubar/menubar-1/menubar-1.html
-    </p>
-    <h3>Why no hover dropdown?</h3>
-    <p>
-      Because consistent UI, better for accesibility and mobile
-    </p>
-    <h3>Why no grouped toggle?</h3>
-    <p>
-      Because, loosing scroll-position when collapsing. Can be acchieved with toggle-event.
+      Table
     </p>
     <h3>Why no select tag?</h3>
     <p>
       Because, mostly styling, and should be avoided anyway: https://www.youtube.com/watch?v=CUkMCQR4TpY
     </p>
-    <h3>Why not just use <code class="prettyprint">&lt;details&gt;</code> instead of core-expand?</h3>
-    <p>
-      Despite having a native <a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details"><code class="prettyprint">&lt;details&gt;</code></a>
-      element for expanding/collapsing content, there are several issues regarding <a target="_blank" href="https://caniuse.com/#feat=details">browser support</a>,
-      <a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details#Example_with_styling">styling</a>,
-      <a target="_blank" href="http://accessibleculture.org/articles/2012/03/screen-readers-and-details-summary/">accessibility</a>
-      and polyfillis often conflict with other standards such as <code class="prettyprint">&lt;dialog&gt;</code>
-    </p>
     <h3>Why can I not just use plain progress elements?</h3>
     <p>UU. That's why.</p>
     <h3>Why not use web components?</h3>
-    <p>They are <a target="_blank" href="https://hacks.mozilla.org/2015/06/the-state-of-web-components/">not mature for production usage</a> yet.</p>
+    <p>They are <a target="_blank" href="https://hacks.mozilla.org/2015/06/the-state-of-web-components/">not mature for production usage</a> yet.</p> -->
   </article>
 
   <!-- JS setup -->
@@ -405,19 +435,19 @@ coreToggle(elements, {
   <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
   <script>
     // Example animate toggle open
-    document.addEventListener('toggle', function (event) {
-      if (event.target.className.indexOf('docs-toggle') === -1) return
-      const isOpen = event.detail.isOpen
-      const target = event.detail.relatedTarget
-      const height = isOpen ? target.scrollHeight : 0
-
-      target.style.cssText = 'display: block; overflow: hidden; transition: .3s; height: ' + height + 'px'
-      target.clientHeight
-      target.style.visibility = isOpen ? 'hidden' : 'visible'
-      target.style.height = isOpen? '0px' : target.scrollHeight + 'px'
-
-      if (!isOpen) setTimeout(function (){ target.style.height = 'auto' }, 300) // Dynamic height after animation
-    })
+    // document.addEventListener('toggle', function (event) {
+    //   if (event.target.className.indexOf('docs-toggle') === -1) return
+    //   const isOpen = event.detail.isOpen
+    //   const target = event.detail.relatedTarget
+    //   const height = isOpen ? target.scrollHeight : 0
+    //
+    //   target.style.cssText = 'display: block; overflow: hidden; transition: .3s; height: ' + height + 'px'
+    //   target.clientHeight
+    //   target.style.visibility = isOpen ? 'hidden' : 'visible'
+    //   target.style.height = isOpen? '0px' : target.scrollHeight + 'px'
+    //
+    //   if (!isOpen) setTimeout(function (){ target.style.height = 'auto' }, 300) // Dynamic height after animation
+    // })
 
     // window.input('.nrk-input', {
     //   mode: 'list',
@@ -452,7 +482,7 @@ coreToggle(elements, {
   </script>
   <script src="core-toggle/min/index.js"></script>
   <script>
-    window.coreToggle('.docs-toggle.js')
+    window.coreToggle('.docs-toggle.js') // Testing multiple initializtions
   </script>
 
   <!-- RequireJS setup -->
