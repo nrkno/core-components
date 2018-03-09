@@ -4,9 +4,7 @@
   "author": "NRK <opensource@nrk.no> (https://www.nrk.no/)",
   "version": "1.0.0",
   "license": "MIT",
-  "main": "bundle/core-components.cjs.js",
-  "module": "bundle/core-components.esm.js",
-  "browser": "bundle/core-components.min.js",
+  "main": "bundle/core-components.min.js",
   "jsx": "bundle/core-components.jsx.js",
   "scripts": {
     "build": "rollup --config",
@@ -15,7 +13,7 @@
     "publish:minor": "node bin/index.js --publish=minor",
     "publish:major": "node bin/index.js --publish=major",
     "start": "rollup --config --watch",
-    "static-publish": "static-publish publish --directory ./bundle --package ./package.json --verbose --latest",
+    "static-publish": "npm run build && static-publish publish --directory ./bundle --package ./package.json --verbose --latest",
     "test": "standard packages/*.js && npm run build && jest"
   },
   "devDependencies": {

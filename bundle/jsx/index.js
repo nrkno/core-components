@@ -1,8 +1,8 @@
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('react')) :
-	typeof define === 'function' && define.amd ? define(['react'], factory) :
-	(global.Toggle = factory(global.React));
-}(this, (function (React) { 'use strict';
+	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('react')) :
+	typeof define === 'function' && define.amd ? define(['exports', 'react'], factory) :
+	(factory((global.Components = {}),global.React));
+}(this, (function (exports,React) { 'use strict';
 
 React = React && React.hasOwnProperty('default') ? React['default'] : React;
 
@@ -219,7 +219,14 @@ var Toggle = (function (superclass) {
   return Toggle;
 }(React.Component));
 
-return Toggle;
+function Input () {
+  return React.createElement( 'div', null, "Testing input" )
+}
+
+exports.Toggle = Toggle;
+exports.Input = Input;
+
+Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
 //# sourceMappingURL=index.js.map

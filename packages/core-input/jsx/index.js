@@ -1,2 +1,16 @@
-!function(e,t){"object"==typeof exports&&"undefined"!=typeof module?module.exports=t(require("react")):"function"==typeof define&&define.amd?define(["react"],t):e.Input=t(e.React)}(this,function(e){"use strict";return e=e&&e.hasOwnProperty("default")?e.default:e,function(){return e.createElement("div",null,"Testing input")}});
+(function (global, factory) {
+	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('react')) :
+	typeof define === 'function' && define.amd ? define(['react'], factory) :
+	(global.Input = factory(global.React));
+}(this, (function (React) { 'use strict';
+
+React = React && React.hasOwnProperty('default') ? React['default'] : React;
+
+function Input () {
+  return React.createElement( 'div', null, "Testing input" )
+}
+
+return Input;
+
+})));
 //# sourceMappingURL=index.js.map

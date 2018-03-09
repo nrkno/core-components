@@ -21,34 +21,28 @@ const config = {
   ]
 }
 
-function assignEach (targets, ...sources) {
-  return targets.map((target) => Object.assign({}, ...sources, target))
-}
-
-function camelCase (str) {
-  return str.replace(/-+\w/g, (m) => m.slice(-1).toUpperCase())
-}
-
 export default ['.'].concat(pkgs).reduce((acc, path) => {     // Make config for all packages (including root)
   const pkg = require(`${path}/package.json`)
-  const file = pkg.name.split('/').pop()                      // Name without scope
-  const name = camelCase(file)                                // Will be expoted when UMD
-  const input = path.replace('.', 'bundle')                   // Root has files in bundle/
-  const output = {sourcemap: true, name, globals}
+  const base = `${path}/${pkg.main.replace(/\/?[^/]+$/, '')}` // pkg.main can contain path
+  const file = pkg.main.split('/').pop().split('.').shift()   // Filename without extension
+  const name = file.replace(/-./g, (m) => m[1].toUpperCase()) // Camel case
 
-  return acc.concat(assignEach([{
-    input: `${input}/${file}.js`,                             // Vanilla JS
-    output: assignEach([
-      {file: `${path}/${pkg.main}`, format: 'cjs'},           // CommonJS (for Node)
-      {file: `${path}/${pkg.module}`, format: 'es'},          // ES module (for bundlers)
-      {file: `${path}/${pkg.browser}`, format: 'umd'}         // UDM for browsers
-    ], output)
-  }, {
-    input: `${input}/${file}.jsx`,                            // JSX
-    output: assignEach([{
-      file: `${path}/${pkg.jsx}`,
-      name: `${name.replace('core', '')}`,
-      format: 'umd'
-    }], output)
-  }], config))
+  return acc.concat(Object.assign({
+    input: `${base}/${file}.js`,                              // Vanilla JS
+    output: {
+      file: `${path}/${pkg.main}`,
+      format: 'umd',
+      sourcemap: true,
+      name
+    }
+  }, config), Object.assign({
+    input: `${base}/${file}.jsx`,                             // JSX
+    output: {
+      file: `${base}/jsx/index.js`,
+      format: 'umd',
+      sourcemap: true,
+      name: name.replace(/^[a-z]+/, ''),                      // Strip core
+      globals
+    }
+  }, config))
 }, [])

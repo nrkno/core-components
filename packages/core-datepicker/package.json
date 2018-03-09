@@ -4,13 +4,10 @@
   "author": "NRK <opensource@nrk.no> (https://www.nrk.no/)",
   "version": "1.0.0",
   "license": "MIT",
-  "main": "cjs/index.js",
-  "module": "esm/index.js",
-  "browser": "min/index.js",
+  "main": "core-datepicker.min.js",
   "jsx": "jsx/index.js",
   "dependencies": {
     "react": "*",
-    "react-dom": "*",
-    "polyfill-custom-event": "^1.0.5"
+    "react-dom": "*"
   }
 }

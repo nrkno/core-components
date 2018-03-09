@@ -4,11 +4,9 @@
   "author": "NRK <opensource@nrk.no> (https://www.nrk.no/)",
   "version": "1.0.0",
   "license": "MIT",
-  "main": "cjs/index.js",
-  "module": "esm/index.js",
-  "browser": "min/index.js",
+  "main": "core-toggle.min.js",
   "jsx": "jsx/index.js",
-  "dependencies": {
+  "optionalDependencies": {
     "react": "*",
     "react-dom": "*"
   }
