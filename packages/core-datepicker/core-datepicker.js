@@ -1,6 +1,5 @@
 // import {name, version} from './package.json'
 import {queryAll, addEvent} from '../utils'
-import 'polyfill-custom-event'
 
 const KEY = 'core-datepicker' //`${name}-${version}`                    // Unique id of component
 

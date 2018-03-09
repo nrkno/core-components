@@ -16,19 +16,21 @@ const config = {
     resolve({browser: true}),                                 // Respect pkg.browser
     commonjs({ignoreGlobal: true}),                           // Let dependencies use the word `global`
     buble({objectAssign: 'assign'}),                          // Polyfill Object.assign from utils.js
-    isWatch || uglify(),                                      // Minify on build
+    uglify(),                                                 // Minify
     isWatch && serve('bundle')                                // Serve on watch
   ]
 }
 
 export default ['.'].concat(pkgs).reduce((acc, path) => {     // Make config for all packages (including root)
   const pkg = require(`${path}/package.json`)
-  const base = `${path}/${pkg.main.replace(/\/?[^/]+$/, '')}` // pkg.main can contain path
-  const file = pkg.main.split('/').pop().split('.').shift()   // Filename without extension
+  const base = `${path}/${pkg.main.replace(/[^/]+$/, '')}`    // Merge path and path from pkg.main
+  const file = pkg.name.split('/').pop()                      // Name without scope
   const name = file.replace(/-./g, (m) => m[1].toUpperCase()) // Camel case
 
+  console.log(base, file, name)
+
   return acc.concat(Object.assign({
-    input: `${base}/${file}.js`,                              // Vanilla JS
+    input: `${base}${file}.js`,                               // Vanilla JS
     output: {
       file: `${path}/${pkg.main}`,
       format: 'umd',
@@ -36,9 +38,9 @@ export default ['.'].concat(pkgs).reduce((acc, path) => {     // Make config for
       name
     }
   }, config), Object.assign({
-    input: `${base}/${file}.jsx`,                             // JSX
+    input: `${base}${file}.jsx`,                              // JSX
     output: {
-      file: `${base}/jsx/index.js`,
+      file: `${base}jsx/index.js`,
       format: 'umd',
       sourcemap: true,
       name: name.replace(/^[a-z]+/, ''),                      // Strip core
