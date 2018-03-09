@@ -27,8 +27,6 @@ export default ['.'].concat(pkgs).reduce((acc, path) => {     // Make config for
   const file = pkg.name.split('/').pop()                      // Name without scope
   const name = file.replace(/-./g, (m) => m[1].toUpperCase()) // Camel case
 
-  console.log(base, file, name)
-
   return acc.concat(Object.assign({
     input: `${base}${file}.js`,                               // Vanilla JS
     output: {
