@@ -17,7 +17,7 @@ const config = {
     commonjs({ignoreGlobal: true}),                           // Let dependencies use the word `global`
     buble({objectAssign: 'assign'}),                          // Polyfill Object.assign from utils.js
     isWatch || uglify(),                                      // Minify on build
-    isWatch && serve('packages')                              // Serve on watch
+    isWatch && serve('bundle')                                // Serve on watch
   ]
 }
 
@@ -29,23 +29,24 @@ function camelCase (str) {
   return str.replace(/-+\w/g, (m) => m.slice(-1).toUpperCase())
 }
 
-export default pkgs.reduce((acc, path) => {     // Make config for all packages (including root)
+export default ['.'].concat(pkgs).reduce((acc, path) => {     // Make config for all packages (including root)
   const pkg = require(`${path}/package.json`)
   const file = pkg.name.split('/').pop()                      // Name without scope
-  const name = camelCase(file)
+  const name = camelCase(file)                                // Will be expoted when UMD
+  const input = path.replace('.', 'bundle')                   // Root has files in bundle/
   const output = {sourcemap: true, name, globals}
 
   return acc.concat(assignEach([{
-    input: `${path}/${file}.js`,                              // Vanilla JS
+    input: `${input}/${file}.js`,                             // Vanilla JS
     output: assignEach([
       {file: `${path}/${pkg.main}`, format: 'cjs'},           // CommonJS (for Node)
       {file: `${path}/${pkg.module}`, format: 'es'},          // ES module (for bundlers)
       {file: `${path}/${pkg.browser}`, format: 'umd'}         // UDM for browsers
     ], output)
   }, {
-    input: `${path}/${file}.jsx`,                             // JSX
+    input: `${input}/${file}.jsx`,                            // JSX
     output: assignEach([{
-      file: `${path}/jsx/index.js`,
+      file: `${path}/${pkg.jsx}`,
       name: `${name.replace('core', '')}`,
       format: 'umd'
     }], output)

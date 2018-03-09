@@ -84,16 +84,16 @@ import Toggle from '@nrk/<strong>core-toggle</strong>/jsx'   // ...or React/Prea
     <details>
       <summary><h3>Use with Require.js</h3> - old school</summary>
       <pre class="prettyprint">&lt;script&gt;
-  require(['https://static.nrk.no/core-components/latest/<strong>core-toggle</strong>/min/index.js'], function(coreToggle) {
-    // use coreToggle() here
+  require(['https://static.nrk.no/core-components/latest/core-components/core-components.min.js'], function(coreComponents) {
+    // use coreComponents.Toggle() etc here
   });
 &lt;/script&gt;</pre>
     </details>
     <details>
       <summary><h3>Use with script tag</h3> - good for prototyping, avoid in production</summary>
-      <pre class="prettyprint">&lt;script src="https://static.nrk.no/core-components/latest/<strong>core-toggle</strong>/min/index.js"&gt;&lt;/script&gt;
+      <pre class="prettyprint">&lt;script src="https://static.nrk.no/core-components/latest/core-components.min.js"&gt;&lt;/script&gt;
 &lt;script&gt;
-  // use window.coreToggle() here
+  // use coreComponents.Toggle() here
 &lt;/script&gt;</pre>
     </details>
     <h3>Browser support</h3>
@@ -120,9 +120,9 @@ import Toggle from '@nrk/<strong>core-toggle</strong>/jsx'   // ...or React/Prea
     <h2 id="toggle">Toggle</h2>
     <p>
       <code class="prettyprint">core-toggle</code> simply makes a
-      <code class="prettyprint">&lt;button&gt;</code> toggle visibility of next adjacent element.
+      <code class="prettyprint">&lt;button&gt;</code> toggle the visibility of next element sibling.
       <code class="prettyprint">core-toggle</code> supports nestability, and can easily be extended with custom animations or behavior manipulation
-      though the <a href="https://www.w3schools.com/jsref/event_ontoggle.asp" target="_blank">toggle event</a>.
+      through the <a href="https://www.w3schools.com/jsref/event_ontoggle.asp" target="_blank">toggle event</a>.
       It has two modes:
     </p>
     <div class="nrk-grid">
@@ -136,10 +136,10 @@ import Toggle from '@nrk/<strong>core-toggle</strong>/jsx'   // ...or React/Prea
         <div hidden>Content</div>
         <div id="docs-react-toggle"></div>
         <script type="text/babel">
-          ReactDOM.render(<Toggle>
+          ReactDOM.render(<Components.Toggle>
             <button className="docs-toggle docs-button">Example toggle JSX</button>
             <div>Content</div>
-          </Toggle>, document.getElementById('docs-react-toggle'))
+          </Components.Toggle>, document.getElementById('docs-react-toggle'))
         </script>
       </div>
       <div class="nrk-xs-12of12 nrk-md-6of12">
@@ -161,21 +161,21 @@ import Toggle from '@nrk/<strong>core-toggle</strong>/jsx'   // ...or React/Prea
         </ul>
         <div id="docs-react-dropdown"></div>
         <script type="text/babel">
-          ReactDOM.render(<Toggle popup={true}>
+          ReactDOM.render(<Components.Toggle popup={true}>
             <button className="docs-dropdown docs-button">Example dropdown JSX</button>
             <ul>
               <li><a href="#">Link</a></li>
               <li>
-                <Toggle popup={true}>
+                <Components.Toggle popup={true}>
                   <button className="docs-dropdown">Can also be nested</button>
                   <ul>
                     <li><a href="#">Sub-link</a></li>
                     <li><button>Sub-button</button></li>
                   </ul>
-                </Toggle>
+                </Components.Toggle>
               </li>
             </ul>
-          </Toggle>, document.getElementById('docs-react-dropdown'))
+          </Components.Toggle>, document.getElementById('docs-react-dropdown'))
         </script>
         <button class="docs-dropdown docs-tip js docs-button" aria-expanded="false">Example tooltip</button>
         <div hidden>Some help text</div>
@@ -185,7 +185,7 @@ import Toggle from '@nrk/<strong>core-toggle</strong>/jsx'   // ...or React/Prea
     <details>
       <summary>Use with VanillaJS</summary>
         <h3>HTML &mdash; CLOSED</h3>
-        <pre class="prettyprint">&lt;button&gt;Closed example&lt;button&gt; &lt;!-- Clickable element must be a &lt;button&gt;. Ease styling with <a href="https://static.nrk.no/core-css/latest/#utilities" target="_blank">.nrk-unset</a> from core-css --&gt;
+        <pre class="prettyprint">&lt;button&gt;Closed example&lt;button&gt; &lt;!-- Clickable element must be a &lt;button&gt;. Tip: Easily style buttons with <a href="https://static.nrk.no/core-css/latest/#utilities" target="_blank">.nrk-unset</a> --&gt;
 &lt;div hidden&gt;Content&lt;/div&gt;      &lt;!-- <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/hidden" target="_blank">hidden attribute</a> is used here to avoid <a href="https://en.wikipedia.org/wiki/Flash_of_unstyled_content" target="_blank">flash of unstyled content</a> --&gt;</pre>
 <h3>HTML &mdash; OPEN</h3>
 <pre class="prettyprint">&lt;button aria-expanded="true"&gt;Open example&lt;button&gt;
@@ -255,8 +255,8 @@ coreToggle('.my-dropdown', {popup: true})
         Despite having a native <a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details"><code class="prettyprint">&lt;details&gt;</code></a>
         element for expanding/collapsing content, there are several issues regarding <a target="_blank" href="https://caniuse.com/#feat=details">browser support</a>,
         <a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details#Example_with_styling">styling</a>,
-        <a target="_blank" href="http://accessibleculture.org/articles/2012/03/screen-readers-and-details-summary/">accessibility</a>
-        and polyfills often conflict with other standards such as <code class="prettyprint">&lt;dialog&gt;</code>.
+        <a target="_blank" href="http://accessibleculture.org/articles/2012/03/screen-readers-and-details-summary/">accessibility</a>.
+        Furthermore, polyfills often conflict with other standards such as <code class="prettyprint">&lt;dialog&gt;</code>.
       </p>
     </details>
     <details>
@@ -284,7 +284,7 @@ coreToggle('.my-dropdown', {popup: true})
       <p>
         Some expand/collapse interfaces like <a href="https://www.nngroup.com/articles/accordions-complex-content/" target="_blank">accordions</a>
         behaves like a group - allowing only one expanded area at the time. This pattern however
-        requires more logic and carefully designed animations to avoid confusion over expcted scroll position.
+        requires more logic and carefully designed animations to avoid confusion over expected scroll position.
       </p>
       <p>
         <small><em>Example: The user first opens "Toggle-1", and then "Toggle-2" (which closes "Toggle-1").
@@ -428,10 +428,8 @@ coreToggle('.my-dropdown', {popup: true})
   <script src="https://cdn.jsdelivr.net/npm/preact/dist/preact.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/preact-compat/dist/preact-compat.min.js"></script>
   <script>React = ReactDOM = preactCompat</script> -->
-  <script src="core-toggle/min/index.js"></script>
-  <script src="core-toggle/jsx/index.js"></script>
-  <script src="core-input/min/index.js"></script>
-  <script src="core-input/jsx/index.js"></script>
+  <script src="core-components.min.js"></script>
+  <script src="core-components.jsx.js"></script>>
   <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
   <script>
     // Example animate toggle open
@@ -466,9 +464,9 @@ coreToggle('.my-dropdown', {popup: true})
     //     })
     //   }
     // })
-    window.coreToggle('.js.docs-toggle')
-    window.coreToggle('.js.docs-dropdown', {popup: true})
-    window.coreInput('.js.docs-input')
+    coreComponents.toggle('.js.docs-toggle')
+    coreComponents.toggle('.js.docs-dropdown', {popup: true})
+    coreComponents.input('.js.docs-input')
 
     // window.datepicker('.nrk-datepicker', {
     //   baseClass: 'nrk',
@@ -480,9 +478,9 @@ coreToggle('.my-dropdown', {popup: true})
     //   max: false
     // })
   </script>
-  <script src="core-toggle/min/index.js"></script>
+  <script src="core-components.min.js"></script>
   <script>
-    window.coreToggle('.docs-toggle.js') // Testing multiple initializtions
+    coreComponents.toggle('.docs-toggle.js') // Testing multiple initializtions
   </script>
 
   <!-- RequireJS setup -->
