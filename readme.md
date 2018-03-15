@@ -31,7 +31,7 @@ git push origin feature/my-changes
 
 WIP
 ```bash
-npm run publish:minor core-input core-toggle # Specify packages to publish
+npm run publish:minor -- --core-input --core-toggle # Specify packages to publish
 ```
 
 > NOTE! Please also make sure to keep commits small and clean (that the commit message actually refers to the updated files).  

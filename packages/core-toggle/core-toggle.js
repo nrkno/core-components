@@ -1,33 +1,36 @@
-// import {name, version} from './package.json'
-import {ariaConnect, dispatchEvent, registerElements, registerEvent} from '../utils'
+import {name, version} from './package.json'
+import {addEvent, ariaExpand, ariaTarget, queryAll} from '../utils'
 
-const KEY = 'core-toggle' //`${name}-${version}` // Unique id of component
+const UUID = `data-${name}-${version}`.replace(/\W+/g, '-')         // Strip invalid attribute characters
+const OPEN = 'aria-expanded'
+const POPS = 'aria-haspopup'
 
-function ariaExpanded (master, slave, expanded) {
-  master.setAttribute('aria-expanded', expanded)
-  slave[expanded? 'removeAttribute' : 'setAttribute']('hidden', '')
-}
+const isBool = (val) => typeof val === 'boolean'
 
-/**
-* toggle
-* @param {String|NodeList|Array|Element} elements A CSS selector string, nodeList, element array, or single element
-* @param {Boolean} [open] Optional. True will open, false will close, undefined just updates attribute
-* @return {Array} Array of elements
-*/
-export default function toggle (elements, open = null) {
-  return registerElements(KEY, elements).map((el) => {
-    const slave = ariaConnect(el)
-    const prevOpen = el.getAttribute('aria-expanded') === 'true'
-    const wantOpen = open === null ? prevOpen : Boolean(open)
-    ariaExpanded(el, slave, prevOpen)
+export default function toggle (selector, open) {
+  const options = typeof open === 'object' ? open : {open}
+  const buttons = queryAll(selector)
 
-    const nextOpen = (prevOpen !== wantOpen && dispatchEvent(el, 'toggle')) ? wantOpen : prevOpen
+  buttons.forEach((button) => {
+    const open = isBool(options.open) ? options.open : button.getAttribute(OPEN) === 'true'
+    const pops = isBool(options.popup) ? options.popup : button.getAttribute(POPS) === 'true'
 
-    ariaExpanded(el, slave, nextOpen)
-    return el
+    button.setAttribute(UUID, '')
+    button.setAttribute(POPS, pops)
+
+    ariaTarget(button, 'controls')
+    ariaExpand(button, open)
   })
+
+  return buttons
 }
 
-registerEvent(KEY, 'click', (el) => {
-  toggle(el, el.getAttribute('aria-expanded') !== 'true')
+addEvent(UUID, 'click', ({target}) => {
+  queryAll(`[${UUID}]`).forEach((el) => {
+    const open = el.getAttribute(OPEN) === 'true'
+    const pops = el.getAttribute(POPS) === 'true'
+
+    if (el.contains(target)) toggle(el, !open)                  // Click on toggle
+    else if (pops) toggle(el, ariaTarget(el).contains(target))  // Click in target or outside
+  })
 })
