@@ -5,24 +5,22 @@ const UUID = `data-${name}-${version}`.replace(/\W+/g, '-')         // Strip inv
 const OPEN = 'aria-expanded'
 const POPS = 'aria-haspopup'
 
-const isBool = (val) => typeof val === 'boolean'
-
 export default function toggle (selector, open) {
   const options = typeof open === 'object' ? open : {open}
-  const buttons = queryAll(selector)
+  const setOpen = typeof options.open === 'boolean'
+  const setPops = typeof options.popup === 'boolean'
 
-  buttons.forEach((button) => {
-    const open = isBool(options.open) ? options.open : button.getAttribute(OPEN) === 'true'
-    const pops = isBool(options.popup) ? options.popup : button.getAttribute(POPS) === 'true'
+  return queryAll(selector).forEach((button) => {
+    const open = setOpen ? options.open : button.getAttribute(OPEN) === 'true'
+    const pops = setPops ? options.popup : button.getAttribute(POPS) === 'true'
 
     button.setAttribute(UUID, '')
     button.setAttribute(POPS, pops)
 
     ariaTarget(button, 'controls')
     ariaExpand(button, open)
+    return button
   })
-
-  return buttons
 }
 
 addEvent(UUID, 'click', ({target}) => {

@@ -15,8 +15,8 @@ const config = {
     json(),                                                   // Enable treeshaking json imports
     resolve({browser: true}),                                 // Respect pkg.browser
     commonjs({ignoreGlobal: true}),                           // Let dependencies use the word `global`
-    buble({objectAssign: 'assign'}),                          // Polyfill Object.assign from utils.js
-    uglify(),                                                 // Minify
+    buble(),                                                  // You know, like Babel
+    isWatch || uglify(),                                      // Minify
     isWatch && serve('bundle')                                // Serve on watch
   ]
 }
@@ -41,7 +41,7 @@ export default ['.'].concat(pkgs).reduce((acc, path) => {     // Make config for
       file: `${base}jsx/index.js`,
       format: 'umd',
       sourcemap: true,
-      name: name.replace(/^[a-z]+/, ''),                      // Strip core
+      name: name.replace(/./, (m) => m.toUpperCase()),        // Title case
       globals
     }
   }, config))
