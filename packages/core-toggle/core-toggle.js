@@ -5,7 +5,7 @@ const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid att
 const OPEN = 'aria-expanded'
 const POPS = 'aria-haspopup'
 
-const isBool = (val) => typeof val === 'boolen'
+const isBool = (val) => typeof val === 'boolean'
 
 export default function toggle (selector, open) {
   const options = typeof open === 'object' ? open : {open}

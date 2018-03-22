@@ -31,5 +31,8 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nrkno/core-components.git"
+  },
+  "standard": {
+    "globals": [ "describe", "expect", "test" ]
   }
 }
