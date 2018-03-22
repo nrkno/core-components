@@ -40,7 +40,7 @@ if (args.install) {
 if (args.publish) {
   // Update packages
   pkgs
-    .filter((path) => args[getPackageName(path)])  // Get packages specified by arguments
+    .filter((path) => args[getPackageName(path)]) // Get packages specified by arguments
     .forEach((path) => {
       console.log(`Publishing ${getPackageName(path)}`)
       execSync(`npm version ${args.publish} -m 'Release ${args.publish} %s'`, {cwd: path, stdio: 'inherit'})

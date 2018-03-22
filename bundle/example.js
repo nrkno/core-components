@@ -1,3 +1,4 @@
+/* eslint-disable */
 var coreComponents = window.coreComponents
 var XMLHttpRequest = window.XMLHttpRequest
 

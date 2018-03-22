@@ -9,7 +9,7 @@
   "scripts": {
     "build": "rollup --config",
     "install": "node bin/index.js --install",
-    "lint": "standard packages/**/*.{js,jsx}",
+    "lint": "standard",
     "publish:patch": "npm run build && node bin/index.js --publish=patch",
     "publish:minor": "npm run build && node bin/index.js --publish=minor",
     "publish:major": "npm run build && node bin/index.js --publish=major",
