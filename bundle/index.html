@@ -85,7 +85,7 @@ import Toggle from '@nrk/<strong>core-toggle</strong>/jsx'   // ...or React/Prea
     <p>
       <code class="prettyprint">core-toggle</code> simply makes a
       <code class="prettyprint">&lt;button&gt;</code> toggle the visibility of next element sibling.
-      <code class="prettyprint">core-toggle</code> supports nestability, and can easily be extended with custom animations or behavior manipulation
+      <code class="prettyprint">core-toggle</code> supports nestability, and can easily be extended with custom animations or behavior
       through the <a href="https://www.w3schools.com/jsref/event_ontoggle.asp" target="_blank">toggle event</a>.
       It has two modes:
     </p>
@@ -171,10 +171,14 @@ coreToggle('.my-dropdown', {popup: true})
     </details>
     <details>
       <summary>Use with React/Preact</summary>
+        <p>
+          All <code class="prettyprint">&lt;Toggle&gt;</code> props are optional. Toggle will handle
+          it's own state unless you run <code class="prettyprint">event.preventDefault()</code> in
+          onToggle (no need to updated props). Non-settings props (like <code class="prettyprint">className</code>,
+          <code class="prettyprint">style</code> etc.) will be applied as actual attributes.
+        </p>
         <pre class="prettyprint">import Toggle from '@nrk/core-toggle/jsx'
 
-// All &lt;Toggle&gt; props are optional
-// Non-settings props (like className, style etc.) will be applied as actual attributes
 &lt;Toggle open={false} popup={false} onToggle={function(){}}&gt;
   &lt;button&gt;Use with JSX&lt;/button&gt;  // First element must result in a &lt;button&gt;-tag. Accepts both elements and components
   &lt;div&gt;Content&lt;/div&gt;             // Next element will be toggled. Accepts both elements and components
@@ -218,7 +222,7 @@ coreToggle('.my-dropdown', {popup: true})
       <p>
         Despite having a native <a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details"><code class="prettyprint">&lt;details&gt;</code></a>
         element for expanding/collapsing content, there are several issues regarding <a target="_blank" href="https://caniuse.com/#feat=details">browser support</a>,
-        <a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details#Example_with_styling">styling</a>,
+        <a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details#Example_with_styling">styling</a> and
         <a target="_blank" href="http://accessibleculture.org/articles/2012/03/screen-readers-and-details-summary/">accessibility</a>.
         Furthermore, polyfills often conflict with other standards such as <code class="prettyprint">&lt;dialog&gt;</code>.
       </p>
@@ -253,9 +257,11 @@ coreToggle('.my-dropdown', {popup: true})
       <p>
         <small><em>Example: The user first opens "Toggle-1", and then "Toggle-2" (which closes "Toggle-1").
         Since "Toggle-1" is placed above, the position "Toggle-2" now changes -
-        potentially outside the viewport on smaller devices.
-        <br>Note: If you do need to implement grouping, you can achieve this by reacting to the
-        <code class="prettyprint">toggle</code> event.</em></small>
+        potentially outside the viewport on smaller devices.</em></small>
+      </p>
+      <p>
+        <small><em>Note: If you do need to implement grouping, you can achieve this by
+        closing other toggles on the <code class="prettyprint">toggle</code> event.</em></small>
       </p>
     </details>
 
@@ -276,59 +282,73 @@ coreToggle('.my-dropdown', {popup: true})
         <h3>VanillaJS</h3><br>
         <label class="nrk-sr" for="docs-1">Write the letter C to test</label>
         <input type="text" id="docs-1" class="js docs-input docs-button" minlength="1" placeholder="Type &quot;C&quot;...">
-        <div class="docs-drop" hidden>
-          <strong>Hello</strong>
-          <ul class="nrk-unset">
-            <li><button value="google">Chrome</button></li>
-            <li><button>Firefox</button></li>
-            <li><button>Opera</button></li>
-            <li><a href="https://www.apple.com/lae/safari/" target="_blank">Safari</a></li>
-            <li><a href="https://www.microsoft.com/en-us/windows/microsoft-edge" target="_blank">Microsoft Edge</a></li>
-          </ul>
-        </div>
+        <ul class="docs-drop" hidden>
+          <li><button value="google">Chrome</button></li>
+          <li><button>Firefox</button></li>
+          <li><button>Opera</button></li>
+          <li><a href="https://www.apple.com/lae/safari/" target="_blank">Safari</a></li>
+          <li><a href="https://www.microsoft.com/en-us/windows/microsoft-edge" target="_blank">Microsoft Edge</a></li>
+        </ul>
       </div>
       <div class="nrk-xs-12of12 nrk-md-3of12">
         <h3>JSX</h3><br>
         <div id="docs-react-input"></div>
         <script type="text/babel">
-          class Validate extends React.Component {
+          class ContainerForInput extends React.Component {
             constructor (props) {
               super(props)
-              this.onInput = this.onInput.bind(this)
-              this.state = {valid: true}
+              this.state = { items: [], query: '' }
+              this.xhr = new XMLHttpRequest()
+              this.xhr.onload = () => {
+                this.setState({
+                  items: JSON.parse(this.xhr.responseText).result
+                    .filter((item) => item._type === 'serie')
+                    .map((item) => item._source)
+                })
+              }
             }
-            onInput() {
-              this.setState((prev) => ({valid: !prev.valid}))
+
+            handleOnFilter = (event) => {
+              const query = event.target.value
+
+              event.preventDefault()
+              this.xhr.abort()
+              this.setState({
+                query,
+                items: query ? [{title: `Søker etter ${query}...`}] : []
+              })
+
+              if(query) {
+                this.xhr.open('GET', `https://tv.nrk.no/autocomplete?query=${encodeURIComponent(query)}`, true)
+                this.xhr.send()
+              }
             }
+
             render () {
-              const style = {border:`9px solid ${this.state.valid ? 'green' : 'red'}`}
-              return <input type="text" className="docs-input docs-button" onInput={this.onInput} style={style} />
+              const Input = CoreComponents.Input
+              const Mark = CoreComponents.Input.Highlight
+              const query = this.state.query.toLowerCase()
+
+              return (
+                <Input>
+                  <input type="text" className="docs-input docs-button" />
+                  <ul className="docs-drop">
+                    {this.state.items.slice(0, 10).map((item, key) => <li key={key}>
+                        <a href={`https://tv.nrk.no/${item.url}`}><Mark text={item.title} query={query} /></a>
+                      </li>)
+                    }
+                    <li><button value="google">Chrome</button></li>
+                    <li><button>Firefox</button></li>
+                    <li><button>Opera</button></li>
+                    <li><a href="https://www.apple.com/lae/safari/" target="_blank">Safari</a></li>
+                    <li><a href="https://www.microsoft.com/en-us/windows/microsoft-edge" target="_blank">Microsoft Edge</a></li>
+                  </ul>
+                </Input>
+              )
             }
           }
 
-          ReactDOM.render(<CoreComponents.Input onType={(event) => {
-            console.log(event)
-            const Highlight = event.detail.Highlight
-
-            event.preventDefault()
-            event.detail.render(
-              <ul className="nrk-unset">
-                <li><button onClick={(event) => event.preventDefault()}>Prevent click</button></li>
-                <li><button><Highlight text="Hade" /></button></li>
-              </ul>
-            )
-          }}>
-            <Validate />
-            <div className="docs-drop">
-              <ul className="nrk-unset">
-                <li><button value="google">Chrome</button></li>
-                <li><button>Firefox</button></li>
-                <li><button>Opera</button></li>
-                <li><a href="https://www.apple.com/lae/safari/" target="_blank">Safari</a></li>
-                <li><a href="https://www.microsoft.com/en-us/windows/microsoft-edge" target="_blank">Microsoft Edge</a></li>
-              </ul>
-            </div>
-          </CoreComponents.Input>, document.getElementById('docs-react-input'))
+          ReactDOM.render(<ContainerForInput />, document.getElementById('docs-react-input'))
         </script>
       </div>
       <div aria-hidden="true" style="pointer-events:none;opacity:.3">
@@ -418,22 +438,22 @@ coreToggle('.my-dropdown', {popup: true})
   <!-- JS setup -->
   <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
   <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
-  <!-- <script>PropTypes = {}</script>
+  <script>PropTypes = {}</script>
   <script src="https://cdn.jsdelivr.net/npm/preact/dist/preact.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/preact-compat/dist/preact-compat.min.js"></script>
-  <script>React = ReactDOM = preactCompat</script> -->
+  <script>React = ReactDOM = preactCompat</script>
   <script src="core-components.min.js"></script>
   <script src="jsx/index.js"></script>>
   <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
   <script src="example.js"></script>
 
   <!-- RequireJS setup -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.5/require.js"></script>
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.5/require.js"></script>
   <script>
     requirejs(['core-components.min.js'], function (coreComponents) {
       coreComponents.toggle('.js.docs-toggle') // Testing multiple initializtions
     })
-  </script>
+  </script> -->
 
   <!-- Docs setup -->
   <script async src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>

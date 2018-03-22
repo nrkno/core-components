@@ -1,4 +1,4 @@
-/* globals describe, it, beforeEach, afterEach */
+/* globals describe, expect, test */
 const toggle = require('./core-toggle.cjs')
 
 describe('toggle', () => {

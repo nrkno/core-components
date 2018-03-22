@@ -19,7 +19,7 @@ html{font:110%/1.5 'LFT Etica',sans-serif;background:#fcfcfc;color:#26292a}stron
 .docs-style .docs-toggle + *[hidden] { display: block; overflow: hidden; visibility: hidden; opacity: 0; height: 0; margin-bottom: 0; padding-top: 0; padding-bottom: 0 }
 .docs-style .docs-dropdown::before { content: '\A0'; float: right; margin: 0 -5px 0 5px; width: 20px; transition: .3s; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 15 15'%3E%3Cpath stroke='%23000' fill='none' stroke-linecap='round' d='M1.5 5l6 6 6-6'%3E%3C/path%3E%3C/svg%3E") 50%/15px no-repeat }
 .docs-style .docs-dropdown:not(.docs-tip)[aria-expanded="true"]::before { -webkit-transform: rotate(180deg); transform: rotate(180deg) }
-.docs-style .docs-drop { position: absolute; z-index: 3; list-style: none; margin: 0; padding: 0; width: 200px; background: #fff; box-shadow: 0 5px 15px rgba(0,0,0,.3); transition: .3s }
+.docs-style .docs-drop { position: absolute; z-index: 3; list-style: none; margin: 0; padding: 0; min-width: 200px; background: #fff; box-shadow: 0 5px 15px rgba(0,0,0,.3); transition: .3s }
 .docs-style .docs-drop[hidden] { display: block; visibility: hidden; opacity: 0; transform: translateY(-5px) }
 .docs-style .docs-drop a,.docs-style .docs-drop button { box-sizing: border-box; display: block; width: 100%; border: 0; padding: 7px 14px; margin: 0; font: inherit; color: inherit; background: none; text-decoration: none; text-align: left }
 .docs-style .docs-drop a[hidden], .docs-style .docs-drop button[hidden] { display: none }

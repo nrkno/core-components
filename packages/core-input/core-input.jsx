@@ -1,51 +1,31 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
 import coreInput from '../core-input/core-input'
 import {exclude} from '../utils'
 
-const DEFAULTS = {open: null, items: null, onType() {}, onFocus() {}, onSelect() {}}
-
-function mountInput (self) {
-  coreInput(ReactDOM.findDOMNode(self).firstElementChild)       // Input must be first child
-}
-
-// function Highlight (text, regex) {
-//   if (!query) return props.text
-//   return props.text.split(query)
-// }
+const DEFAULTS = {open: null, items: null, onFilter () {}, onSelect () {}}
 
 export default class Input extends React.Component {
-  constructor (props) {
-    super(props)
-    this.onType = this.onType.bind(this)
-    this.state = {items: props.items, open: props.open}
+  componentDidMount () { // Mount client side only to avoid rerender
+    this.el.addEventListener('input.filter', this.props.onFilter)
+    this.el.addEventListener('input.select', this.props.onSelect)
+    coreInput(this.el.firstElementChild)
   }
-  componentDidMount () {                                        // Mount client side only to avoid rerender
-    const elem = ReactDOM.findDOMNode(this)
-    mountInput(this)
-    elem.addEventListener('input.type', this.onType)
-    elem.addEventListener('input.focus', this.props.onFocus)
-    elem.addEventListener('input.select', this.props.onSelect)
-  }
-  componentDidUpdate () { mountInput(this) }                    // Must mount also on update in case content changes
+  componentDidUpdate () { coreInput(this.el.firstElementChild) } // Must mount also on update in case content changes
   componentWillUnmount () {
-    elem.removeEventListener('input.type', this.onType)
-    elem.removeEventListener('input.focus', this.props.onFocus)
-    elem.removeEventListener('input.select', this.props.onSelect)
-  }
-  onType (event) {
-    const query = event.target.value
-    event.detail.render = (items) => this.setState({items, open: true}) // Allow react items
-    // event.detail.Highlight = (props) => {}
-    this.props.onType(event)
+    this.el.removeEventListener('input.filter', this.props.onFilter)
+    this.el.removeEventListener('input.select', this.props.onSelect)
   }
   render () {
-    return React.createElement('div', exclude(this.props, DEFAULTS),
-      React.Children.map(this.props.children, (child, adjacent) => {
-        return adjacent ?
-          React.cloneElement(child, {'hidden': !this.state.open}, this.state.items || child.props.children) :
-          React.cloneElement(child, {'aria-expanded': String(Boolean(this.state.open))})
-      })
+    return React.createElement('div', exclude(this.props, DEFAULTS, {ref: el => (this.el = el)}),
+      React.Children.map(this.props.children, (child, adjacent) => adjacent
+        ? React.cloneElement(child, {'hidden': !this.props.open})
+        : React.cloneElement(child, {'aria-expanded': String(Boolean(this.props.open))})
+      )
     )
   }
 }
+
+Input.Highlight = ({text, query = ''}) =>
+  React.createElement('span', {dangerouslySetInnerHTML: {
+    __html: coreInput.highlight(text, query) // We know coreInput escapes, so this is safe
+  }})
