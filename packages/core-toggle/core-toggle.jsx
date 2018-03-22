@@ -1,28 +1,21 @@
 import React from 'react'
-import ReactDOM from 'react-dom';
 import coreToggle from '../core-toggle/core-toggle'
-import {assign} from '../utils'
+import {exclude} from '../utils'
 
-function mountToggle (self) {
-  coreToggle(ReactDOM.findDOMNode(self).firstElementChild)      // Button must be first child
-}
+const DEFAULTS = {open: null, popup: null}
 
 export default class Toggle extends React.Component {
-  componentDidMount () { mountToggle(this) }                    // Mount client side only to avoid rerender
-  componentDidUpdate () { mountToggle(this) }                   // Must mount also on update in case content changes
+  componentDidMount () { coreToggle(this.el.firstElementChild) } // Mount client side only to avoid rerender
+  componentDidUpdate () { coreToggle(this.el.firstElementChild) } // Must mount also on update in case content changes
   render () {
-    return <div {...assign({}, this.props, {open: null, popup: null})}>
-      {React.Children.map(this.props.children, (child, i) => {  // Augment children with aria-attributes
-        return assign({}, child, {
-          props: assign({}, child.props, i ?
-            {'hidden': !this.props.open} :
-            {
-              'aria-expanded': String(Boolean(this.props.open)),
-              'aria-haspopup': String(Boolean(this.props.popup))
-            }
-          )
+    return React.createElement('div', exclude(this.props, DEFAULTS, {ref: (el) => (this.el = el)}),
+      React.Children.map(this.props.children, (child, adjacent) => adjacent
+        ? React.cloneElement(child, {'hidden': !this.props.open})
+        : React.cloneElement(child, {
+          'aria-expanded': String(Boolean(this.props.open)),
+          'aria-haspopup': String(Boolean(this.props.popup))
         })
-      })}
-    </div>
+      )
+    )
   }
 }

@@ -1,5 +1,6 @@
-import {attr, getElements, weakState} from '../utils'
-
+import {weakState} from '../utils'
+const getElements = () => {}
+const attr = () => {}
 let BACKDROP
 const KEY = 'dialog-@VERSION'
 const KEY_UNIVERSAL = 'data-dialog-xxx'
