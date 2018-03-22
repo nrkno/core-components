@@ -1,3 +1,4 @@
+/* eslint-disable */
 // import {name, version} from './package.json'
 import {queryAll, addEvent} from '../utils'
 

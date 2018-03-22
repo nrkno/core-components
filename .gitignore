@@ -1,7 +1,12 @@
 .DS_Store
 .npm
-.DS_Store
-node_modules/*
-packages/**/node_modules/*
-npm-debug.log*
+.vscode
+.idea
+node_modules/
+npm-debug*
+yarn-error*
+*.code-workspace
 *.tar
+**/*.min.js
+**/*.js.map
+jsx/

@@ -1,1 +1,0 @@
-{"version":3,"file":"index.js","sources":["../core-input.jsx"],"sourcesContent":["import React from 'react'\n\nexport default function Input () {\n  return <div>Testing input</div>\n}\n"],"names":["React"],"mappings":"uQAEe,WACb,OAAOA,2BAAK"}
