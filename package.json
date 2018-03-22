@@ -33,6 +33,15 @@
     "url": "git+https://github.com/nrkno/core-components.git"
   },
   "standard": {
-    "globals": [ "describe", "expect", "test" ]
+    "globals": [
+      "describe",
+      "it",
+      "before",
+      "after",
+      "beforeEach",
+      "afterEach",
+      "test",
+      "expect"
+    ]
   }
 }
