@@ -1,32 +1,19 @@
 import React from 'react'
-import {dialog} from './core-dialog'
+import dialog from './core-dialog'
 
-export class Dialog extends React.Component {
+export default class Dialog extends React.Component {
   componentDidMount () {
-    this.dialog = dialog(this.dialogEl, {
-      onOpenCallback: () => {
-        this.props.onOpenCallback()
-      },
-      onCloseCallback: () => {
-        this.props.onCloseCallback()
-      }
-    })
+    dialog(this.dialogEl, {open: this.props.open})
+    this.props.handleOpen && this.dialogEl.addEventListener('dialog.open', this.props.handleOpen)
+    this.props.handleClose && this.dialogEl.addEventListener('dialog.close', this.props.handleClose)
+  }
+  componentWillUnmount () {
+    this.props.handleOpen && this.dialogEl.removeEventListener('dialog.open', this.props.handleOpen)
+    this.props.handleClose && this.dialogEl.removeEventListener('dialog.close', this.props.handleClose)
   }
 
   componentWillReceiveProps (nextProps) {
-    this.props.open !== nextProps.open && this.toggle(nextProps.open)
-  }
-
-  shouldComponentUpdate () {
-    return false
-  }
-
-  toggle (open) {
-    if (open) {
-      this.dialog.open()
-    } else {
-      this.dialog.close()
-    }
+    nextProps.open ? dialog.open(this.dialogEl) : dialog.close(this.dialogEl)
   }
 
   render () {

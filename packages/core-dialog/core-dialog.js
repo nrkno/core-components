@@ -1,134 +1,166 @@
-import {weakState} from '../utils'
-const getElements = () => {}
-const attr = () => {}
-let BACKDROP
-const KEY = 'dialog-@VERSION'
-const KEY_UNIVERSAL = 'data-dialog-xxx'
+import {name, version} from './package.json'
+import {queryAll, addEvent, dispatchEvent} from '../utils'
+
 const FOCUSABLE_ELEMENTS = `
   [tabindex]:not([disabled]),
+  a:not([disabled]),
   button:not([disabled]),
   input:not([disabled]),
   select:not([disabled]),
   textarea:not([disabled])`
 
-// Attempt to focus on an autofocus target first. If none exists we will focus
-// on the first focusable element.
-const focusOnFirstFocusableElement = (el) => {
-  const autofocusElement = el.querySelector('[autofocus]:not([disabled])')
-  const focusableElement = el.querySelector(FOCUSABLE_ELEMENTS)
-  ;(autofocusElement || focusableElement || el).focus()
-}
+/** Best practice would be to have a single modal element at the bottom of body with
+ * the backdrop appended after the modal.
+ */
+
+const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid attribute characters
+const UUID_BACKDROP = `${UUID}-backdrop`
+const UUID_ACTIVE = `${UUID}-active`
+const KEYS = {ENTER: 13, ESC: 27, PAGEUP: 33, PAGEDOWN: 34, END: 35, HOME: 36, UP: 38, DOWN: 40}
 
 const getHighestZIndex = () =>
-  getElements('*').reduce((zIndex, el) =>
+  queryAll('*').reduce((zIndex, el) =>
     Math.max(zIndex, Number(window.getComputedStyle(el, null).getPropertyValue('z-index')) || 0)
   , 0)
 
-const getActive = () => document.querySelector(`[${KEY_UNIVERSAL}]`)
+export default function dialog (elements, options) {
+  // window[UUID_ACTIVE] is our list of active dialogs.
+  // Maybe it should not be bound to version?
+  if (typeof window !== 'undefined' && typeof window[UUID_ACTIVE] === 'undefined') {
+    window[UUID_ACTIVE] = []
+    document.addEventListener('focus', keepFocus, true)
+  }
+  let backdrop = getBackdrop()
+  if (!backdrop) backdrop = createBackdrop()
+  setupBackdrop(backdrop, options.open)
 
-const setActiveStateForElement = (el) => {
-  const prevActive = getActive()
-  prevActive && prevActive.removeAttribute(KEY_UNIVERSAL)
-  el.setAttribute(KEY_UNIVERSAL, '')
+  bindButtonsToOpenDialog()
 
-  return weakState(el, {
-    prevActive,
-    focusBeforeModalOpen: document.activeElement
-  }).get(el)
+  return queryAll(elements).forEach((element) => {
+    setupDialogContainer(element, options.open)
+    bindButtonsInDialog(element)
+    return element
+  })
 }
 
-// Will toggle the open state of the dialog depending on what the fn function
-// returns or what (Boolean) value fn has.
-const toggle = (el, index, fn, open = true) => {
-  const isOpen = Boolean(typeof fn === 'function' ? fn(el, index) : fn) === open
+dialog.close = (element) => {
+  setupDialogContainer(element, false)
+  setupBackdrop(getBackdrop(), false)
+}
 
-  attr(el, {open: isOpen ? '' : null})
-  if (isOpen) {
-    el.style.zIndex = getHighestZIndex() + 1
-    setActiveStateForElement(el)
-    focusOnFirstFocusableElement(el)
-    BACKDROP.hidden = false
-    weakState().get(el).onOpenCallback && weakState().get(el).onOpenCallback()
-    // set focus
+dialog.open = (element) => {
+  // const autofocusElement = element.querySelector('[autofocus]:not([disabled])')
+  // const focusableElement = element.querySelector(FOCUSABLE_ELEMENTS)
+  // ;(autofocusElement || focusableElement || element).focus()
+
+  setupDialogContainer(element, true)
+  setupBackdrop(getBackdrop(), true)
+}
+
+function setupDialogContainer (dialog, open = false) {
+  dialog.setAttribute(UUID, '')
+  dialog.setAttribute('aria-modal', true)
+  dialog.setAttribute('tabindex', '-1')
+  dialog.setAttribute('role', 'dialog')
+  dialog[open ? 'setAttribute' : 'removeAttribute']('open', '')
+  if (open) {
+    dialog.style.zIndex = getHighestZIndex() + 1
+    window[UUID_ACTIVE].push(dialog)
   } else {
-    if (!weakState().get(el)) { return }
-    BACKDROP.hidden = !(weakState().get(el).prevActive)
-    el.removeAttribute(KEY_UNIVERSAL)
-    if (!BACKDROP.hidden) {
-      weakState().get(el).prevActive.setAttribute(KEY_UNIVERSAL, '')
-    }
-    // Should be able to pop when removing as the last element is the active dialog
-    const state = weakState().get(el)
-    // Focus on the last focused thing before the dialog modal was opened
-    state.focusBeforeModalOpen && state.focusBeforeModalOpen.focus()
-    // Delete state for element
-    // weakState(el, false)
-    weakState().get(el).onCloseCallback && weakState().get(el).onCloseCallback()
+    window[UUID_ACTIVE].find((el, idx) => {
+      if (el === dialog) window[UUID_ACTIVE].splice(idx, 1)
+    })
+    dialog.style.zIndex = 0
   }
 }
 
-const keepFocus = (event) => {
-  const activeDialog = getActive()
-  // If no dialog is active, we don't need to do anything
-  if (!activeDialog) { return }
+function setupBackdrop (backdrop, open = false) {
+  backdrop.setAttribute(UUID_BACKDROP, '')
+  backdrop[open ? 'removeAttribute' : 'setAttribute']('hidden', '')
+}
 
-  const state = weakState().get(activeDialog)
+function getBackdrop () {
+  return document.querySelector(`[${UUID_BACKDROP}]`)
+}
+
+function createBackdrop (open) {
+  const backdrop = document.createElement('div')
+  // Should probably not add class. But just doing it for now to simplify styling
+  backdrop.classList.add('nrk-dialog-backdrop')
+  // document.addEventListener('focus', keepFocus, true)
+  // document.addEventListener('keydown', exitOnEscape)
+  document.documentElement.appendChild(backdrop)
+  return backdrop
+}
+
+function keepFocus (event) {
+  // If no dialog is active, we don't need to do anything
+  if (window[UUID_ACTIVE].length === 0) { return }
+  const activeDialog = window[UUID_ACTIVE][window[UUID_ACTIVE].length - 1]
+
   const focusable = activeDialog.querySelectorAll(FOCUSABLE_ELEMENTS)
 
   // If focus moves us outside the dialog, we need to refocus to inside the dialog
   if (!activeDialog.contains(event.target)) {
-    state.activeElement === focusable[0] ? focusable[focusable.length - 1].focus() : focusable[0].focus()
-  } else {
-    state.activeElement = event.target
+    focusable[0] ? focusable[focusable.length - 1].focus() : focusable[0].focus()
   }
 }
 
-const exitOnEscape = (event) => {
-  if (event.keyCode === 27) dialog(getActive()).close()
+function bindButtonsInDialog (element) {
+  queryAll('[data-dialog="close"]', element).forEach((button) => {
+    button.addEventListener('click', (event) => {
+      if (dispatchEvent(element, 'dialog.close')) {
+        dialog.close(element)
+      }
+    })
+  })
 }
 
-export function dialog (selector, options = {}) {
-  if (!(this instanceof dialog)) return new dialog(selector, options) //eslint-disable-line
-
-  // Initialize the element with necessary attributes for a dialog
-  this.elements = attr(getElements(selector), {
-    role: 'dialog',
-    tabindex: -1,
-    'aria-modal': true
-  })
-
-  // Set the callbacks to each element
-  this.elements.forEach((el) => {
-    if (!weakState().get(el)) {
-      weakState().set(el, {
-        onOpenCallback: options.onOpenCallback,
-        onCloseCallback: options.onCloseCallback
+function bindButtonsToOpenDialog () {
+  queryAll('[data-dialog="open"]').forEach((button) => {
+    const dialogEl = document.querySelector(`#${button.getAttribute('data-dialog-ref')}`)
+    if (dialogEl) {
+      button.addEventListener('click', (event) => {
+        if (dispatchEvent(dialogEl, 'dialog.open')) {
+          dialog.open(dialogEl)
+        }
       })
     }
   })
-
-  return this
 }
 
-dialog.prototype.open = function (fn = true) {
-  this.elements.forEach((el, index) => toggle(el, index, fn))
-  return this
-}
+addEvent(UUID, 'keydown', (event) => {
+  if (event.keyCode === KEYS.ESC) {
+    queryAll(`[${UUID}]`).forEach((element) => {
+      dialog.close(element)
+    })
+  }
+})
 
-dialog.prototype.close = function (fn = false) {
-  this.elements.forEach((el, index) => toggle(el, index, fn))
-  return this
-}
+/**
+ * Desired behavior:
+ */
+// ============================================
+// dialog('.dialog-1', { some: 'options' })
+// Example html of how core-dialog can be used
+// <button data-dialog="william">Åpne dialog</button>
+//  <div class="dialog-1" hidden id="william" role="dialog">
+//   <h1>Vil du slette spørsmål?</h1>
+//   <div>Some content stuff</div>
+//   <div>
+//     <!-- Footer layer with actions -->
+//     <!-- User must bind button to do dialog.close() -->
+//     <button data-dialog="close">Lukk</button>
+//   </div>
+// </div>
 
-export function createBackdrop () {
-  attr(BACKDROP = document.createElement('div'), {hidden: true, id: KEY})
-  // @todo: General styling. Should be removed?
-  BACKDROP.classList.add('nrk-dialog-backdrop')
-  document.addEventListener('focus', keepFocus, true)
-  document.addEventListener('keydown', exitOnEscape)
-  document.documentElement.appendChild(BACKDROP)
-}
-
-if (typeof document !== 'undefined' && !document.getElementById(KEY)) {
-  createBackdrop()
-}
+// ============================================
+// Example jsx of how core-dialog can be used
+// <CoreDialog open={this.props.isOpen}>
+//   <h1>Some title stuff</h1>
+//   <div>Some content stuff</div>
+//   <div>
+//     <!-- Footer layer with actions -->
+//     <button onClick={this.toggleIsOpen}>Lukk</button>
+//   </div>
+// </CoreDialog>

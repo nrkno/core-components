@@ -5,6 +5,20 @@ var XMLHttpRequest = window.XMLHttpRequest
 coreComponents.toggle('.js.docs-toggle')
 coreComponents.toggle('.js.docs-dropdown', {popup: true})
 coreComponents.input('.js.docs-input', '')
+coreComponents.dialog('#docs-dialog', {open: false})
+coreComponents.dialog('#docs-dialog-nested', {open: false})
+
+document.addEventListener('dialog.close', (event) => {
+  // If you want to stop the dialog from being closed
+  // event.preventDefault()
+  // If you want to manually close the dialog
+  // coreComponents.dialog.close(event.target)
+  console.log('dialog closed: ', event)
+})
+
+document.addEventListener('dialog.open', (event) => {
+  console.log('dialog opened: ', event)
+})
 
 var debounce = function (fn, ms) {
   var bounced = function () {

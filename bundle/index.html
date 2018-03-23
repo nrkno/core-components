@@ -95,23 +95,55 @@ import Toggle from '@nrk/<strong>core-toggle</strong>/jsx'   // ...or React/Prea
 
     <h3>Demo + usage</h3><br>
 
-    <button class="dialog-showModal">Show modal</button>
-    <div id="docs-dialog" class="nrk-dialog" role="dialog" tabindex="-1" aria-modal="true" aria-label="dialog test">
+    <button class="dialog-showModal" data-dialog="open" data-dialog-ref="docs-dialog">Show modal</button>
+    <div id="docs-dialog" class="nrk-dialog" role="dialog">
       <h1>Her er en tittel</h1>
       <p>Her er det kanskje litt mer innhold som beskriver et eller annet valg du må ta.</p>
       
-      <button class="close">Lukk</button>
+      <button class="close" data-dialog="close">Lukk</button>
       <input type="text" />
       <button class="accept">Åpne ny dialog</button>
     </div>
 
-    <div id="docs-dialog-nested" class="nrk-dialog" aria-label="En nested dialog">
+
+    <button class="dialog-showModal" data-dialog="open" data-dialog-ref="docs-dialog-nested">Open modal2</button>
+    <div id="docs-dialog-nested" class="nrk-dialog">
       <h2>Dette er en dialog som er triggered av noe annet</h2>
 
       <p>Dette kunne vært noe lorem ipsum text. Det burde være lengere enn tittelen :).</p>
 
-      <button class="close">Lukk</button>
+      <button class="close" data-dialog="close">Lukk</button>
     </div>
+
+    <div id="docs-react-dialog"></div>
+
+    <script type="text/babel">
+      class DialogContainerTest extends React.Component {
+        constructor (props) {
+          super(props)
+          this.state = {open: false}
+        }
+
+        toggleDialog = () => {
+          this.setState({open: !this.state.open})
+        }
+        render () {
+          console.log('coreComponents: ', <CoreComponents.Dialog />)
+          return (
+            <div>
+              <button onClick={this.toggleDialog}>Open dialog</button>
+              <CoreComponents.Dialog open={this.state.open}>
+                <h2>Dette er en dialog som er triggered av noe annet</h2>
+                <p>Dette kunne vært noe lorem ipsum text. Det burde være lengere enn tittelen :).</p>
+                <button class="close" onClick={this.toggleDialog}>Lukk</button>
+              </CoreComponents.Dialog>
+            </div>
+          )
+        }
+      }
+
+      ReactDOM.render(<DialogContainerTest />, document.getElementById('docs-react-dialog'))
+    </script>
 
     <pre class="prettyprint">
 // HTML
