@@ -45,4 +45,12 @@ export default ['.'].concat(pkgs).reduce((acc, path) => { // Make config for all
       globals
     }
   }, config))
-}, [])
+}, [Object.assign({ // Examples
+  input: `bundle/examples.jsx`,
+  output: {
+    file: `bundle/examples.min.js`,
+    format: 'iife',
+    sourcemap: true,
+    globals
+  }
+}, config)])
