@@ -121,19 +121,33 @@ import Toggle from '@nrk/<strong>core-toggle</strong>/jsx'   // ...or React/Prea
       class DialogContainerTest extends React.Component {
         constructor (props) {
           super(props)
-          this.state = {open: false}
+          this.state = {
+            open: false,
+            contentTitle: 'Dette er en dialog test'
+          }
         }
 
         toggleDialog = () => {
           this.setState({open: !this.state.open})
         }
+
+        changeTitle = () => {
+          this.setState({
+            contentTitle: `Endret tittel ${Math.random()}`
+          })
+        }
+
+        handleClose = (event) => {
+          this.setState({open: false})
+        }
+
         render () {
-          console.log('coreComponents: ', <CoreComponents.Dialog />)
           return (
             <div>
               <button onClick={this.toggleDialog}>Open dialog</button>
-              <CoreComponents.Dialog open={this.state.open}>
-                <h2>Dette er en dialog som er triggered av noe annet</h2>
+              <button onClick={this.changeTitle}>Change title</button>
+              <CoreComponents.Dialog open={this.state.open} handleClose={this.handleClose}>
+                <h2>{this.state.contentTitle}</h2>
                 <p>Dette kunne vært noe lorem ipsum text. Det burde være lengere enn tittelen :).</p>
                 <button class="close" onClick={this.toggleDialog}>Lukk</button>
               </CoreComponents.Dialog>

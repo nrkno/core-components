@@ -1,6 +1,11 @@
 import {name, version} from './package.json'
 import {queryAll, addEvent, dispatchEvent} from '../utils'
 
+const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid attribute characters
+const UUID_BACKDROP = `${UUID}-backdrop`
+const UUID_ACTIVE = `${UUID}-active`
+const KEYS = {ESC: 27}
+
 const FOCUSABLE_ELEMENTS = `
   [tabindex]:not([disabled]),
   a:not([disabled]),
@@ -8,15 +13,6 @@ const FOCUSABLE_ELEMENTS = `
   input:not([disabled]),
   select:not([disabled]),
   textarea:not([disabled])`
-
-/** Best practice would be to have a single modal element at the bottom of body with
- * the backdrop appended after the modal.
- */
-
-const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid attribute characters
-const UUID_BACKDROP = `${UUID}-backdrop`
-const UUID_ACTIVE = `${UUID}-active`
-const KEYS = {ENTER: 13, ESC: 27, PAGEUP: 33, PAGEDOWN: 34, END: 35, HOME: 36, UP: 38, DOWN: 40}
 
 const getHighestZIndex = () =>
   queryAll('*').reduce((zIndex, el) =>
@@ -29,12 +25,12 @@ export default function dialog (elements, options) {
   if (typeof window !== 'undefined' && typeof window[UUID_ACTIVE] === 'undefined') {
     window[UUID_ACTIVE] = []
     document.addEventListener('focus', keepFocus, true)
+    bindButtonsToOpenDialog()
   }
+
   let backdrop = getBackdrop()
   if (!backdrop) backdrop = createBackdrop()
   setupBackdrop(backdrop, options.open)
-
-  bindButtonsToOpenDialog()
 
   return queryAll(elements).forEach((element) => {
     setupDialogContainer(element, options.open)
@@ -44,17 +40,17 @@ export default function dialog (elements, options) {
 }
 
 dialog.close = (element) => {
-  setupDialogContainer(element, false)
-  setupBackdrop(getBackdrop(), false)
+  if (dispatchEvent(element, 'dialog.close')) {
+    setupDialogContainer(element, false)
+    setupBackdrop(getBackdrop(), false)
+  }
 }
 
 dialog.open = (element) => {
-  // const autofocusElement = element.querySelector('[autofocus]:not([disabled])')
-  // const focusableElement = element.querySelector(FOCUSABLE_ELEMENTS)
-  // ;(autofocusElement || focusableElement || element).focus()
-
-  setupDialogContainer(element, true)
-  setupBackdrop(getBackdrop(), true)
+  if (dispatchEvent(element, 'dialog.open')) {
+    setupDialogContainer(element, true)
+    setupBackdrop(getBackdrop(), true)
+  }
 }
 
 function setupDialogContainer (dialog, open = false) {
@@ -76,7 +72,9 @@ function setupDialogContainer (dialog, open = false) {
 
 function setupBackdrop (backdrop, open = false) {
   backdrop.setAttribute(UUID_BACKDROP, '')
-  backdrop[open ? 'removeAttribute' : 'setAttribute']('hidden', '')
+  // We cannot remove the backdrop while there are active dialogs, that's why we
+  // first check the list before the options
+  backdrop[window[UUID_ACTIVE].length > 0 || open ? 'removeAttribute' : 'setAttribute']('hidden', '')
 }
 
 function getBackdrop () {
@@ -93,12 +91,21 @@ function createBackdrop (open) {
   return backdrop
 }
 
+function isVisiblyFocusable (element) {
+  if (window.getComputedStyle(element).getPropertyValue('visibility') === 'hidden') {
+    return false
+  }
+  return true
+}
+
 function keepFocus (event) {
   // If no dialog is active, we don't need to do anything
   if (window[UUID_ACTIVE].length === 0) { return }
   const activeDialog = window[UUID_ACTIVE][window[UUID_ACTIVE].length - 1]
 
-  const focusable = activeDialog.querySelectorAll(FOCUSABLE_ELEMENTS)
+  // Find all focusable elements and make sure they are not hidden with css
+  const focusable = queryAll(FOCUSABLE_ELEMENTS, activeDialog)
+    .filter((element) => isVisiblyFocusable(element))
 
   // If focus moves us outside the dialog, we need to refocus to inside the dialog
   if (!activeDialog.contains(event.target)) {
@@ -108,11 +115,7 @@ function keepFocus (event) {
 
 function bindButtonsInDialog (element) {
   queryAll('[data-dialog="close"]', element).forEach((button) => {
-    button.addEventListener('click', (event) => {
-      if (dispatchEvent(element, 'dialog.close')) {
-        dialog.close(element)
-      }
-    })
+    button.addEventListener('click', (event) => dialog.close(element))
   })
 }
 
@@ -120,11 +123,8 @@ function bindButtonsToOpenDialog () {
   queryAll('[data-dialog="open"]').forEach((button) => {
     const dialogEl = document.querySelector(`#${button.getAttribute('data-dialog-ref')}`)
     if (dialogEl) {
-      button.addEventListener('click', (event) => {
-        if (dispatchEvent(dialogEl, 'dialog.open')) {
-          dialog.open(dialogEl)
-        }
-      })
+      button.setAttribute('aria-controls', button.getAttribute('data-dialog-ref'))
+      button.addEventListener('click', (event) => dialog.open(dialogEl))
     }
   })
 }

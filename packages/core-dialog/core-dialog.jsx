@@ -13,7 +13,10 @@ export default class Dialog extends React.Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    nextProps.open ? dialog.open(this.dialogEl) : dialog.close(this.dialogEl)
+    // Only open or close if state has changed
+    if (this.props.open !== nextProps.open) {
+      nextProps.open ? dialog.open(this.dialogEl) : dialog.close(this.dialogEl)
+    }
   }
 
   render () {
