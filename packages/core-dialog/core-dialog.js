@@ -32,6 +32,7 @@ export default function dialog (dialogs, options) {
     dialog.setAttribute('aria-modal', true)
     dialog.setAttribute('tabindex', '-1')
     dialog.setAttribute('role', 'dialog')
+    dialog.setAttribute('aria-label', options.label)
 
     toggleDialog(dialog, options.open)
     return dialog

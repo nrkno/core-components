@@ -5,8 +5,8 @@ var XMLHttpRequest = window.XMLHttpRequest
 coreComponents.toggle('.js.docs-toggle')
 coreComponents.toggle('.js.docs-dropdown', {popup: true})
 coreComponents.input('.js.docs-input', '')
-coreComponents.dialog('#docs-dialog', {open: false})
-coreComponents.dialog('#docs-dialog-nested', {open: false})
+coreComponents.dialog('#docs-dialog', {open: false, label: 'første dialog tittel'})
+coreComponents.dialog('#docs-dialog-nested', {open: false, label: 'andre dialog tittel'})
 
 // document.addEventListener('dialog.close', (event) => {
 //   // If you want to stop the dialog from being closed
