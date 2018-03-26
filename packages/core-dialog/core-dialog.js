@@ -3,7 +3,6 @@ import {queryAll, addEvent, dispatchEvent} from '../utils'
 
 const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid attribute characters
 const UUID_BACKDROP = `${UUID}-backdrop`
-const UUID_ACTIVE = `${UUID}-active`
 const KEYS = {ESC: 27}
 
 const FOCUSABLE_ELEMENTS = `
@@ -14,59 +13,75 @@ const FOCUSABLE_ELEMENTS = `
   select:not([disabled]),
   textarea:not([disabled])`
 
-const getHighestZIndex = () =>
-  queryAll('*').reduce((zIndex, el) =>
+const getHighestZIndex = (elements = '*') =>
+  queryAll(elements).reduce((zIndex, el) =>
     Math.max(zIndex, Number(window.getComputedStyle(el, null).getPropertyValue('z-index')) || 0)
   , 0)
 
-export default function dialog (elements, options) {
-  // window[UUID_ACTIVE] is our list of active dialogs.
-  // Maybe it should not be bound to version?
-  if (typeof window !== 'undefined' && typeof window[UUID_ACTIVE] === 'undefined') {
-    window[UUID_ACTIVE] = []
-    document.addEventListener('focus', keepFocus, true)
-    bindButtonsToOpenDialog()
-  }
+const getHighestPrevious = (elements = `[${UUID}-previous]`) =>
+  queryAll(elements).reduce((lastElement, el) => {
+    if (!lastElement) return el
+    if (Number(el.getAttribute(`${UUID}-previous`)) >
+      Number(lastElement.getAttribute(`${UUID}-previous`))) return el
+    return lastElement
+  }, null)
 
-  let backdrop = getBackdrop()
-  if (!backdrop) backdrop = createBackdrop()
-  setupBackdrop(backdrop, options.open)
+export default function dialog (dialogs, options) {
+  return queryAll(dialogs).forEach((dialog) => {
+    dialog.setAttribute(UUID, '')
+    dialog.setAttribute('aria-modal', true)
+    dialog.setAttribute('tabindex', '-1')
+    dialog.setAttribute('role', 'dialog')
 
-  return queryAll(elements).forEach((element) => {
-    setupDialogContainer(element, options.open)
-    bindButtonsInDialog(element)
-    return element
+    toggleDialog(dialog, options.open)
+    return dialog
   })
 }
 
-dialog.close = (element) => {
-  if (dispatchEvent(element, 'dialog.close')) {
-    setupDialogContainer(element, false)
-    setupBackdrop(getBackdrop(), false)
-  }
-}
+addEvent(UUID, 'focus', (event) => {
+  keepFocus(event)
+})
 
-dialog.open = (element) => {
-  if (dispatchEvent(element, 'dialog.open')) {
-    setupDialogContainer(element, true)
-    setupBackdrop(getBackdrop(), true)
+addEvent(UUID, 'click', (event) => {
+  for (let el = event.target; el; el = el.parentElement) {
+    const action = el.getAttribute('data-dialog')
+    if (action === 'close' && el.parentElement.hasAttribute(UUID)) {
+      dialog(el.parentElement, {open: false})
+    } else if (action) dialog(action, {open: true})
   }
-}
+})
 
-function setupDialogContainer (dialog, open = false) {
-  dialog.setAttribute(UUID, '')
-  dialog.setAttribute('aria-modal', true)
-  dialog.setAttribute('tabindex', '-1')
-  dialog.setAttribute('role', 'dialog')
-  dialog[open ? 'setAttribute' : 'removeAttribute']('open', '')
-  if (open) {
-    dialog.style.zIndex = getHighestZIndex() + 1
-    window[UUID_ACTIVE].push(dialog)
-  } else {
-    window[UUID_ACTIVE].find((el, idx) => {
-      if (el === dialog) window[UUID_ACTIVE].splice(idx, 1)
+addEvent(UUID, 'keydown', (event) => {
+  if (event.keyCode === KEYS.ESC) {
+    queryAll(`[${UUID}]`).forEach((element) => {
+      dialog(element, {open: false})
     })
-    dialog.style.zIndex = 0
+  }
+})
+
+function toggleDialog (dialog, open = false) {
+  const isOpen = dialog.getAttribute('open')
+  const previousEl = getHighestPrevious()
+  if (isOpen !== open && dispatchEvent(dialog, open ? 'dialog.open' : 'dialog.close')) {
+    let backdrop = getBackdrop()
+    if (!backdrop) backdrop = createBackdrop()
+    setupBackdrop(backdrop, open)
+
+    dialog[open ? 'setAttribute' : 'removeAttribute']('open', '')
+    if (open) {
+      const highestIndex = previousEl ? Number(previousEl.getAttribute(`${UUID}-previous`)) : 0
+      document.activeElement.setAttribute(`${UUID}-previous`, highestIndex + 1)
+      dialog.style.zIndex = getHighestZIndex() + 1
+      const focusable = queryAll(FOCUSABLE_ELEMENTS, dialog)
+      .filter((element) => isVisiblyFocusable(element))
+      focusable[0].focus()
+    } else {
+      if (previousEl) {
+        previousEl.removeAttribute(`${UUID}-previous`)
+        previousEl.focus()
+      }
+      dialog.style.zIndex = 0
+    }
   }
 }
 
@@ -74,7 +89,7 @@ function setupBackdrop (backdrop, open = false) {
   backdrop.setAttribute(UUID_BACKDROP, '')
   // We cannot remove the backdrop while there are active dialogs, that's why we
   // first check the list before the options
-  backdrop[window[UUID_ACTIVE].length > 0 || open ? 'removeAttribute' : 'setAttribute']('hidden', '')
+  backdrop[open ? 'removeAttribute' : 'setAttribute']('hidden', '')
 }
 
 function getBackdrop () {
@@ -85,8 +100,6 @@ function createBackdrop (open) {
   const backdrop = document.createElement('div')
   // Should probably not add class. But just doing it for now to simplify styling
   backdrop.classList.add('nrk-dialog-backdrop')
-  // document.addEventListener('focus', keepFocus, true)
-  // document.addEventListener('keydown', exitOnEscape)
   document.documentElement.appendChild(backdrop)
   return backdrop
 }
@@ -99,9 +112,17 @@ function isVisiblyFocusable (element) {
 }
 
 function keepFocus (event) {
+  const dialogs = queryAll(`[${UUID}]`)
+  let activeDialog = null
+  for (let i = 0; i < dialogs.length; i++) {
+    if (dialogs[i].hasAttribute('open')) {
+      activeDialog = dialogs[i]
+      break
+    }
+  }
+
   // If no dialog is active, we don't need to do anything
-  if (window[UUID_ACTIVE].length === 0) { return }
-  const activeDialog = window[UUID_ACTIVE][window[UUID_ACTIVE].length - 1]
+  if (!activeDialog) { return }
 
   // Find all focusable elements and make sure they are not hidden with css
   const focusable = queryAll(FOCUSABLE_ELEMENTS, activeDialog)
@@ -112,30 +133,6 @@ function keepFocus (event) {
     focusable[0] ? focusable[focusable.length - 1].focus() : focusable[0].focus()
   }
 }
-
-function bindButtonsInDialog (element) {
-  queryAll('[data-dialog="close"]', element).forEach((button) => {
-    button.addEventListener('click', (event) => dialog.close(element))
-  })
-}
-
-function bindButtonsToOpenDialog () {
-  queryAll('[data-dialog="open"]').forEach((button) => {
-    const dialogEl = document.querySelector(`#${button.getAttribute('data-dialog-ref')}`)
-    if (dialogEl) {
-      button.setAttribute('aria-controls', button.getAttribute('data-dialog-ref'))
-      button.addEventListener('click', (event) => dialog.open(dialogEl))
-    }
-  })
-}
-
-addEvent(UUID, 'keydown', (event) => {
-  if (event.keyCode === KEYS.ESC) {
-    queryAll(`[${UUID}]`).forEach((element) => {
-      dialog.close(element)
-    })
-  }
-})
 
 /**
  * Desired behavior:

@@ -13,11 +13,11 @@ coreComponents.dialog('#docs-dialog-nested', {open: false})
 //   // event.preventDefault()
 //   // If you want to manually close the dialog
 //   // coreComponents.dialog.close(event.target)
-//   // console.log('dialog closed: ', event)
+//   console.log('dialog closed: ', event)
 // })
 
 // document.addEventListener('dialog.open', (event) => {
-//   // console.log('dialog opened: ', event)
+//   console.log('dialog opened: ', event)
 // })
 
 var debounce = function (fn, ms) {
