@@ -7,7 +7,7 @@
   <title>@nrk/core-components</title>
   <link rel="stylesheet" href="https://static.nrk.no/core-fonts/latest/core-fonts.min.css">
   <link rel="stylesheet" href="https://static.nrk.no/core-css/latest/core-css.min.css">
-  <link rel="stylesheet" href="example.css">
+  <link rel="stylesheet" href="examples.css">
 </head>
 <body class="docs-style">
   <ul class="docs-menu nrk-color-shade-1">
@@ -16,6 +16,7 @@
     <li><a href="#input">Input</a></li>
     <li><a href="#dialog">Dialog</a></li>
     <li><a href="#datepicker">Datepicker</a></li>
+    <li><a href="#faq">FAQ</a></li>
     <li><label><input type="checkbox" checked onchange="document.body.classList.toggle('docs-style')"> Example style</label></li>
   </ul>
 
@@ -49,7 +50,7 @@ import Toggle from '@nrk/<strong>core-toggle</strong>/jsx'   // ...or React/Prea
       <summary><h3>Use with Require.js</h3> - old school</summary>
       <pre class="prettyprint">&lt;script&gt;
   require(['https://static.nrk.no/core-components/X.X.X/core-components.min.js'], function(coreComponents) {
-    // use coreComponents.Toggle() etc here
+    // use coreComponents.toggle() etc here
   });
 &lt;/script&gt;</pre>
     </details>
@@ -74,6 +75,7 @@ import Toggle from '@nrk/<strong>core-toggle</strong>/jsx'   // ...or React/Prea
     <p>
       <a class="nrk-button" target="_top" href="https://github.com/nrkno/core-components">View on Github</a>
       <a class="nrk-button" target="_top" href="https://github.com/nrkno/core-components/releases/latest">View latest release</a>
+      <a class="nrk-button" target="_blank" href="https://nrk.slack.com/messages/C49CY4VTP/">#core on NRK Slack</a>
     </p>
 
 
@@ -99,12 +101,6 @@ import Toggle from '@nrk/<strong>core-toggle</strong>/jsx'   // ...or React/Prea
         <button class="docs-toggle docs-button js">Example toggle</button>
         <div hidden>Content</div>
         <div id="docs-react-toggle"></div>
-        <script type="text/babel">
-          ReactDOM.render(<CoreComponents.Toggle>
-            <button className="docs-toggle docs-button">Example toggle JSX</button>
-            <div>Content</div>
-          </CoreComponents.Toggle>, document.getElementById('docs-react-toggle'))
-        </script>
       </div>
       <div class="nrk-xs-12of12 nrk-md-6of12">
         <h3>Popup toggle</h3>
@@ -124,23 +120,6 @@ import Toggle from '@nrk/<strong>core-toggle</strong>/jsx'   // ...or React/Prea
           </li>
         </ul>
         <div id="docs-react-dropdown"></div>
-        <script type="text/babel">
-          ReactDOM.render(<CoreComponents.Toggle popup={true}>
-            <button className="docs-dropdown docs-button">Example dropdown JSX</button>
-            <ul className="docs-drop">
-              <li><a href="#">Link</a></li>
-              <li>
-                <CoreComponents.Toggle popup={true}>
-                  <button className="docs-dropdown">Can also be nested</button>
-                  <ul className="docs-drop">
-                    <li><a href="#">Sub-link</a></li>
-                    <li><button>Sub-button</button></li>
-                  </ul>
-                </CoreComponents.Toggle>
-              </li>
-            </ul>
-          </CoreComponents.Toggle>, document.getElementById('docs-react-dropdown'))
-        </script>
         <button class="docs-dropdown js docs-tip docs-button" aria-expanded="false">Example tooltip</button>
         <div class="docs-drop" hidden>Some help text</div>
       </div>
@@ -206,13 +185,13 @@ coreToggle('.my-dropdown', {popup: true})
         Both the toggle button and toggle content receive attributes reflecting the current state. Example:
       </p>
       <pre class="prettyprint">
-.my-example-toggle-button {}                        // Target button in any state
-.my-example-toggle-button[aria-expanded="true"] {}  // Target only open button
-.my-example-toggle-button[aria-expanded="false"] {} // Target only closed button
+.my-example-toggle-button {}                        /* Target button in any state */
+.my-example-toggle-button[aria-expanded="true"] {}  /* Target only open button */
+.my-example-toggle-button[aria-expanded="false"] {} /* Target only closed button */
 
-.my-example-toggle-content {}                       // Target content in any state
-.my-example-toggle-content:not([hidden]) {}         // Target only open content
-.my-example-toggle-content[hidden] {}               // Target only closed content
+.my-example-toggle-content {}                       /* Target content in any state */
+.my-example-toggle-content:not([hidden]) {}         /* Target only open content */
+.my-example-toggle-content[hidden] {}               /* Target only closed content */
 </pre>
     </details>
 
@@ -273,92 +252,208 @@ coreToggle('.my-dropdown', {popup: true})
     <h2 id="input">Input</h2>
     <p>
       <code class="prettyprint">core-input</code> enhances
-      <code class="prettyprint">&lt;input&gt;</code> fields with functionality
-      for autocomplete suggesions, search results and taging abilities.
-      It has three modes:
+      <code class="prettyprint">&lt;input&gt;</code> fields with keyboard accessible
+      functionality for autocomplete suggestions, search results and smart selectbox abilities.
+      <code class="prettyprint">core-input</code> has a default filtering behavior,
+      but can easily be customized through the <code class="prettyprint">'input.select'</code>
+      and <code class="prettyprint">'input.filter'</code> events. Examples:
     </p>
     <div class="nrk-grid">
-      <div class="nrk-xs-12of12 nrk-md-3of12">
-        <h3>VanillaJS</h3><br>
-        <label class="nrk-sr" for="docs-1">Write the letter C to test</label>
-        <input type="text" id="docs-1" class="js docs-input docs-button" minlength="1" placeholder="Type &quot;C&quot;...">
+      <div class="nrk-xs-12of12 nrk-md-6of12 nrk-lg-3of12">
+        <h3>Default filtering</h3>
+        <p><small>
+          Typing in a <code class="prettyprint">core-input</code> automatically toggles
+          the <code class="prettyprint"><a href="https://developer.mozilla.org/en/docs/Web/HTML/Global_attributes/hidden" target="_blank">hidden</a></code> attribute on <code class="prettyprint">&lt;button&gt;</code>
+          and <code class="prettyprint">&lt;a&gt;</code> tags based on matches in <code class="prettyprint"><a href="https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent" target="_blank">textContent</a></code>.
+          <br>Source: <a href="https://github.com/nrkno/core-components/blob/master/bundle/examples/core-input.js" target="_blank">JS</a> | <a href="https://github.com/nrkno/core-components/blob/master/bundle/examples/core-input.jsx" target="_blank">JSX</a>
+        </small></p>
+        <input type="text" class="js docs-input docs-button" minlength="1" placeholder="Type &quot;C&quot;...">
         <ul class="docs-drop" hidden>
-          <li><button value="google">Chrome</button></li>
+          <li><button>Chrome</button></li>
           <li><button>Firefox</button></li>
           <li><button>Opera</button></li>
-          <li><a href="https://www.apple.com/lae/safari/" target="_blank">Safari</a></li>
-          <li><a href="https://www.microsoft.com/en-us/windows/microsoft-edge" target="_blank">Microsoft Edge</a></li>
+          <li><button>Safari</button></li>
+          <li><button>Microsoft Edge</button></li>
         </ul>
-      </div>
-      <div class="nrk-xs-12of12 nrk-md-3of12">
-        <h3>JSX</h3><br>
         <div id="docs-react-input"></div>
-        <script type="text/babel">
-          class ContainerForInput extends React.Component {
-            constructor (props) {
-              super(props)
-              this.state = { items: [], query: '' }
-              this.xhr = new XMLHttpRequest()
-              this.xhr.onload = () => {
-                this.setState({
-                  items: JSON.parse(this.xhr.responseText).result
-                    .filter((item) => item._type === 'serie')
-                    .map((item) => item._source)
-                })
-              }
-            }
-
-            handleOnFilter = (event) => {
-              const query = event.target.value
-
-              event.preventDefault()
-              this.xhr.abort()
-              this.setState({
-                query,
-                items: query ? [{title: `Søker etter ${query}...`}] : []
-              })
-
-              if(query) {
-                this.xhr.open('GET', `https://tv.nrk.no/autocomplete?query=${encodeURIComponent(query)}`, true)
-                this.xhr.send()
-              }
-            }
-
-            render () {
-              const Input = CoreComponents.Input
-              const Mark = CoreComponents.Input.Highlight
-              const query = this.state.query.toLowerCase()
-
-              return (
-                <Input>
-                  <input type="text" className="docs-input docs-button" />
-                  <ul className="docs-drop">
-                    {this.state.items.slice(0, 10).map((item, key) => <li key={key}>
-                        <a href={`https://tv.nrk.no/${item.url}`}><Mark text={item.title} query={query} /></a>
-                      </li>)
-                    }
-                    <li><button value="google">Chrome</button></li>
-                    <li><button>Firefox</button></li>
-                    <li><button>Opera</button></li>
-                    <li><a href="https://www.apple.com/lae/safari/" target="_blank">Safari</a></li>
-                    <li><a href="https://www.microsoft.com/en-us/windows/microsoft-edge" target="_blank">Microsoft Edge</a></li>
-                  </ul>
-                </Input>
-              )
-            }
-          }
-
-          ReactDOM.render(<ContainerForInput />, document.getElementById('docs-react-input'))
-        </script>
       </div>
-      <div aria-hidden="true" style="pointer-events:none;opacity:.3">
-        <h3>Tags (work in progress)</h3><br>
-        <label class="nrk-sr" for="docs-3">Write the letter C to test</label>
-        <input type="text" id="docs-3" class="docs-input docs-button" disabled placeholder="Separate with comma">
+      <div class="nrk-xs-12of12 nrk-md-6of12 nrk-lg-3of12">
+        <h3>Example: ajax</h3>
+        <p><small>
+          You can stop default filtering by calling <code class="prettyprint">event.preventDefault()</code>
+          on <code class="prettyprint">'input.filter'</code>. Always escape html and debounce requests when fetching data from external sources.
+          <br>Source: <a href="https://github.com/nrkno/core-components/blob/master/bundle/examples/core-input-ajax.js" target="_blank">JS</a> | <a href="https://github.com/nrkno/core-components/blob/master/bundle/examples/core-input-ajax.jsx" target="_blank">JSX</a>
+        </small></p>
+        <input type="text" class="js docs-input-ajax docs-button" minlength="1" placeholder="Type &quot;nytt&quot;...">
+        <ul class="docs-drop" hidden></ul>
+        <div id="docs-react-input-ajax"></div>
+      </div>
+      <div class="nrk-xs-12of12 nrk-md-6of12 nrk-lg-3of12">
+        <h3>Example: lazy</h3>
+        <p><small>
+          You can also do a hybrid; lazy load items, but let <code class="prettyprint">core-input</code>
+          still handle filtering.
+          <br>Source: <a href="https://github.com/nrkno/core-components/blob/master/bundle/examples/core-input-lazy.js" target="_blank">JS</a> | <a href="https://github.com/nrkno/core-components/blob/master/bundle/examples/core-input-lazy.jsx" target="_blank">JSX</a>
+        </small></p>
+        <input type="text" class="js docs-input-lazy docs-button" minlength="1" placeholder="Type &quot;B&quot;...">
+        <ul class="docs-drop" hidden></ul>
+        <div id="docs-react-input-lazy"></div>
+      </div>
+      <div class="nrk-xs-12of12 nrk-md-6of12 nrk-lg-3of12">
+        <h3>Example: dynamic</h3>
+        <p><small>
+          You can also do synchronous operations,
+          like dynamically populating items based input value.
+          <br>Source: <a href="https://github.com/nrkno/core-components/blob/master/bundle/examples/core-input-dynamic.js" target="_blank">JS</a> | <a href="https://github.com/nrkno/core-components/blob/master/bundle/examples/core-input-dynamic.jsx" target="_blank">JSX</a>
+        </small></p>
+        <input type="text" class="js docs-input-dynamic docs-button" minlength="1" placeholder="Type your email...">
+        <ul class="docs-drop" hidden></ul>
+        <div id="docs-react-input-dynamic"></div>
       </div>
     </div>
-    <h3>Usage</h3>
-    <pre class="prettyprint">import input from '@nrk/core-input'</pre>
+    <br><h3>Usage</h3><br>
+    <details>
+      <summary>Use with VanillaJS</summary>
+        <p><em><strong>Important:</strong> Use <code class="prettyprint">coreInput.escapeHTML(String)</code> to safely render data from API or user.</em></p>
+        <h3>HTML</h3>
+        <pre class="prettyprint">&lt;input type="text" class="my-input"&gt; &lt;!-- Input element must be a &lt;input&gt; --&gt;
+&lt;ul hidden&gt;                          &lt;!-- Items can be any tag, but items should be wrappend in &lt;li&gt; --&gt;
+  &lt;li&gt;&lt;button type="button"&gt;Item 1&lt;/button&gt;&lt;/li&gt;                  &lt;!-- Interactive items must be &lt;button&gt; or &lt;a&gt; --&gt;
+  &lt;li&gt;&lt;button type="button" value="Suprise!"&gt;Item 2&lt;/button&gt;&lt;/li&gt; &lt;!-- Alternative value can be defined --&gt;
+  &lt;li&gt;&lt;a href="https://www.nrk.no/"&gt;NRK.no&lt;/a&gt;&lt;/li&gt;               &lt;!-- Actual links are recommended when applicable --&gt;
+&lt;/ul&gt;</pre>
+        <h3>Javascript</h3>
+        <pre class="prettyprint">import coreInput from '@nrk/core-input'
+
+coreInput(String|Element|Elements, {  // Accepts a <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors" target="
+">selector string</a>, <a href="https://developer.mozilla.org/en-US/docs/Web/API/NodeList" target="_blank">NodeList</a>, <a href="https://developer.mozilla.org/en-US/docs/Web/API/Element" target="_blank">Element</a> or array of Elements
+  open: null,                         // Defaults to value of aria-expanded or false. Use true|false to force open state
+  items: null                         // Set new string of HTML items. HTML is used for full flexibility on markup
+})
+
+// Example:
+coreInput('.my-input')
+coreInput('.my-input', {open: true})
+coreInput('.my-input', {open: true, items: '&lt;li&gt;No hits&lt;/li&gt;'}) // Open and set items
+coreInput('.my-input', '&lt;li&gt;&lt;button type="button"&gt;Item&lt;/button&gt;&lt;/li&gt;') // Second arument can also be items
+coreInput('.my-input', '&lt;li&gt;&lt;a href="?q=' + coreInput.escapeHTML(input.value) + '"&gt;More results&lt;/a&gt;&lt;/li&gt;') // escape html
+coreInput('.my-input', '&lt;li&gt;&lt;a href="#"&gt;' + coreInput.highlight(item.text, input.value) + '&lt;/a&gt;&lt;/li&gt;') // highlight match
+
+// Helpers:
+coreInput.escapeHTML(String)          // Escapes string to safely be used in markup
+coreInput.highlight(haystack, needle) // Escapes haystack and wraps all instances of needle in &lt;mark&gt; tag
+</pre>
+    </details>
+    <details>
+      <summary>Use with React/Preact</summary>
+        <p>
+          All <code class="prettyprint">&lt;Input&gt;</code> props are optional. Input will handle
+          its own state unless you run <code class="prettyprint">event.preventDefault()</code> in
+          <code class="prettyprint">onFilter</code> or <code class="prettyprint">onSelect</code>.
+          Non-settings props (like <code class="prettyprint">className</code>,
+          <code class="prettyprint">style</code> etc.) will be applied as actual attributes.
+        </p>
+        <pre class="prettyprint">import Toggle from '@nrk/core-toggle/jsx'
+
+&lt;Input open={false} onFilter={function(){}} onSelect={function(){}}&gt;
+  &lt;input type="text" /&gt;   // First element must result in a &lt;input&gt;-tag. Accepts both elements and components
+  &lt;ul&gt;                    // Next element will be used for items. Accepts both elements and components
+    &lt;li&gt;&lt;button type="button"&gt;Item 1&lt;/button&gt;&lt;/li&gt;                  // Interactive items must be &lt;button&gt; or &lt;a&gt;
+    &lt;li&gt;&lt;button type="button" value="Suprise!"&gt;Item 2&lt;/button&gt;&lt;/li&gt; // Alternative value can be defined
+    &lt;li&gt;&lt;a href="https://www.nrk.no/"&gt;NRK.no&lt;/a&gt;&lt;/li&gt;               // Actual links are recommended when applicable
+  &lt;/ul&gt;
+&lt;/Toggle&gt;</pre>
+    </details>
+    <details>
+      <summary>Events</summary>
+      <h3>input.filter</h3>
+      <p><small>
+        Before a <code class="prettyprint">core-input</code> filters items,
+        a <code class="prettyprint">'input.filter'</code> event
+        is fired (both for VanillaJS and React/Preact components).
+        The input.filter event is cancelable, meaning you can use <a href="https://developer.mozilla.org/en-US/docs/Web/API/Event/preventDefault" target="_blank"><code class="prettyprint">event.preventDefault()</code></a>
+        to cancel default filtering and respond to users typing yourself. The event also <a href="https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Building_blocks/Events#Event_bubbling_and_capture" target="_blank">bubbles</a>,
+        and can therefore be detected both from button element itself, or any parent element (read <a href="https://stackoverflow.com/questions/1687296/what-is-dom-event-delegation" target="_blank">event delegation</a>):
+      </small></p>
+      <pre class="prettyprint">document.addEventListener('input.filter', (event) => {
+  event.target                // The core-input element triggering input.filter event
+  event.detail.relatedTarget  // The items element controled by input
+})</pre>
+      <h3>input.select</h3>
+      <p><small>
+        When the user clickes/selects a item,
+        a <code class="prettyprint">'input.select'</code> event
+        is fired (both for VanillaJS and React/Preact components).
+        The input.select event is cancelable, meaning you can use <a href="https://developer.mozilla.org/en-US/docs/Web/API/Event/preventDefault" target="_blank"><code class="prettyprint">event.preventDefault()</code></a>
+        to cancel replacing the input value and handle select-action yourself. The event also <a href="https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Building_blocks/Events#Event_bubbling_and_capture" target="_blank">bubbles</a>,
+        and can therefore be detected both from button element itself, or any parent element (read <a href="https://stackoverflow.com/questions/1687296/what-is-dom-event-delegation" target="_blank">event delegation</a>):
+      </small></p>
+<pre class="prettyprint">document.addEventListener('input.select', (event) => {
+  event.target                // The core-input element triggering input.filter event
+  event.detail.relatedTarget  // The items element controled by input
+  event.detail.currentTarget  // The item clicked/selected
+  event.detail.value          // The item value
+})</pre>
+    </details>
+    <details>
+      <summary>Styling</summary>
+      <p>
+        Both the input and items element receive attributes reflecting the current state. Example:
+      </p>
+      <pre class="prettyprint">
+.my-example-input {}                              /* Target input in any state */
+.my-example-input[aria-expanded="true"] {}        /* Target only open button */
+.my-example-input[aria-expanded="false"] {}       /* Target only closed button */
+
+.my-example-input-items-element {}                /* Target items element in any state */
+.my-example-input-items-element:not([hidden]) {}  /* Target only open content */
+.my-example-input-items-element[hidden] {}        /* Target only closed content */
+
+.my-example-input-items-element :focus {}         /* Target focused items */
+.my-example-input-items-element mark {}           /* Target hightlight element */
+
+/* Tip: Easily style buttons with <a href="https://static.nrk.no/core-css/latest/#utilities" target="_blank">.nrk-unset</a> */
+</pre>
+    </details>
+
+    <h3>FAQ</h3><br>
+    <details>
+      <summary>Why not use <code class="prettyprint">&lt;datalist&gt;</code> instead?</summary>
+      <p>
+        Despite having a native <a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/datalist"><code class="prettyprint">&lt;datalist&gt;</code></a>
+        element for autocomplete lists, there are several issues regarding <a target="_blank" href="https://caniuse.com/#feat=details">browser support</a>,
+        varying <a target="_blank" href="http://accessibleculture.org/articles/2012/03/screen-readers-and-details-summary/">accessibility</a> support
+        as well as no ability for custom styling or custom behavior.
+      </p>
+    </details>
+    <details>
+      <summary>Why is there only a subset of aria attributes in use?</summary>
+      <p>
+        Despite well documented <a href="https://www.w3.org/TR/2017/NOTE-wai-aria-practices-1.1-20171214/examples/combobox/aria1.1pattern/listbox-combo.html" target="_blank">examples in the aria 1.1 spesification</a>,
+        "best practice" simply becomes unusable in several screen reader due to implementation differences.
+        <code class="prettyprint">core-input</code> aims to provide a equally good user experience regardless
+        if a screen reader passes events to browser or not (events are often hijacked for quick-navigation).
+        Several techniques and attributes have been thoroughly tested:
+      </p>
+      <ul>
+        <li><small><code class="prettyprint">aria-activedescendant</code>/<code class="prettyprint">aria-selected</code> - ignored in Android, lacks indication of list length in JAWS</small></li>
+        <li><small><code class="prettyprint">aria-owns</code> - full list is read for every keystroke in NVDA</small></li>
+        <li><small><code class="prettyprint">role="listbox"</code> - VoiceOver needs aria-selected to falsely announce "0 selected"</small></li>
+        <li><small><code class="prettyprint">role="option"</code> - falsely announces links and buttons as "text"</small></li>
+        <li><small><code class="prettyprint">aria-live="assertive"</code> - fails to correctly inform user if current target is link or button</small></li>
+        <li><small><code class="prettyprint">role="combobox"</code> - skipped in iOS as VoiceOver fails to inform current field is editable</small></li>
+      </ul>
+    </details>
+    <details>
+      <summary>How do I use core-input with multiple tags/output values?</summary>
+      <p>
+        Tagging and screen readers is a complex matter, requiring more than comma separated values.
+        Currently, tagging is just a part of the wishlist for <code class="prettyprint">core-input</code>.
+        If tagging functionality is of interest for your project, please add a +1 to
+        the <a href="https://github.com/nrkno/core-components/issues/9" target="_blank">tagging task</a>,
+        describe your needs in a comment, and you'll be updated about progress.
+      </p>
+    </details>
 
 
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
@@ -366,7 +461,9 @@ coreToggle('.my-dropdown', {popup: true})
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
 
     <h2 id="datepicker">Datepicker</h2>
-    <p>Work in progress</p>
+    <p>Important: Work in progress</p>
+    <input type="text" class="js docs-datepicker docs-button">
+    <div class="docs-drop"></div>
 
 
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
@@ -424,15 +521,29 @@ coreToggle('.my-dropdown', {popup: true})
     <!-- FAQ -->
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
 
-    <!-- <h2 id="faq">FAQ</h2>
-    <h3>What more components are coming?</h3>
-    <p>Table</p>
-    <h3>Why no select tag?</h3>
-    <p>Because, mostly styling, and should be avoided anyway: https://www.youtube.com/watch?v=CUkMCQR4TpY</p>
-    <h3>Why can I not just use plain progress elements?</h3>
-    <p>UU. That's why.</p>
-    <h3>Why not use web components?</h3>
-    <p>They are <a target="_blank" href="https://hacks.mozilla.org/2015/06/the-state-of-web-components/">not mature for production usage</a> yet.</p> -->
+    <h2 id="faq">FAQ</h2>
+    <h3>Who can I contact for requests, feedback and questions?</h3>
+    <p>
+      This is the first version of core-components - <a href="https://github.com/nrkno/core-components/issues/" target="_blank">feedback</a>
+      and testing is welcome! Feel free to <a href="https://github.com/nrkno/core-components/issues/" target="_blank">submit an issue</a>
+      or (if employed at  NRK) slack us at <code class="prettyprint">#core</code>
+    </p>
+    <h3>What screen readers is supported by core-components?</h3>
+    <p>
+      core-components has been developed with extensive testing in
+      major screen readers: Mac + iOS (VoiceOver),  Windows (NVDA + JAWS), TalkBack (Android).
+    </p>
+    <h3>How can I request a new components?</h3>
+    <p>
+      Please see if your <a href="https://github.com/nrkno/core-components/issues?q=is%3Aissue+is%3Aopen+Component+request">component request</a> already exists, and add a +1 reaction if found.
+      For <a href="https://github.com/nrkno/core-components/issues/new?title=Component%20Request:%20&labels=enhancement" target="_blank">new component requests</a>,
+      describe how you plan to use the components and functionality to be covered.
+    </p>
+    <h3>Where are the form elements?</h3>
+    <p>
+      HTML form elements are accessible by nature, and have quite compatible and well documented native APIs.
+      Best practices and styling tips is not a pure functionality concern, and therefore not covered by core-components, for now.
+    </p>
   </article>
 
   <!-- JS setup -->
@@ -442,10 +553,7 @@ coreToggle('.my-dropdown', {popup: true})
   <script src="https://cdn.jsdelivr.net/npm/preact/dist/preact.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/preact-compat/dist/preact-compat.min.js"></script>
   <script>React = ReactDOM = preactCompat</script>
-  <script src="core-components.min.js"></script>
-  <script src="jsx/index.js"></script>>
-  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
-  <script src="example.js"></script>
+  <script src="examples.min.js"></script>
 
   <!-- RequireJS setup -->
   <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.5/require.js"></script>

@@ -11,6 +11,7 @@ html{font:110%/1.5 'LFT Etica',sans-serif;background:#fcfcfc;color:#26292a}stron
 .docs-support > * { margin: 1em 1px; min-width: 80px; padding: 1em; font-size: 13px; text-align: center }
 
 /* Toggle */
+.docs-style input.docs-button { font-size: 16px; background: #fff }
 .docs-style .docs-button { background: none; font: inherit; font-size: 14px; padding: 8px 16px; border: 1px solid #ccc; margin: 2px 0 }
 .docs-style .docs-toggle { box-sizing: border-box; width: 100%; text-align: left }
 .docs-style .docs-toggle::before { content: '\A0'; float: left; margin: 0 5px 0 -5px; width: 20px; transition: .3s; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 15 15'%3E%3Cpath fill='none' stroke='%23000' stroke-linecap='round' d='M1.5 7.5h12m-6-6v12'%3E%3C/path%3E%3C/svg%3E") 50%/15px no-repeat }
@@ -20,13 +21,18 @@ html{font:110%/1.5 'LFT Etica',sans-serif;background:#fcfcfc;color:#26292a}stron
 .docs-style .docs-dropdown::before { content: '\A0'; float: right; margin: 0 -5px 0 5px; width: 20px; transition: .3s; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 15 15'%3E%3Cpath stroke='%23000' fill='none' stroke-linecap='round' d='M1.5 5l6 6 6-6'%3E%3C/path%3E%3C/svg%3E") 50%/15px no-repeat }
 .docs-style .docs-dropdown:not(.docs-tip)[aria-expanded="true"]::before { -webkit-transform: rotate(180deg); transform: rotate(180deg) }
 .docs-style .docs-drop { position: absolute; z-index: 3; list-style: none; margin: 0; padding: 0; min-width: 200px; background: #fff; box-shadow: 0 5px 15px rgba(0,0,0,.3); transition: .3s }
+.docs-style .docs-drop::after { content: ''; position: absolute; bottom: -30px; border: 2px solid transparent} /* Scroll past dropdowns */
 .docs-style .docs-drop[hidden] { display: block; visibility: hidden; opacity: 0; transform: translateY(-5px) }
 .docs-style .docs-drop a,.docs-style .docs-drop button { box-sizing: border-box; display: block; width: 100%; border: 0; padding: 7px 14px; margin: 0; font: inherit; color: inherit; background: none; text-decoration: none; text-align: left }
 .docs-style .docs-drop a[hidden], .docs-style .docs-drop button[hidden] { display: none }
 .docs-style .docs-drop [data-highlight] { background: #ccc }
 .docs-style .docs-tip::before { content: '?'; float: left; margin: -4px 9px 0 -9px; width: 20px; height: 20px; line-height: 22px; border: 1px solid #666; border-radius: 100%; background: none }
 .docs-style .docs-tip { font-size: 13px; border: 0 }
-.docs-style .docs-input { font-size: 16px; background: #fff }
+
+.docs-style .docs-datepicker + .docs-drop button { text-align: center; width: 100% }
+.docs-style .docs-datepicker + .docs-drop table { width: 320px; white-space: nowrap; border-collapse: collapse; table-layout: fixed }
+.docs-style .docs-datepicker + .docs-drop th { border: 1px solid #eee; font-weight: 600; font-size: 13px }
+.docs-style .docs-datepicker + .docs-drop td { border: 1px solid #eee }
 
 @media(min-width:720px){
   .docs-page .nrk-grid > .nrk-xs-12of12 { padding-right: 2em }
