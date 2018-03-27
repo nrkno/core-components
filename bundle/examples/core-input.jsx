@@ -8,11 +8,11 @@ ReactDOM.render(
   <Input>
     <input type='text' className='docs-input docs-button' placeholder='Type "C"... (JSX)' />
     <ul className='docs-drop'>
-      <li><button type='button' value='google'>Chrome</button></li>
-      <li><button type='button'>Firefox</button></li>
-      <li><button type='button'>Opera</button></li>
-      <li><a href='https://www.apple.com/lae/safari/' target='_blank'>Safari</a></li>
-      <li><a href='https://www.microsoft.com/en-us/windows/microsoft-edge' target='_blank'>Microsoft Edge</a></li>
+      <li><button>Chrome</button></li>
+      <li><button>Firefox</button></li>
+      <li><button>Opera</button></li>
+      <li><button>Safari</button></li>
+      <li><button>Microsoft Edge</button></li>
     </ul>
   </Input>,
   document.getElementById('docs-react-input')

@@ -185,13 +185,13 @@ coreToggle('.my-dropdown', {popup: true})
         Both the toggle button and toggle content receive attributes reflecting the current state. Example:
       </p>
       <pre class="prettyprint">
-.my-example-toggle-button {}                        // Target button in any state
-.my-example-toggle-button[aria-expanded="true"] {}  // Target only open button
-.my-example-toggle-button[aria-expanded="false"] {} // Target only closed button
+.my-example-toggle-button {}                        /* Target button in any state */
+.my-example-toggle-button[aria-expanded="true"] {}  /* Target only open button */
+.my-example-toggle-button[aria-expanded="false"] {} /* Target only closed button */
 
-.my-example-toggle-content {}                       // Target content in any state
-.my-example-toggle-content:not([hidden]) {}         // Target only open content
-.my-example-toggle-content[hidden] {}               // Target only closed content
+.my-example-toggle-content {}                       /* Target content in any state */
+.my-example-toggle-content:not([hidden]) {}         /* Target only open content */
+.my-example-toggle-content[hidden] {}               /* Target only closed content */
 </pre>
     </details>
 
@@ -253,8 +253,8 @@ coreToggle('.my-dropdown', {popup: true})
     <p>
       <code class="prettyprint">core-input</code> enhances
       <code class="prettyprint">&lt;input&gt;</code> fields with keyboard accessible
-      functionality for autocomplete suggesions, search results and smart selectbox abilities.
-      <code class="prettyprint">core-input</code> has a detault filtering behavior,
+      functionality for autocomplete suggestions, search results and smart selectbox abilities.
+      <code class="prettyprint">core-input</code> has a default filtering behavior,
       but can easily be customized through the <code class="prettyprint">'input.select'</code>
       and <code class="prettyprint">'input.filter'</code> events. Examples:
     </p>
@@ -269,11 +269,11 @@ coreToggle('.my-dropdown', {popup: true})
         </small></p>
         <input type="text" class="js docs-input docs-button" minlength="1" placeholder="Type &quot;C&quot;...">
         <ul class="docs-drop" hidden>
-          <li><button type="button" value="google">Chrome</button></li>
-          <li><button type="button">Firefox</button></li>
-          <li><button type="button">Opera</button></li>
-          <li><a href="https://www.apple.com/lae/safari/" target="_blank">Safari</a></li>
-          <li><a href="https://www.microsoft.com/en-us/windows/microsoft-edge" target="_blank">Microsoft Edge</a></li>
+          <li><button>Chrome</button></li>
+          <li><button>Firefox</button></li>
+          <li><button>Opera</button></li>
+          <li><button>Safari</button></li>
+          <li><button>Microsoft Edge</button></li>
         </ul>
         <div id="docs-react-input"></div>
       </div>
@@ -302,7 +302,7 @@ coreToggle('.my-dropdown', {popup: true})
       <div class="nrk-xs-12of12 nrk-md-6of12 nrk-lg-3of12">
         <h3>Example: dynamic</h3>
         <p><small>
-          You can also to synchronous on filtering,
+          You can also do synchronous operations,
           like dynamically populating items based input value.
           <br>Source: <a href="https://github.com/nrkno/core-components/blob/master/bundle/examples/core-input-dynamic.js" target="_blank">JS</a> | <a href="https://github.com/nrkno/core-components/blob/master/bundle/examples/core-input-dynamic.jsx" target="_blank">JSX</a>
         </small></p>
@@ -348,7 +348,7 @@ coreInput.highlight(haystack, needle) // Escapes haystack and wraps all instance
       <summary>Use with React/Preact</summary>
         <p>
           All <code class="prettyprint">&lt;Input&gt;</code> props are optional. Input will handle
-          it's own state unless you run <code class="prettyprint">event.preventDefault()</code> in
+          its own state unless you run <code class="prettyprint">event.preventDefault()</code> in
           <code class="prettyprint">onFilter</code> or <code class="prettyprint">onSelect</code>.
           Non-settings props (like <code class="prettyprint">className</code>,
           <code class="prettyprint">style</code> etc.) will be applied as actual attributes.
@@ -366,11 +366,54 @@ coreInput.highlight(haystack, needle) // Escapes haystack and wraps all instance
     </details>
     <details>
       <summary>Events</summary>
-      <p>WIP</p>
+      <h3>input.filter</h3>
+      <p><small>
+        Before a <code class="prettyprint">core-input</code> filters items,
+        a <code class="prettyprint">'input.filter'</code> event
+        is fired (both for VanillaJS and React/Preact components).
+        The input.filter event is cancelable, meaning you can use <a href="https://developer.mozilla.org/en-US/docs/Web/API/Event/preventDefault" target="_blank"><code class="prettyprint">event.preventDefault()</code></a>
+        to cancel default filtering and respond to users typing yourself. The event also <a href="https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Building_blocks/Events#Event_bubbling_and_capture" target="_blank">bubbles</a>,
+        and can therefore be detected both from button element itself, or any parent element (read <a href="https://stackoverflow.com/questions/1687296/what-is-dom-event-delegation" target="_blank">event delegation</a>):
+      </small></p>
+      <pre class="prettyprint">document.addEventListener('input.filter', (event) => {
+  event.target                // The core-input element triggering input.filter event
+  event.detail.relatedTarget  // The items element controled by input
+})</pre>
+      <h3>input.select</h3>
+      <p><small>
+        When the user clickes/selects a item,
+        a <code class="prettyprint">'input.select'</code> event
+        is fired (both for VanillaJS and React/Preact components).
+        The input.select event is cancelable, meaning you can use <a href="https://developer.mozilla.org/en-US/docs/Web/API/Event/preventDefault" target="_blank"><code class="prettyprint">event.preventDefault()</code></a>
+        to cancel replacing the input value and handle select-action yourself. The event also <a href="https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Building_blocks/Events#Event_bubbling_and_capture" target="_blank">bubbles</a>,
+        and can therefore be detected both from button element itself, or any parent element (read <a href="https://stackoverflow.com/questions/1687296/what-is-dom-event-delegation" target="_blank">event delegation</a>):
+      </small></p>
+<pre class="prettyprint">document.addEventListener('input.select', (event) => {
+  event.target                // The core-input element triggering input.filter event
+  event.detail.relatedTarget  // The items element controled by input
+  event.detail.currentTarget  // The item clicked/selected
+  event.detail.value          // The item value
+})</pre>
     </details>
     <details>
       <summary>Styling</summary>
-      <p>WIP</p>
+      <p>
+        Both the input and items element receive attributes reflecting the current state. Example:
+      </p>
+      <pre class="prettyprint">
+.my-example-input {}                              /* Target input in any state */
+.my-example-input[aria-expanded="true"] {}        /* Target only open button */
+.my-example-input[aria-expanded="false"] {}       /* Target only closed button */
+
+.my-example-input-items-element {}                /* Target items element in any state */
+.my-example-input-items-element:not([hidden]) {}  /* Target only open content */
+.my-example-input-items-element[hidden] {}        /* Target only closed content */
+
+.my-example-input-items-element :focus {}         /* Target focused items */
+.my-example-input-items-element mark {}           /* Target hightlight element */
+
+/* Tip: Easily style buttons with <a href="https://static.nrk.no/core-css/latest/#utilities" target="_blank">.nrk-unset</a> */
+</pre>
     </details>
 
     <h3>FAQ</h3><br>
@@ -384,19 +427,19 @@ coreInput.highlight(haystack, needle) // Escapes haystack and wraps all instance
       </p>
     </details>
     <details>
-      <summary>Why is the only a subset of aria attributes in use?</summary>
+      <summary>Why is there only a subset of aria attributes in use?</summary>
       <p>
         Despite well documented <a href="https://www.w3.org/TR/2017/NOTE-wai-aria-practices-1.1-20171214/examples/combobox/aria1.1pattern/listbox-combo.html" target="_blank">examples in the aria 1.1 spesification</a>,
         "best practice" simply becomes unusable in several screen reader due to implementation differences.
-        <code class="prettyprint">core-input</code> aims to proivde a equally good user experience regardless
+        <code class="prettyprint">core-input</code> aims to provide a equally good user experience regardless
         if a screen reader passes events to browser or not (events are often hijacked for quick-navigation).
         Several techniques and attributes have been thoroughly tested:
       </p>
       <ul>
         <li><small><code class="prettyprint">aria-activedescendant</code>/<code class="prettyprint">aria-selected</code> - ignored in Android, lacks indication of list length in JAWS</small></li>
         <li><small><code class="prettyprint">aria-owns</code> - full list is read for every keystroke in NVDA</small></li>
-        <li><small><code class="prettyprint">role="listbox"</code> - VoiceOver needs aria-selected to falsly announce "0 selected"</small></li>
-        <li><small><code class="prettyprint">role="option"</code> - falsly announces links and buttons as "text"</small></li>
+        <li><small><code class="prettyprint">role="listbox"</code> - VoiceOver needs aria-selected to falsely announce "0 selected"</small></li>
+        <li><small><code class="prettyprint">role="option"</code> - falsely announces links and buttons as "text"</small></li>
         <li><small><code class="prettyprint">aria-live="assertive"</code> - fails to correctly inform user if current target is link or button</small></li>
         <li><small><code class="prettyprint">role="combobox"</code> - skipped in iOS as VoiceOver fails to inform current field is editable</small></li>
       </ul>
@@ -418,7 +461,10 @@ coreInput.highlight(haystack, needle) // Escapes haystack and wraps all instance
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
 
     <h2 id="datepicker">Datepicker</h2>
-    <p>Work in progress</p>
+    <input type="text" class="js docs-datepicker docs-button">
+    <div class="docs-drop">
+
+    </div>
 
 
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->

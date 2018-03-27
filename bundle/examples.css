@@ -29,6 +29,11 @@ html{font:110%/1.5 'LFT Etica',sans-serif;background:#fcfcfc;color:#26292a}stron
 .docs-style .docs-tip::before { content: '?'; float: left; margin: -4px 9px 0 -9px; width: 20px; height: 20px; line-height: 22px; border: 1px solid #666; border-radius: 100%; background: none }
 .docs-style .docs-tip { font-size: 13px; border: 0 }
 
+.docs-style .docs-datepicker + .docs-drop button { text-align: center; width: 100% }
+.docs-style .docs-datepicker + .docs-drop table { width: 320px; white-space: nowrap; border-collapse: collapse; table-layout: fixed }
+.docs-style .docs-datepicker + .docs-drop th { border: 1px solid #eee; font-weight: 600; font-size: 13px }
+.docs-style .docs-datepicker + .docs-drop td { border: 1px solid #eee }
+
 @media(min-width:720px){
   .docs-page .nrk-grid > .nrk-xs-12of12 { padding-right: 2em }
   .docs-menu { position: fixed; width: 160px; height: 100vh; padding-top: 90px }
