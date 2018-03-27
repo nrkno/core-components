@@ -97,20 +97,18 @@ import Toggle from '@nrk/<strong>core-toggle</strong>/jsx'   // ...or React/Prea
 
     <button class="dialog-showModal" data-dialog="#docs-dialog">Show modal</button>
     <div id="docs-dialog" class="nrk-dialog" role="dialog">
-      <h1>Her er en tittel</h1>
-      <p>Her er det kanskje litt mer innhold som beskriver et eller annet valg du må ta.</p>
+      <h1>This is a title</h1>
+      <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
       
       <button class="close" data-dialog="close">Lukk</button>
-      <button class="accept" aria-label="et tilfeldig input">Åpne ny dialog</button>
+      <button class="dialog-showModal" data-dialog="#docs-dialog-nested">Open an additional dialog</button>
     </div>
 
 
-    <button class="dialog-showModal" data-dialog="#docs-dialog-nested">Open modal2</button>
+    
     <div id="docs-dialog-nested" class="nrk-dialog">
-      <h2>Dette er en dialog som er triggered av noe annet</h2>
-
-      <p>Dette kunne vært noe lorem ipsum text. Det burde være lengere enn tittelen :).</p>
-
+      <h2>Another dialog, triggered inside the first dialog</h2>
+      <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
       <button class="close" data-dialog="close">Lukk</button>
     </div>
 
@@ -137,19 +135,22 @@ import Toggle from '@nrk/<strong>core-toggle</strong>/jsx'   // ...or React/Prea
         }
 
         handleClose = (event) => {
-          this.setState({open: false})
+          // console.log('before event.preventDefault()')
+          event.preventDefault()
+          // console.log('after event.preventDefault()')
+          if (this.state.open) this.setState({open: false})
         }
 
         render () {
           return (
             <div>
-              {/*<button onClick={this.toggleDialog}>Open dialog</button>
+              <button onClick={this.toggleDialog}>Open dialog</button>
               <button onClick={this.changeTitle}>Change title</button>
               <CoreComponents.Dialog open={this.state.open} handleClose={this.handleClose}>
                 <h2>{this.state.contentTitle}</h2>
                 <p>Dette kunne vært noe lorem ipsum text. Det burde være lengere enn tittelen :).</p>
                 <button class="close" onClick={this.toggleDialog}>Lukk</button>
-              </CoreComponents.Dialog>*/}
+              </CoreComponents.Dialog>
             </div>
           )
         }

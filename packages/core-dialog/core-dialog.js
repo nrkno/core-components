@@ -3,6 +3,7 @@ import {queryAll, addEvent, dispatchEvent} from '../utils'
 
 const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid attribute characters
 const UUID_BACKDROP = `${UUID}-backdrop`
+const UUID_PREVIOUS = `${UUID}-previous`
 const KEYS = {ESC: 27}
 
 const FOCUSABLE_ELEMENTS = `
@@ -13,18 +14,30 @@ const FOCUSABLE_ELEMENTS = `
   select:not([disabled]),
   textarea:not([disabled])`
 
+const getZIndexOfElement = (element) =>
+  Number(window.getComputedStyle(element).getPropertyValue('z-index')) || 0
+
 const getHighestZIndex = (elements = '*') =>
   queryAll(elements).reduce((zIndex, el) =>
-    Math.max(zIndex, Number(window.getComputedStyle(el, null).getPropertyValue('z-index')) || 0)
+    Math.max(zIndex, getZIndexOfElement(el))
   , 0)
 
-const getHighestPrevious = (elements = `[${UUID}-previous]`) =>
+// Find the last focused element before opening the dialog
+const getLastFocusedElement = (elements = `[${UUID_PREVIOUS}]`) =>
   queryAll(elements).reduce((lastElement, el) => {
     if (!lastElement) return el
-    if (Number(el.getAttribute(`${UUID}-previous`)) >
-      Number(lastElement.getAttribute(`${UUID}-previous`))) return el
+    if (Number(el.getAttribute(`${UUID_PREVIOUS}`)) >
+      Number(lastElement.getAttribute(`${UUID_PREVIOUS}`))) return el
     return lastElement
   }, null)
+
+const getTopLevelDialog = () =>
+  queryAll(`[${UUID}]`).reduce((topDialog, dialog) => {
+    if (!topDialog || (
+      getZIndexOfElement(dialog) > getZIndexOfElement(topDialog)
+    )) topDialog = dialog
+    return topDialog
+  })
 
 export default function dialog (dialogs, options) {
   return queryAll(dialogs).forEach((dialog) => {
@@ -39,9 +52,7 @@ export default function dialog (dialogs, options) {
   })
 }
 
-addEvent(UUID, 'focus', (event) => {
-  keepFocus(event)
-})
+addEvent(UUID, 'focus', keepFocus)
 
 addEvent(UUID, 'click', (event) => {
   for (let el = event.target; el; el = el.parentElement) {
@@ -54,31 +65,35 @@ addEvent(UUID, 'click', (event) => {
 
 addEvent(UUID, 'keydown', (event) => {
   if (event.keyCode === KEYS.ESC) {
-    queryAll(`[${UUID}]`).forEach((element) => {
-      dialog(element, {open: false})
-    })
+    const topDialog = getTopLevelDialog()
+    topDialog && dialog(topDialog, {open: false})
   }
 })
 
-function toggleDialog (dialog, open = false) {
+function toggleDialog (dialog, open = false, overwrite) {
   const isOpen = dialog.getAttribute('open')
-  const previousEl = getHighestPrevious()
-  if (isOpen !== open && dispatchEvent(dialog, open ? 'dialog.open' : 'dialog.close')) {
+  const previousEl = getLastFocusedElement()
+  if (isOpen === null && !open) return
+  console.log(`will toggle dialog "${isOpen}", "${open}"`, dialog, open)
+  // Only dispatch event if there is a diff between previous state and new state
+  if ((isOpen !== open && dispatchEvent(dialog, open ? 'dialog.open' : 'dialog.close'))) {
+    // console.log('toggle dialog')
     let backdrop = getBackdrop()
     if (!backdrop) backdrop = createBackdrop()
-    setupBackdrop(backdrop, open)
-
+    const highestIndex = previousEl ? Number(previousEl.getAttribute(`${UUID_PREVIOUS}`)) : 0
+    // We cannot remove the backdrop if there still exists dialogs
+    setupBackdrop(backdrop, highestIndex > 1 || open)
+    console.log('open will trigger: ', open ? 'setAttribute' : 'removeAttribute')
     dialog[open ? 'setAttribute' : 'removeAttribute']('open', '')
     if (open) {
-      const highestIndex = previousEl ? Number(previousEl.getAttribute(`${UUID}-previous`)) : 0
-      document.activeElement.setAttribute(`${UUID}-previous`, highestIndex + 1)
+      document.activeElement.setAttribute(`${UUID_PREVIOUS}`, highestIndex + 1)
       dialog.style.zIndex = getHighestZIndex() + 1
       const focusable = queryAll(FOCUSABLE_ELEMENTS, dialog)
-      .filter((element) => isVisiblyFocusable(element))
+        .filter((element) => isVisiblyFocusable(element))
       focusable[0].focus()
     } else {
       if (previousEl) {
-        previousEl.removeAttribute(`${UUID}-previous`)
+        previousEl.removeAttribute(`${UUID_PREVIOUS}`)
         previousEl.focus()
       }
       dialog.style.zIndex = 0
@@ -88,8 +103,6 @@ function toggleDialog (dialog, open = false) {
 
 function setupBackdrop (backdrop, open = false) {
   backdrop.setAttribute(UUID_BACKDROP, '')
-  // We cannot remove the backdrop while there are active dialogs, that's why we
-  // first check the list before the options
   backdrop[open ? 'removeAttribute' : 'setAttribute']('hidden', '')
 }
 
@@ -106,24 +119,13 @@ function createBackdrop (open) {
 }
 
 function isVisiblyFocusable (element) {
-  if (window.getComputedStyle(element).getPropertyValue('visibility') === 'hidden') {
-    return false
-  }
-  return true
+  return window.getComputedStyle(element).getPropertyValue('visibility') !== 'hidden'
 }
 
 function keepFocus (event) {
-  const dialogs = queryAll(`[${UUID}]`)
-  let activeDialog = null
-  for (let i = 0; i < dialogs.length; i++) {
-    if (dialogs[i].hasAttribute('open')) {
-      activeDialog = dialogs[i]
-      break
-    }
-  }
-
+  let activeDialog = getTopLevelDialog()
   // If no dialog is active, we don't need to do anything
-  if (!activeDialog) { return }
+  if (!activeDialog || !activeDialog.hasAttribute('open')) { return }
 
   // Find all focusable elements and make sure they are not hidden with css
   const focusable = queryAll(FOCUSABLE_ELEMENTS, activeDialog)
@@ -134,31 +136,3 @@ function keepFocus (event) {
     focusable[0] ? focusable[focusable.length - 1].focus() : focusable[0].focus()
   }
 }
-
-/**
- * Desired behavior:
- */
-// ============================================
-// dialog('.dialog-1', { some: 'options' })
-// Example html of how core-dialog can be used
-// <button data-dialog="william">Åpne dialog</button>
-//  <div class="dialog-1" hidden id="william" role="dialog">
-//   <h1>Vil du slette spørsmål?</h1>
-//   <div>Some content stuff</div>
-//   <div>
-//     <!-- Footer layer with actions -->
-//     <!-- User must bind button to do dialog.close() -->
-//     <button data-dialog="close">Lukk</button>
-//   </div>
-// </div>
-
-// ============================================
-// Example jsx of how core-dialog can be used
-// <CoreDialog open={this.props.isOpen}>
-//   <h1>Some title stuff</h1>
-//   <div>Some content stuff</div>
-//   <div>
-//     <!-- Footer layer with actions -->
-//     <button onClick={this.toggleIsOpen}>Lukk</button>
-//   </div>
-// </CoreDialog>
