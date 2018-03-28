@@ -58,15 +58,21 @@ addEvent(UUID, 'click', (event) => {
   for (let el = event.target; el; el = el.parentElement) {
     const action = el.getAttribute('data-dialog')
     if (action === 'close' && el.parentElement.hasAttribute(UUID)) {
+      dispatchEvent(el.parentElement, 'dialog.toggle', {isOpen: false}) &&
       dialog(el.parentElement, {open: false})
-    } else if (action) dialog(action, {open: true})
+    } else if (action) {
+      dispatchEvent(el.parentElement, 'dialog.toggle', {isOpen: true}) &&
+      dialog(action, {open: true})
+    }
   }
 })
 
 addEvent(UUID, 'keydown', (event) => {
   if (event.keyCode === KEYS.ESC) {
     const topDialog = getTopLevelDialog()
-    topDialog && dialog(topDialog, {open: false})
+    if (topDialog && dispatchEvent(topDialog, 'dialog.toggle', {isOpen: false})) {
+      dialog(topDialog, {open: false})
+    }
   }
 })
 
@@ -74,16 +80,13 @@ function toggleDialog (dialog, open = false, overwrite) {
   const isOpen = dialog.getAttribute('open')
   const previousEl = getLastFocusedElement()
   if (isOpen === null && !open) return
-  console.log(`will toggle dialog "${isOpen}", "${open}"`, dialog, open)
   // Only dispatch event if there is a diff between previous state and new state
-  if ((isOpen !== open && dispatchEvent(dialog, open ? 'dialog.open' : 'dialog.close'))) {
-    // console.log('toggle dialog')
+  if (isOpen !== open) {
     let backdrop = getBackdrop()
     if (!backdrop) backdrop = createBackdrop()
     const highestIndex = previousEl ? Number(previousEl.getAttribute(`${UUID_PREVIOUS}`)) : 0
     // We cannot remove the backdrop if there still exists dialogs
     setupBackdrop(backdrop, highestIndex > 1 || open)
-    console.log('open will trigger: ', open ? 'setAttribute' : 'removeAttribute')
     dialog[open ? 'setAttribute' : 'removeAttribute']('open', '')
     if (open) {
       document.activeElement.setAttribute(`${UUID_PREVIOUS}`, highestIndex + 1)

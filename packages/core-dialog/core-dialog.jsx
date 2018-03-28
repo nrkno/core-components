@@ -4,14 +4,11 @@ import dialog from './core-dialog'
 export default class Dialog extends React.Component {
   componentDidMount () {
     dialog(this.dialogEl, {open: this.props.open})
-    this.props.handleOpen && this.dialogEl.addEventListener('dialog.open', this.props.handleOpen)
-    this.props.handleClose && this.dialogEl.addEventListener('dialog.close', this.props.handleClose)
+    this.props.handleToggle && this.dialogEl.addEventListener('dialog.toggle', this.props.handleToggle)
   }
   componentWillUnmount () {
-    this.props.handleOpen && this.dialogEl.removeEventListener('dialog.open', this.props.handleOpen)
-    this.props.handleClose && this.dialogEl.removeEventListener('dialog.close', this.props.handleClose)
+    this.props.handleToggle && this.dialogEl.removeEventListener('dialog.toggle', this.props.handleToggle)
   }
-
   componentWillReceiveProps (nextProps) {
     dialog(this.dialogEl, {open: nextProps.open})
   }

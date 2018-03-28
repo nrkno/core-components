@@ -8,17 +8,15 @@ coreComponents.input('.js.docs-input', '')
 coreComponents.dialog('#docs-dialog', {open: false, label: 'første dialog tittel'})
 coreComponents.dialog('#docs-dialog-nested', {open: false, label: 'andre dialog tittel'})
 
-// document.addEventListener('dialog.close', (event) => {
-//   // If you want to stop the dialog from being closed
-//   // event.preventDefault()
-//   // If you want to manually close the dialog
-//   // coreComponents.dialog.close(event.target)
-//   console.log('dialog closed: ', event)
-// })
-
-// document.addEventListener('dialog.open', (event) => {
-//   console.log('dialog opened: ', event)
-// })
+document.addEventListener('dialog.toggle', (event) => {
+  // if (event.detail.isOpen) return
+  // // If you want to stop the dialog from being closed
+  // event.preventDefault()
+  // window.setTimeout(() => {
+  //   // manually close dialog
+  //   coreComponents.dialog(event.target, {open: event.detail.isOpen})
+  // }, 5000)
+})
 
 var debounce = function (fn, ms) {
   var bounced = function () {

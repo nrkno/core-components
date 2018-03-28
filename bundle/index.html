@@ -134,11 +134,9 @@ import Toggle from '@nrk/<strong>core-toggle</strong>/jsx'   // ...or React/Prea
           })
         }
 
-        handleClose = (event) => {
-          // console.log('before event.preventDefault()')
+        handleToggle = (event) => {
           event.preventDefault()
-          // console.log('after event.preventDefault()')
-          if (this.state.open) this.setState({open: false})
+          this.setState({open: event.detail.isOpen})
         }
 
         render () {
@@ -146,7 +144,7 @@ import Toggle from '@nrk/<strong>core-toggle</strong>/jsx'   // ...or React/Prea
             <div>
               <button onClick={this.toggleDialog}>Open dialog</button>
               <button onClick={this.changeTitle}>Change title</button>
-              <CoreComponents.Dialog open={this.state.open} handleClose={this.handleClose}>
+              <CoreComponents.Dialog open={this.state.open} handleToggle={this.handleToggle}>
                 <h2>{this.state.contentTitle}</h2>
                 <p>Dette kunne vært noe lorem ipsum text. Det burde være lengere enn tittelen :).</p>
                 <button class="close" onClick={this.toggleDialog}>Lukk</button>

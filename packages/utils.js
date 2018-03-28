@@ -2,31 +2,6 @@ export const IS_BROWSER = typeof window !== 'undefined'
 export const IS_ANDROID = IS_BROWSER && /(android)/i.test(navigator.userAgent) // Bad, but needed
 export const IS_IOS = IS_BROWSER && /iPad|iPhone|iPod/.test(String(navigator.platform))
 
-export function weakState (element, object, initial = {}) {
-  const weakMap = {
-    get: (element) => STATES[element[KEY]],
-    set: (element, object) => {
-      const uuid = element[KEY] || (element[KEY] = ++UUID)
-      const state = STATES[uuid] || (STATES[uuid] = initial)
-      Object.keys(object).forEach((key) => (state[key] = object[key]))
-      return state
-    },
-    has: (element) => Boolean(STATES[element[KEY]]),
-    delete: (element) => {
-      if (!weakMap.get(element)) return false
-      delete element[KEY]
-      delete STATES[element[KEY]]
-      return true
-    }
-  }
-
-  if (object === false) {
-    weakMap.delete(element)
-  } else if (typeof object === 'object') {
-    weakMap.set(element, object)
-  }
-  return weakMap
-}
 /**
 * addEvent
 * @param {String} uuid An unique ID of the event to bind - ensurnes single instance
