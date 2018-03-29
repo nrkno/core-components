@@ -1,5 +1,8 @@
 import React from 'react'
 import dialog from './core-dialog'
+import {exclude} from '../utils'
+
+const DEFAULTS = {open: null, hidden: null, ariaLabel: null}
 
 export default class Dialog extends React.Component {
   componentDidMount () {
@@ -12,16 +15,9 @@ export default class Dialog extends React.Component {
   componentWillReceiveProps (nextProps) {
     dialog(this.dialogEl, {open: nextProps.open})
   }
-
   render () {
-    return (
-      <div className='nrk-dialog'
-        role='dialog'
-        tabIndex='-1'
-        ref={(el) => { this.dialogEl = el }}
-      >
-        {this.props.children}
-      </div>
-    )
+    return React.createElement('div',
+      exclude(this.props, DEFAULTS, {ref: el => (this.dialogEl = el)}),
+      this.props.children)
   }
 }

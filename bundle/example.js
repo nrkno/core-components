@@ -9,6 +9,8 @@ coreComponents.dialog('#docs-dialog', {open: false, label: 'første dialog titte
 coreComponents.dialog('#docs-dialog-nested', {open: false, label: 'andre dialog tittel'})
 
 document.addEventListener('dialog.toggle', (event) => {
+  // console.log('event: ', event)
+  // event.preventDefault()
   // if (event.detail.isOpen) return
   // // If you want to stop the dialog from being closed
   // event.preventDefault()

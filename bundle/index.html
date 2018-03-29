@@ -144,7 +144,12 @@ import Toggle from '@nrk/<strong>core-toggle</strong>/jsx'   // ...or React/Prea
             <div>
               <button onClick={this.toggleDialog}>Open dialog</button>
               <button onClick={this.changeTitle}>Change title</button>
-              <CoreComponents.Dialog open={this.state.open} handleToggle={this.handleToggle}>
+              <CoreComponents.Dialog
+                className="nrk-dialog"
+                open={this.state.open}
+                handleToggle={this.handleToggle}
+                ariaLabel="React dialog"
+              >
                 <h2>{this.state.contentTitle}</h2>
                 <p>Dette kunne vært noe lorem ipsum text. Det burde være lengere enn tittelen :).</p>
                 <button class="close" onClick={this.toggleDialog}>Lukk</button>
@@ -157,24 +162,68 @@ import Toggle from '@nrk/<strong>core-toggle</strong>/jsx'   // ...or React/Prea
       ReactDOM.render(<DialogContainerTest />, document.getElementById('docs-react-dialog'))
     </script>
 
-    <pre class="prettyprint">
-// HTML
-&lt;div role="dialog" class="nrk-dialog" aria-label="This is required!"&gt;
-  &lt;h2&gt;Innhold i dialog&lt;/h2&gt;
-  &lt;button&gt;Godta&lt;/button&gt;
-  &lt;button&gt;Avslå&lt;/button&gt;
+    <h3>Usage</h3><br>
+    <details>
+      <summary>Use with VanillaJS</summary>
+      <h3>HTML &mdash; opening dialog</h3>
+      <pre class="prettyprint">
+&lt;!-- By setting the data-dialog attribute with a reference to an element --&gt;
+&lt;!-- we automatically set up a click handler that will open the dialog --&gt;
+&lt;!-- Note: you need to initialize core-dialog --&gt;
+&lt;button data-dialog="#my-dialog"&gt;Open dialog&lt;/button&gt;
+</pre>
+<h3>HTML &mdash; closing dialog</h3>
+      <pre class="prettyprint">
+&lt;div id="my-dialog"&gt;
+  &lt;h1&gt;Title of dialog&lt;/h1&gt;
+  &lt;p&gt;Some content&lt;/p&gt;
+  &lt;!-- By setting the data-dialog attribute to "close" we automatically --&gt;
+  &lt;!-- set up a click handler that will close the dialog --&gt;
+  &lt;!-- Note: you need to initialize core-dialog --&gt;
+  &lt;button data-dialog="close"&gt;Close dialog&lt;/button&gt;
 &lt;/div&gt;
+</pre>
+      <h3>Javascript</h3>
+      <pre class="prettyprint">
+import coreDialog from '@nrk/core-dialog'
 
-// CODE
 // Initialize a specific component or multiple components
-window.coreComponents.dialog('.nrk-dialog');
+coreDialog(String|Element|Elements, { // Accepts a <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors" target="
+">selector string</a>, <a href="https://developer.mozilla.org/en-US/docs/Web/API/NodeList" target="_blank">NodeList</a>, <a href="https://developer.mozilla.org/en-US/docs/Web/API/Element" target="_blank">Element</a> or array of Elements
+  open: null,                       // Defaults to true if open is set, otherwise false. Use true|false to force open state
+  label: ''                         // Defaults to aria-label if set or an empty string. Should be implemented in order for the dialog to have a label readable by screen readers
+})
 
-// Open the dialog
-window.coreComponents.dialog('.nrk-dialog').open();
+// Example:
+coreDialog('.my-dialog')
+coreDialog('.my-dialog', {open: true, label: 'A super dialog'})
+</pre>
+    </details>
+    <details>
+      <summary>Use with React/Preact</summary>
+      <pre class="prettyprint">
+import Dialog from '@nrk/core-dialog/jsx'
 
-// Close the dialog
-window.coreComponents.dialog('.nrk-dialog').close();
-    </pre>
+&lt;Dialog open={this.props/state.open} handleToggle={function(){}}&gt;
+  &lt;h2&gt;My React/Preact dialog&lt;/h2&gt;
+  &lt;p&gt;Some content&lt;/p&gt;
+  &lt;button onClick={closeDialog}&gt;&lt;/button&gt;
+&lt;/Dialog&gt;
+
+function closeDialog () {
+  // change open state/props to false
+}
+</pre>
+    </details>
+    <details>
+      <summary>Events</summary>
+      <pre class="prettyprint">
+document.addEventListener('dialog.toggle', (event) => {
+  event.target                // The dialog container element
+  event.detail.willOpen       // The open state that the dialog will get (unless event.preventDefault() is called)
+})
+</pre>
+    </details>
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
     <!-- Toggle -->
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->

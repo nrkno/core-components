@@ -45,7 +45,7 @@ export default function dialog (dialogs, options) {
     dialog.setAttribute('aria-modal', true)
     dialog.setAttribute('tabindex', '-1')
     dialog.setAttribute('role', 'dialog')
-    dialog.setAttribute('aria-label', options.label)
+    dialog.setAttribute('aria-label', dialog.getAttribute('aria-label') || options.label)
 
     toggleDialog(dialog, options.open)
     return dialog
@@ -58,10 +58,10 @@ addEvent(UUID, 'click', (event) => {
   for (let el = event.target; el; el = el.parentElement) {
     const action = el.getAttribute('data-dialog')
     if (action === 'close' && el.parentElement.hasAttribute(UUID)) {
-      dispatchEvent(el.parentElement, 'dialog.toggle', {isOpen: false}) &&
+      dispatchEvent(el.parentElement, 'dialog.toggle', {willOpen: false}) &&
       dialog(el.parentElement, {open: false})
     } else if (action) {
-      dispatchEvent(el.parentElement, 'dialog.toggle', {isOpen: true}) &&
+      dispatchEvent(document.querySelector(action), 'dialog.toggle', {willOpen: true}) &&
       dialog(action, {open: true})
     }
   }
@@ -70,7 +70,7 @@ addEvent(UUID, 'click', (event) => {
 addEvent(UUID, 'keydown', (event) => {
   if (event.keyCode === KEYS.ESC) {
     const topDialog = getTopLevelDialog()
-    if (topDialog && dispatchEvent(topDialog, 'dialog.toggle', {isOpen: false})) {
+    if (topDialog && dispatchEvent(topDialog, 'dialog.toggle', {willOpen: false})) {
       dialog(topDialog, {open: false})
     }
   }
