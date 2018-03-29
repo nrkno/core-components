@@ -35,14 +35,15 @@ html{font:110%/1.5 'LFT Etica',sans-serif;background:#fcfcfc;color:#26292a}stron
 }
 
 
-.nrk-dialog {
+.docs-style .docs-dialog {
   background: #fff;
   border: solid 2px #000;
   padding: 10px;
   margin: 0;
   display: none;
 }
-.nrk-dialog[open] {
+
+.docs-style .docs-dialog[open] {
   display: block;
   position: fixed;
   top: 5%;

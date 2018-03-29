@@ -83,44 +83,42 @@ import Toggle from '@nrk/<strong>core-toggle</strong>/jsx'   // ...or React/Prea
 
     <h2 id="dialog">Dialog</h2>
     <p>
-      <code class="prettyprint">&lt;dialog&gt;</code> is an element with which the user interacts with to perform some task or descision.
-      Currently <code class="prettyprint">&lt;dialog&gt;</code> is not implemented in all major browsers. In order to provide
-      a consistent experience across browsers our component omits the usage of the <code class="prettyprint">&lt;dialog&gt;</code> element to avoid
-      the implementation done by the browser. 
+      <code class="prettyprint">&lt;dialog&gt;</code> is an element with which the user interacts with to perform some task or decision.
+      <code class="prettyprint">core-dialog</code> simply adds <code class="prettyprint">dialog</code> functionality to a specified element (preferably a <code class="prettyprint">&lt;div&gt;</code>).
+      <code class="prettyprint">core-dialog</code> supports nestability, keyboard navigation containment and restoring focus when dialog is closed.
     </p>  
-    <p>
-      For more information about the dialog element visit the <a href="https://www.w3.org/TR/html52/interactive-elements.html#the-dialog-element">W3C HTML 5.2 specification</a>.<br />
-      For more information about WAI-ARIA practices for the dialog element visit the <a href="https://www.w3.org/TR/wai-aria-practices-1.1/#dialog_modal">W3C WAI-ARIA Authoring Practices 1.1</a>
-    </p>
 
-    <h3>Demo + usage</h3><br>
+    <div class="nrk-grid">
+      <div class="nrk-xs-12of12 nrk-md-4of12">
+        <h3>VanillaJS</h3><br>
+        <button class="docs-button" data-dialog="#docs-dialog">Open dialog</button>
+        <div id="docs-dialog" class="docs-dialog" role="dialog">
+          <h1>This is a title</h1>
+          <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
+          
+          <button class="docs-button close" data-dialog="close">Lukk</button>
+          <button class="docs-button" data-dialog="#docs-dialog-nested">Open an additional dialog</button>
+        </div>
+        <div id="docs-dialog-nested" class="docs-dialog">
+          <h2>Another dialog, triggered inside the first dialog</h2>
+          <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
+          <button class="docs-button close" data-dialog="close">Lukk</button>
+        </div>
+      </div>
 
-    <button class="dialog-showModal" data-dialog="#docs-dialog">Show modal</button>
-    <div id="docs-dialog" class="nrk-dialog" role="dialog">
-      <h1>This is a title</h1>
-      <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
-      
-      <button class="close" data-dialog="close">Lukk</button>
-      <button class="dialog-showModal" data-dialog="#docs-dialog-nested">Open an additional dialog</button>
+      <div class="nrk-xs-12of12 nrk-md-4of12">
+        <h3>JSX</h3><br>
+        <div id="docs-react-dialog"></div>
+      </div>
     </div>
-
-
     
-    <div id="docs-dialog-nested" class="nrk-dialog">
-      <h2>Another dialog, triggered inside the first dialog</h2>
-      <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
-      <button class="close" data-dialog="close">Lukk</button>
-    </div>
-
-    <div id="docs-react-dialog"></div>
-
     <script type="text/babel">
       class DialogContainerTest extends React.Component {
         constructor (props) {
           super(props)
           this.state = {
             open: false,
-            contentTitle: 'Dette er en dialog test'
+            contentTitle: 'Dialog for JSX'
           }
         }
 
@@ -142,17 +140,17 @@ import Toggle from '@nrk/<strong>core-toggle</strong>/jsx'   // ...or React/Prea
         render () {
           return (
             <div>
-              <button onClick={this.toggleDialog}>Open dialog</button>
-              <button onClick={this.changeTitle}>Change title</button>
+              <button className="docs-button" onClick={this.toggleDialog}>Open dialog jsx</button>
+              {/*<button onClick={this.changeTitle}>Change title</button>*/}
               <CoreComponents.Dialog
-                className="nrk-dialog"
+                className="docs-dialog"
                 open={this.state.open}
                 handleToggle={this.handleToggle}
                 ariaLabel="React dialog"
               >
                 <h2>{this.state.contentTitle}</h2>
-                <p>Dette kunne vært noe lorem ipsum text. Det burde være lengere enn tittelen :).</p>
-                <button class="close" onClick={this.toggleDialog}>Lukk</button>
+                <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
+                <button class="docs-button close" onClick={this.toggleDialog}>Lukk</button>
               </CoreComponents.Dialog>
             </div>
           )
@@ -204,13 +202,17 @@ coreDialog('.my-dialog', {open: true, label: 'A super dialog'})
       <pre class="prettyprint">
 import Dialog from '@nrk/core-dialog/jsx'
 
-&lt;Dialog open={this.props/state.open} handleToggle={function(){}}&gt;
+&lt;Dialog
+  open={this.props/state.open}
+  handleToggle={function(){}}
+  ariaLabel="JSX dialog"
+&gt;
   &lt;h2&gt;My React/Preact dialog&lt;/h2&gt;
   &lt;p&gt;Some content&lt;/p&gt;
   &lt;button onClick={closeDialog}&gt;&lt;/button&gt;
 &lt;/Dialog&gt;
 
-function closeDialog () {
+function closeDialog (event) {
   // change open state/props to false
 }
 </pre>
@@ -223,6 +225,17 @@ document.addEventListener('dialog.toggle', (event) => {
   event.detail.willOpen       // The open state that the dialog will get (unless event.preventDefault() is called)
 })
 </pre>
+    </details>
+
+    <h3>FAQ</h3><br>
+    <details>
+      <summary>Why not use <code class="prettyprint">&lt;dialog&gt;</code> instead?</summary>
+      There is currently <a href="https://caniuse.com/#feat=dialog" target="_blank">minimal support</a> for the <code class="prettyprint">&lt;dialog&gt;</code> element.
+      In order to provide a consistent user experience across different platforms and good accessibility, <code class="prettyprint">core-dialog</code> was created.
+      <p>
+        For more information about the dialog element visit the <a href="https://www.w3.org/TR/html52/interactive-elements.html#the-dialog-element">W3C HTML 5.2 specification</a>.<br />
+        For more information about WAI-ARIA practices for the dialog element visit the <a href="https://www.w3.org/TR/wai-aria-practices-1.1/#dialog_modal">W3C WAI-ARIA Authoring Practices 1.1</a>
+      </p>
     </details>
     <!-- =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= -->
     <!-- Toggle -->
