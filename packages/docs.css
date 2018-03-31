@@ -1,0 +1,23 @@
+.i-page { font: 300 100%/1.7 'LFT Etica',sans-serif; -webkit-font-smoothing: antialiased }
+.i-page h1 { font-size: 2.5rem }
+.i-page h2 { font-weight: 600; font-size: 12px; letter-spacing: .05em; text-transform: uppercase }
+.i-page h2 em { font-weight: 300; font-size: 15px; letter-spacing: normal; text-transform: none }
+.i-page code, .i-page pre { -webkit-font-smoothing: subpixel-antialiased; color: inherit }
+.i-page strong, .i-page b { font-weight: 600; -webkit-font-smoothing: subpixel-antialiased }
+
+.i-library { margin-bottom: 1px }
+.i-library h1 { position: sticky; top: 0; z-index: 9; padding: 15px; margin: 0 -15px; background: #fff }
+.i-library details pre { margin: 1em 0; padding: 1em 1.5em; font-size: 13px; background: #f7f7f7 }
+.i-library details[open], .i-page details[open] summary { margin-bottom: 15px }
+.i-library details summary { margin-left: -15px; font-size: 15px }
+.i-library details { padding-left: 15px }
+.i-library blockquote { font-size: 1.2em }
+.i-library p { max-width: 770px }
+.i-library a { color: #0059b3 }
+.i-library .nrk-button { color: inherit; text-decoration: none }
+
+.i-section, .i-example__body { padding: 0 }
+.i-sidebar-list-item b { font-weight: 600; font-size: 12px; letter-spacing: .05em; text-transform: uppercase }
+.i-sidebar-title { padding-top: 30px; max-width: 200px; font: 800 20px/1 'LFT Etica',sans-serif!important; text-transform: uppercase }
+.i-sidebar-title img, .tooltip { display: none }
+.i-search-input input { border: 0 }

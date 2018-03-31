@@ -1,6 +1,7 @@
 # @nrk/core-components
 
-> NRK's UI component library
+> `@nrk/core-components` is a kit of lightweight, unstyled and accessible [Javascript](https://stackoverflow.com/questions/20435653/what-is-vanillajs) and [React](https://reactjs.org/) / [Preact](https://github.com/developit/preact-compat) components.
+It provides effortless and flexible usage, while under the hood enhancing markup and functionality for best best user experience across all major browsers and screen readers.
 
 [Demo and documentation](https://static.nrk.no/core-components/latest/)
 
@@ -11,7 +12,7 @@ First clone `@nrk/core-components` and install its dependencies:
 git clone git@github.com:nrkno/core-components.git
 cd core-components
 npm install # Installs dependencies for all packages
-npm start   # Starts localhost:10001
+npm start # Your browser will open documentation with hot reloading
 ```
 
 ## Building and committing
@@ -29,7 +30,6 @@ git push origin feature/my-changes
 
 ## Publishing
 
-WIP
 ```bash
 npm run publish:minor -- --core-input --core-toggle # Specify packages to publish
 ```

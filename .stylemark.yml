@@ -1,0 +1,38 @@
+name: NRK Core Components
+
+headHtml: |
+  <link rel="stylesheet" href="https://static.nrk.no/core-css/latest/core-css.min.css">
+  <style>
+    /* Example styling */
+    html { font: 300 100%/1.7 'LFT Etica', sans-serif } body { padding: 25px }
+    .my-dropdown { position: absolute; z-index: 3; list-style: none; margin-top: 0; padding: 0; min-width: 200px; background: #fff; box-shadow: 0 3px 6px rgba(0,0,0,.3); transition: .3s }
+    .my-dropdown a:not([hidden]), .my-dropdown button:not([hidden]) { box-sizing: border-box; display: block; width: 100%; border: 0; padding: 7px 14px; font: inherit; background: none; text-decoration: none; text-align: left }
+    .my-dropdown[hidden] { display: block; visibility: hidden; opacity: 0; transform: translateY(-5px) }
+  </style>
+  <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+  <!--<script>PropTypes = {}</script>
+  <script src="https://cdn.jsdelivr.net/npm/preact/dist/preact.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/preact-compat/dist/preact-compat.min.js"></script>-->
+  <script src="jsx/index.js"></script>
+  <script src="core-components.min.js"></script>
+  <script>
+    // Expose JSX and JS components to window
+    Object.keys(CoreComponents).forEach(function (key) { window[key] = CoreComponents[key]})
+    Object.keys(coreComponents).forEach(function (key) {
+      window['core' + key[0].toUpperCase() + key.slice(1)] = coreComponents[key]
+    })
+  </script>
+
+assets:
+  - docs.css                # Include CSS for documentation
+  - jsx/index.js            # Include JSX library
+  - core-components.js      # Include JS src
+  - core-components.min.js  # Include JS library
+
+sidebar:
+  background: "#3d2351"
+  textColor: "#fff"
+
+order:
+  - Introduction
