@@ -13,6 +13,7 @@ html { font: 100%/1.7 'LFT Etica', sans-serif } body { padding: 25px }
 .i-page h2 { font-weight: 600; font-size: 12px; letter-spacing: .05em; text-transform: uppercase }
 .i-page h2 em { font-weight: 300; font-size: 15px; letter-spacing: normal; text-transform: none }
 .i-page strong, .i-page b { font-weight: 600; -webkit-font-smoothing: subpixel-antialiased }
+.i-page code { color: inherit; -webkit-font-smoothing: subpixel-antialiased }
 
 .i-library { margin-bottom: 1px }
 .i-library h1 { position: sticky; top: 0; z-index: 9; padding: 15px; margin: 0 -15px; background: #fff }
