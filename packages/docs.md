@@ -3,7 +3,6 @@ name: Getting started
 category: Introduction
 ---
 
-<link rel="stylesheet" href="https://static.nrk.no/core-css/latest/core-css.min.css">
 <link rel="stylesheet" href="docs.css">
 
 > `@nrk/core-components` is a kit of lightweight, unstyled and accessible [Javascript](https://stackoverflow.com/questions/20435653/what-is-vanillajs) and [React](https://reactjs.org/) / [Preact](https://github.com/developit/preact-compat) components.
