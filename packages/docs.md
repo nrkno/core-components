@@ -1,5 +1,5 @@
 ---
-name: Getting started
+name: Core Components
 category: Introduction
 ---
 
