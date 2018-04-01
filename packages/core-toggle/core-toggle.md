@@ -5,8 +5,8 @@ category: Components
 
 > `@nrk/core-toggle` simply makes a `<button>` toggle the visibility of next element sibling. Toggles can be nested and easily extended with custom animations or behavior through the [toggle event](#events). It has two modes:
 
-## Default toggle
-
+<div class="nrk-grid">
+<div class="nrk-xs-12of12 nrk-md-6of12" style="padding-right:30px"><h2>Default toggle</h2>
 Content is only toggled when clicking `<button>`. Great for accordions and expand/collapse panels.
 
 ```toggle.html
@@ -22,9 +22,8 @@ coreToggle('.my-toggle') // Optionally pass {open: true|false} as second argumen
   <div>Content</div>
 </Toggle>
 ```
-
-## Popup toggle
-
+</div>
+<div class="nrk-xs-12of12 nrk-md-6of12"><h2>Popup toggle</h2>
 Content is toggled when clicking `<button>`, and closed when clicking outside content. Great for dropdowns and tooltips.
 
 ```popup.html
@@ -58,6 +57,8 @@ coreToggle('.my-popup', {popup: true})
   </ul>
 </Toggle>
 ```
+</div>
+</div>
 
 ## Usage
 
