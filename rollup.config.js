@@ -1,48 +1,32 @@
 const buble = require('rollup-plugin-buble')
-const commonjs = require('rollup-plugin-commonjs')
 const json = require('rollup-plugin-json')
-const resolve = require('rollup-plugin-node-resolve')
-const serve = require('rollup-plugin-serve')
 const uglify = require('rollup-plugin-uglify')
-const {pkgs} = require('./bin/index.js') // Find all packages
+const {pkgs, getPackageName} = require('./bin/index.js') // Find all packages
 
-const isWatch = Boolean(process.env.ROLLUP_WATCH)
 const globals = {'react-dom': 'ReactDOM', react: 'React'} // Do not include react in out package
-const config = {
-  watch: {include: '**/*.(css|js|jsx)'},
-  external: Object.keys(globals),
-  plugins: [
-    json(), // Enable treeshaking json imports
-    resolve({browser: true}), // Respect pkg.browser
-    commonjs({ignoreGlobal: true}), // Let dependencies use the word `global`
-    buble(), // You know, like Babel
-    isWatch || uglify(), // Minify on build
-    isWatch && serve('bundle') // Serve on watch
-  ]
-}
+const plugins = [json(), buble(), uglify()]
 
-export default ['.'].concat(pkgs).reduce((acc, path) => { // Make config for all packages (including root)
-  const pkg = require(`${path}/package.json`)
-  const base = `${path}/${pkg.main.replace(/[^/]+$/, '')}` // Merge path and path from pkg.main
-  const file = pkg.name.split('/').pop() // Name without scope
-  const name = file.replace(/-./g, (m) => m[1].toUpperCase()) // Camel case
-
-  return acc.concat(Object.assign({ // Vanilla JS
-    input: `${base}${file}.js`,
+export default pkgs
+  .map((path) => ({path, name: getPackageName(path)})) // Find packages
+  .concat({path: 'packages', name: 'core-components'}) // Include bundle
+  .reduce((all, {path, name}) => all.concat({
+    input: `${path}/${name}.js`, // JS
     output: {
-      file: `${path}/${pkg.main}`,
-      format: 'umd',
+      file: `${path}/${name}.min.js`,
+      name: name.replace(/-./g, (m) => m.slice(-1).toUpperCase()), // camelCase
       sourcemap: true,
-      name
-    }
-  }, config), Object.assign({ // JSX
-    input: `${base}${file}.jsx`,
+      format: 'umd'
+    },
+    plugins
+  }, {
+    input: `${path}/${name}.jsx`, // JSX
     output: {
-      file: `${base}jsx/index.js`,
-      format: 'umd',
+      file: `${path}/jsx/index.js`,
+      name: name.replace(/(^|-)./g, (m) => m.slice(-1).toUpperCase()), // TitleCase
       sourcemap: true,
-      name: name.replace(/./, (m) => m.toUpperCase()), // Title case
+      format: 'umd',
       globals
-    }
-  }, config))
-}, [])
+    },
+    external: Object.keys(globals),
+    plugins
+  }), [])

@@ -1,4 +1,4 @@
-const toggle = require('./core-toggle.cjs')
+const toggle = require('./core-toggle.min.js')
 
 describe('toggle', () => {
   test('should exists', () => {
