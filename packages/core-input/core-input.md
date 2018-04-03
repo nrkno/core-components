@@ -53,7 +53,7 @@ import coreInput from '@nrk/core-input'
 
 coreInput(String|Element|Elements, {        // Accepts a selector string, NodeList, Element or array of Elements
   open: null,                               // Defaults to value of aria-expanded. Use true|false to force open state
-  items: null                               // Set String of HTML items. HTML is used for full flexibility on markup
+  content: null                             // Set String of HTML content. HTML is used for full flexibility on markup
 })
 
 // Helpers:
@@ -84,7 +84,7 @@ import Input from '@nrk/core-input/jsx'
 ```js
 document.addEventListener('input.filter', (event) => {
   event.target                // The core-input element triggering input.filter event
-  event.detail.relatedTarget  // The items element controlled by input
+  event.detail.relatedTarget  // The content element controlled by input
 })
 ```
 
@@ -93,7 +93,7 @@ document.addEventListener('input.filter', (event) => {
 ```js
 document.addEventListener('input.select', (event) => {
   event.target                // The core-input element triggering input.filter event
-  event.detail.relatedTarget  // The items element controlled by input
+  event.detail.relatedTarget  // The content element controlled by input
   event.detail.currentTarget  // The item clicked/selected
   event.detail.value          // The item value
 })
@@ -107,12 +107,12 @@ All styling in documentation is example only. Both the `<button>` and content el
 .my-input[aria-expanded="true"] {}    /* Target only open button */
 .my-input[aria-expanded="false"] {}   /* Target only closed button */
 
-.my-input-items {}                    /* Target items element in any state */
-.my-input-items:not([hidden]) {}      /* Target only open content */
-.my-input-items[hidden] {}            /* Target only closed content */
+.my-input-content {}                  /* Target content element in any state */
+.my-input-content:not([hidden]) {}    /* Target only open content */
+.my-input-content[hidden] {}          /* Target only closed content */
 
-.my-input-items :focus {}             /* Target focused item */
-.my-input-items mark {}               /* Target highlighted text */
+.my-input-content :focus {}           /* Target focused item */
+.my-input-content mark {}             /* Target highlighted text */
 ```
 
 ## Advanced examples
@@ -151,11 +151,11 @@ document.addEventListener('input.filter', function (event) {
   if (!value) return coreInput(input, '') // Prevent empty searches
 
   coreInput(input, '<li><a>Searching for ' + coreInput.highlight(value, value) + '...</a></li>')
-  window.getCountries(value, function (hits) {
-    coreInput(input, hits.length ? hits.slice(0, 10)
-      .map(function (item) { return coreInput.highlight(item.name, value) })    // Hightlight hits
+  window.getCountries(value, function (items) {
+    coreInput(input, items.length ? items.slice(0, 10)
+      .map(function (item) { return coreInput.highlight(item.name, value) })    // Hightlight items
       .map(function (html) { return '<li><button>' + html + '</button></li>' }) // Generate list
-      .join('') : '<li><a>No Hits</a></li>')
+      .join('') : '<li><a>No results</a></li>')
   })
 })
 ```
@@ -177,7 +177,7 @@ class AjaxInput extends React.Component {
       items: [{name: `Searching for ${value}...`}]
     })
     window.getCountries(value, (data) => { // getCountries defined in JS
-      this.setState({items: data.length ? data : {name: 'No hits'}})
+      this.setState({items: data.length ? data : {name: 'No results'}})
     })
   }
   render () {
@@ -218,8 +218,8 @@ document.addEventListener('focus', function (event) {
   if (event.target.className.indexOf('my-input-lazy') === -1) return // Make sure we are on correct input
 
   event.target.className = '' // Prevent double execution
-  window.getCountries(function (hits) {
-    coreInput(event.target, hits
+  window.getCountries(function (items) {
+    coreInput(event.target, items
       .map(function (item) { return '<li><button>' + coreInput.escapeHTML(item.name) + '</button></li>'})
       .join(''))
   })
@@ -234,9 +234,7 @@ class LazyInput extends React.Component {
   }
   onFocus (event) {
     this.onFocus = null // Load items only on first interaction
-    window.getCountries((hits) => { // getCountries defined in JS
-      this.setState({items: hits})
-    })
+    window.getCountries((items) => this.setState({items})) // getCountries defined in JS
   }
   render () {
     return <Input onFocus={this.onFocus}>
