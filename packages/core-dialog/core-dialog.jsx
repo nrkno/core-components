@@ -2,7 +2,7 @@ import React from 'react'
 import dialog from './core-dialog'
 import {exclude} from '../utils'
 
-const DEFAULTS = {open: null, hidden: null, ariaLabel: null}
+const DEFAULTS = {open: null, hidden: null, ariaLabel: null, handleToggle: null}
 
 export default class Dialog extends React.Component {
   componentDidMount () {
