@@ -46,7 +46,7 @@ if (args.publish) {
   update.forEach((path) => {
     console.log(`Publishing ${getPackageName(path)}`)
     execSync(`npm version ${args.publish} -m 'Release ${args.publish} %s'`, {cwd: path, stdio: 'inherit'})
-    execSync(`git push && git push --tags && npm publish`, {cwd: path, stdio: 'inherit'})
+    execSync(`git push && git push --tags && npm publish --access public`, {cwd: path, stdio: 'inherit'})
     console.log('') // Insert new line
   })
 
