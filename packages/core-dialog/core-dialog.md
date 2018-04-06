@@ -6,15 +6,15 @@ category: Components
 > `<dialog>` is an element with which the user interacts with to perform some task or decision. `core-dialog` simply adds `dialog` functionality to a specified element (preferably a `<div>`). `core-dialog` supports nestability, keyboard navigation containment and restoring focus when dialog is closed.
 
 ```dialog.html
-<button data-dialog="#docs-dialog">Open dialog</button>
-<div id="docs-dialog" class="docs-dialog" role="dialog">
+<button data-dialog="#my-dialog">Open dialog</button>
+<dialog id="my-dialog" class="my-dialog" aria-label="første dialog tittel">
   <h1>This is a title</h1>
   <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
   
   <button class="docs-button close" data-dialog="close">Lukk</button>
-  <button class="docs-button" data-dialog="#docs-dialog-nested">Open an additional dialog</button>
-</div>
-<div id="docs-dialog-nested" class="docs-dialog">
+  <button class="docs-button" data-dialog="#my-dialog-nested">Open an additional dialog</button>
+</dialog>
+<div id="my-dialog-nested" class="my-dialog" aria-label="andre dialog tittel">
   <h2>Another dialog, triggered inside the first dialog</h2>
   <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
   <button class="docs-button close" data-dialog="close">Lukk</button>
@@ -22,10 +22,10 @@ category: Components
 <div id="docs-react-dialog"></div>
 ```
 ```dialog.js
-coreDialog('#docs-dialog', {open: false, label: 'første dialog tittel'})
-coreDialog('#docs-dialog-nested', {open: false, label: 'andre dialog tittel'})
+coreDialog('.my-dialog', false)
 ```
 ```dialog.jsx
+
 class DialogContainerTest extends React.Component {
   constructor (props) {
     super(props)
@@ -43,7 +43,8 @@ class DialogContainerTest extends React.Component {
 
   handleToggle (event) {
     event.preventDefault()
-    this.setState({open: event.detail.isOpen})
+    console.log('event: ', event)
+    this.setState({open: !event.detail.isOpen})
   }
 
   render () {
@@ -51,10 +52,10 @@ class DialogContainerTest extends React.Component {
       <div>
         <button className="docs-button" onClick={this.toggleDialog}>Open dialog jsx</button>
         <Dialog
-          className="docs-dialog"
+          className="my-dialog"
           open={this.state.open}
-          handleToggle={this.handleToggle}
-          ariaLabel="React dialog"
+          onToggle={this.handleToggle}
+          aria-label="React dialog"
         >
           <h2>{this.state.contentTitle}</h2>
           <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
@@ -67,12 +68,44 @@ class DialogContainerTest extends React.Component {
 
 <DialogContainerTest />
 ```
+```dialog.css
 
+.my-dialog {
+  background: #fff;
+  border: solid 2px #000;
+  padding: 10px;
+  margin: 0;
+  display: none;
+}
 
-<h3>HTML &mdash; closing dialog</h3>
-      <pre class="prettyprint">
+.my-dialog[open] {
+  display: block;
+  position: fixed;
+  top: 5%;
+  left: 0;
+  right: 0;
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+  z-index: 10000;
+}
 
-</pre>
+.my-dialog + backdrop {
+  background: #000;
+  opacity: 0.3;
+  z-index: 9990;
+  margin: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.my-dialog + backdrop[hidden] {
+  display: none;
+}
+```
 
 ## Usage
 ```html

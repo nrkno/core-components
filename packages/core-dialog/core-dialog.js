@@ -1,10 +1,10 @@
 import {name, version} from './package.json'
-import {queryAll, addEvent, dispatchEvent} from '../utils'
+import {IS_BROWSER, queryAll, addEvent, dispatchEvent} from '../utils'
 
 const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid attribute characters
-const UUID_BACKDROP = `${UUID}-backdrop`
-const UUID_PREVIOUS = `${UUID}-previous`
-const KEYS = {ESC: 27}
+const BACKDROP = IS_BROWSER && document.createElement('backdrop')
+const PREVIOUS = `${UUID}-previous`
+const KEYS = {ESC: 27, TAB: 9}
 
 const FOCUSABLE_ELEMENTS = `
   [tabindex]:not([disabled]),
@@ -14,36 +14,12 @@ const FOCUSABLE_ELEMENTS = `
   select:not([disabled]),
   textarea:not([disabled])`
 
-const getZIndexOfElement = (element) =>
-  Number(window.getComputedStyle(element).getPropertyValue('z-index')) || 0
+export default function dialog (dialogs, open) {
+  const options = typeof open === 'object' ? open : {open}
 
-const getHighestZIndex = (elements = '*') =>
-  queryAll(elements).reduce((zIndex, el) =>
-    Math.max(zIndex, getZIndexOfElement(el))
-  , 0)
-
-// Find the last focused element before opening the dialog
-const getLastFocusedElement = (elements = `[${UUID_PREVIOUS}]`) =>
-  queryAll(elements).reduce((lastElement, el) => {
-    if (!lastElement) return el
-    if (Number(el.getAttribute(`${UUID_PREVIOUS}`)) >
-      Number(lastElement.getAttribute(`${UUID_PREVIOUS}`))) return el
-    return lastElement
-  }, null)
-
-const getTopLevelDialog = () =>
-  queryAll(`[${UUID}]`).reduce((topDialog, dialog) => {
-    if (!topDialog || (
-      getZIndexOfElement(dialog) > getZIndexOfElement(topDialog)
-    )) topDialog = dialog
-    return topDialog
-  })
-
-export default function dialog (dialogs, options) {
   return queryAll(dialogs).forEach((dialog) => {
     dialog.setAttribute(UUID, '')
     dialog.setAttribute('aria-modal', true)
-    dialog.setAttribute('tabindex', '-1')
     dialog.setAttribute('role', 'dialog')
     dialog.setAttribute('aria-label', dialog.getAttribute('aria-label') || options.label)
 
@@ -52,90 +28,85 @@ export default function dialog (dialogs, options) {
   })
 }
 
-addEvent(UUID, 'focus', keepFocus)
-
 addEvent(UUID, 'click', (event) => {
-  for (let el = event.target; el; el = el.parentElement) {
+  for (let el = event.target, isClose; el; el = el.parentElement) {
     const action = el.getAttribute('data-dialog')
-    if (action === 'close' && el.parentElement.hasAttribute(UUID)) {
-      dispatchEvent(el.parentElement, 'dialog.toggle', {willOpen: false}) &&
-      dialog(el.parentElement, {open: false})
-    } else if (action) {
-      dispatchEvent(document.querySelector(action), 'dialog.toggle', {willOpen: true}) &&
-      dialog(action, {open: true})
-    }
+    isClose = isClose || action === 'close'
+    if (isClose) el.hasAttribute(UUID) && dialog(el, false)
+    else if (action) dialog(action, true)
   }
 })
 
 addEvent(UUID, 'keydown', (event) => {
-  if (event.keyCode === KEYS.ESC) {
-    const topDialog = getTopLevelDialog()
-    if (topDialog && dispatchEvent(topDialog, 'dialog.toggle', {willOpen: false})) {
-      dialog(topDialog, {open: false})
-    }
-  }
+  if (event.keyCode === KEYS.TAB) keepFocus(event)
+  if (event.keyCode === KEYS.ESC) dialog(getTopLevelDialog(), false)
 })
 
-function toggleDialog (dialog, open = false, overwrite) {
-  const isOpen = dialog.getAttribute('open')
-  const previousEl = getLastFocusedElement()
-  if (isOpen === null && !open) return
-  // Only dispatch event if there is a diff between previous state and new state
-  if (isOpen !== open) {
-    let backdrop = getBackdrop()
-    if (!backdrop) backdrop = createBackdrop()
-    const highestIndex = previousEl ? Number(previousEl.getAttribute(`${UUID_PREVIOUS}`)) : 0
-    // We cannot remove the backdrop if there still exists dialogs
-    setupBackdrop(backdrop, highestIndex > 1 || open)
-    dialog[open ? 'setAttribute' : 'removeAttribute']('open', '')
-    if (open) {
-      document.activeElement.setAttribute(`${UUID_PREVIOUS}`, highestIndex + 1)
-      dialog.style.zIndex = getHighestZIndex() + 1
-      const focusable = queryAll(FOCUSABLE_ELEMENTS, dialog)
-        .filter((element) => isVisiblyFocusable(element))
-      focusable[0].focus()
-    } else {
-      if (previousEl) {
-        previousEl.removeAttribute(`${UUID_PREVIOUS}`)
-        previousEl.focus()
-      }
-      dialog.style.zIndex = 0
-    }
+const getZIndexOfElement = (element) =>
+  Number(window.getComputedStyle(element).getPropertyValue('z-index')) || 0
+
+// Find the last focused element before opening the dialog
+const getLastFocusedElement = () =>
+  queryAll(`[${PREVIOUS}]`).sort((a, b) =>
+    a.getAttribute(PREVIOUS) < b.getAttribute(PREVIOUS)
+  )[0] || document.body
+
+const getTopLevelDialog = () =>
+  queryAll(`[${UUID}][open]`).sort((a, b) =>
+    getZIndexOfElement(a) < getZIndexOfElement(b)
+  )[0]
+
+function toggleDialog (dialog, open) {
+  const last = getLastFocusedElement()
+  const isOpen = toggleOpen(dialog, open)
+  const lastIndex = Number(last.getAttribute(`${PREVIOUS}`)) || 0
+  const topZIndex = Math.max(...queryAll('*').map(getZIndexOfElement))
+
+  if (isOpen) {
+    const focusable = queryFocusable(dialog)[0]
+    dialog.insertAdjacentElement('afterend', BACKDROP)
+    document.activeElement.setAttribute(`${PREVIOUS}`, lastIndex + 1)
+    dialog.style.zIndex = topZIndex + 1
+    focusable && focusable.focus()
+
+    BACKDROP.removeAttribute('hidden')
+  } else {
+    if (!getTopLevelDialog()) BACKDROP.setAttribute('hidden', '')
+    last.removeAttribute(`${PREVIOUS}`)
+    last.focus()
   }
 }
 
-function setupBackdrop (backdrop, open = false) {
-  backdrop.setAttribute(UUID_BACKDROP, '')
-  backdrop[open ? 'removeAttribute' : 'setAttribute']('hidden', '')
+function toggleOpen (dialog, open) {
+  const prevState = dialog.hasAttribute('open')
+  const nextState = typeof open === 'boolean' ? open : (open === 'toggle' ? !prevState : prevState)
+  const canUpdate = prevState === nextState || dispatchEvent(dialog, 'dialog.toggle', {isOpen: prevState})
+
+  if (canUpdate) dialog[nextState ? 'setAttribute' : 'removeAttribute']('open', '') // Toggle open attribute
+
+  return nextState
 }
 
-function getBackdrop () {
-  return document.querySelector(`[${UUID_BACKDROP}]`)
-}
-
-function createBackdrop (open) {
-  const backdrop = document.createElement('div')
-  // Should probably not add class. But just doing it for now to simplify styling
-  backdrop.classList.add('nrk-dialog-backdrop')
-  document.documentElement.appendChild(backdrop)
-  return backdrop
-}
-
-function isVisiblyFocusable (element) {
-  return window.getComputedStyle(element).getPropertyValue('visibility') !== 'hidden'
+function queryFocusable (context) {
+  return queryAll(FOCUSABLE_ELEMENTS, context).filter((el) =>
+    el.clientWidth &&
+    el.clientHeight &&
+    window.getComputedStyle(el).getPropertyValue('visibility') !== 'hidden'
+  )
 }
 
 function keepFocus (event) {
-  let activeDialog = getTopLevelDialog()
+  const activeDialog = getTopLevelDialog()
   // If no dialog is active, we don't need to do anything
-  if (!activeDialog || !activeDialog.hasAttribute('open')) { return }
+  if (!activeDialog) return
 
   // Find all focusable elements and make sure they are not hidden with css
-  const focusable = queryAll(FOCUSABLE_ELEMENTS, activeDialog)
-    .filter((element) => isVisiblyFocusable(element))
+  const focusable = queryFocusable(activeDialog)
+  const onEdge = focusable[event.shiftKey ? 0 : focusable.length - 1]
 
   // If focus moves us outside the dialog, we need to refocus to inside the dialog
-  if (!activeDialog.contains(event.target)) {
-    focusable[0] ? focusable[focusable.length - 1].focus() : focusable[0].focus()
+  if (event.target === onEdge) {
+    event.preventDefault()
+    focusable[event.shiftKey ? focusable.length - 1 : 0].focus()
   }
 }
