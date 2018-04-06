@@ -9,13 +9,8 @@ export default class Dialog extends React.Component {
     dialog(this.el, this.props.open)
     this.el.addEventListener('dialog.toggle', this.props.onToggle)
   }
-  componentWillUnmount () {
-    this.el.removeEventListener('dialog.toggle', this.props.onToggle)
-  }
-  componentDidUpdate () {
-    console.log('componentDidUpdate')
-    dialog(this.el, this.props.open)
-  }
+  componentWillUnmount () { this.el.removeEventListener('dialog.toggle', this.props.onToggle) }
+  componentDidUpdate () { dialog(this.el, this.props.open) }
   render () {
     return React.createElement('div',
       exclude(this.props, DEFAULTS, {ref: el => (this.el = el)}),
