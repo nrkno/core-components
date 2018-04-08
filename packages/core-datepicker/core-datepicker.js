@@ -8,16 +8,16 @@ const CODE = Object.keys(KEYS).reduce((all, key) => (all[KEYS[key]] = key) && al
 
 const DAYS = ['man', 'tirs', 'ons', 'tors', 'fre', 'lør', 'søn'] // TODO make configurable
 const MONTHS = ['januar', 'februar', 'mars', 'april', 'mai', 'juni', 'juli', 'august', 'september', 'oktober', 'november', 'desember']
-const RENDERS = {select: 'month', input: 'year', table: 'day'}
+const RENDERS = {select: 'month', input: 'year', table: 'day'} // TODO can contain other <input>s?
 
 export default function datepicker (buttons, date = {}) {
-  const options = date.constructor === Object ? date : {date} // Date is object so check cunstructor
+  const options = date.constructor === Object ? date : {date} // typeof Date is object so instead check constructor
 
   return queryAll(buttons).map((button) => {
     const show = datepicker.parse(options.date || button.getAttribute(UUID) || button.value)
 
     button.setAttribute(UUID, '')
-    button.value = show.getTime() // Store date value
+    button.value = show.getTime() // Store date value. Also makes form submitting work
 
     queryAll(Object.keys(RENDERS).join(','), button.nextElementSibling).forEach((el) => {
       datepicker[RENDERS[el.nodeName.toLowerCase()]](el, show, show)
@@ -72,8 +72,8 @@ function closest (target) {
     const attr = target.getAttribute(ATTR)
 
     if (target.value) currentTarget = target // Store element with value as event source
-    if (target.hasAttribute(UUID)) return {currentTarget, target} // If datepicker comes from <input>
-    if (prev && prev.hasAttribute(UUID)) return {currentTarget, target: prev} // If inside datepicer
+    if (target.hasAttribute(UUID)) return {currentTarget, target} // Datepicker is <input>
+    if (prev && prev.hasAttribute(UUID)) return {currentTarget, target: prev} // Inside datepicker
     if (attr) return {currentTarget, target: document.querySelector(target.getAttribute(ATTR))}
   }
   return {}
@@ -96,7 +96,7 @@ function onChange (event) {
     const next = target.nextElementSibling
     const from = currentTarget.value.indexOf('now') === -1 ? target.value : Date.now()
     const show = datepicker.parse(currentTarget.value, from)
-    const date = new Date(target.value)
+    const date = datepicker.parse(target.value)
 
     // TODO only update on actual change
     // TODO update aria in table to keep focus
@@ -108,8 +108,7 @@ function onChange (event) {
   }
 }
 
-// date, [timestamp|Date]
-// string, [timestamp|Date]
+// [date|timestamp|string], [timestamp|Date]
 // + 1 second(s)
 // - 1 minute(s)
 // + 1 day(s)
@@ -134,7 +133,7 @@ function onChange (event) {
 // -181 + y0 = -180
 
 datepicker.parse = (parse, from) => {
-  if (parse instanceof Date) return parse
+  if (Number(parse)) return new Date(Number(parse)) // Allow timestamps and Date instances
 
   const text = String(parse).toLowerCase()
   const date = new Date(Number(from) || Date.now())

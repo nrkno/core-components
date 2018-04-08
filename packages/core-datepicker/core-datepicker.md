@@ -7,30 +7,33 @@ category: Components
 
 ```datepicker.html
 <button data-core-datepicker=".my-date" value="now - 1 day">I går</button>
-<!-- <input type="text" name="">
+<!--
 <button class="my-date">Choose date</button>  <!-- must be <button> or <input> -->
-<input type="text" class="my-date" placeholder="Choose date" value="">
-<div class="my-dropdown my-calendar">                     <!-- hidden prevents flash of unstyled content -->
-  <button value="now">I dag</button>
-  <button value="now - 1 day">I går</button>
-  <button value="now + 1 day">I morgen</button>
-  <button value="- 7 days">Tilbake en uke</button>
-  <button value="+ 7 days">Fremover en uke</button>
-  <button value="now tuesday - 7 days">Tirsdag sist uke</button>
-  <button value="now + 10 years">Om ti år</button>
-  <button value="yy00-01-01 - 100 years">Forrige århundre</button>
-  <br>
-  <label><span>Måned</span><select name="month"></select></label>
-  <label><span>År</span><input type="number" name="year"></label>
-  <table></table>
+<input type="text" class="input" placeholder="Choose date">
+<div class="my-dropdown" hidden>              <!-- hidden prevents flash of unstyled content -->
+  <input type="text" class="my-date">
+  <div class="my-calendar">
+    <button value="now">I dag</button>
+    <button value="now - 1 day">I går</button>
+    <button value="now + 1 day">I morgen</button>
+    <button value="- 7 days">Tilbake en uke</button>
+    <button value="+ 7 days">Fremover en uke</button>
+    <button value="now tuesday - 7 days">Tirsdag sist uke</button>
+    <button value="now + 10 years">Om ti år</button>
+    <button value="yy00-01-01 - 100 years">Forrige århundre</button>
+    <br>
+    <label><span>Måned</span><select></select></label>
+    <label><span>År</span><input type="number"></label>
+    <table></table>
+  </div>
 </div>
 ```
 ```datepicker.js
 coreDatepicker('.my-date')
-// coreToggle('.my-date', {   // Make datepicker popup
-//   open: true,
-//   popup: true
-// })
+coreToggle('.input', {   // Make datepicker popup
+  open: true,
+  popup: true
+})
 ```
 ```datepicker.css
 .my-calendar button[aria-current="date"] { outline: 1px dashed }

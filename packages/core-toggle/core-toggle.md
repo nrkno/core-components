@@ -31,7 +31,7 @@ Content is toggled when clicking `<button>`, and closed when clicking outside co
 <ul class="my-dropdown" hidden>
   <li><a class="nrk-unset" href="#">Link</a></li>
   <li>
-    <button class="my-popup nrk-unset">Can also be nested</button>
+    <button class="my-popup">Can also be nested</button>
     <ul class="my-dropdown" hidden>
       <li><a class="nrk-unset" href="#">Sub-link</a></li>
     </ul>
@@ -48,7 +48,7 @@ coreToggle('.my-popup', {popup: true})
     <li><a className='nrk-unset' href='#'>Link</a></li>
     <li>
       <Toggle popup>
-        <button className='nrk-unset'>Can also be nested</button>
+        <button>Can also be nested</button>
         <ul className='my-dropdown'>
           <li><a className='nrk-unset' href='#'>Sub-link</a></li>
         </ul>
