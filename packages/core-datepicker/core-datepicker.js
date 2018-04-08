@@ -6,18 +6,18 @@ const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid att
 const KEYS = {ENTER: 13, ESC: 27, PAGEUP: 33, PAGEDOWN: 34, END: 35, HOME: 36, UP: 38, DOWN: 40}
 const CODE = Object.keys(KEYS).reduce((all, key) => (all[KEYS[key]] = key) && all, {})
 
-const DAYS = ['man', 'tirs', 'ons', 'tors', 'fre', 'lør', 'søn']
+const DAYS = ['man', 'tirs', 'ons', 'tors', 'fre', 'lør', 'søn'] // TODO make configurable
 const MONTHS = ['januar', 'februar', 'mars', 'april', 'mai', 'juni', 'juli', 'august', 'september', 'oktober', 'november', 'desember']
 const RENDERS = {select: 'month', input: 'year', table: 'day'}
 
 export default function datepicker (buttons, date = {}) {
-  const options = date.constructor === Object ? date :  {date} // Date is object so check cunstructor
+  const options = date.constructor === Object ? date : {date} // Date is object so check cunstructor
 
   return queryAll(buttons).map((button) => {
     const show = datepicker.parse(options.date || button.getAttribute(UUID) || button.value)
 
-    button.setAttribute(UUID, show.toJSON())
-    // button.value = show.toISOString() // Store date value
+    button.setAttribute(UUID, '')
+    button.value = show.getTime() // Store date value
 
     queryAll(Object.keys(RENDERS).join(','), button.nextElementSibling).forEach((el) => {
       datepicker[RENDERS[el.nodeName.toLowerCase()]](el, show, show)
@@ -26,18 +26,18 @@ export default function datepicker (buttons, date = {}) {
   })
 }
 
-datepicker.month = function (select, date){
+datepicker.month = function (select, date) {
   const month = date.getMonth()
   select.innerHTML = MONTHS.map((name, i) =>
-    `<option value="${i}"${i === month ? 'selected' : ''}>${i + 1} - ${name}</option>`
+    `<option value="y-${i + 1}-d"${i === month ? 'selected' : ''}>${i + 1} - ${name}</option>`
   ).join('')
 }
 
-datepicker.year = function (input, date){
+datepicker.year = function (input, date) {
   input.value = date.getFullYear()
 }
 
-datepicker.day = function (table, date, selected){
+datepicker.day = function (table, date, selected) {
   const today = new Date()
   const year = date.getFullYear()
   const month = date.getMonth()
@@ -47,11 +47,12 @@ datepicker.day = function (table, date, selected){
   for (let i = 0; i < 6; i++) {
     html += '<tr>'
     for (let j = 0; j < 7; j++) {
-      const isDayInMonth = isSameMonth(day, date)
+      const value = `${day.getFullYear()}-${day.getMonth() + 1}-${day.getDate()}`
+      const isOtherMonth = !isSameMonth(day, date)
       const isSelected = isSameDay(day, selected)
       const isToday = isSameDay(day, today)
 
-      html += `<td><button title="${isToday ? 'I dag' : ''}" aria-pressed="${isSelected}" style="${isDayInMonth ? '' : 'opacity:.3'}${isToday ? ';color:red' : ''}">`
+      html += `<td><button value="${value}" aria-pressed="${isSelected}" aria-disabled="${isOtherMonth}" aria-current="${isToday && 'date'}">`
       html += `${day.getDate()}</button></td>`
       day.setDate(day.getDate() + 1)
     }
@@ -66,28 +67,21 @@ const isSameMonth = (d1, d2) => isSameYear(d1, d2) && d1.getMonth() === d2.getMo
 const isSameDay = (d1, d2) => isSameYear(d1, d2) && isSameMonth(d1, d2) && d1.getDate() === d2.getDate()
 
 function closest (target) {
-  for (var currentTarget = target; target; target = target.parentElement) {
-    const prev = target.previousElementSibling ||target
-    const attr = target.getAttribute(ATTR) // Will fail when empty
-    if (attr) return {currentTarget: target, target: document.querySelector(attr)}
-    if (target.hasAttribute(UUID) || prev.hasAttribute(UUID)) break
+  for (let currentTarget; target; target = target.parentElement) {
+    const prev = target.previousElementSibling
+    const attr = target.getAttribute(ATTR)
+
+    if (target.value) currentTarget = target // Store element with value as event source
+    if (target.hasAttribute(UUID)) return {currentTarget, target} // If datepicker comes from <input>
+    if (prev && prev.hasAttribute(UUID)) return {currentTarget, target: prev} // If inside datepicer
+    if (attr) return {currentTarget, target: document.querySelector(target.getAttribute(ATTR))}
   }
-  return {target, currentTarget}
+  return {}
 }
 
 addEvent(UUID, 'input', onChange)
-addEvent(UUID, 'change', onChange) // IE/Edge does not trigger input on <select>
-addEvent(UUID, 'click', (event) => {
-  const {target, currentTarget} = closest(event.target)
-  console.log(closest(event.target))
-
-  if (target) {
-    const from = currentTarget.value.indexOf('now') === -1 ? target.getAttribute(UUID) : Date.now()
-    const date = datepicker.parse(currentTarget.value, from)
-
-    return datepicker(target, date) // TODO, when there is no table?
-  }
-})
+addEvent(UUID, 'click', onChange) // Clicks on buttons can change
+addEvent(UUID, 'change', onChange) // Needed since IE/Edge does not trigger 'input' on <select>
 addEvent(UUID, 'keydown', (event) => {
   if (CODE[event.keyCode]) {
     const element = closest(event.target)
@@ -96,38 +90,34 @@ addEvent(UUID, 'keydown', (event) => {
 })
 
 function onChange (event) {
-  const {target} = closest(event.target)
-  console.log(event.type, element)
+  const {target, currentTarget} = closest(event.target)
 
-  if (target) {
-    const content = target.nextElementSibling
-    const table = content.querySelector('table')
-    const date = new Date(target.getAttribute(UUID))
-    const show = new Date(date)
+  if (target && currentTarget) {
+    const next = target.nextElementSibling
+    const from = currentTarget.value.indexOf('now') === -1 ? target.value : Date.now()
+    const show = datepicker.parse(currentTarget.value, from)
+    const date = new Date(target.value)
 
-    show.setFullYear(content.querySelector('[name="year"]').value)
-    show.setMonth(content.querySelector('[name="month"]').value)
+    // TODO only update on actual change
+    // TODO update aria in table to keep focus
+    // TODO Kristoffer set focus on month/year change?
+    // TODO Update year from input too
 
-    datepicker.day(table, show, date) // TODO, when there is no table?
+    if (currentTarget.nodeName === 'BUTTON') datepicker(target, show)
+    else datepicker.day(next.querySelector('table'), show, date) // TODO when there is no table?
   }
 }
 
-// Date.parse
+// date, [timestamp|Date]
+// string, [timestamp|Date]
 // + 1 second(s)
-// + 1 minute(s)
-// + 1 day(s)
-// + 1 month(s)
-// + 1 year(s)
-
 // - 1 minute(s)
-// - 1 day(s)
+// + 1 day(s)
 // - 1 month(s)
-// - 1 year(s)
-
+// + 1 year(s)
 // 00:00 - 1 year(s)
 // yyyy-mm-01 + 1 year
 // monday + 1 days
-
 // tue + 7 days(s)
 // friday = friday this week, can be in future and past
 // monday - 3 days = friday guaranteed last week
@@ -135,26 +125,37 @@ function onChange (event) {
 // 2018-01-dd + 1 week
 // yyyy-mm-01 + 1 month(s) - 1 day = end current month
 // yy00-01-01 - 100 year(s)
+// 100-1-1 - 1st of January year 100
+// -100-1-1 - 1st of January year -100
+// -081 + y00 = 0
+// -181 + y0y = -101
+// -181 + y0 = -80
+// -181 + y0yy = -81
+// -181 + y0 = -180
 
-datepicker.parse = (parse, now) => {
-  if (isFinite(new Date(parse))) return new Date(parse) // Try parsing natively first
+datepicker.parse = (parse, from) => {
+  if (parse instanceof Date) return parse
 
   const text = String(parse).toLowerCase()
-  const date = new Date(now || Date.now()) // Allow another now
+  const date = new Date(Number(from) || Date.now())
   const name = {year: 'FullYear', month: 'Month', day: 'Date', hour: 'Hours', minute: 'Minutes', second: 'Seconds'}
   const math = /([+-]\s*\d+)\s*(second|minute|hour|day|month|year)|(mon)|(tue)|(wed)|(thu)|(fri)|(sat)|(sun)/g
-  const [, year = 'yyyy', month = 'mm', day = 'dd'] = text.match(/([\dy]{4})-([\dm]{2})-([\dd]{2})/) || []
-  const [, hour = 'hh', minute = 'mm', second = 'ss'] = text.match(/([\dh]{2}):([\dm]{2}):?([\ds]{2})?/) || []
+  const [, year = 'y', month = 'm', day = 'd'] = text.match(/([-\dy]+)[-/.]([\dm]{1,2})[-/.]([\dd]{1,2})/) || []
+  const [, hour = 'h', minute = 'm', second = 's'] = text.match(/([\dh]{1,2}):([\dm]{1,2}):?([\ds]{1,2})?/) || []
   let match = {year, month, day, hour, minute, second}
 
   Object.keys(match).forEach((unit) => {
-    const move = unit === 'month' ? 1 : 0 // Fix zero based month index
-    const prev = `000${date[`get${name[unit]}`]() + move}`.slice(-match[unit].length) // PadLeft to same length
-    const next = match[unit].replace(/\D/g, (v, k) => prev[k]) // Replace non-digits with prev values
+    const move = unit === 'month' ? 1 : 0 // Month have zero based index
+    const prev = `${date[`get${name[unit]}`]() + move}` // Shift to consistent index
+    const next = match[unit].replace(/[^-\d]+/g, (match, index, next) => { // Replace non digit chars
+      if (index) return prev.substr(prev.length - next.length + index, match.length) // Inside: copy match.length
+      return prev.substr(0, Math.max(0, prev.length - next.length + match.length)) // Start: copy leading chars
+    })
+
     date[`set${name[unit]}`](next - move)
   })
 
-  while((match = math.exec(text)) !== null) {
+  while ((match = math.exec(text)) !== null) {
     const unit = match[2]
     const size = Number(String(match[1]).replace(/\s/g, '')) // Keep plus/minus but strip whitespace
     const day = match.slice(2).indexOf(match[0]) // Weekdays starts at 3rd index but is not zero based

@@ -10,6 +10,10 @@ headHtml: |
   <script src="jsx/index.js"></script>
   <script src="core-components.min.js"></script>
   <script>
+    // Create unstyle button
+    document.documentElement.appendChild(document.createElement('unstyle')).onclick =
+      function () { document.documentElement.classList.toggle('unstyle') }
+
     // Expose JSX and JS components to window
     Object.keys(CoreComponents).forEach(function (key) { window[key] = CoreComponents[key]})
     Object.keys(coreComponents).forEach(function (key) {
