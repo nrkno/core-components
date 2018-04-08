@@ -18,7 +18,7 @@ export default function datepicker (elements, date = {}) {
     const next = element.nextElementSibling
 
     element.setAttribute(UUID, '')
-    element.value = show.getTime() // Store date value. Also makes form submitting work
+    element.value = date.getTime() // Store date value. Also makes form submitting work
 
     Object.keys(RENDERS).forEach((key) => {
       queryAll(key, next).forEach((el) => datepicker[RENDERS[key]](el, date, date))
