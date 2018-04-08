@@ -8,21 +8,23 @@ const CODE = Object.keys(KEYS).reduce((all, key) => (all[KEYS[key]] = key) && al
 
 const DAYS = ['man', 'tirs', 'ons', 'tors', 'fre', 'lør', 'søn'] // TODO make configurable
 const MONTHS = ['januar', 'februar', 'mars', 'april', 'mai', 'juni', 'juli', 'august', 'september', 'oktober', 'november', 'desember']
-const RENDERS = {select: 'month', input: 'year', table: 'day'} // TODO can contain other <input>s?
+const RENDERS = {select: 'month', 'input[type="number"]': 'year', table: 'day'}
 
-export default function datepicker (buttons, date = {}) {
+export default function datepicker (elements, date = {}) {
   const options = date.constructor === Object ? date : {date} // typeof Date is object so instead check constructor
 
-  return queryAll(buttons).map((button) => {
-    const show = datepicker.parse(options.date || button.getAttribute(UUID) || button.value)
+  return queryAll(elements).map((element) => {
+    const date = datepicker.parse(options.date || element.getAttribute(UUID) || element.value)
+    const next = element.nextElementSibling
 
-    button.setAttribute(UUID, '')
-    button.value = show.getTime() // Store date value. Also makes form submitting work
+    element.setAttribute(UUID, '')
+    element.value = show.getTime() // Store date value. Also makes form submitting work
 
-    queryAll(Object.keys(RENDERS).join(','), button.nextElementSibling).forEach((el) => {
-      datepicker[RENDERS[el.nodeName.toLowerCase()]](el, show, show)
+    Object.keys(RENDERS).forEach((key) => {
+      queryAll(key, next).forEach((el) => datepicker[RENDERS[key]](el, date, date))
     })
-    return button
+
+    return element
   })
 }
 
