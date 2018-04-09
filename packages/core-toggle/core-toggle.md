@@ -93,6 +93,7 @@ document.addEventListener('toggle', (event) => {
   event.target                              // The button element triggering toggle event
   event.detail.relatedTarget                // The content element controlled by button
   event.detail.isOpen                       // The current toggle state (before toggle event has run)
+  event.detail.willOpen                     // The wanted toggle state
 })
 ```
 
