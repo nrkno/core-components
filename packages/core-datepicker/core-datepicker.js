@@ -104,6 +104,8 @@ function onChange (event) {
     // TODO update aria in table to keep focus
     // TODO Kristoffer set focus on month/year change?
     // TODO Update year from input too
+    // TODO move tab Kristoffer?
+    // UTC 0 fail
 
     if (currentTarget.nodeName === 'BUTTON') datepicker(target, show)
     else datepicker.day(next.querySelector('table'), show, date) // TODO when there is no table?
@@ -156,7 +158,7 @@ datepicker.parse = (parse, from) => {
     date[`set${name[unit]}`](next - move)
   })
 
-  while ((match = math.exec(text)) !== null) {
+  while ((match = math.exec(text)) !== null) { // match = [fullMatch, number, unit, mon, tue, etc...]
     const unit = match[2]
     const size = Number(String(match[1]).replace(/\s/g, '')) // Keep plus/minus but strip whitespace
     const day = match.slice(2).indexOf(match[0]) // Weekdays starts at 3rd index but is not zero based

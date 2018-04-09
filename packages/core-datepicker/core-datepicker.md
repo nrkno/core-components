@@ -8,7 +8,7 @@ category: Components
 ```datepicker.html
 <button data-core-datepicker=".my-date" value="now - 1 day">I går</button>
 <!--
-<button class="my-date">Choose date</button>  <!-- must be <button> or <input> -->
+<button class="my-date" value="">Choose date</button>  <!-- must be <button> or <input> -->
 <input type="text" class="input" placeholder="Choose date">
 <div class="my-dropdown" hidden>              <!-- hidden prevents flash of unstyled content -->
   <input type="text" class="my-date">
@@ -36,7 +36,7 @@ coreToggle('.input', {   // Make datepicker popup
 })
 ```
 ```datepicker.css
-.my-calendar button[aria-current="date"] { outline: 1px dashed }
+.my-calendar button[aria-current="date"] { outline: 2px dashed }
 .my-calendar button[aria-pressed="true"] { box-shadow: 0 0 0 1px }
 .my-calendar button[aria-disabled="true"] { opacity: .3 }
 ```
