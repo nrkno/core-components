@@ -30,7 +30,7 @@ export default function dialog (dialogs, open) {
 
 addEvent(UUID, 'click', (event) => {
   for (let el = event.target, isClose; el; el = el.parentElement) {
-    const action = el.getAttribute('data-dialog')
+    const action = el.getAttribute('data-core-dialog')
     isClose = isClose || action === 'close'
     if (isClose) el.hasAttribute(UUID) && dialog(el, false)
     else if (action) dialog(action, true)

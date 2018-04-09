@@ -6,18 +6,18 @@ category: Components
 > `<dialog>` is an element with which the user interacts with to perform some task or decision. `core-dialog` simply adds `dialog` functionality to a specified element (preferably a `<div>`). `core-dialog` supports nestability, keyboard navigation containment and restoring focus when dialog is closed.
 
 ```dialog.html
-<button data-dialog="#my-dialog">Open dialog</button>
+<button data-core-dialog="#my-dialog">Open dialog</button>
 <dialog id="my-dialog" class="my-dialog" aria-label="første dialog tittel">
   <h1>This is a title</h1>
   <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
   
-  <button class="docs-button close" data-dialog="close">Lukk</button>
-  <button class="docs-button" data-dialog="#my-dialog-nested">Open an additional dialog</button>
+  <button class="docs-button close" data-core-dialog="close">Lukk</button>
+  <button class="docs-button" data-core-dialog="#my-dialog-nested">Open an additional dialog</button>
 </dialog>
 <div id="my-dialog-nested" class="my-dialog" aria-label="andre dialog tittel">
   <h2>Another dialog, triggered inside the first dialog</h2>
   <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
-  <button class="docs-button close" data-dialog="close">Lukk</button>
+  <button class="docs-button close" data-core-dialog="close">Lukk</button>
 </div>
 <div id="docs-react-dialog"></div>
 ```
@@ -110,18 +110,18 @@ class DialogContainerTest extends React.Component {
 ## Usage
 ```html
 <!-- Opening a dialog -->
-<!-- By setting the data-dialog attribute with a reference to an element -->
+<!-- By setting the data-core-dialog attribute with a reference to an element -->
 <!-- we automatically set up a click handler that will open the dialog -->
 <!-- Note: you need to initialize core-dialog -->
-<button data-dialog="#my-dialog">Open dialog</button>
+<button data-core-dialog="#my-dialog">Open dialog</button>
 <!-- Closing a dialog -->
 <div id="my-dialog">
   <h1>Title of dialog</h1>
   <p>Some content</p>
-  <!-- By setting the data-dialog attribute to "close" we automatically -->
+  <!-- By setting the data-core-dialog attribute to "close" we automatically -->
   <!-- set up a click handler that will close the dialog -->
   <!-- Note: you need to initialize core-dialog -->
-  <button data-dialog="close">Close dialog</button>
+  <button data-core-dialog="close">Close dialog</button>
 </div>
 ```
 ```js
