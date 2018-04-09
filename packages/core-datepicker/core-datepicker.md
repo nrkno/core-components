@@ -16,9 +16,9 @@ category: Components
     <button value="now">I dag</button>
     <button value="now - 1 day">I går</button>
     <button value="now + 1 day">I morgen</button>
-    <button value="- 7 days">Tilbake en uke</button>
-    <button value="+ 7 days">Fremover en uke</button>
-    <button value="now tuesday - 7 days">Tirsdag sist uke</button>
+    <button value="- 1 week">Tilbake en uke</button>
+    <button value="+ 1 week">Fremover en uke</button>
+    <button value="now tuesday - 1 week">Tirsdag sist uke</button>
     <button value="now + 10 years">Om ti år</button>
     <button value="yy00-01-01 - 100 years">Forrige århundre</button>
     <br>
@@ -37,6 +37,6 @@ coreToggle('.input', {   // Make datepicker popup
 ```
 ```datepicker.css
 .my-calendar button[aria-current="date"] { outline: 2px dashed }
-.my-calendar button[aria-pressed="true"] { box-shadow: 0 0 0 1px }
+.my-calendar button[aria-pressed="true"] { outline: 2px solid }
 .my-calendar button[aria-disabled="true"] { opacity: .3 }
 ```

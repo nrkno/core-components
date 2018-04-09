@@ -1,12 +1,13 @@
 import {name, version} from './package.json'
 import {queryAll, addEvent} from '../utils'
+import parse from '../../../simple-date-parse/index.js' // While simple-date-parse not on NPM
 
 const ATTR = `data-${name.split('/').pop()}` // Name without scope
 const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid attribute characters
 const KEYS = {ENTER: 13, ESC: 27, PAGEUP: 33, PAGEDOWN: 34, END: 35, HOME: 36, UP: 38, DOWN: 40}
 const CODE = Object.keys(KEYS).reduce((all, key) => (all[KEYS[key]] = key) && all, {})
 
-const DAYS = ['man', 'tirs', 'ons', 'tors', 'fre', 'lør', 'søn'] // TODO make configurable
+const DAYS = ['mandag', 'tirsdag', 'onsdag', 'torsdag', 'fredag', 'lørdag', 'søndag'] // TODO make configurable
 const MONTHS = ['januar', 'februar', 'mars', 'april', 'mai', 'juni', 'juli', 'august', 'september', 'oktober', 'november', 'desember']
 const RENDERS = {select: 'month', 'input[type="number"]': 'year', table: 'day'}
 
@@ -14,7 +15,8 @@ export default function datepicker (elements, date = {}) {
   const options = date.constructor === Object ? date : {date} // typeof Date is object so instead check constructor
 
   return queryAll(elements).map((element) => {
-    const date = datepicker.parse(options.date || element.getAttribute(UUID) || element.value)
+    const date = datepicker.parse(options.date || element.getAttribute(UUID) || element.value || Date.now())
+    const show = datepicker.parse(options.show || date)
     const next = element.nextElementSibling
 
     element.setAttribute(UUID, '')
@@ -28,15 +30,17 @@ export default function datepicker (elements, date = {}) {
   })
 }
 
+datepicker.parse = parse
 datepicker.month = function (select, date) {
   const month = date.getMonth()
-  select.innerHTML = MONTHS.map((name, i) =>
+  if (select.selectedIndex !== month) select.innerHTML = MONTHS.map((name, i) =>
     `<option value="y-${i + 1}-d"${i === month ? 'selected' : ''}>${i + 1} - ${name}</option>`
   ).join('')
 }
 
 datepicker.year = function (input, date) {
-  input.value = date.getFullYear()
+  const year = date.getFullYear()
+  if (input.value !== year) input.value = year
 }
 
 datepicker.day = function (table, date, selected) {
@@ -54,7 +58,7 @@ datepicker.day = function (table, date, selected) {
       const isSelected = isSameDay(day, selected)
       const isToday = isSameDay(day, today)
 
-      html += `<td><button value="${value}" aria-pressed="${isSelected}" aria-disabled="${isOtherMonth}" aria-current="${isToday && 'date'}">`
+      html += `<td><button value="${value}" tabindex="${isSelected - 1}" aria-pressed="${isSelected}" aria-disabled="${isOtherMonth}" aria-current="${isToday && 'date'}">`
       html += `${day.getDate()}</button></td>`
       day.setDate(day.getDate() + 1)
     }
@@ -96,78 +100,17 @@ function onChange (event) {
 
   if (target && currentTarget) {
     const next = target.nextElementSibling
-    const from = currentTarget.value.indexOf('now') === -1 ? target.value : Date.now()
-    const show = datepicker.parse(currentTarget.value, from)
-    const date = datepicker.parse(target.value)
+    const move = currentTarget.nodeName === 'BUTTON'
+    const show = datepicker.parse(currentTarget.value, target.value)
+    const date = datepicker.parse(move ? show : target.value, target.value)
 
     // TODO only update on actual change
     // TODO update aria in table to keep focus
-    // TODO Kristoffer set focus on month/year change?
+    // TODO set focus on grid update always
     // TODO Update year from input too
-    // TODO move tab Kristoffer?
-    // UTC 0 fail
 
-    if (currentTarget.nodeName === 'BUTTON') datepicker(target, show)
-    else datepicker.day(next.querySelector('table'), show, date) // TODO when there is no table?
+    datepicker(target, {show, date})
   }
-}
-
-// [date|timestamp|string], [timestamp|Date]
-// + 1 second(s)
-// - 1 minute(s)
-// + 1 day(s)
-// - 1 month(s)
-// + 1 year(s)
-// 00:00 - 1 year(s)
-// yyyy-mm-01 + 1 year
-// monday + 1 days
-// tue + 7 days(s)
-// friday = friday this week, can be in future and past
-// monday - 3 days = friday guaranteed last week
-// sunday + 5 days = friday guaranteed next week
-// 2018-01-dd + 1 week
-// yyyy-mm-01 + 1 month(s) - 1 day = end current month
-// yy00-01-01 - 100 year(s)
-// 100-1-1 - 1st of January year 100
-// -100-1-1 - 1st of January year -100
-// -081 + y00 = 0
-// -181 + y0y = -101
-// -181 + y0 = -80
-// -181 + y0yy = -81
-// -181 + y0 = -180
-
-datepicker.parse = (parse, from) => {
-  if (Number(parse)) return new Date(Number(parse)) // Allow timestamps and Date instances
-
-  const text = String(parse).toLowerCase()
-  const date = new Date(Number(from) || Date.now())
-  const name = {year: 'FullYear', month: 'Month', day: 'Date', hour: 'Hours', minute: 'Minutes', second: 'Seconds'}
-  const math = /([+-]\s*\d+)\s*(second|minute|hour|day|month|year)|(mon)|(tue)|(wed)|(thu)|(fri)|(sat)|(sun)/g
-  const [, year = 'y', month = 'm', day = 'd'] = text.match(/([-\dy]+)[-/.]([\dm]{1,2})[-/.]([\dd]{1,2})/) || []
-  const [, hour = 'h', minute = 'm', second = 's'] = text.match(/([\dh]{1,2}):([\dm]{1,2}):?([\ds]{1,2})?/) || []
-  let match = {year, month, day, hour, minute, second}
-
-  Object.keys(match).forEach((unit) => {
-    const move = unit === 'month' ? 1 : 0 // Month have zero based index
-    const prev = `${date[`get${name[unit]}`]() + move}` // Shift to consistent index
-    const next = match[unit].replace(/[^-\d]+/g, (match, index, next) => { // Replace non digit chars
-      if (index) return prev.substr(prev.length - next.length + index, match.length) // Inside: copy match.length
-      return prev.substr(0, Math.max(0, prev.length - next.length + match.length)) // Start: copy leading chars
-    })
-
-    date[`set${name[unit]}`](next - move)
-  })
-
-  while ((match = math.exec(text)) !== null) { // match = [fullMatch, number, unit, mon, tue, etc...]
-    const unit = match[2]
-    const size = Number(String(match[1]).replace(/\s/g, '')) // Keep plus/minus but strip whitespace
-    const day = match.slice(2).indexOf(match[0]) // Weekdays starts at 3rd index but is not zero based
-
-    if (unit) date[`set${name[unit]}`](date[`get${name[unit]}`]() + size)
-    else date.setDate(date.getDate() - (date.getDay() || 7) + day) // Make sunday 7th day
-  }
-
-  return date
 }
 
 /*
