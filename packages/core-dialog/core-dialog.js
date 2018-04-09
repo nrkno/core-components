@@ -2,6 +2,7 @@ import {name, version} from './package.json'
 import {IS_BROWSER, queryAll, addEvent, dispatchEvent} from '../utils'
 
 const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid attribute characters
+const SUPPORT = IS_BROWSER && typeof window.HTMLDialogElement !== 'undefined'
 const BACKDROP = IS_BROWSER && document.createElement('backdrop')
 const PREVIOUS = `${UUID}-previous`
 const KEYS = {ESC: 27, TAB: 9}
@@ -19,8 +20,8 @@ export default function dialog (dialogs, open) {
 
   return queryAll(dialogs).forEach((dialog) => {
     dialog.setAttribute(UUID, '')
-    dialog.setAttribute('aria-modal', true)
     dialog.setAttribute('role', 'dialog')
+    dialog.setAttribute('aria-modal', true)
     dialog.setAttribute('aria-label', dialog.getAttribute('aria-label') || options.label)
 
     toggleDialog(dialog, options.open)
@@ -39,7 +40,14 @@ addEvent(UUID, 'click', (event) => {
 
 addEvent(UUID, 'keydown', (event) => {
   if (event.keyCode === KEYS.TAB) keepFocus(event)
-  if (event.keyCode === KEYS.ESC) dialog(getTopLevelDialog(), false)
+  if (event.keyCode === KEYS.ESC) {
+    if (!event.defaultPrevented) dialog(getTopLevelDialog(), false)// event.preventDefault()
+    event.preventDefault()
+    /* else {
+      event.preventDefault()
+      dialog(getTopLevelDialog(), false)
+    } */
+  }
 })
 
 const getZIndexOfElement = (element) =>
@@ -64,14 +72,17 @@ function toggleDialog (dialog, open) {
 
   if (isOpen) {
     const focusable = queryFocusable(dialog)[0]
-    dialog.insertAdjacentElement('afterend', BACKDROP)
     document.activeElement.setAttribute(`${PREVIOUS}`, lastIndex + 1)
-    dialog.style.zIndex = topZIndex + 1
+    dialog.style.zIndex = topZIndex + 2
     focusable && focusable.focus()
 
+    dialog.insertAdjacentElement('afterend', BACKDROP)
     BACKDROP.removeAttribute('hidden')
+    BACKDROP.style.zIndex = topZIndex + 1
   } else {
-    if (!getTopLevelDialog()) BACKDROP.setAttribute('hidden', '')
+    const topDialog = getTopLevelDialog()
+    if (topDialog) BACKDROP.style.zIndex = topDialog.style.zIndex - 1
+    else BACKDROP.setAttribute('hidden', '')
     last.removeAttribute(`${PREVIOUS}`)
     last.focus()
   }
@@ -82,7 +93,12 @@ function toggleOpen (dialog, open) {
   const nextState = typeof open === 'boolean' ? open : (open === 'toggle' ? !prevState : prevState)
   const canUpdate = prevState === nextState || dispatchEvent(dialog, 'dialog.toggle', {isOpen: prevState})
 
-  if (canUpdate) dialog[nextState ? 'setAttribute' : 'removeAttribute']('open', '') // Toggle open attribute
+  if (canUpdate) {
+    if (SUPPORT) { //  && dialog
+      dialog.open = !nextState
+      dialog[nextState ? 'show' : 'close']()
+    } else dialog[nextState ? 'setAttribute' : 'removeAttribute']('open', '') // Toggle open attribute
+  }
 
   return nextState
 }

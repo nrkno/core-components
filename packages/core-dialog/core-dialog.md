@@ -10,19 +10,30 @@ category: Components
 <dialog id="my-dialog" class="my-dialog" aria-label="første dialog tittel">
   <h1>This is a title</h1>
   <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
-  
+  <input type="text" class="my-input" placeholder="Type &quot;C&quot;...">
+  <ul class="my-dropdown" hidden>
+    <li><button>Chrome</button></li>
+    <li><button>Firefox</button></li>
+    <li><button>Opera</button></li>
+    <li><button>Safari</button></li>
+    <li><button>Microsoft Edge</button></li>
+  </ul>
   <button class="docs-button close" data-core-dialog="close">Lukk</button>
   <button class="docs-button" data-core-dialog="#my-dialog-nested">Open an additional dialog</button>
 </dialog>
-<div id="my-dialog-nested" class="my-dialog" aria-label="andre dialog tittel">
+<dialog id="my-dialog-nested" class="my-dialog" aria-label="andre dialog tittel">
   <h2>Another dialog, triggered inside the first dialog</h2>
   <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
   <button class="docs-button close" data-core-dialog="close">Lukk</button>
-</div>
+</dialog>
 <div id="docs-react-dialog"></div>
 ```
 ```dialog.js
 coreDialog('.my-dialog', false)
+/*document.addEventListener('dialog.toggle', (event) => {
+  console.log('dialog.toggle: ', event)
+})*/
+coreInput('.my-input')
 ```
 ```dialog.jsx
 
@@ -43,7 +54,7 @@ class DialogContainerTest extends React.Component {
 
   handleToggle (event) {
     event.preventDefault()
-    console.log('event: ', event)
+    console.log('handleToggle: ', event)
     this.setState({open: !event.detail.isOpen})
   }
 
