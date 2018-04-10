@@ -71,6 +71,3 @@ export function queryAll (elements, context = document) {
   }
   return []
 }
-
-// export const queryAll = (selector, context = document) =>
-//   [].slice.call(context.querySelectorAll(selector))
