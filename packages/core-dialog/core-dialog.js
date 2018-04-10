@@ -91,10 +91,10 @@ function toggleDialog (dialog, open) {
 function toggleOpen (dialog, open) {
   const prevState = dialog.hasAttribute('open')
   const nextState = typeof open === 'boolean' ? open : (open === 'toggle' ? !prevState : prevState)
-  const canUpdate = prevState === nextState || dispatchEvent(dialog, 'dialog.toggle', {isOpen: prevState})
+  const canUpdate = prevState === nextState || dispatchEvent(dialog, 'dialog.toggle', {isOpen: prevState, willOpen: nextState})
 
   if (canUpdate) {
-    if (SUPPORT) { //  && dialog
+    if (SUPPORT) {
       dialog.open = !nextState
       dialog[nextState ? 'show' : 'close']()
     } else dialog[nextState ? 'setAttribute' : 'removeAttribute']('open', '') // Toggle open attribute

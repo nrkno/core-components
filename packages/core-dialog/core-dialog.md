@@ -3,7 +3,7 @@ name: Dialog
 category: Components
 ---
 
-> `<dialog>` is an element with which the user interacts with to perform some task or decision. `core-dialog` simply adds `dialog` functionality to a specified element (preferably a `<div>`). `core-dialog` supports nestability, keyboard navigation containment and restoring focus when dialog is closed.
+> `<dialog>` is an element with which the user interacts with to perform some task or decision. `core-dialog` simply adds `dialog` functionality to a `<dialog>` if it is not supported (or extends functionality if is supported). `core-dialog` supports nestability, keyboard navigation containment and restoring focus when dialog is closed.
 
 ```dialog.html
 <button data-core-dialog="#my-dialog">Open dialog</button>
@@ -30,9 +30,6 @@ category: Components
 ```
 ```dialog.js
 coreDialog('.my-dialog', false)
-/*document.addEventListener('dialog.toggle', (event) => {
-  console.log('dialog.toggle: ', event)
-})*/
 coreInput('.my-input')
 ```
 ```dialog.jsx
@@ -54,7 +51,6 @@ class DialogContainerTest extends React.Component {
 
   handleToggle (event) {
     event.preventDefault()
-    console.log('handleToggle: ', event)
     this.setState({open: !event.detail.isOpen})
   }
 
@@ -126,14 +122,14 @@ class DialogContainerTest extends React.Component {
 <!-- Note: you need to initialize core-dialog -->
 <button data-core-dialog="#my-dialog">Open dialog</button>
 <!-- Closing a dialog -->
-<div id="my-dialog">
+<dialog id="my-dialog">
   <h1>Title of dialog</h1>
   <p>Some content</p>
   <!-- By setting the data-core-dialog attribute to "close" we automatically -->
   <!-- set up a click handler that will close the dialog -->
   <!-- Note: you need to initialize core-dialog -->
   <button data-core-dialog="close">Close dialog</button>
-</div>
+</dialog>
 ```
 ```js
 import coreDialog from '@nrk/core-dialog'
@@ -173,16 +169,26 @@ function closeDialog (event) {
 ```js
 document.addEventListener('dialog.toggle', (event) => {
   event.target                // The dialog container element
+  event.detail.isOpen         // The current open state the dialog has
   event.detail.willOpen       // The open state that the dialog will get (unless event.preventDefault() is called)
 })
+```
+
+## Styling
+
+```css
+.my-dialog {}                         /* Target dialog in closed state */
+.my-dialog[open] {}                   /* Target dialog in open state */
+.my-dialog + backdrop {}              /* Target backdrop in open state */
+.my-dialog + backdrop[hidden] {}      /* Target backdrop in closed state */
 ```
 
 ## FAQ
 
 <details>
-  <summary>Why not use `<dialog>` instead?</summary>
-  There is currently <a href="https://caniuse.com/#feat=dialog" target="_blank">minimal support</a> for the `<dialog>` element.
-  In order to provide a consistent user experience across different platforms and good accessibility, `core-dialog` was created.
+  <summary>Why use `<dialog>` when it is not supported by all browsers?</summary>
+  There is currently <a href="https://caniuse.com/#feat=dialog" target="_blank">minimal support</a> for the `<dialog>` element,
+  which means we cannot rely only on `<dialog>`. `core-dialog` implements the behavior of a dialog and uses the `role="dialog"` attribute which works for most browsers and screen readers, however, screen readers in Chrome fail to work. When using the native `<dialog>` element screen readers in Chrome are able to understand it is in a dialog.
   <p>
     For more information about the dialog element visit the <a href="https://www.w3.org/TR/html52/interactive-elements.html#the-dialog-element">W3C HTML 5.2 specification</a>.<br />
     For more information about WAI-ARIA practices for the dialog element visit the <a href="https://www.w3.org/TR/wai-aria-practices-1.1/#dialog_modal">W3C WAI-ARIA Authoring Practices 1.1</a>
