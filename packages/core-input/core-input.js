@@ -64,11 +64,13 @@ function onKey (input, event) {
   const index = focus.indexOf(document.activeElement)
   let item = false
 
-  if (event.keyCode === KEYS.END || event.keyCode === KEYS.PAGEDOWN) item = focus.pop()
-  else if (event.keyCode === KEYS.HOME || event.keyCode === KEYS.PAGEUP) item = focus[0]
-  else if (event.keyCode === KEYS.DOWN) item = focus[index + 1] || focus[0]
+  if (event.keyCode === KEYS.DOWN) item = focus[index + 1] || focus[0]
   else if (event.keyCode === KEYS.UP) item = focus[index - 1] || focus.pop()
-  else if (event.keyCode !== KEYS.ENTER) input.focus()
+  else if (list.contains(event.target)) { // Aditional shortcuts if focus is inside list
+    if (event.keyCode === KEYS.END || event.keyCode === KEYS.PAGEDOWN) item = focus.pop()
+    else if (event.keyCode === KEYS.HOME || event.keyCode === KEYS.PAGEUP) item = focus[0]
+    else if (event.keyCode !== KEYS.ENTER) input.focus()
+  }
 
   if (!item && !list.hasAttribute('hidden') && event.keyCode === KEYS.ESC) event.preventDefault()
   setupExpand(input, event.keyCode !== KEYS.ESC)

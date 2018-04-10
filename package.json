@@ -2,7 +2,7 @@
   "name": "@nrk/core-components",
   "homepage": "https://static.nrk.no/core-components/latest/",
   "author": "NRK <opensource@nrk.no> (https://www.nrk.no/)",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "license": "MIT",
   "scripts": {
     "build": "npm run build:code && npm run build:docs",
@@ -14,7 +14,7 @@
     "publish:minor": "npm run build && node bin/index.js --publish=minor",
     "publish:major": "npm run build && node bin/index.js --publish=major",
     "start": "npm-run-all --parallel 'build:code -- --watch' 'build:docs -- -w -b'",
-    "static-publish": "npm run build && static-publish publish --directory ./docs --package ./package.json --verbose --latest",
+    "static-publish": "npm run build && static-publish --directory=docs --latest --major",
     "test": "npm run lint && npm run build:code && jest"
   },
   "devDependencies": {

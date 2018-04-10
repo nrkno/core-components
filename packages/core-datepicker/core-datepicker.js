@@ -2,30 +2,42 @@ import {name, version} from './package.json'
 import {queryAll, addEvent} from '../utils'
 
 const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid attribute characters
-const DAYS = ['man', 'tir', 'ons', 'tor', 'fre', 'lør', 'søn']
-const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+const DAYS = ['mandag', 'tirsdag', 'onsdag', 'torsdag', 'fredag', 'lørdag', 'søndag']
+const MONTHS = ['januar', 'februar', 'mars', 'april', 'mai', 'juni', 'juli', 'august', 'september', 'oktober', 'november', 'desember']
+const RENDERS = {}
 
 export default function datepicker (elements, date = {}) {
   const options = date instanceof Date ? {date} : date
-  const html = render(new Date(options.date || Date.now()))
+  const dateObj = new Date(options.date || Date.now())
 
   return queryAll(elements).map((input) => {
     input.setAttribute(UUID, '')
-    input.nextElementSibling.innerHTML = html
+
+    queryAll('[name],table', input.nextElementSibling).forEach((el) => {
+      console.log(el)
+      RENDERS[el.name || el.nodeName.toLowerCase()](el, dateObj)
+    })
 
     return input
   })
 }
 
-// http://stackoverflow.com/questions/4156434/javascript-get-the-first-day-of-the-week-from-current-date
-function getMonday (date) {
-  const d = new Date(date)
-  const day = d.getDay()
-  const diff = d.getDate() - day + (day ? 1 : -6)
-  return new Date(d.setDate(diff))
+RENDERS.month = (el, date) => {
+  const month = date.getMonth()
+  el.innerHTML = MONTHS.map((name, i) =>
+    `<option value="${i}"${i === month ? 'selected' : ''}>${i + 1} - ${name}</option>`
+  ).join('')
 }
 
-function render (date) {
+RENDERS.week = (el, date) => {
+  el.value = 0
+}
+
+RENDERS.year = (el, date) => {
+  el.value = date.getFullYear()
+}
+
+RENDERS.table = (el, date) => {
   const today = new Date()
   const day = date.getDate()
   const year = date.getFullYear()
@@ -35,7 +47,7 @@ function render (date) {
   let html = ''
 
   for (let i = 0; i < 6; i++) {
-    html += `<tr>`
+    html += '<tr>'
     for (let j = 0; j < 7; j++) {
       const isSameMonth = current.getMonth() === month
       const isToday = today.setHours(0, 0, 0, 0) === current.setHours(0, 0, 0, 0)
@@ -51,25 +63,36 @@ function render (date) {
     html += '</tr>'
   }
 
-  return `
-    <label>
-      <span>Måned</span>
-      <select name="month">
-        ${MONTHS.map((name, i) =>
-    `<option value="${i}"${i === month ? 'selected' : ''}>${i + 1} - ${name}</option>`
-  ).join('')}
-      </select>
-    </label>
-    <label>
-      <span>År</span>
-      <input type="number" name="year" value="${year}">
-    </label>
-    <table>
-      <caption>${MONTHS[month]}, ${year}</caption>
-      <thead><tr><th>${DAYS.join('</th><th>')}</th></tr></thead>
-      <tbody>${html}</tbody>
-    </table>`
+  el.innerHTML = `<caption>${MONTHS[month]}, ${year}</caption>
+  <thead><tr><th>${DAYS.join('</th><th>')}</th></tr></thead>
+  <tbody>${html}</tbody>`
 }
+
+// http://stackoverflow.com/questions/4156434/javascript-get-the-first-day-of-the-week-from-current-date
+function getMonday (date) {
+  const d = new Date(date)
+  const day = d.getDay()
+  const diff = d.getDate() - day + (day ? 1 : -6)
+  return new Date(d.setDate(diff))
+}
+
+function getWeek (date) {
+  var date = new Date(date.getTime());
+   date.setHours(0, 0, 0, 0);
+
+  // Thursday in current week decides the year.
+  date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
+
+  // January 4 is always in week 1.
+  var week1 = new Date(date.getFullYear(), 0, 4);
+
+  var jan4th = new Date(this.getFullYear(), 0, 4);
+  return Math.ceil((((this - jan4th) / 86400000) + jan4th.getDay()+1)/7);
+
+  // Adjust to Thursday in week 1 and count number of weeks from date to week1.
+  return 1 + Math.round(((date.getTime() - jan4th.getTime()) / 86400000 - 3 + (jan4th.getDay() + 6) % 7) / 7);
+}
+
 
 addEvent(UUID, 'change', (event) => {
   for (let el = event.target; el; el = el.parentElement) {
