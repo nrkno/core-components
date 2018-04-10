@@ -22,7 +22,7 @@ export default function dialog (dialogs, open) {
     dialog.setAttribute(UUID, '')
     dialog.setAttribute('role', 'dialog')
     dialog.setAttribute('aria-modal', true)
-    dialog.setAttribute('aria-label', dialog.getAttribute('aria-label') || options.label)
+    dialog.setAttribute('aria-label', options.label || dialog.getAttribute('aria-label'))
 
     toggleDialog(dialog, options.open)
     return dialog
@@ -30,6 +30,9 @@ export default function dialog (dialogs, open) {
 }
 
 addEvent(UUID, 'click', (event) => {
+  // This functions handles if the user clicked on a open or close button.
+  // We need to do this loop in order for the close button to know which
+  // dialog it should close.
   for (let el = event.target, isClose; el; el = el.parentElement) {
     const action = el.getAttribute('data-core-dialog')
     isClose = isClose || action === 'close'
@@ -40,13 +43,12 @@ addEvent(UUID, 'click', (event) => {
 
 addEvent(UUID, 'keydown', (event) => {
   if (event.keyCode === KEYS.TAB) keepFocus(event)
-  if (event.keyCode === KEYS.ESC) {
-    if (!event.defaultPrevented) dialog(getTopLevelDialog(), false)// event.preventDefault()
-    event.preventDefault()
-    /* else {
+  if (event.keyCode === KEYS.ESC && !event.defaultPrevented) {
+    const activeDialog = getTopLevelDialog()
+    if (activeDialog) {
       event.preventDefault()
-      dialog(getTopLevelDialog(), false)
-    } */
+      dialog(activeDialog, false)
+    }
   }
 })
 
@@ -67,12 +69,12 @@ const getTopLevelDialog = () =>
 function toggleDialog (dialog, open) {
   const last = getLastFocusedElement()
   const isOpen = toggleOpen(dialog, open)
-  const lastIndex = Number(last.getAttribute(`${PREVIOUS}`)) || 0
+  const lastIndex = Number(last.getAttribute(PREVIOUS)) || 0
   const topZIndex = Math.max(...queryAll('*').map(getZIndexOfElement))
 
   if (isOpen) {
     const focusable = queryFocusable(dialog)[0]
-    document.activeElement.setAttribute(`${PREVIOUS}`, lastIndex + 1)
+    document.activeElement.setAttribute(PREVIOUS, lastIndex + 1)
     dialog.style.zIndex = topZIndex + 2
     focusable && focusable.focus()
 
@@ -80,10 +82,10 @@ function toggleDialog (dialog, open) {
     BACKDROP.removeAttribute('hidden')
     BACKDROP.style.zIndex = topZIndex + 1
   } else {
-    const topDialog = getTopLevelDialog()
-    if (topDialog) BACKDROP.style.zIndex = topDialog.style.zIndex - 1
+    const activeDialog = getTopLevelDialog()
+    if (activeDialog) BACKDROP.style.zIndex = activeDialog.style.zIndex - 1
     else BACKDROP.setAttribute('hidden', '')
-    last.removeAttribute(`${PREVIOUS}`)
+    last.removeAttribute(PREVIOUS)
     last.focus()
   }
 }
@@ -111,6 +113,11 @@ function queryFocusable (context) {
   )
 }
 
+/**
+ * keepFocus ensures that the user cannot tab outside an
+ * active dialog
+ * @param {Object} event keyboard event from keydown
+ */
 function keepFocus (event) {
   const activeDialog = getTopLevelDialog()
   // If no dialog is active, we don't need to do anything

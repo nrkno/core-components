@@ -72,7 +72,7 @@ function onKey (input, event) {
     else if (event.keyCode !== KEYS.ENTER) input.focus()
   }
 
-  if (!item && !list.hasAttribute('hidden') && event.keyCode === KEYS.ESC) event.preventDefault()
+  if (!list.hasAttribute('hidden') && event.keyCode === KEYS.ESC) event.preventDefault()
   setupExpand(input, event.keyCode !== KEYS.ESC)
   if (item !== false) event.preventDefault() // event.preventDefault even if empty list
   if (item) item.focus()

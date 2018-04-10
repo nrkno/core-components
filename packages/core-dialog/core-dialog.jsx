@@ -1,10 +1,8 @@
 import React from 'react'
 import dialog from './core-dialog'
-import {IS_BROWSER, exclude} from '../utils'
+import { exclude } from '../utils'
 
-const NO_SUPPORT = IS_BROWSER && typeof window.HTMLDialogElement === 'undefined'
 const DEFAULTS = {hidden: null, onToggle: null}
-if (NO_SUPPORT) DEFAULTS.open = null
 
 export default class Dialog extends React.Component {
   componentDidMount () {
