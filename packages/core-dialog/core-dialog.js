@@ -3,7 +3,6 @@ import {IS_BROWSER, queryAll, addEvent, dispatchEvent} from '../utils'
 
 const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid attribute characters
 const SUPPORT = IS_BROWSER && typeof window.HTMLDialogElement !== 'undefined'
-const BACKDROP = IS_BROWSER && document.createElement('backdrop')
 const PREVIOUS = `${UUID}-previous`
 const KEYS = {ESC: 27, TAB: 9}
 
@@ -71,6 +70,7 @@ function toggleDialog (dialog, open) {
   const isOpen = toggleOpen(dialog, open)
   const lastIndex = Number(last.getAttribute(PREVIOUS)) || 0
   const topZIndex = Math.max(...queryAll('*').map(getZIndexOfElement))
+  let backdrop = dialog.nextElementSibling
 
   if (isOpen) {
     const focusable = queryFocusable(dialog)[0]
@@ -78,13 +78,15 @@ function toggleDialog (dialog, open) {
     dialog.style.zIndex = topZIndex + 2
     focusable && focusable.focus()
 
-    dialog.insertAdjacentElement('afterend', BACKDROP)
-    BACKDROP.removeAttribute('hidden')
-    BACKDROP.style.zIndex = topZIndex + 1
+    // Next element should be backdrop. If not, create it and insert it
+    if (!backdrop || backdrop.nodeName !== 'BACKDROP') {
+      backdrop = document.createElement('backdrop')
+      dialog.insertAdjacentElement('afterend', backdrop)
+    }
+    backdrop.removeAttribute('hidden')
+    backdrop.style.zIndex = topZIndex + 1
   } else {
-    const activeDialog = getTopLevelDialog()
-    if (activeDialog) BACKDROP.style.zIndex = activeDialog.style.zIndex - 1
-    else BACKDROP.setAttribute('hidden', '')
+    backdrop && backdrop.setAttribute('hidden', '')
     last.removeAttribute(PREVIOUS)
     last.focus()
   }
