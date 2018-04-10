@@ -15,7 +15,8 @@ export default function datepicker (elements, date = {}) {
   const options = date.constructor === Object ? date : {date} // typeof Date is object so instead check constructor
 
   return queryAll(elements).map((element) => {
-    const date = datepicker.parse(options.date || element.getAttribute(UUID) || element.value || Date.now())
+    const prev = datepicker.parse(element.value || Date.now())
+    const date = datepicker.parse(options.date || prev)
     const show = datepicker.parse(options.show || date)
     const next = element.nextElementSibling
 

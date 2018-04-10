@@ -1,10 +1,10 @@
 import {name, version} from './package.json'
-import {queryAll, addEvent, getUUID} from '../utils'
+import {IS_ANDROID, queryAll, addEvent, getUUID} from '../utils'
 
 const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid attribute characters
-const KEYS = {ENTER: 13, SPACE: 32, END: 35, HOME: 36, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40}
+const KEYS = {SPACE: 32, END: 35, HOME: 36, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40}
 const CODE = Object.keys(KEYS).reduce((all, key) => (all[KEYS[key]] = key) && all, {})
-const ARIA = 'aria' // TODO IS_ANDROID, IS_ANDROID ? 'data' : Test Andriod
+const ARIA = IS_ANDROID ? 'data' : 'aria' // Android skips reading content if aria-labelledby
 
 export default function tabs (tablists, open = {}) { // Open can be node, id or index or nothing
   const options = open.constructor === Object ? open : {open}
@@ -32,11 +32,6 @@ export default function tabs (tablists, open = {}) { // Open can be node, id or 
       panel.setAttribute('role', 'tabpanel')
       panel.setAttribute('tabindex', 0)
       panel[selected ? 'removeAttribute' : 'setAttribute']('hidden', '')
-
-      queryAll('a,button', tab).forEach((el) => { /* Hide all sub children */
-        el.setAttribute('role', 'presentation')
-        el.setAttribute('tabindex', -1)
-      })
     })
 
     return tablist
@@ -49,7 +44,7 @@ addEvent(UUID, 'click', (event) => {
 })
 
 addEvent(UUID, 'keydown', (event) => {
-  const target = CODE[event.keyCode] && closest(event.target)
+  const target = !event.ctrlKey && !event.altKey && !event.metaKey && CODE[event.keyCode] && closest(event.target)
 
   if (target) {
     const tabs = queryAll('[role="tab"]', target.tablist)
@@ -57,7 +52,7 @@ addEvent(UUID, 'keydown', (event) => {
     const key = event.keyCode
     let item = target.tab
 
-    if (key === KEYS.SPACE || key === KEYS.ENTER) item.click()
+    if (key === KEYS.SPACE) item.click()
     else if (key === KEYS.DOWN || key === KEYS.RIGHT) item = tabs[open + 1] || tabs[0]
     else if (key === KEYS.UP || key === KEYS.LEFT) item = tabs[open - 1] || tabs.pop()
     else if (key === KEYS.END) item = tabs.pop()
