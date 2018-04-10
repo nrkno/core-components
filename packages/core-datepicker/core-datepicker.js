@@ -34,7 +34,7 @@ datepicker.parse = parse
 datepicker.month = function (select, date) {
   const month = date.getMonth()
   if (select.selectedIndex !== month) select.innerHTML = MONTHS.map((name, i) =>
-    `<option value="y-${i + 1}-d"${i === month ? 'selected' : ''}>${i + 1} - ${name}</option>`
+    `<option value="y-${i + 1}-d"${i === month ? 'selected' : ''}>${i + 1} - ${name}</option>` // TODO Unsafe name
   ).join('')
 }
 
@@ -65,6 +65,7 @@ datepicker.day = function (table, date, selected) {
     html += '</tr>'
   }
 
+   // TODO Unsafe days
   table.innerHTML = `<caption>${MONTHS[month]}, ${year}</caption><thead><tr><th>${DAYS.join('</th><th>')}</th></tr></thead><tbody>${html}</tbody>`
 }
 
@@ -90,8 +91,8 @@ addEvent(UUID, 'click', onChange) // Clicks on buttons can change
 addEvent(UUID, 'change', onChange) // Needed since IE/Edge does not trigger 'input' on <select>
 addEvent(UUID, 'keydown', (event) => {
   if (CODE[event.keyCode]) {
-    const element = closest(event.target)
-    console.log(CODE[event.keyCode], element)
+    // const element = closest(event.target)
+    // console.log(CODE[event.keyCode], element)
   }
 })
 

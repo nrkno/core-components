@@ -6,20 +6,36 @@ category: Components
 > `@nrk/core-tabs`
 
 ```tabs.html
-<div class="my-tabs"> <!-- Accepts any tag and structure. All <button> and <a> inside will become tabs -->
-  <button>Tab 1</button>
-  <button>Tab 2</button>
-  <button>Tab 3</button>
+<div>
+  <ul class="my-tabs nrk-unset nrk-grid" aria-label="Choose a name">   <!-- Aria label should be set --->
+    <li>Tor Gjermund</li>                  <!-- Direct children can be any tag -->
+    <li><button>Einar</button></li>        <!-- Can contain <button> but does nothing -->
+    <li><a href="#link">Bjartmar</a></li>  <!-- Can contain <a> -->
+  </ul>
+  <div> <!-- Children of next element will become panels of correlating <button> and <a> tabs -->
+    <div>Text about Tor Gjermund </div>
+    <div hidden>Text about Einar</div>     <!-- hidden prevents flash of unstyled content -->
+    <div hidden>Text about Bjartmar</div>
+  </div>
 </div>
-<div> <!-- Children of next element will become panels of correlating <button> and <a> tabs -->
-  <div hidden>Panel 1</div>
-  <div>Panel 2</div> <!-- hidden prevents flash of unstyled content -->
-  <div hidden>Panel 3</div>
+<br>
+<div>
+  <div class="my-tabs nrk-grid" aria-label="Choose a person">
+    <div>Kristoffer</div>
+    <button>Eirik</button>
+    <a href="#link">William</a>
+  </div>
+  <div> <!-- Children of next element will become panels of correlating <button> and <a> tabs -->
+    <div>Text about Kristoffer </div>
+    <div hidden>Text about Eirik</div>
+    <div hidden>Text about William</div>
+  </div>
 </div>
+
 ```
 ```tabs.js
 coreTabs('.my-tabs')
 ```
 ```tabs.css
-.my-tabs button[aria-selected="true"] { border: 2px solid }
+[role="tab"][aria-selected="true"] { border: 2px solid }
 ```

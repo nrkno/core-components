@@ -36,7 +36,7 @@ coreToggle('.input', {   // Make datepicker popup
 })
 ```
 ```datepicker.css
-.my-calendar button[aria-current="date"] { outline: 2px dashed }
-.my-calendar button[aria-pressed="true"] { outline: 2px solid }
+.my-calendar button[aria-current="date"] { border: 2px dashed }
+.my-calendar button[aria-pressed="true"] { border: 2px solid }
 .my-calendar button[aria-disabled="true"] { opacity: .3 }
 ```

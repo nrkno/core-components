@@ -59,6 +59,14 @@ export function dispatchEvent (elem, name, detail = {}) {
 }
 
 /**
+* getUUID
+* @return {String} A generated unique ID
+*/
+export function getUUID (el, attr) {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 5)
+}
+
+/**
 * queryAll
 * @param {String|NodeList|Array|Element} elements A CSS selector string, nodeList, element array, or single element
 * @return {Array} Array of elements
