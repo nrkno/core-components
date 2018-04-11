@@ -1,32 +1,69 @@
 import {name, version} from './package.json'
-import {IS_ANDROID, queryAll, addEvent, getUUID} from '../utils'
+import {IS_ANDROID, addEvent, dispatchEvent, getUUID, queryAll} from '../utils'
 
 const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid attribute characters
+const ARIA = IS_ANDROID ? 'data' : 'aria' // Andriod has a bug and reads only label instead of content
 const KEYS = {SPACE: 32, END: 35, HOME: 36, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40}
-const CODE = Object.keys(KEYS).reduce((all, key) => (all[KEYS[key]] = key) && all, {})
-const ARIA = IS_ANDROID ? 'data' : 'aria' // Android skips reading content if aria-labelledby
 
-export default function tabs (tablists, open = {}) { // Open can be node, id or index or nothing
-  const options = open.constructor === Object ? open : {open}
-
+export default function tabs (tablists, open) { // open can be Number or String or Element
   return queryAll(tablists).map((tablist) => {
-    const panels = tablist.nextElementSibling.children
-    let open = options.open || false // Scoped so each tablist can have one open tab
-
     tablist.setAttribute(UUID, '')
     tablist.setAttribute('role', 'tablist')
+    setOpen(tablist, open)
+    return tablist
+  })
+}
 
-    queryAll(tablist.children).forEach((tab, index) => {
-      if (!panels[index]) throw new Error('Unequal number of tabs and panels')
-      const panel = panels[index]
-      const selected = index === open || tab.id === open ||
-        (open.nodeName && tab.contains(open)) || // Open Element
-        !(open || panel.hasAttribute('hidden')) // Open not set, read from DOM
+addEvent(UUID, 'click', (event) => {
+  if (event.ctrlKey || event.altKey || event.metaKey) return
+  for (let el = event.target; el; el = el.parentElement) {
+    if (el.getAttribute('role') === 'tab' && el.parentElement.hasAttribute(UUID)) {
+      return setOpen(el.parentElement, el) || event.preventDefault() // Also prevent links
+    }
+  }
+})
 
-      if (selected) open = true // Only one tab can be open at the time
+addEvent(UUID, 'keydown', (event) => {
+  let tab = event.target
+  const tablist = tab.parentElement
+
+  if (event.ctrlKey || event.altKey || event.metaKey) return
+  if (tab.getAttribute('role') === 'tab' && tablist.hasAttribute(UUID)) {
+    const els = queryAll(tablist.children)
+    const open = els.indexOf(tab)
+    const key = event.keyCode
+
+    if (key === KEYS.SPACE) tab.click() // Forward action to click event
+    else if (key === KEYS.DOWN || key === KEYS.RIGHT) tab = els[open + 1] || els[0]
+    else if (key === KEYS.UP || key === KEYS.LEFT) tab = els[open - 1] || els.pop()
+    else if (key === KEYS.END) tab = els.pop()
+    else if (key === KEYS.HOME) tab = els[0]
+    else return // Do not hijack other keys
+
+    event.preventDefault()
+    tab.focus()
+  }
+})
+
+function setOpen (tablist, open) { // open can be Number or String or Element
+  const tabs = queryAll(tablist.children)
+  const pans = tablist.nextElementSibling.children
+  const isOpen = tabs.reduce((acc, tab, i) => pans[i].hasAttribute('hidden') ? acc : i, 0)
+  const willOpen = tabs.reduce((acc, tab, i) => (i === open || tab === open || tab.id === open) ? i : acc, isOpen)
+  const isRender = isOpen === willOpen || dispatchEvent(tablist, 'tabs.toggle', {
+    isOpen,
+    willOpen,
+    relatedTarget: tabs[isOpen],
+    currentTarget: tabs[willOpen]
+  })
+
+  if (isRender) {
+    tabs.forEach((tab, index) => {
+      const selected = index === willOpen
+      const panel = pans[index]
 
       tab.setAttribute('role', 'tab')
-      tab.setAttribute('tabindex', selected - 1) // TODO go though all and dispatchEvent before change
+      tab.setAttribute('tabindex', selected - 1)
       tab.setAttribute('aria-selected', selected)
       tab.setAttribute('aria-controls', panel.id = panel.id || getUUID())
       panel.setAttribute(`${ARIA}-labelledby`, tab.id = tab.id || getUUID())
@@ -34,39 +71,6 @@ export default function tabs (tablists, open = {}) { // Open can be node, id or 
       panel.setAttribute('tabindex', 0)
       panel[selected ? 'removeAttribute' : 'setAttribute']('hidden', '')
     })
-
-    return tablist
-  })
-}
-
-addEvent(UUID, 'click', (event) => {
-  const target = closest(event.target)
-  if (target) tabs(target.tablist, target.tab)
-})
-
-addEvent(UUID, 'keydown', (event) => {
-  const target = !event.ctrlKey && !event.altKey && !event.metaKey && CODE[event.keyCode] && closest(event.target)
-
-  if (target) {
-    let item = document.activeElement
-    const tabs = target.tablist.children
-    const open = [].indexOf.call(tabs, item)
-    const key = event.keyCode
-
-    if (key === KEYS.SPACE) item.click()
-    else if (key === KEYS.DOWN || key === KEYS.RIGHT) item = tabs[open + 1] || tabs[0]
-    else if (key === KEYS.UP || key === KEYS.LEFT) item = tabs[open - 1] || tabs.pop()
-    else if (key === KEYS.END) item = tabs.pop()
-    else if (key === KEYS.HOME) item = tabs[0]
-
-    event.preventDefault()
-    if (item) item.focus()
   }
-})
-
-function closest (element) {
-  for (let el = element, tab; el; el = el.parentElement) {
-    if (tab && el.hasAttribute(UUID)) return {tablist: el, tab}
-    else if (el.getAttribute('role') === 'tab') tab = el
-  }
+  return isRender
 }

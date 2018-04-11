@@ -1,5 +1,5 @@
 import React from 'react'
-import coreToggle from '../core-toggle/core-toggle'
+import coreToggle from './core-toggle'
 import {exclude} from '../utils'
 
 const DEFAULTS = {open: null, popup: null, onToggle: null} // Remove onToggle prop as this is also a native event
