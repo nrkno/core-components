@@ -11,7 +11,7 @@ category: Components
     <button>Tor Gjermund</button>         <!-- Direct children must be <a> or <button> -->
     <button>Einar</button>
     <a href="#link">Bjartmar</a>
-  </ul>
+  </div>
   <div> <!-- Children of next element will become panels of correlating <button> and <a> tabs -->
     <div>Text about Tor Gjermund </div>
     <div hidden>Text about Einar</div>    <!-- hidden prevents flash of unstyled content -->
@@ -37,5 +37,5 @@ category: Components
 coreTabs('.my-tabs')
 ```
 ```tabs.css
-[role="tab"][aria-selected="true"] { border: 2px solid }
+.my-tabs [aria-selected="true"] { border: 2px solid }
 ```

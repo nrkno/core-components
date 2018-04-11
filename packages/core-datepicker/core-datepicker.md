@@ -6,7 +6,6 @@ category: Components
 > `@nrk/core-datepicker` enhances a `<button>` or `<input>` field with keyboard accessible functionality for selecting date and time. The interface and granularity of date refinement can easily be altered through markup:
 
 ```datepicker.html
-<button data-core-datepicker=".my-date" value="now - 1 day">I går</button>
 <!--
 <button class="my-date" value="">Choose date</button>  <!-- must be <button> or <input> -->
 <input type="text" class="input" placeholder="Choose date">
@@ -23,12 +22,37 @@ category: Components
     <button value="yy00-01-01 - 100 years">Forrige århundre</button>
     <br>
     <label><span>Måned</span><select></select></label>
-    <label><span>År</span><input type="number"></label>
+    <label><span>Year</span>
+      <select>
+        <option value="2016-m-d">2016</option>
+        <option value="2017-m-d">2017</option>
+        <option value="2018-m-d">2018</option>
+        <option value="2019-m-d">2019</option>
+      </select>
+    </label>
+    <fieldset>
+      <caption>Måned</caption>
+      <label><input type="radio" name="my-group-name" value="y-1-d">Jan</label>
+      <label><input type="radio" name="my-group-name" value="y-2-d">Fed</label>
+      <label><input type="radio" name="my-group-name" value="y-3-d">Mars</label>
+      <label><input type="radio" name="my-group-name" value="y-4-d">April</label>
+      <label><input type="radio" name="my-group-name" value="y-5-d">Mai</label>
+      <label><input type="radio" name="my-group-name" value="y-6-d">Juni</label>
+      <label><input type="radio" name="my-group-name" value="y-7-d">Juli</label>
+      <label><input type="radio" name="my-group-name" value="y-8-d">Aug</label>
+      <label><input type="radio" name="my-group-name" value="y-9-d">Sep</label>
+      <label><input type="radio" name="my-group-name" value="y-10-d">Okt</label>
+      <label><input type="radio" name="my-group-name" value="y-11-d">Nov</label>
+      <label><input type="radio" name="my-group-name" value="y-12-d">Des</label>
+    </fieldset>
+    <label><span>År</span><input type="text" data-pattern="?-m-d"></label>
+    <label><span>Tid</span><input type="text" data-pattern="y-m-d ?:?"></label>
     <table></table>
   </div>
 </div>
 ```
 ```datepicker.js
+coreDatepicker.days = ['m', 't', 'o', 't', 'f', 'l', 's'] // Change name of days
 coreDatepicker('.my-date')
 coreToggle('.input', {   // Make datepicker popup
   open: true,
@@ -36,7 +60,7 @@ coreToggle('.input', {   // Make datepicker popup
 })
 ```
 ```datepicker.css
-.my-calendar button[aria-current="date"] { border: 2px dashed }
+.my-calendar button[aria-current="date"] { border: 1px dashed }
 .my-calendar button[aria-pressed="true"] { border: 2px solid }
 .my-calendar button[aria-disabled="true"] { opacity: .3 }
 ```

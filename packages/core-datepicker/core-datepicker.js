@@ -1,62 +1,130 @@
 import {name, version} from './package.json'
-import {queryAll, addEvent} from '../utils'
+import {addEvent, escapeHTML, queryAll} from '../utils'
 import parse from '../../../simple-date-parse/index.js' // While simple-date-parse not on NPM
 
-const ATTR = `data-${name.split('/').pop()}` // Name without scope
 const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid attribute characters
 const KEYS = {ENTER: 13, ESC: 27, PAGEUP: 33, PAGEDOWN: 34, END: 35, HOME: 36, UP: 38, DOWN: 40}
 const CODE = Object.keys(KEYS).reduce((all, key) => (all[KEYS[key]] = key) && all, {})
 
-const DAYS = ['mandag', 'tirsdag', 'onsdag', 'torsdag', 'fredag', 'lørdag', 'søndag'] // TODO make configurable
-const MONTHS = ['januar', 'februar', 'mars', 'april', 'mai', 'juni', 'juli', 'august', 'september', 'oktober', 'november', 'desember']
-const RENDERS = {select: 'month', 'input[type="number"]': 'year', table: 'day'}
-
-export default function datepicker (elements, date = {}) {
-  const options = date.constructor === Object ? date : {date} // typeof Date is object so instead check constructor
+export default function datepicker (elements, date = {}) { // Date can be String, Timestamp and Date
+  const options = date.constructor === Object ? date : {date} // Check constructor as Date is object
 
   return queryAll(elements).map((element) => {
-    const prev = datepicker.parse(element.value || Date.now())
-    const date = datepicker.parse(options.date || prev)
-    const show = datepicker.parse(options.show || date)
-    const next = element.nextElementSibling
+    const prevDate = parse(element.value || Date.now())
+    const prevShow = parse(element.getAttribute(UUID) || prevDate)
+    const nextDate = parse(options.date || prevDate)
+    const nextShow = parse(options.show || nextDate)
+    const isRender = !element.hasAttribute(UUID) || prevShow.getTime() !== nextShow.getTime()
+    const target = element.nextElementSibling
 
-    element.setAttribute(UUID, '')
-    element.value = date.getTime() // Store date value. Also makes form submitting work
+    if (isRender) {
+      console.log('render(nextShow, nextDate)', nextShow, nextDate)
+      element.setAttribute(UUID, nextShow.getTime()) // Store show to compare on next update
+      element.value = nextDate.getTime() // Store date to make form submitting work
 
-    Object.keys(RENDERS).forEach((key) => {
-      queryAll(key, next).forEach((el) => datepicker[RENDERS[key]](el, date, date))
-    })
+      queryAll('select:empty,option,input,textarea,table', target).forEach((el) => {
+        render(el, nextShow, nextDate, element)
+      })
+
+      // Object.keys(RENDERS).forEach((key) => {
+      //   queryAll(key, element.nextElementSibling).forEach((el) => RENDERS[key](el, nextShow, nextDate))
+      // })
+    }
 
     return element
   })
 }
 
+// Expose API and config
 datepicker.parse = parse
-datepicker.month = function (select, date) {
-  const month = date.getMonth()
-  if (select.selectedIndex !== month) select.innerHTML = MONTHS.map((name, i) =>
-    `<option value="y-${i + 1}-d"${i === month ? 'selected' : ''}>${i + 1} - ${name}</option>` // TODO Unsafe name
+datepicker.months = ['januar', 'februar', 'mars', 'april', 'mai', 'juni', 'juli', 'august', 'september', 'oktober', 'november', 'desember']
+datepicker.days = ['mandag', 'tirsdag', 'onsdag', 'torsdag', 'fredag', 'lørdag', 'søndag']
+
+function render(el, show, date, context) {
+  const type = el.getAttribute('type') || el.nodeName.toLowerCase()
+  const pattern = el.getAttribute('data-pattern') || '?'
+  const value = parse(pattern.replace(/\?+/g, el.value), show)
+  const check = value.getTime() === show.getTime()
+
+  // Handle document.activeElement - should leave alone?
+  // x Handle empty select
+  // x Handle option
+  // x Handle [type="radio"] (not checkbox as this does not make sence)
+  // Handle textarea / input (with data-pattern)
+  // x Handle table
+
+  if (type === 'radio') el.checked = check
+  else if (type === 'option') el.selected = check
+  else if (type === 'select') renderMonth(el, show)
+  else if (type === 'table') renderDay(el, show, date)
+  else {
+    // const pad = (str) => `0${str}`.slice(-2)
+    // const str = `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`
+    // const mask = pattern.replace(/(\?)(.*\1)?/g, '($&)').replace(/[a-z?]/ig, (m, i) => i ? '\\d+' : '[-\\d]+')
+    // const [, ymd, year, month, day, hms, hour, minutes, seconds] = pattern.match(/(([?]+)[./-]([?]+)[./-]([?]+))?\s*(([?]*):([?]+))/)
+    //
+    //
+    //
+    // str.match(new RegExp(mask))
+    //
+    // 'y-m-d ?:?'.replace(/[\w?]\W*/g, (m) => {
+    //   const fn = mask.shift()
+    //   return m === '?' ? date[fn]() : ''
+    // })
+
+    // const pluck = pattern.match(/(\?(.*\?)?)/) || []
+    // const index = pattern.split(/[-:\s]/)
+    // pattern.match(/(\?).*\1?/g)
+
+    // .replace(/[a-z]|\?(?:.*\?)?/g, (match, index) => {
+    //   const unit = index === 0 ? '[-\\d]+' : '\\d+'
+    //   return match[0] === '?' ? `(${match.replace(/\?/g, unit)})` : unit
+    // })
+    //
+    // .map((match, index) => {
+    //   if (match === '?') return date[mask[index]]()
+    // }).join(':')
+    // console.log(match)
+    // const local = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()} ${date.getHours()}:$da`
+    // const regex = new RegExp('y-m-d ?'.replace(/[a-z]/g, '\\d+').replace(/[?]+/g, '\\b.*\\b'))
+    //
+    // console.log(local, regex)
+    //
+    // const unit = dateUnits(show)
+    // const mask = `${unit.year}-${unit.month}-${unit}`
+    // console.log()
+  }
+}
+
+function renderMonth (select, show) {
+  select.innerHTML = datepicker.months.map((name, i) =>
+    `<option value="y-${i + 1}-d"${i === show.getMonth()? ' selected' : ''}>${i + 1} - ${escapeHTML(name)}</option>`
   ).join('')
 }
 
-datepicker.year = function (input, date) {
-  const year = date.getFullYear()
+function renderYear (input, show) {
+  const year = show.getFullYear()
   if (input.value !== year) input.value = year
 }
 
-datepicker.day = function (table, date, selected) {
+function renderTime (input, show) {
+  const time = `${`0${show.getHours()}`.slice(-2)}:${`0${show.getMinutes()}`.slice(-2)}`
+  if (input.value !== time) input.value = time
+}
+
+function renderDay (table, show, date) {
   const today = new Date()
-  const year = date.getFullYear()
-  const month = date.getMonth()
-  let day = datepicker.parse('yyyy-mm-01 mon', date) // Start on first monday of month
+  const year = show.getFullYear()
+  const month = show.getMonth()
+  let day = parse(`yyyy-mm-01 mon`, show) // Start on first monday of month
   let html = ''
 
   for (let i = 0; i < 6; i++) {
     html += '<tr>'
     for (let j = 0; j < 7; j++) {
       const value = `${day.getFullYear()}-${day.getMonth() + 1}-${day.getDate()}`
-      const isOtherMonth = !isSameMonth(day, date)
-      const isSelected = isSameDay(day, selected)
+      const isOtherMonth = !isSameMonth(day, show)
+      const isSelected = isSameDay(day, date)
       const isToday = isSameDay(day, today)
 
       html += `<td><button value="${value}" tabindex="${isSelected - 1}" aria-pressed="${isSelected}" aria-disabled="${isOtherMonth}" aria-current="${isToday && 'date'}">`
@@ -66,8 +134,7 @@ datepicker.day = function (table, date, selected) {
     html += '</tr>'
   }
 
-   // TODO Unsafe days
-  table.innerHTML = `<caption>${MONTHS[month]}, ${year}</caption><thead><tr><th>${DAYS.join('</th><th>')}</th></tr></thead><tbody>${html}</tbody>`
+  table.innerHTML = `<caption>${escapeHTML(datepicker.months[month])}, ${year}</caption><thead><tr><th>${datepicker.days.map(escapeHTML).join('</th><th>')}</th></tr></thead><tbody>${html}</tbody>`
 }
 
 const isSameYear = (d1, d2) => d1.getFullYear() === d2.getFullYear()
@@ -77,14 +144,18 @@ const isSameDay = (d1, d2) => isSameYear(d1, d2) && isSameMonth(d1, d2) && d1.ge
 function closest (target) {
   for (let currentTarget; target; target = target.parentElement) {
     const prev = target.previousElementSibling
-    const attr = target.getAttribute(ATTR)
 
     if (target.value) currentTarget = target // Store element with value as event source
     if (target.hasAttribute(UUID)) return {currentTarget, target} // Datepicker is <input>
     if (prev && prev.hasAttribute(UUID)) return {currentTarget, target: prev} // Inside datepicker
-    if (attr) return {currentTarget, target: document.querySelector(target.getAttribute(ATTR))}
   }
   return {}
+}
+
+function dateUnits (date = new Date()) {
+  const local = new Date(date.getTime() - (date.getTimezoneOffset() * 60000))
+  const [year, month, day, hour, minute, second] = local.toJSON().split(/[-.:T]/)
+  return {year, month, day, hour, minute, second}
 }
 
 addEvent(UUID, 'input', onChange)
@@ -103,13 +174,13 @@ function onChange (event) {
   if (target && currentTarget) {
     const next = target.nextElementSibling
     const move = currentTarget.nodeName === 'BUTTON'
-    const show = datepicker.parse(currentTarget.value, target.value)
-    const date = datepicker.parse(move ? show : target.value, target.value)
+    const show = parse(currentTarget.value, target.value)
+    const date = move ? show : parse(target.value)
 
-    // TODO only update on actual change
-    // TODO update aria in table to keep focus
-    // TODO set focus on grid update always
-    // TODO Update year from input too
+    // TODO dispatchEvent on date change
+    // TODO Update aria in table to keep focus
+    // TODO Set focus on grid update always
+    // TODO Update year/hours from input too
 
     datepicker(target, {show, date})
   }
