@@ -1,5 +1,5 @@
 import {name, version} from './package.json'
-import {IS_ANDROID, addEvent, dispatchEvent, getUUID, queryAll} from '../utils'
+import {IS_ANDROID, addEvent, dispatchEvent, queryAll} from '../utils'
 
 const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid attribute characters
 const ARIA = IS_ANDROID ? 'data' : 'aria' // Andriod has a bug and reads only label instead of content
@@ -43,6 +43,10 @@ function toggleExpand (button, open) {
   if (isOpen === willOpen) setExpand(button, isOpen)
   else if (dispatchEvent(button, 'toggle', {relatedTarget, isOpen, willOpen})) setExpand(button, willOpen)
   return willOpen
+}
+
+function getUUID () {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 5)
 }
 
 function setExpand (button, open) {
