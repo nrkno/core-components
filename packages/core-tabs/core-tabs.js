@@ -1,4 +1,4 @@
-panelsimport {name, version} from './package.json'
+import {name, version} from './package.json'
 import {IS_ANDROID, addEvent, dispatchEvent, getUUID, queryAll} from '../utils'
 
 const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid attribute characters

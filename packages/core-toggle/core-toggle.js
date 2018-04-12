@@ -42,5 +42,5 @@ function setOpen (button, open) {
   const nextOpen = isUpdate ? willOpen : button.getAttribute(OPEN) === 'true' // dispatchEvent can change attributes
 
   button.setAttribute(OPEN, nextOpen)
-  button.nextElementSibling[nextOpen ? 'removeAttribute' :  'setAttribute']('hidden', '')
+  button.nextElementSibling[nextOpen ? 'removeAttribute' : 'setAttribute']('hidden', '')
 }
