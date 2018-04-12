@@ -45,8 +45,9 @@ addEvent(UUID, 'click', (event) => {
   }
 })
 
-addEvent(UUID, 'transitionend', (event) => {
-  if (event.target.hasAttribute(UUID)) setFocus(event.target) // Ensure focus is set after animations
+// Ensure focus is set after animations
+addEvent(UUID, 'transitionend', ({target}) => {
+  if (target.hasAttribute(UUID) && target.hasAttribute('open')) setFocus(target)
 })
 
 addEvent(UUID, 'keydown', (event) => {
