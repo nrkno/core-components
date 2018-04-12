@@ -102,7 +102,6 @@ class DialogContainerTest extends React.Component {
 }
 .my-dialog:not([open]),
 .my-dialog + backdrop[hidden] {
-  transform: scale(1.05);
   pointer-events: none; /* Allow clicks while animating */
   visibility: hidden;
   display: block;

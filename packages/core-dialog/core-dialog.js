@@ -2,9 +2,8 @@ import {name, version} from './package.json'
 import {IS_BROWSER, queryAll, addEvent, dispatchEvent} from '../utils'
 
 const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid attribute characters
-const PREV = `${UUID}-previous`
 const KEYS = {ESC: 27, TAB: 9}
-
+const FOCUS_PREVIOUS = `${UUID}-previous`
 const FOCUSABLE_ELEMENTS = `
   [tabindex]:not([disabled]),
   a:not([disabled]),
@@ -46,6 +45,10 @@ addEvent(UUID, 'click', (event) => {
   }
 })
 
+addEvent(UUID, 'transitionend', (event) => {
+  if (event.target.hasAttribute(UUID)) setFocus(event.target) // Ensure focus is set after animations
+})
+
 addEvent(UUID, 'keydown', (event) => {
   const key = event.keyCode
   const dialog = !event.defaultPrevented && (key === KEYS.ESC || key === KEYS.TAB) && getTopLevelDialog()
@@ -59,8 +62,8 @@ const getZIndexOfElement = (element) =>
 
 // Find the last focused element before opening the dialog
 const getLastFocusedElement = () =>
-  queryAll(`[${PREV}]`).sort((a, b) =>
-    a.getAttribute(PREV) < b.getAttribute(PREV)
+  queryAll(`[${FOCUS_PREVIOUS}]`).sort((a, b) =>
+    a.getAttribute(FOCUS_PREVIOUS) < b.getAttribute(FOCUS_PREVIOUS)
   )[0] || document.body
 
 const getTopLevelDialog = () =>
@@ -77,23 +80,23 @@ function setOpen (dialog, open) {
   const backdrop = dialog.nextElementSibling
 
   if (typeof window.HTMLDialogElement !== 'undefined') { // Native support
-    dialog.open = !nextOpen // Opdate to opposite value to ensure show/close can run without error
+    dialog.open = !nextOpen // Update to opposite value to ensure show/close can run without error
     dialog[nextOpen ? 'show' : 'close']()
   } else dialog[nextOpen ? 'setAttribute' : 'removeAttribute']('open', '') // Toggle open attribute
   backdrop[nextOpen ? 'removeAttribute' : 'setAttribute']('hidden', '')
 
   if (isUpdate) { // Update if no event.preventDefault
     const lastFocus = getLastFocusedElement()
-    const lastIndex = Number(lastFocus.getAttribute(PREV)) || 0
+    const lastIndex = Number(lastFocus.getAttribute(FOCUS_PREVIOUS)) || 0
     const topZIndex = Math.max(...queryAll('*').map(getZIndexOfElement))
 
     if (nextOpen) {
       dialog.style.zIndex = topZIndex + 2
       dialog.nextElementSibling.style.zIndex = topZIndex + 1
-      active.setAttribute(PREV, lastIndex + 1) // Remember activeElement
-      setTimeout(() => (queryFocusable(dialog)[0] || dialog).focus(), 300) // Wait a tick ensures dialog is visible
+      active.setAttribute(FOCUS_PREVIOUS, lastIndex + 1) // Remember activeElement
+      setFocus(dialog)
     } else {
-      lastFocus.removeAttribute(PREV)
+      lastFocus.removeAttribute(FOCUS_PREVIOUS)
       lastFocus.focus()
     }
   }
@@ -105,6 +108,10 @@ function queryFocusable (context) {
     el.clientHeight &&
     window.getComputedStyle(el).getPropertyValue('visibility') !== 'hidden'
   )
+}
+
+function setFocus (dialog) {
+  (queryFocusable(dialog)[0] || dialog).focus()
 }
 
 /**
