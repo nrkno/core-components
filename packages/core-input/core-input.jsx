@@ -1,8 +1,8 @@
 import React from 'react'
-import coreInput from '../core-input/core-input'
+import coreInput from './core-input'
 import {exclude} from '../utils'
 
-const DEFAULTS = {open: null, onFilter () {}, onSelect () {}}
+const DEFAULTS = {open: null, onFilter: null, onSelect: null}
 
 export default class Input extends React.Component {
   componentDidMount () { // Mount client side only to avoid rerender
