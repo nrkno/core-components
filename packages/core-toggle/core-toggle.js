@@ -38,10 +38,9 @@ function setOpen (button, open) {
   const relatedTarget = button.nextElementSibling
   const isOpen = button.getAttribute(OPEN) === 'true'
   const willOpen = typeof open === 'boolean' ? open : (open === 'toggle' ? !isOpen : isOpen)
-  const isRender = isOpen === willOpen || dispatchEvent(button, 'toggle', {relatedTarget, isOpen, willOpen})
+  const isUpdate = isOpen === willOpen || dispatchEvent(button, 'toggle', {relatedTarget, isOpen, willOpen})
+  const nextOpen = isUpdate ? willOpen : button.getAttribute(OPEN) === 'true' // dispatchEvent can change attributes
 
-  if (isRender) {
-    button.setAttribute(OPEN, open)
-    button.nextElementSibling[open ? 'removeAttribute' :  'setAttribute']('hidden', '')
-  }
+  button.setAttribute(OPEN, nextOpen)
+  button.nextElementSibling[nextOpen ? 'removeAttribute' :  'setAttribute']('hidden', '')
 }

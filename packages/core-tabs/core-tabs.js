@@ -29,15 +29,15 @@ addEvent(UUID, 'keydown', (event) => {
 
   if (event.ctrlKey || event.altKey || event.metaKey) return
   if (tab.getAttribute('role') === 'tab' && tablist.hasAttribute(UUID)) {
-    const els = queryAll(tablist.children)
-    const open = els.indexOf(tab)
+    const tabs = queryAll(tablist.children)
+    const open = tabs.indexOf(tab)
     const key = event.keyCode
 
     if (key === KEYS.SPACE) tab.click() // Forward action to click event
-    else if (key === KEYS.DOWN || key === KEYS.RIGHT) tab = els[open + 1] || els[0]
-    else if (key === KEYS.UP || key === KEYS.LEFT) tab = els[open - 1] || els.pop()
-    else if (key === KEYS.END) tab = els.pop()
-    else if (key === KEYS.HOME) tab = els[0]
+    else if (key === KEYS.DOWN || key === KEYS.RIGHT) tab = tabs[open + 1] || tabs[0]
+    else if (key === KEYS.UP || key === KEYS.LEFT) tab = tabs[open - 1] || tabs.pop()
+    else if (key === KEYS.END) tab = tabs.pop()
+    else if (key === KEYS.HOME) tab = tabs[0]
     else return // Do not hijack other keys
 
     event.preventDefault()
@@ -45,32 +45,31 @@ addEvent(UUID, 'keydown', (event) => {
   }
 })
 
+function getOpenPanel (panels) {
+  return [].reduce.call(panels, (acc, pan, i) => pan.hasAttribute('hidden') ? acc : i, 0)
+}
+
 function setOpen (tablist, open) { // open can be Number or String or Element
   const tabs = queryAll(tablist.children)
   const pans = tablist.nextElementSibling.children
-  const isOpen = tabs.reduce((acc, tab, i) => pans[i].hasAttribute('hidden') ? acc : i, 0)
+  const isOpen = getOpenPanel(pans)
   const willOpen = tabs.reduce((acc, tab, i) => (i === open || tab === open || tab.id === open) ? i : acc, isOpen)
-  const isRender = isOpen === willOpen || dispatchEvent(tablist, 'tabs.toggle', {
-    isOpen,
-    willOpen,
-    relatedTarget: tabs[isOpen],
-    currentTarget: tabs[willOpen]
+  const isUpdate = isOpen === willOpen || dispatchEvent(tablist, 'tabs.toggle', {isOpen, willOpen})
+  const nextOpen = isUpdate ? willOpen : getOpenPanel(pans) // dispatchEvent can change attributes, so check getOpenPanel again
+
+  tabs.forEach((tab, index) => {
+    const selected = index === nextOpen
+    const panel = pans[index]
+
+    tab.setAttribute('role', 'tab')
+    tab.setAttribute('tabindex', selected - 1)
+    tab.setAttribute('aria-selected', selected)
+    tab.setAttribute('aria-controls', panel.id = panel.id || getUUID())
+    panel.setAttribute(`${ARIA}-labelledby`, tab.id = tab.id || getUUID())
+    panel.setAttribute('role', 'tabpanel')
+    panel.setAttribute('tabindex', 0)
+    panel[selected ? 'removeAttribute' : 'setAttribute']('hidden', '')
   })
 
-  if (isRender) {
-    tabs.forEach((tab, index) => {
-      const selected = index === willOpen
-      const panel = pans[index]
-
-      tab.setAttribute('role', 'tab')
-      tab.setAttribute('tabindex', selected - 1)
-      tab.setAttribute('aria-selected', selected)
-      tab.setAttribute('aria-controls', panel.id = panel.id || getUUID())
-      panel.setAttribute(`${ARIA}-labelledby`, tab.id = tab.id || getUUID())
-      panel.setAttribute('role', 'tabpanel')
-      panel.setAttribute('tabindex', 0)
-      panel[selected ? 'removeAttribute' : 'setAttribute']('hidden', '')
-    })
-  }
-  return isRender
+  return nextOpen
 }
