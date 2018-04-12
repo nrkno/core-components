@@ -1,11 +1,11 @@
-import {name, version} from './package.json'
+panelsimport {name, version} from './package.json'
 import {IS_ANDROID, addEvent, dispatchEvent, getUUID, queryAll} from '../utils'
 
 const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid attribute characters
 const ARIA = IS_ANDROID ? 'data' : 'aria' // Andriod has a bug and reads only label instead of content
 const KEYS = {SPACE: 32, END: 35, HOME: 36, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40}
 
-export default function tabs (tablists, open) { // open can be Number or String or Element
+export default function tabs (tablists, open) { // open can be Number, String or Element
   return queryAll(tablists).map((tablist) => {
     tablist.setAttribute(UUID, '')
     tablist.setAttribute('role', 'tablist')
@@ -49,17 +49,17 @@ function getOpenPanel (panels) {
   return [].reduce.call(panels, (acc, pan, i) => pan.hasAttribute('hidden') ? acc : i, 0)
 }
 
-function setOpen (tablist, open) { // open can be Number or String or Element
+function setOpen (tablist, open) { // open can be Number, String or Element
   const tabs = queryAll(tablist.children)
-  const pans = tablist.nextElementSibling.children
-  const isOpen = getOpenPanel(pans)
+  const panels = tablist.nextElementSibling.children
+  const isOpen = getOpenPanel(panels)
   const willOpen = tabs.reduce((acc, tab, i) => (i === open || tab === open || tab.id === open) ? i : acc, isOpen)
   const isUpdate = isOpen === willOpen || dispatchEvent(tablist, 'tabs.toggle', {isOpen, willOpen})
-  const nextOpen = isUpdate ? willOpen : getOpenPanel(pans) // dispatchEvent can change attributes, so check getOpenPanel again
+  const nextOpen = isUpdate ? willOpen : getOpenPanel(panels) // dispatchEvent can change attributes, so check getOpenPanel again
 
   tabs.forEach((tab, index) => {
     const selected = index === nextOpen
-    const panel = pans[index]
+    const panel = panels[index]
 
     tab.setAttribute('role', 'tab')
     tab.setAttribute('tabindex', selected - 1)
