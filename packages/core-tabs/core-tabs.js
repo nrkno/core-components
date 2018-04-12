@@ -46,12 +46,12 @@ addEvent(UUID, 'keydown', (event) => {
 })
 
 function getOpenPanel (panels) {
-  return [].reduce.call(panels, (acc, pan, i) => pan.hasAttribute('hidden') ? acc : i, 0)
+  return Math.max(0, panels.indexOf(panels.filter((pan) => !pan.hasAttribute('hidden'))[0]))
 }
 
 function setOpen (tablist, open) { // open can be Number, String or Element
   const tabs = queryAll(tablist.children)
-  const panels = tablist.nextElementSibling.children
+  const panels = queryAll(tablist.nextElementSibling.children)
   const isOpen = getOpenPanel(panels)
   const willOpen = tabs.reduce((acc, tab, i) => (i === open || tab === open || tab.id === open) ? i : acc, isOpen)
   const isUpdate = isOpen === willOpen || dispatchEvent(tablist, 'tabs.toggle', {isOpen, willOpen})
