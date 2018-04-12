@@ -18,13 +18,13 @@ category: Components
     <li><button>Safari</button></li>
     <li><button>Microsoft Edge</button></li>
   </ul>
-  <button class="docs-button close" data-core-dialog="close">Lukk</button>
-  <button class="docs-button" data-core-dialog="#my-dialog-nested">Open an additional dialog</button>
+  <button data-core-dialog="close">Lukk</button>
+  <button data-core-dialog="#my-dialog-nested">Open an additional dialog</button>
 </dialog>
 <dialog id="my-dialog-nested" class="my-dialog" aria-label="andre dialog tittel">
-  <h2>Another dialog, triggered inside the first dialog</h2>
-  <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
-  <button class="docs-button close" data-core-dialog="close">Lukk</button>
+  <h1>Another dialog, triggered inside the first dialog</h1>
+  <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero.</p>
+  <button data-core-dialog="close">Lukk</button>
 </dialog>
 <div id="docs-react-dialog"></div>
 ```
@@ -57,16 +57,16 @@ class DialogContainerTest extends React.Component {
   render () {
     return (
       <div>
-        <button className="docs-button" onClick={this.toggleDialog}>Open dialog jsx</button>
+        <button onClick={this.toggleDialog}>Open dialog jsx</button>
         <Dialog
           className="my-dialog"
           open={this.state.open}
           onToggle={this.handleToggle}
           aria-label="React dialog"
         >
-          <h2>{this.state.contentTitle}</h2>
+          <h1>{this.state.contentTitle}</h1>
           <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
-          <button className="docs-button close" onClick={this.toggleDialog}>Lukk</button>
+          <button onClick={this.toggleDialog}>Lukk</button>
         </Dialog>
       </div>
     )
@@ -76,41 +76,37 @@ class DialogContainerTest extends React.Component {
 <DialogContainerTest />
 ```
 ```dialog.css
-
+.my-dialog h1 { margin-top: 0 }
 .my-dialog {
-  background: #fff;
-  border: solid 2px #000;
-  padding: 10px;
-  margin: 0;
-  display: none;
-}
-
-.my-dialog[open] {
-  display: block;
-  position: fixed;
+  position: absolute;
+  margin: auto;
   top: 5%;
   left: 0;
   right: 0;
+  border: 0;
+  padding: 2em;
   width: 100%;
   max-width: 300px;
-  margin: 0 auto;
-  z-index: 10000;
+  background: #fff;
+  transition: .2s;
 }
 
 .my-dialog + backdrop {
-  background: #000;
-  opacity: 0.3;
-  z-index: 9990;
-  margin: 0;
   position: fixed;
+  background: rgba(0,0,0,.3);
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
+  transition: .2s;
 }
-
+.my-dialog:not([open]),
 .my-dialog + backdrop[hidden] {
-  display: none;
+  transform: scale(1.05);
+  pointer-events: none; /* Allow clicks while animating */
+  visibility: hidden;
+  display: block;
+  opacity: 0;
 }
 ```
 
@@ -135,10 +131,9 @@ class DialogContainerTest extends React.Component {
 import coreDialog from '@nrk/core-dialog'
 
 // Initialize a specific component or multiple components
-coreDialog(String|Element|Elements, { // Accepts a <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors" target="
-">selector string</a>, <a href="https://developer.mozilla.org/en-US/docs/Web/API/NodeList" target="_blank">NodeList</a>, <a href="https://developer.mozilla.org/en-US/docs/Web/API/Element" target="_blank">Element</a> or array of Elements
-  open: null,                       // Defaults to true if open is set, otherwise false. Use true|false to force open state
-  label: ''                         // Defaults to aria-label if set or an empty string. Should be implemented in order for the dialog to have a label readable by screen readers
+coreDialog(String|Element|Elements, { // Accepts a selector string, NodeList, Element or array of Elements
+  open: null,                         // Defaults to true if open is set, otherwise false. Use true|false to force open state
+  label: ''                           // Defaults to aria-label if set or an empty string. Should be implemented in order for the dialog to have a label readable by screen readers
 })
 
 // Example:
@@ -149,12 +144,8 @@ coreDialog('.my-dialog', {open: true, label: 'A super dialog'})
 ```jsx
 import Dialog from '@nrk/core-dialog/jsx'
 
-<Dialog
-  open={this.props/state.open}
-  handleToggle={function(){}}
-  ariaLabel="JSX dialog"
->
-  <h2>My React/Preact dialog</h2>
+<Dialog open={true|false} onToggle={function(){}} aria-label="Title of dialog">
+  <h1>My React/Preact dialog</h1>
   <p>Some content</p>
   <button onClick={closeDialog}></button>
 </Dialog>
@@ -187,10 +178,5 @@ document.addEventListener('dialog.toggle', (event) => {
 
 <details>
   <summary>Why use `<dialog>` when it is not supported by all browsers?</summary>
-  There is currently <a href="https://caniuse.com/#feat=dialog" target="_blank">minimal support</a> for the `<dialog>` element,
-  which means we cannot rely only on `<dialog>`. `core-dialog` implements the behavior of a dialog and uses the `role="dialog"` attribute which works for most browsers and screen readers, however, screen readers in Chrome fail to work. When using the native `<dialog>` element screen readers in Chrome are able to understand it is in a dialog.
-  <p>
-    For more information about the dialog element visit the <a href="https://www.w3.org/TR/html52/interactive-elements.html#the-dialog-element">W3C HTML 5.2 specification</a>.<br />
-    For more information about WAI-ARIA practices for the dialog element visit the <a href="https://www.w3.org/TR/wai-aria-practices-1.1/#dialog_modal">W3C WAI-ARIA Authoring Practices 1.1</a>
-  </p>
+  There is currently [minimal support](https://caniuse.com/#feat=dialog) for the `<dialog>` element. However, to ensure best accessibility, `core-dialog` uses native functionality whenever possible, and augments with `role="dialog"` as a fallback. For more information about the dialog element visit the [W3C HTML 5.2 specification](https://www.w3.org/TR/html52/interactive-elements.html#the-dialog-element). For more information about WAI-ARIA practices for the dialog element visit the [W3C WAI-ARIA Authoring Practices 1.1](https://www.w3.org/TR/wai-aria-practices-1.1/#dialog_modal)
 </details>
