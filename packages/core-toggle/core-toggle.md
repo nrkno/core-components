@@ -10,15 +10,15 @@ category: Components
 Content is only toggled when clicking `<button>`. Great for accordions and expand/collapse panels.
 
 ```toggle.html
-<button class="my-toggle">Toggle VanillaJS</button>   <!-- must be <button> -->
-<div hidden>Content</div>                             <!-- hidden prevents flash of unstyled content -->
+<button class="my-toggle nrk-button">Toggle VanillaJS</button>  <!-- must be <button> -->
+<div hidden>Content</div>                                       <!-- hidden prevents flash of unstyled content -->
 ```
 ```toggle.js
 coreToggle('.my-toggle') // Optionally pass {open: true|false} as second argument to open/close
 ```
 ```toggle.jsx
 <Toggle popup={false} open={false} onToggle={function(){}}>
-  <button>Toggle JSX</button>
+  <button className='nrk-button'>Toggle JSX</button>
   <div>Content</div>
 </Toggle>
 ```
@@ -27,13 +27,13 @@ coreToggle('.my-toggle') // Optionally pass {open: true|false} as second argumen
 Content is toggled when clicking `<button>`, and closed when clicking outside content. Great for dropdowns and tooltips.
 
 ```popup.html
-<button class="my-popup">Popup VanillaJS</button>
+<button class="my-popup nrk-button">Popup VanillaJS</button>
 <ul class="my-dropdown" hidden>
-  <li><a href="#">Link</a></li>
+  <li><a class="nrk-unset" href="#">Link</a></li>
   <li>
-    <button class="my-popup">Can also be nested</button>
+    <button class="my-popup nrk-unset">Can also be nested</button>
     <ul class="my-dropdown" hidden>
-      <li><a href="#">Sub-link</a></li>
+      <li><a class="nrk-unset" href="#">Sub-link</a></li>
     </ul>
   </li>
 </ul>
@@ -43,14 +43,14 @@ coreToggle('.my-popup', {popup: true})
 ```
 ```popup.jsx
 <Toggle popup>
-  <button>Popup JSX</button>
+  <button className='nrk-button'>Popup JSX</button>
   <ul className='my-dropdown'>
-    <li><a href='#'>Link</a></li>
+    <li><a className='nrk-unset' href='#'>Link</a></li>
     <li>
       <Toggle popup>
-        <button>Can also be nested</button>
+        <button className='nrk-unset'>Can also be nested</button>
         <ul className='my-dropdown'>
-          <li><a href='#'>Sub-link</a></li>
+          <li><a className='nrk-unset' href='#'>Sub-link</a></li>
         </ul>
       </Toggle>
     </li>
