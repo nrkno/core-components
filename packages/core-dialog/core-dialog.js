@@ -59,18 +59,18 @@ addEvent(UUID, 'keydown', (event) => {
 })
 
 const getZIndexOfElement = (element) =>
-  Number(window.getComputedStyle(element).getPropertyValue('z-index')) || 0
+  Number(window.getComputedStyle(element).getPropertyValue('z-index')) || 1
 
 // Find the last focused element before opening the dialog
 const getLastFocusedElement = () =>
   queryAll(`[${FOCUS_PREVIOUS}]`).sort((a, b) =>
-    a.getAttribute(FOCUS_PREVIOUS) < b.getAttribute(FOCUS_PREVIOUS)
-  )[0] || document.body
+    a.getAttribute(FOCUS_PREVIOUS) > b.getAttribute(FOCUS_PREVIOUS)
+  ).pop() || document.body
 
 const getTopLevelDialog = () =>
   queryAll(`[${UUID}][open]`).sort((a, b) =>
-    getZIndexOfElement(a) < getZIndexOfElement(b)
-  )[0]
+    getZIndexOfElement(a) > getZIndexOfElement(b)
+  ).pop()
 
 function setOpen (dialog, open) {
   const active = document.activeElement // Store activeElement as dialog.show() focuses <body>

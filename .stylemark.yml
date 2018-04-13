@@ -1,7 +1,10 @@
 name: NRK Core Components
 
 headHtml: |
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <link rel="stylesheet" href="docs.css">
+  <!--[if IE 9]><script>document.createElement('dialog')</script><![endif]-->
   <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
   <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
   <!--<script>PropTypes = {}</script>

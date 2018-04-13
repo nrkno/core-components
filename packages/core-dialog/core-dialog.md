@@ -146,6 +146,12 @@ function closeDialog (event) {
 }
 ```
 
+## Supporting IE9
+If you need `core-dialog` to support IE9, add the following code in your `<head>` tag:
+```
+<!--[if IE 9]><script>document.createElement('dialog')</script><![endif]-->
+```
+
 ## Events
 
 ```js
