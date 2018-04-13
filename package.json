@@ -2,7 +2,7 @@
   "name": "@nrk/core-components",
   "homepage": "https://static.nrk.no/core-components/latest/",
   "author": "NRK <opensource@nrk.no> (https://www.nrk.no/)",
-  "version": "1.1.0",
+  "version": "1.1.2",
   "license": "MIT",
   "scripts": {
     "build": "npm run build:code && npm run build:docs",
