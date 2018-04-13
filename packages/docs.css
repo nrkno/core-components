@@ -4,7 +4,6 @@
 /* Exmaple styling */
 html { font: 100%/1.7 'LFT Etica', sans-serif } body { padding: 25px }
 .my-dropdown { position: absolute; z-index: 3; list-style: none; margin-top: 0; padding: 0; min-width: 200px; background: #fff; box-shadow: 0 3px 6px rgba(0,0,0,.3); transition: .3s }
-.my-dropdown a:not([hidden]), .my-dropdown button:not([hidden]) { box-sizing: border-box; display: block; width: 100%; border: 0; padding: 7px 14px; font: inherit; background: none; text-decoration: none; text-align: left }
 .my-dropdown[hidden] { display: block; visibility: hidden; opacity: 0; transform: translateY(-5px) }
 
 /* Documentation styling */

@@ -10,21 +10,13 @@ category: Components
 <dialog id="my-dialog" class="my-dialog" aria-label="første dialog tittel">
   <h1>This is a title</h1>
   <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
-  <input type="text" class="my-input" placeholder="Type &quot;C&quot;...">
-  <ul class="my-dropdown" hidden>
-    <li><button>Chrome</button></li>
-    <li><button>Firefox</button></li>
-    <li><button>Opera</button></li>
-    <li><button>Safari</button></li>
-    <li><button>Microsoft Edge</button></li>
-  </ul>
-  <button data-core-dialog="close">Lukk</button>
   <button data-core-dialog="#my-dialog-nested">Open an additional dialog</button>
+  <button data-core-dialog="close">Close</button>
 </dialog>
 <dialog id="my-dialog-nested" class="my-dialog" aria-label="andre dialog tittel">
   <h1>Another dialog, triggered inside the first dialog</h1>
   <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero.</p>
-  <button data-core-dialog="close">Lukk</button>
+  <button data-core-dialog="close">Close</button>
 </dialog>
 <div id="docs-react-dialog"></div>
 ```
