@@ -6,29 +6,21 @@ const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid att
 const KEYS = {ENTER: 13, ESC: 27, PAGEUP: 33, PAGEDOWN: 34, END: 35, HOME: 36, UP: 38, DOWN: 40}
 const CODE = Object.keys(KEYS).reduce((all, key) => (all[KEYS[key]] = key) && all, {})
 
-export default function datepicker (elements, date = {}) { // Date can be String, Timestamp and Date
+export default function datepicker (elements, date = {}) { // Date can be String, Timestamp or Date
   const options = date.constructor === Object ? date : {date} // Check constructor as Date is object
 
   return queryAll(elements).map((element) => {
-    const prevDate = parse(element.value || Date.now())
-    const prevShow = parse(element.getAttribute(UUID) || prevDate)
+    const prevDate = parse(element.getAttribute(UUID) || Date.now()) // from .value?
     const nextDate = parse(options.date || prevDate)
-    const nextShow = parse(options.show || nextDate)
-    const isRender = !element.hasAttribute(UUID) || prevShow.getTime() !== nextShow.getTime()
-    const target = element.nextElementSibling
+    const isChange = prevDate.getTime() !== nextDate.getTime()
+    const isFirstRender = !element.hasAttribute(UUID)
 
-    if (isRender) {
-      console.log('render(nextShow, nextDate)', nextShow, nextDate)
-      element.setAttribute(UUID, nextShow.getTime()) // Store show to compare on next update
-      element.value = nextDate.getTime() // Store date to make form submitting work
+    if (isFirstRender || isChange) {
+      element.setAttribute(UUID, nextDate.getTime()) // Store date to compare on next update
 
-      queryAll('select:empty,option,input,textarea,table', target).forEach((el) => {
-        render(el, nextShow, nextDate, element)
+      queryAll('select:empty,option,input,textarea,table', element).forEach((el) => {
+        render(el, nextDate, element)
       })
-
-      // Object.keys(RENDERS).forEach((key) => {
-      //   queryAll(key, element.nextElementSibling).forEach((el) => RENDERS[key](el, nextShow, nextDate))
-      // })
     }
 
     return element
@@ -40,24 +32,36 @@ datepicker.parse = parse
 datepicker.months = ['januar', 'februar', 'mars', 'april', 'mai', 'juni', 'juli', 'august', 'september', 'oktober', 'november', 'desember']
 datepicker.days = ['mandag', 'tirsdag', 'onsdag', 'torsdag', 'fredag', 'lørdag', 'søndag']
 
-function render(el, show, date, context) {
+function render(el, date, context) {
   const type = el.getAttribute('type') || el.nodeName.toLowerCase()
-  const pattern = el.getAttribute('data-pattern') || '?'
-  const value = parse(pattern.replace(/\?+/g, el.value), show)
-  const check = value.getTime() === show.getTime()
+  const mask = el.getAttribute('data-mask') || '?'
+  const value = parse(mask.replace(/\?+/g, el.value), date)
+  const check = value.getTime() === date.getTime()
 
+  // Handle data-mask for all elements
   // Handle document.activeElement - should leave alone?
   // x Handle empty select
   // x Handle option
   // x Handle [type="radio"] (not checkbox as this does not make sence)
-  // Handle textarea / input (with data-pattern)
+  // Handle textarea / input (with data-mask)
   // x Handle table
 
   if (type === 'radio') el.checked = check
   else if (type === 'option') el.selected = check
-  else if (type === 'select') renderMonth(el, show)
-  else if (type === 'table') renderDay(el, show, date)
+  else if (type === 'select') renderMonth(el, date)
+  else if (type === 'table') renderDay(el, date)
   else {
+    const pad = (str) => `0${str}`.slice(-2)
+    const name = ['FullYear', 'Month', 'Date', 'Date', 'Hours', 'Minutes', 'Seconds']
+    const [, year = 'y', month = 'm', day = 'd'] = mask.match(/([-?y]+)[-/.]([?m]{1,2})[-/.]([?d]{1,2})/) || []
+    const [, hour = 'h', minute = 'm', second = 's'] = mask.match(/([?h]{1,2}):([?m]{1,2}):?([?s]{1,2})?/) || []
+    const match = [year, month, day, hour, minute, second]
+    let value = ''
+
+    Object.keys(match).map((unit) =>
+      match[unit].slice(-1) === '?' ? date[`get${name[unit]}`]() : ''
+    ).join('')
+
     // const pad = (str) => `0${str}`.slice(-2)
     // const str = `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`
     // const mask = pattern.replace(/(\?)(.*\1)?/g, '($&)').replace(/[a-z?]/ig, (m, i) => i ? '\\d+' : '[-\\d]+')
@@ -89,41 +93,31 @@ function render(el, show, date, context) {
     // const regex = new RegExp('y-m-d ?'.replace(/[a-z]/g, '\\d+').replace(/[?]+/g, '\\b.*\\b'))
     //
     // console.log(local, regex)
-    //
+
     // const unit = dateUnits(show)
     // const mask = `${unit.year}-${unit.month}-${unit}`
     // console.log()
   }
 }
 
-function renderMonth (select, show) {
+function renderMonth (select, date) {
   select.innerHTML = datepicker.months.map((name, i) =>
-    `<option value="y-${i + 1}-d"${i === show.getMonth()? ' selected' : ''}>${i + 1} - ${escapeHTML(name)}</option>`
+    `<option value="y-${i + 1}-d"${i === date.getMonth()? ' selected' : ''}>${i + 1} - ${escapeHTML(name)}</option>`
   ).join('')
 }
 
-function renderYear (input, show) {
-  const year = show.getFullYear()
-  if (input.value !== year) input.value = year
-}
-
-function renderTime (input, show) {
-  const time = `${`0${show.getHours()}`.slice(-2)}:${`0${show.getMinutes()}`.slice(-2)}`
-  if (input.value !== time) input.value = time
-}
-
-function renderDay (table, show, date) {
+function renderDay (table, date) {
   const today = new Date()
-  const year = show.getFullYear()
-  const month = show.getMonth()
-  let day = parse(`yyyy-mm-01 mon`, show) // Start on first monday of month
+  const year = date.getFullYear()
+  const month = date.getMonth()
+  let day = parse(`yyyy-mm-01 mon`, date) // Start on first monday of month
   let html = ''
 
   for (let i = 0; i < 6; i++) {
     html += '<tr>'
     for (let j = 0; j < 7; j++) {
       const value = `${day.getFullYear()}-${day.getMonth() + 1}-${day.getDate()}`
-      const isOtherMonth = !isSameMonth(day, show)
+      const isOtherMonth = !isSameMonth(day, date)
       const isSelected = isSameDay(day, date)
       const isToday = isSameDay(day, today)
 
@@ -140,17 +134,6 @@ function renderDay (table, show, date) {
 const isSameYear = (d1, d2) => d1.getFullYear() === d2.getFullYear()
 const isSameMonth = (d1, d2) => isSameYear(d1, d2) && d1.getMonth() === d2.getMonth()
 const isSameDay = (d1, d2) => isSameYear(d1, d2) && isSameMonth(d1, d2) && d1.getDate() === d2.getDate()
-
-function closest (target) {
-  for (let currentTarget; target; target = target.parentElement) {
-    const prev = target.previousElementSibling
-
-    if (target.value) currentTarget = target // Store element with value as event source
-    if (target.hasAttribute(UUID)) return {currentTarget, target} // Datepicker is <input>
-    if (prev && prev.hasAttribute(UUID)) return {currentTarget, target: prev} // Inside datepicker
-  }
-  return {}
-}
 
 function dateUnits (date = new Date()) {
   const local = new Date(date.getTime() - (date.getTimezoneOffset() * 60000))
@@ -169,20 +152,23 @@ addEvent(UUID, 'keydown', (event) => {
 })
 
 function onChange (event) {
-  const {target, currentTarget} = closest(event.target)
+  let target
+  let element = event.target
+  for (; element; element = element.parentElement) {
+    if (element.value) target = element // Store element with value as target
+    if (element.hasAttribute(UUID)) break
+  }
 
-  if (target && currentTarget) {
-    const next = target.nextElementSibling
-    const move = currentTarget.nodeName === 'BUTTON'
-    const show = parse(currentTarget.value, target.value)
-    const date = move ? show : parse(target.value)
+  if (element && target) {
+    const date = parse(target.value, element.getAttribute(UUID))
 
+    // TODO max within same month if month-select to avoid 31 marts to 31->30 april?
     // TODO dispatchEvent on date change
     // TODO Update aria in table to keep focus
     // TODO Set focus on grid update always
     // TODO Update year/hours from input too
 
-    datepicker(target, {show, date})
+    datepicker(element, date)
   }
 }
 
