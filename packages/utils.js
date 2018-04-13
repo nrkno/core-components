@@ -40,22 +40,38 @@ export function exclude (target, exclude, include = {}) {
 }
 
 /**
-* dispatchEvent
+* dispatchEvent - with infinite loop prevention
 * @param {Element} elem The target object
 * @param {String} name The source object(s)
 * @param {Object} detail Detail object (bubbles and cancelable is set to true)
-* @return {Boolean} Whether the event was cance
+* @return {Boolean} Whether the event was canceled
 */
-export function dispatchEvent (elem, name, detail = {}) {
+const IGNORE = 'prevent_recursive_dispatch_maximum_callstack'
+export function dispatchEvent (element, name, detail = {}) {
+  const ignore = `${IGNORE}${name}`
   let event
+
+  if (element[ignore]) return true // We are already processing this event, so skip sending a new one
+  else element[ignore] = true // Add name to dispatching ignore
+
   if (typeof window.CustomEvent === 'function') {
     event = new window.CustomEvent(name, {bubbles: true, cancelable: true, detail})
   } else {
     event = document.createEvent('CustomEvent')
     event.initCustomEvent(name, true, true, detail)
   }
+  element.dispatchEvent(event)
+  element[ignore] = null // Remove name from dispatching ignore
 
-  return elem.dispatchEvent(event)
+  return !event.defaultPrevented // Follow W3C standard for return value
+}
+
+/**
+* getUUID
+* @return {String} A generated unique ID
+*/
+export function getUUID (el) {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 5)
 }
 
 /**
