@@ -1,5 +1,5 @@
 import {name, version} from './package.json'
-import {IS_BROWSER, queryAll, addEvent, dispatchEvent} from '../utils'
+import {queryAll, addEvent, dispatchEvent} from '../utils'
 
 const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid attribute characters
 const KEYS = {ESC: 27, TAB: 9}
