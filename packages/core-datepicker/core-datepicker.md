@@ -30,7 +30,7 @@ category: Components
   <fieldset>
     <caption>Måned</caption>
     <label><input type="radio" name="my-group-name" value="y-1-d">Jan</label>
-    <label><input type="radio" name="my-group-name" value="y-2-d">Fed</label>
+    <label><input type="radio" name="my-group-name" value="y-2-d">Feb</label>
     <label><input type="radio" name="my-group-name" value="y-3-d">Mars</label>
     <label><input type="radio" name="my-group-name" value="y-4-d">April</label>
     <label><input type="radio" name="my-group-name" value="y-5-d">Mai</label>
@@ -47,6 +47,16 @@ category: Components
     <caption>Time</caption>
     <label><span>Hour</span><input type="number" data-mask="*:m"></label>
     <label><span>Minute</span><input type="number" data-mask="h:*"></label>
+
+    <label>
+      <span>Hour</span>
+      <select data-mask="*:m">
+        <option value="">--</option>
+        <option>11</option>
+        <option>12</option>
+        <option>13</option>
+      </select>
+    </label>
   </fieldset>
   <table></table>
 </div>
