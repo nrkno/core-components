@@ -20,11 +20,11 @@ category: Components
   <br>
   <label><span>Måned</span><select></select></label>
   <label><span>Year</span>
-    <select>
-      <option value="2016-m-d">2016</option>
-      <option value="2017-m-d">2017</option>
-      <option value="2018-m-d">2018</option>
-      <option value="2019-m-d">2019</option>
+    <select data-mask="*-m-d">
+      <option>2016</option>
+      <option>2017</option>
+      <option>2018</option>
+      <option>2019</option>
     </select>
   </label>
   <fieldset>
@@ -57,6 +57,9 @@ coreDatepicker('.my-date')
 coreToggle('.my-toggle', {   // Make datepicker popup
   open: true,
   popup: true
+})
+document.addEventListener('datepicker.change', (event) => {
+  console.log(event.detail)
 })
 ```
 ```datepicker.css

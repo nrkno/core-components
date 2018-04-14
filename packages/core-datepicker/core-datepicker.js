@@ -1,26 +1,16 @@
 import {name, version} from './package.json'
-import {addEvent, escapeHTML, queryAll} from '../utils'
+import {addEvent, escapeHTML, dispatchEvent, queryAll} from '../utils'
 import parse from '../../../simple-date-parse/index.js' // While simple-date-parse not on NPM
 
 const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid attribute characters
 const KEYS = {ENTER: 13, ESC: 27, PAGEUP: 33, PAGEDOWN: 34, END: 35, HOME: 36, UP: 38, DOWN: 40}
-const CODE = Object.keys(KEYS).reduce((all, key) => (all[KEYS[key]] = key) && all, {})
+const CONTROLS = 'input,option,select:empty,table'
 
 export default function datepicker (elements, date = {}) { // Date can be String, Timestamp or Date
   const options = date.constructor === Object ? date : {date} // Check constructor as Date is Object
 
   return queryAll(elements).map((element) => {
-    const prevDate = parse(element.getAttribute(UUID) || options.date || Date.now()) // from .value?
-    const nextDate = parse(options.date || prevDate)
-    // const isChange = prevDate.getTime() !== nextDate.getTime()
-    // const isFirstRender = !element.hasAttribute(UUID)
-    // if (isFirstRender || isChange) {}
-
-    element.setAttribute(UUID, nextDate.getTime()) // Store date to compare on next update
-    queryAll('select:empty,option,input,textarea,table', element).forEach((control) => {
-      render(control, nextDate, prevDate, element)
-    })
-
+    setDate(element, options.date)
     return element
   })
 }
@@ -30,108 +20,91 @@ datepicker.parse = parse
 datepicker.months = ['januar', 'februar', 'mars', 'april', 'mai', 'juni', 'juli', 'august', 'september', 'oktober', 'november', 'desember']
 datepicker.days = ['mandag', 'tirsdag', 'onsdag', 'torsdag', 'fredag', 'lørdag', 'søndag']
 
-function render(control, nextDate, prevDate, element) {
-  const type = control.getAttribute('type') || control.nodeName.toLowerCase()
-  const check = nextDate.getTime() === parse(control.value, nextDate).getTime()
+addEvent(UUID, 'input', onChange)
+addEvent(UUID, 'change', onChange) // Needed since IE/Edge does not trigger 'input' on <select>
+addEvent(UUID, 'click', onButton)
+addEvent(UUID, 'keydown', (event) => {
+  // TODO Change date and move focus
+})
 
-  // Handle data-mask for all elements
-  // x Handle empty select
-  // x Handle option
-  // x Handle [type="radio"] (not checkbox as this does not make sence)
-  // Handle textarea / input (with data-mask)
-  // x Handle table
-
-  if (type === 'radio') control.checked = check
-  else if (type === 'option') control.selected = check
-  else if (type === 'select') renderMonths(control, nextDate)
-  else if (type === 'table') renderDay(control, nextDate, prevDate)
-  else {
-    const mask = control.getAttribute('data-mask') || ''
-    const pad = (str) => `0${str}`.slice(-2)
-    let value = `${nextDate.getFullYear()}-${pad(nextDate.getMonth() + 1)}-${pad(nextDate.getDate())} ${pad(nextDate.getHours())}:${pad(nextDate.getMinutes())}:${pad(nextDate.getSeconds())}`
-    // const [, year, month, day] = mask.match(/([y?]+)[-/.]([m?]+)[-/.]([d?]+)/) || []
-    // const [, hour, minute, second] = mask.match(/([h?]+):([m?]+):?([s?]+)?/) || []
-    // const match = {year, month, day, hour, minute, second}
-    // console.log(match)
-
-    if (mask) {
-      value = (value.match(new RegExp(mask.replace('*', '(-?$&)').replace(/[*ymdhs]+/g, '\\d+'))) || [])[1] || ''
-    }
-    control.value = value
+function onButton (event) {
+  for (let el = event.target; el; el = el.parentElement) {
+    if (el.value && el.nodeName === 'BUTTON') onChange({target: el})
   }
 }
-function dateUnits (date = new Date()) {
-  const local = new Date(date.getTime() - (date.getTimezoneOffset() * 60000))
-  const [year, month, day, hour, minute, second] = local.toJSON().split(/[-.:T]/)
-  return {year, month, day, hour, minute, second}
+
+function onChange ({target}) {
+  for (let el = target; el; el = el.parentElement) {
+    if (el.hasAttribute(UUID)) {
+      const mask = target.getAttribute('data-mask') || '*'
+      return datepicker(el, mask.replace('*', target.value))
+    }
+  }
 }
 
-function renderMonths (select, date) {
-  select.innerHTML = datepicker.months.map((name, i) =>
-    `<option value="y-${i + 1}-d"${i === date.getMonth()? ' selected' : ''}>${i + 1} - ${escapeHTML(name)}</option>`
+function setDate (element, date) {
+  const prevDate = parse(element.getAttribute(UUID) || Date.now())
+  const nextDate = parse(typeof date === 'undefined' ? prevDate : date, prevDate)
+  const isUpdate = prevDate.getTime() === nextDate.getTime() || dispatchEvent(element, 'datepicker.change', {prevDate, nextDate})
+  const showDate = isUpdate ? nextDate : parse(element.getAttribute(UUID) || Date.now()) // dispatchEvent can change attributes, so check again
+
+  element.setAttribute(UUID, showDate.getTime())
+  queryAll(CONTROLS, element).forEach((control) => {
+    render(control, showDate, prevDate, element)
+  })
+}
+
+function render(control, nextDate, prevDate, element) {
+  const type = control.getAttribute('type') || control.nodeName.toLowerCase()
+  const mask = control.getAttribute('data-mask')
+  const check = nextDate.getTime() === parse(control.value, nextDate).getTime()
+
+  if (type === 'radio') control.checked = check // TODO Mask radio too
+  else if (type === 'option') control.selected = check // TODO Mask selects too
+  else if (type === 'select') renderMonths(control, nextDate)
+  else if (type === 'table') renderDay(control, nextDate, prevDate)
+  else if (mask){
+    const pad = (str) => `0${str}`.slice(-2)
+    const value = `${nextDate.getFullYear()}-${pad(nextDate.getMonth() + 1)}-${pad(nextDate.getDate())} ${pad(nextDate.getHours())}:${pad(nextDate.getMinutes())}:${pad(nextDate.getSeconds())}`
+    control.value = (value.match(new RegExp(mask.replace('*', '(-?$&)').replace(/[*ymdhs]+/g, '\\d+'))) || [])[1] || ''
+  }
+}
+
+function renderMonths (select, nextDate) {
+  select.innerHTML = datepicker.months.map((name, month) =>
+    `<option value="y-${month + 1}-d"${month === nextDate.getMonth()? ' selected' : ''}>${month + 1} - ${escapeHTML(name)}</option>`
   ).join('')
 }
 
 function renderDay (table, nextDate, prevDate) {
+  const isEmpty = !table.textContent.trim()
   const today = new Date()
-  const year = nextDate.getFullYear()
-  const month = nextDate.getMonth()
   let day = parse(`y-m-1 mon`, nextDate) // Start on first monday of month
-  let html = ''
 
-  // TODO only swap attributes if same year and month, not render everything
-
-  for (let i = 0; i < 6; i++) {
-    html += '<tr>'
-    for (let j = 0; j < 7; j++) {
-      const value = `${day.getFullYear()}-${day.getMonth() + 1}-${day.getDate()}`
-      const isOtherMonth = !isSameMonth(day, nextDate)
-      const isSelected = isSameDay(day, nextDate)
-      const isToday = isSameDay(day, nextDate)
-
-      html += `<td><button value="${value}" tabindex="${isSelected - 1}" aria-pressed="${isSelected}" aria-disabled="${isOtherMonth}" aria-current="${isToday && 'date'}">`
-      html += `${day.getDate()}</button></td>`
-      day.setDate(day.getDate() + 1)
-    }
-    html += '</tr>'
+  if (isEmpty) {
+    table.innerHTML = `
+      <thead><tr><th>${datepicker.days.map(escapeHTML).join('</th><th>')}</th></tr></thead>
+      <tbody>${Array(7).join(`<tr>${Array(8).join('<td><button></button></td>')}</tr>`)}</tbody>`
   }
 
-  table.innerHTML = `<caption>${escapeHTML(datepicker.months[month])}, ${year}</caption><thead><tr><th>${datepicker.days.map(escapeHTML).join('</th><th>')}</th></tr></thead><tbody>${html}</tbody>`
+ table.createCaption().textContent = `${datepicker.months[nextDate.getMonth()]}, ${nextDate.getFullYear()}`
+
+  queryAll('button', table).forEach((btn) => {
+    const isPressed = isSameDay(day, nextDate)
+    const number = day.getDate()
+
+    btn.textContent = number // Set textContent instead of innerHTML to avoid reflow
+    btn.value = `${day.getFullYear()}-${day.getMonth() + 1}-${number}`
+    btn.setAttribute('tabindex', isPressed - 1)
+    btn.setAttribute('aria-pressed', isPressed)
+    btn.setAttribute('aria-current', isSameDay(day, today) && 'date')
+    btn.setAttribute('aria-disabled', day.getMonth() !== nextDate.getMonth())
+    day.setDate(number + 1)
+  })
 }
 
-const isSameYear = (d1, d2) => d1.getFullYear() === d2.getFullYear()
-const isSameMonth = (d1, d2) => isSameYear(d1, d2) && d1.getMonth() === d2.getMonth()
-const isSameDay = (d1, d2) => isSameYear(d1, d2) && isSameMonth(d1, d2) && d1.getDate() === d2.getDate()
-
-addEvent(UUID, 'input', onChange)
-addEvent(UUID, 'click', onChange) // Clicks on buttons can change
-addEvent(UUID, 'change', onChange) // Needed since IE/Edge does not trigger 'input' on <select>
-addEvent(UUID, 'keydown', (event) => {
-  if (CODE[event.keyCode]) {
-    // const element = closest(event.target)
-    // console.log(CODE[event.keyCode], element)
-  }
-})
-
-function onChange (event) {
-  let control
-  let element = event.target
-  for (; element; element = element.parentElement) {
-    if (element.value) control = element // Store element with value as control
-    if (element.hasAttribute(UUID)) break
-  }
-  console.log(event.type, event.target)
-
-  if (element && control) {
-    const mask = control.getAttribute('data-mask') || '*'
-    const date = parse(mask.replace('*', control.value), element.getAttribute(UUID))
-
-    // TODO dispatchEvent on date change
-    // TODO Update aria in table to keep focus
-    // TODO Set focus on grid update always
-
-    datepicker(element, date)
-  }
+function isSameDay (d1, d2) {
+  return d1.toJSON().slice(0, 10) === d2.toJSON().slice(0, 10)
 }
 
 /*
