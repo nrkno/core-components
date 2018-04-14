@@ -35,7 +35,7 @@ function onButton (event) {
 }
 
 function onChange ({target}) {
-  if (!target.value) return // Allow without value to have no effect
+  if (!target.value) return // Allow elements without value to have no effect
   for (let el = target; el; el = el.parentElement) {
     if (el.hasAttribute(UUID)) {
       const mask = target.getAttribute('data-mask') || MASK
