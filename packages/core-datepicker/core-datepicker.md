@@ -42,8 +42,12 @@ category: Components
     <label><input type="radio" name="my-group-name" value="y-11-d">Nov</label>
     <label><input type="radio" name="my-group-name" value="y-12-d">Des</label>
   </fieldset>
-  <label><span>År</span><input type="text" data-mask="?-m-d"></label>
-  <label><span>Tid</span><input type="text" data-mask="y-m-d ?:?"></label>
+  <label><span>År</span><input type="number" data-mask="*-m-d"></label>
+  <fieldset>
+    <caption>Time</caption>
+    <label><span>Hour</span><input type="number" data-mask="*:m"></label>
+    <label><span>Minute</span><input type="number" data-mask="h:*"></label>
+  </fieldset>
   <table></table>
 </div>
 ```
