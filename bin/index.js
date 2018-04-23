@@ -15,8 +15,8 @@ function getProcessArgs () {
   }, {})
 }
 
-function getPackageName (path) {
-  return path.split('/').pop()
+function getPackageName (packagePath) {
+  return packagePath.split(path.sep).pop()
 }
 
 function getPackagePaths () {
