@@ -9,48 +9,66 @@ category: Components
 <!-- <button class="my-toggle" value="">Choose date</button>  <!-- must be <button> or <input> -->
 <input type="text" class="my-toggle" placeholder="Choose date">
 <div class="my-date my-dropdown" hidden>
-  <button value="now">I dag</button>
-  <button value="now - 1 day">I går</button>
-  <button value="now + 1 day">I morgen</button>
-  <button value="- 1 week">Tilbake en uke</button>
-  <button value="+ 1 week">Fremover en uke</button>
-  <button value="now tuesday - 1 week">Tirsdag sist uke</button>
-  <button value="now + 10 years">Om ti år</button>
-  <button value="yy00-01-01 - 100 years">Forrige århundre</button>
-  <br>
-  <label><span>Måned</span><select></select></label>
-  <label><span>Year</span>
-    <select data-mask="*-m-d">
+  <fieldset>
+    <legend>Navigasjon</legend>
+    <button value="now">I dag</button>
+    <button value="now - 1 day">I går</button>
+    <button value="now + 1 day">I morgen</button>
+    <button value="- 1 week">Tilbake en uke</button>
+    <button value="+ 1 week">Fremover en uke</button>
+    <button value="now tuesday - 1 week">Tirsdag sist uke</button>
+    <button value="now + 10 years">Om ti år</button>
+    <button value="yy00-01-01 - 100 years">Forrige århundre</button>
+  </fieldset>
+  <label><span>År</span>
+    <select data-unit="year" data-step="2" data-min="-5 years" data-max="+ 5 years">
       <option>2016</option>
       <option>2017</option>
       <option>2018</option>
       <option>2019</option>
     </select>
   </label>
+  <label>
+    <span>Måned</span>
+    <select data-unit="month">
+      <option value="1">Januar</option>
+      <option value="2">Februar</option>
+      <option value="3">Mars</option>
+      <option value="4">April</option>
+      <option value="5">Mai</option>
+      <option value="6">Juni</option>
+      <option value="7">Juli</option>
+      <option value="8">August</option>
+      <option value="9">September</option>
+      <option value="10">Oktober</option>
+      <option value="11">November</option>
+      <option value="12">Desember</option>
+    </select>
+  </label>
   <fieldset>
-    <caption>Måned</caption>
-    <label><input type="radio" name="my-group-name" value="y-1-d">Jan</label>
-    <label><input type="radio" name="my-group-name" value="y-2-d">Feb</label>
-    <label><input type="radio" name="my-group-name" value="y-3-d">Mars</label>
-    <label><input type="radio" name="my-group-name" value="y-4-d">April</label>
-    <label><input type="radio" name="my-group-name" value="y-5-d">Mai</label>
-    <label><input type="radio" name="my-group-name" value="y-6-d">Juni</label>
-    <label><input type="radio" name="my-group-name" value="y-7-d">Juli</label>
-    <label><input type="radio" name="my-group-name" value="y-8-d">Aug</label>
-    <label><input type="radio" name="my-group-name" value="y-9-d">Sep</label>
-    <label><input type="radio" name="my-group-name" value="y-10-d">Okt</label>
-    <label><input type="radio" name="my-group-name" value="y-11-d">Nov</label>
-    <label><input type="radio" name="my-group-name" value="y-12-d">Des</label>
+    <legend>Måned</legend>
+    <label><input type="radio" name="my-months" data-unit="year" value="1">Jan</label>
+    <label><input type="radio" name="my-months" value="y-2-d">Feb</label>
+    <label><input type="radio" name="my-months" value="y-3-d">Mars</label>
+    <label><input type="radio" name="my-months" value="y-4-d">April</label>
+    <label><input type="radio" name="my-months" value="y-5-d">Mai</label>
+    <label><input type="radio" name="my-months" value="y-6-d">Juni</label>
+    <label><input type="radio" name="my-months" value="y-7-d">Juli</label>
+    <label><input type="radio" name="my-months" value="y-8-d">Aug</label>
+    <label><input type="radio" name="my-months" value="y-9-d">Sep</label>
+    <label><input type="radio" name="my-months" value="y-10-d">Okt</label>
+    <label><input type="radio" name="my-months" value="y-11-d">Nov</label>
+    <label><input type="radio" name="my-months" value="y-12-d">Des</label>
   </fieldset>
-  <label><span>År</span><input type="number" data-mask="*-m-d"></label>
+  <label><span>År</span><input type="number" data-unit="year"></label>
   <fieldset>
-    <caption>Time</caption>
-    <label><span>Hour</span><input type="number" data-mask="*:m"></label>
-    <label><span>Minute</span><input type="number" data-mask="h:*"></label>
+    <legend>Klokke</legend>
+    <label><span>Time</span><input type="number" data-unit="hour"></label>
+    <label><span>Minutt</span><input type="number" data-unit="minute"></label>
 
     <label>
-      <span>Hour</span>
-      <select data-mask="*:m">
+      <span>Time</span>
+      <select data-unit="hour" data-step="10" data-min="0" data-max="50">
         <option value="">--</option>
         <option>11</option>
         <option>12</option>
@@ -63,17 +81,20 @@ category: Components
 ```
 ```datepicker.js
 coreDatepicker.days = ['m', 't', 'o', 't', 'f', 'l', 's'] // Change name of days
-coreDatepicker('.my-date')
-coreToggle('.my-toggle', {   // Make datepicker popup
-  open: true,
-  popup: true
+coreDatepicker('.my-date', {
+  disable: () => {}
 })
-document.addEventListener('datepicker.change', (event) => {
-  console.log(event.detail)
+coreToggle('.my-toggle', {open: true, popup: true})   // Make popup
+
+document.addEventListener('datepicker.render', (event) => {
+  const now = Date.now()
+  console.log(now)
+  event.detail.setDisabled((date) => date < now)
 })
 ```
 ```datepicker.css
 .my-date button[aria-current="date"] { border: 1px dashed }
 .my-date button[aria-pressed="true"] { border: 2px solid }
 .my-date button[aria-disabled="true"] { opacity: .3 }
+.my-date :disabled { cursor: not-allowed; filter: sepia(1) saturate(7) hue-rotate(-70deg) }
 ```

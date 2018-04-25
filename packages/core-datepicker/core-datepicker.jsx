@@ -5,12 +5,11 @@ import {exclude} from '../utils'
 const DEFAULTS = {date: null, onChange: null}
 
 export default class Datepicker extends React.Component {
-  componentDidMount () { // Mount client side only to avoid rerender
+  componentDidMount () {
     this.el.addEventListener('datepicker.change', this.props.onChange)
     coreDatepicker(this.el.firstElementChild, this.props.date)
   }
-  // WILLIAM: should componentDidUpdate also pass this.props.date?
-  componentDidUpdate () { coreDatepicker(this.el.firstElementChild) } // Must mount also on update in case content changes
+  componentDidUpdate () { coreDatepicker(this.el.firstElementChild, this.props.date) }
   componentWillUnmount () { this.el.removeEventListener('datepicker.change', this.props.onChange) }
   render () {
     const props = exclude(this.props, DEFAULTS, {ref: el => (this.el = el)})
