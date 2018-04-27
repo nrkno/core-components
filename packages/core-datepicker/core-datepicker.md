@@ -21,7 +21,7 @@ category: Components
     <button value="yy00-01-01 - 100 years">Forrige århundre</button>
   </fieldset>
   <label><span>År</span>
-    <select data-unit="year" data-step="2" data-min="-5 years" data-max="+ 5 years">
+    <select data-unit="year">
       <option>2016</option>
       <option>2017</option>
       <option>2018</option>
@@ -30,20 +30,7 @@ category: Components
   </label>
   <label>
     <span>Måned</span>
-    <select data-unit="month">
-      <option value="1">Januar</option>
-      <option value="2">Februar</option>
-      <option value="3">Mars</option>
-      <option value="4">April</option>
-      <option value="5">Mai</option>
-      <option value="6">Juni</option>
-      <option value="7">Juli</option>
-      <option value="8">August</option>
-      <option value="9">September</option>
-      <option value="10">Oktober</option>
-      <option value="11">November</option>
-      <option value="12">Desember</option>
-    </select>
+    <select data-unit="months"></select>
   </label>
   <fieldset>
     <legend>Måned</legend>
@@ -81,16 +68,21 @@ category: Components
 ```
 ```datepicker.js
 coreDatepicker.days = ['m', 't', 'o', 't', 'f', 'l', 's'] // Change name of days
-coreDatepicker('.my-date', {
-  disable: () => {}
-})
-coreToggle('.my-toggle', {open: true, popup: true})   // Make popup
+
+// Example auto fill months
+const select = document.querySelector('.my-date select[data-unit="months"]')
+select.innerHTML = coreDatepicker.months.map((name, index) => {
+  return `<option value="${index}">${name}</option>`
+}).join('')
 
 document.addEventListener('datepicker.render', (event) => {
   const now = Date.now()
   console.log(now)
   event.detail.setDisabled((date) => date < now)
 })
+
+coreDatepicker('.my-date')
+coreToggle('.my-toggle', {open: true, popup: true})   // Make popup
 ```
 ```datepicker.css
 .my-date button[aria-current="date"] { border: 1px dashed }
