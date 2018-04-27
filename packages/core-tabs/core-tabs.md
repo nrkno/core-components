@@ -129,8 +129,7 @@ A `<ul>`/`<li>` structure would seem logical for tabs, but this causes some scre
 
 <details>
 <summary>Does panels always need to direct children of next element?</summary>
-The aria specification does not allow any screen reader focusable elements between
-tabs and panels. Therefore, `@nrk/core-tabs` defaults to use children of next element as panels.
+The aria specification does not allow any elements that are focusable by a screen reader to be placed between tabs and panels. Therefore, `@nrk/core-tabs` defaults to use children of next element as panels.
 This behaviour can be overridden, by setting up `id` on panel elements and `aria-controls` on tab element. Use with caution and *only* do this if your project *must* use another DOM structure. Example:
 
 <pre>
