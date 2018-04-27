@@ -3,10 +3,10 @@ name: Tabs
 category: Components
 ---
 
-> `@nrk/core-tabs` converts `<button>` and `<a>` elements to keyboard accessible tabs, controlling children of next element sibling (tabpanels). Tabs can be nested and easily extended with custom animations or behavior through the `tabs.toggle` event.
+> `@nrk/core-tabs` converts `<button>` and `<a>` elements to keyboard accessible tabs, controlling children of next element sibling (tabpanels). Tabs can be nested and easily extended with custom animations or behaviour through the `tabs.toggle` event.
 
 ```tabs.html
-<div class="my-tabs"> <!-- Children must be <a> or <button> -->
+<div class="my-tabs"> <!-- Direct children must be <a> or <button>. Do not use <li> -->
   <button>Button tab</button>
   <button>Nested tabs</button>
   <a href="#link">Link tab</a>
@@ -97,15 +97,14 @@ document.addEventListener('tabs.toggle', (event) => {
   event.target                // The core-tabs element triggering tabs.toggle event
   event.detail.isOpen         // Index of the open tab
   event.detail.willOpen       // Index of the clicked tab
+  event.detail.tabs           // Array of tab elements
+  event.detail.panels         // Array of panel elements
 
   // TIP - access the actual DOM elements:
-  const tabs = event.target.children
-  const panels = event.target.nextElementSibling.children
-
-  const isOpenTab = tabs[event.detail.isOpen]
-  const isOpenPanel = tabs[event.detail.isOpen]
-  const willOpenTab = panels[event.detail.willOpen]
-  const willOpenPanel = panels[event.detail.willOpen]
+  const isOpenTab = event.detail.tabs[event.detail.isOpen]
+  const isOpenPanel = event.detail.panels[event.detail.isOpen]
+  const willOpenTab = event.detail.tabs[event.detail.willOpen]
+  const willOpenPanel = event.detail.panels[event.detail.willOpen]
 })
 ```
 
@@ -121,3 +120,24 @@ All styling in documentation is example only. Both the tabs and tabpanels receiv
 .my-tabpanel:not([hidden]) {}       /* Target only open panel */
 .my-tabpanel[hidden] {}             /* Target only closed panel */
 ```
+
+## FAQ
+<details>
+<summary>Why must tabs be direct children of `core-tabs` element and not inside `<li>`?</summary>
+A `<ul>`/`<li>` structure would seem logical for tabs, but this causes some screen readers to incorrectly announce tabs as single (tab 1 of 1).
+</details>
+
+<details>
+<summary>Does panels always need to direct children of next element?</summary>
+The aria specification does not allow any screen reader focusable elements between
+tabs and panels. Therefore, `@nrk/core-tabs` defaults to use children of next element as panels.
+This behaviour can be overridden, by setting up `id` on panel elements and `aria-controls` on tab element. Use with caution and *only* do this if your project *must* use another DOM structure. Example:
+
+<pre>
+const tabs = Array.from(document.querySelectorAll('.my-tabs__tab'))
+const panels = Array.from(document.querySelectorAll('.my-tabs__panel'))
+tabs.forEach((tabs, index) => tab.setAttribute('aria-controls', panels[index].id = 'my-panel-' + i))
+
+coreTabs('.my-tabs')
+</pre>
+</details>

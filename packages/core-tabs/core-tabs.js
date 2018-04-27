@@ -5,16 +5,11 @@ const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid att
 const ARIA = IS_ANDROID ? 'data' : 'aria' // Andriod has a bug and reads only label instead of content
 const KEYS = {SPACE: 32, END: 35, HOME: 36, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40}
 
-export default function tabs (tablists, open = {}) { // open can be Number, String or Element
-  const options = typeof open === 'object' ? open : {open}
+export default function tabs (tablists, open) { // open can be Number, String or Element
   return queryAll(tablists).map((tablist) => {
-    const panels = queryAll(options.target || tablist.nextElementSibling.children) // Default target to children og next element
-
     tablist.setAttribute(UUID, '')
     tablist.setAttribute('role', 'tablist')
-    setOpen(tablist, options.open, target)
-
-    if (tablist.children.length !== panels.length) throw new Error('Not matching number of tabs and panels')
+    setOpen(tablist, open)
     return tablist
   })
 }
@@ -54,12 +49,13 @@ function getOpenPanel (panels) {
   return Math.max(0, panels.indexOf(panels.filter((pan) => !pan.hasAttribute('hidden'))[0]))
 }
 
-function setOpen (tablist, open, panels = []) { // open can be Number, String or Element
+function setOpen (tablist, open) { // open can be Number, String or Element
+  const next = tablist.nextElementSibling.children
   const tabs = queryAll(tablist.children).filter((tab) => tab.nodeName === 'A' || tab.nodeName === 'BUTTON')
-  const panels = tabs.map((tab, i) => document.getElementById(tab.getAttribute('aria-controls')) || panels[i])
+  const panels = tabs.map((tab, i) => document.getElementById(tab.getAttribute('aria-controls')) || next[i])
   const isOpen = getOpenPanel(panels)
   const willOpen = tabs.reduce((acc, tab, i) => (i === open || tab === open || tab.id === open) ? i : acc, isOpen)
-  const isUpdate = isOpen === willOpen || dispatchEvent(tablist, 'tabs.toggle', {isOpen, willOpen})
+  const isUpdate = isOpen === willOpen || dispatchEvent(tablist, 'tabs.toggle', {isOpen, willOpen, tabs, panels})
   const nextOpen = isUpdate ? willOpen : getOpenPanel(panels) // dispatchEvent can change attributes, so check getOpenPanel again
 
   tabs.forEach((tab, index) => {
