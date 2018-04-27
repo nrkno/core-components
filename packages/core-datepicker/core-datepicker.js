@@ -110,7 +110,7 @@ function renderDays (table, date) {
 
 function renderSelect (select, date, unit) {
   queryAll(select.children).forEach((option) => {
-    const mask = MASK[option.getAttribute('data-unit')] || '*'
+    const mask = MASK[option.getAttribute('data-unit')] || MASK[select.getAttribute('data-unit')] || '*'
     const time = parse(mask.replace('*', option.value), date).getTime()
     console.log(mask, time)
     option.selected = time === date.getTime()

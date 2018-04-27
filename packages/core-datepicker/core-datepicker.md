@@ -30,7 +30,7 @@ category: Components
   </label>
   <label>
     <span>Måned</span>
-    <select data-unit="months"></select>
+    <select data-unit="month"></select>
   </label>
   <fieldset>
     <legend>Måned</legend>
@@ -70,17 +70,19 @@ category: Components
 coreDatepicker.days = ['m', 't', 'o', 't', 'f', 'l', 's'] // Change name of days
 
 // Example auto fill months
-const select = document.querySelector('.my-date select[data-unit="months"]')
-select.innerHTML = coreDatepicker.months.map((name, index) => {
-  return `<option value="${index}">${name}</option>`
-}).join('')
+document.querySelector('.my-date select[data-unit="month"]').innerHTML =
+  coreDatepicker.months.map((name, index) => {
+    return `<option value="${index + 1}">${name}</option>`
+  }).join('')
 
+// Disable dates
 document.addEventListener('datepicker.render', (event) => {
   const now = Date.now()
   console.log(now)
   event.detail.setDisabled((date) => date < now)
 })
 
+// Initialize
 coreDatepicker('.my-date')
 coreToggle('.my-toggle', {open: true, popup: true})   // Make popup
 ```
