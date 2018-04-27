@@ -1,4 +1,4 @@
-const toggle = require('./core-toggle.min.js')
+import toggle from './core-toggle'
 
 describe('toggle', () => {
   test('should exists', () => {
