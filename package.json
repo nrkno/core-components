@@ -14,7 +14,7 @@
     "publish:minor": "npm run build && node bin/index.js --publish=minor",
     "publish:major": "npm run build && node bin/index.js --publish=major",
     "start": "npm-run-all --parallel 'build:code -- --watch' 'build:docs -- -w -b'",
-    "static-publish": "npm run build && static-publish --directory=docs --latest --major",
+    "static-publish": "npm run build && static-publish --directory=docs --account=nrk-core --latest --major",
     "test": "npm run lint && npm run build:code && jest"
   },
   "devDependencies": {
