@@ -50,11 +50,12 @@ function getOpenPanel (panels) {
 }
 
 function setOpen (tablist, open) { // open can be Number, String or Element
-  const tabs = queryAll(tablist.children)
-  const panels = queryAll(tablist.nextElementSibling.children)
+  const next = tablist.nextElementSibling.children
+  const tabs = queryAll(tablist.children).filter((tab) => tab.nodeName === 'A' || tab.nodeName === 'BUTTON')
+  const panels = tabs.map((tab, i) => document.getElementById(tab.getAttribute('aria-controls')) || next[i])
   const isOpen = getOpenPanel(panels)
   const willOpen = tabs.reduce((acc, tab, i) => (i === open || tab === open || tab.id === open) ? i : acc, isOpen)
-  const isUpdate = isOpen === willOpen || dispatchEvent(tablist, 'tabs.toggle', {isOpen, willOpen})
+  const isUpdate = isOpen === willOpen || dispatchEvent(tablist, 'tabs.toggle', {isOpen, willOpen, tabs, panels})
   const nextOpen = isUpdate ? willOpen : getOpenPanel(panels) // dispatchEvent can change attributes, so check getOpenPanel again
 
   tabs.forEach((tab, index) => {
