@@ -71,7 +71,7 @@ coreTabs(
 )
 ```
 ```jsx
-import Input from '@nrk/core-tabs/jsx'
+import Tabs from '@nrk/core-tabs/jsx'
 
 // All props are optional, and defaults are shown below
 // Props like className, style, etc. will be applied as actual attributes
