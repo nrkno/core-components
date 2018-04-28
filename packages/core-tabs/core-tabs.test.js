@@ -209,8 +209,8 @@ describe('core-tabs', () => {
     const tab1 = document.querySelector('#tab-1')
     const tab2 = document.querySelector('#tab-2')
 
-    setPanelAttributes(panel1, tab1, true)
-    setPanelAttributes(panel2, tab2, false)
+    setPanelAttributes(panel1, tab1.id, true)
+    setPanelAttributes(panel2, tab2.id, false)
 
     expectActivePanel(panel1, { labelledby: 'tab-1' })
     expectInactivePanel(panel2, { labelledby: 'tab-2' })

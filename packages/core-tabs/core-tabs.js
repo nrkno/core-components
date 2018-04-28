@@ -47,11 +47,11 @@ export default function coreTabs (tablists, open, options = {}) { // open can be
  * Updates a panel element with correct a11y attributes.
  *
  * @param {Element} panel the panel to update
- * @param {Element} tab the tab this panel belongs to
+ * @param {string} tabId the tab this panel belongs to
  * @param {boolean} selected tab is selected
  */
-export function setPanelAttributes (panel, tab, selected) {
-  panel.setAttribute(`${ARIA}-labelledby`, tab.id)
+export function setPanelAttributes (panel, tabId, selected) {
+  panel.setAttribute(`${ARIA}-labelledby`, tabId)
   panel.setAttribute('role', 'tabpanel')
   panel.setAttribute('tabindex', 0)
   panel[selected ? 'removeAttribute' : 'setAttribute']('hidden', '')
@@ -132,7 +132,7 @@ function setOpen (tablist, open, options = {}) { // open can be Number, String o
       setTabAttributes(tab, selected)
     }
     if (!options.dangerouslyPromiseToHandlePanels) {
-      setPanelAttributes(panel, tab, selected)
+      setPanelAttributes(panel, tab.id, selected)
     }
   })
 
