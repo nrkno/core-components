@@ -1,19 +1,22 @@
 export const IS_BROWSER = typeof window !== 'undefined'
 export const IS_ANDROID = IS_BROWSER && /(android)/i.test(navigator.userAgent) // Bad, but needed
 export const IS_IOS = IS_BROWSER && /iPad|iPhone|iPod/.test(String(navigator.platform))
+export const HAS_EVENT_OPTIONS = ((has = false) => {
+  try { window.addEventListener('test', null, {get passive () { has = true }}) } catch (e) {}
+  return has
+})()
 
 /**
 * addEvent
 * @param {String} uuid An unique ID of the event to bind - ensurnes single instance
 * @param {String} type The type of event to bind
 * @param {Function} handler The function to call on event
+* @param {Boolean|Object} options useCapture or options object for addEventListener. Defaults to false
 */
-export function addEvent (uuid, type, handler) {
-  const useCaptureForOldFirefox = type === 'blur' || type === 'focus'
-  const id = `${uuid}-${type}`
-
-  if (typeof window === 'undefined' || window[id]) return // Ensure single instance
-  document.addEventListener(window[id] = type, handler, useCaptureForOldFirefox)
+export function addEvent (uuid, type, handler, options = false) {
+  if (typeof window === 'undefined' || window[`${uuid}-${type}`]) return // Ensure single instance
+  if (!HAS_EVENT_OPTIONS && typeof options === 'object') options = Boolean(options.capture) // Fix unsupported options
+  document.addEventListener(window[`${uuid}-${type}`] = type, handler, options)
 }
 
 /**
