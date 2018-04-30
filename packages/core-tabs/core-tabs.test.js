@@ -1,4 +1,4 @@
-import coreTabs, { setPanelAttributes, setTabAttributes } from './core-tabs'
+import coreTabs from './core-tabs'
 
 function expectActiveTab (tab, { controls }) {
   expect(tab.getAttribute('aria-controls')).toEqual(controls)
@@ -51,6 +51,16 @@ const standardHTMLWithIDs = `
 <div id="panels">
   <div id="panel-1">Text of tab 1</div>
   <div id="panel-2">Text of tab 2</div>
+</div>`
+
+const standardHTMLWithReUse = `
+<div id="tabs">
+  <button id="tab-1" aria-controls="panel-1">Button tab 1</button>
+  <button id="tab-2" aria-controls="panel-1">Button tab 2</button>
+</div>
+<!-- Same panel will be re-used -->
+<div id="panels">
+  <div id="panel-1">Text of tab 1</div>
 </div>`
 
 describe('core-tabs', () => {
@@ -142,7 +152,6 @@ describe('core-tabs', () => {
     </div>
     <!--
       Putting tabs somewhere else in the DOM.
-
       NB! there must not be any semantic content between tabs and panels.
     -->
     <div>
@@ -159,60 +168,17 @@ describe('core-tabs', () => {
       labelledby: document.querySelector('[aria-controls=panel-2]').id
     })
   })
-  it('coreTabs with dangerouslyPromiseToHandlePanels should not modify panels', () => {
-    document.body.innerHTML = standardHTMLWithIDs
+  it('coreTabs should update panel aria-labelledby when controlled by multiple tabs', () => {
+    document.body.innerHTML = standardHTMLWithReUse
 
     const tabs = document.querySelector('#tabs')
     const panels = document.querySelector('#panels')
+    const panel = document.querySelector('#panel-1')
 
-    const initialHTML = panels.outerHTML
+    coreTabs(tabs, 0)
+    expectActivePanel(panel, {labelledby: tabs.children[0].id})
 
-    coreTabs(tabs, 0, { dangerouslyPromiseToHandlePanels: true })
-
-    expect(initialHTML).toEqual(panels.outerHTML)
-  })
-  it('coreTabs with dangerouslyPromiseToHandleTabs should not modify tabs', () => {
-    document.body.innerHTML = standardHTMLWithIDs
-
-    const tabs = document.querySelector('#tabs')
-    const initialHTML = tabs.innerHTML
-
-    coreTabs(tabs, 0, { dangerouslyPromiseToHandleTabs: true })
-
-    // using innerHTML because we will modify tabs-element with data-* attrs
-    expect(initialHTML).toEqual(tabs.innerHTML)
-  })
-  it('setTabAttributes sets the correct attributes', () => {
-    document.body.innerHTML = standardHTMLWithIDs
-
-    const tabs = document.querySelector('#my-tabs')
-
-    coreTabs(tabs, 0, { dangerouslyPromiseToHandleTabs: true })
-
-    const tab1 = document.querySelector('#tab-1')
-    const tab2 = document.querySelector('#tab-2')
-
-    setTabAttributes(tab1, true)
-    setTabAttributes(tab2, false)
-
-    expectActiveTab(tab1, { controls: 'panel-1' })
-    expectInactiveTab(tab2, { controls: 'panel-2' })
-  })
-  it('setPanelAttributes sets the correct attributes', () => {
-    document.body.innerHTML = standardHTMLWithIDs
-    const tabs = document.querySelector('#my-tabs')
-
-    coreTabs(tabs, 0, { dangerouslyPromiseToHandldePanels: true })
-
-    const panel1 = document.querySelector('#panel-1')
-    const panel2 = document.querySelector('#panel-2')
-    const tab1 = document.querySelector('#tab-1')
-    const tab2 = document.querySelector('#tab-2')
-
-    setPanelAttributes(panel1, tab1.id, true)
-    setPanelAttributes(panel2, tab2.id, false)
-
-    expectActivePanel(panel1, { labelledby: 'tab-1' })
-    expectInactivePanel(panel2, { labelledby: 'tab-2' })
+    coreTabs(tabs, 1)
+    expectActivePanel(panel, {labelledby: tabs.children[1].id})
   })
 })

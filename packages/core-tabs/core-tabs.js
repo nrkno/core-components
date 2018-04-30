@@ -1,28 +1,7 @@
 import {name, version} from './package.json'
 import {IS_ANDROID, addEvent, dispatchEvent, getUUID, queryAll} from '../utils'
 
-/**
- * Options
- *
- * By setting dangerouslyPromiseToHandle**Panels** you promise:
- *
- * * setting tab[aria-controls] correctly
- * * setting panel[id] correctly
- * * using set**Panel**Attributes to update properties on the panel element
- *
- * By setting dangerouslyPromiseToHandle**Tabs** you promise:
- *
- * * setting tab[aria-controls] correctly
- * * setting panel[id] correctly
- * * using set**Tab**Attributes to update properties on the panel element
- *
- * @typedef {Object} Options
- * @property {boolean} [dangerouslyPromiseToHandlePanels] I promise to handle panel attributes by using setTabAttributes.
- * @property {boolean} [dangerouslyPromiseToHandleTabs] I promise to handle tab attributes by using setTabAttributes.
- */
-
 const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid attribute characters
-const OPTIONS = `${UUID}-options`
 const ARIA = IS_ANDROID ? 'data' : 'aria' // Andriod has a bug and reads only label instead of content
 const KEYS = {SPACE: 32, END: 35, HOME: 36, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40}
 
@@ -31,14 +10,12 @@ const KEYS = {SPACE: 32, END: 35, HOME: 36, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 4
  *
  * @param {String|NodeList|Element[]|Element} tablists A CSS selector string, nodeList, element array, or single element
  * @param {Number|String|Element} open index, id or tab-element of the open tab
- * @param {Options} [options]
  */
-export default function coreTabs (tablists, open, options = {}) { // open can be Number, String or Element
+export default function tabs (tablists, open) { // open can be Number, String or Element
   return queryAll(tablists).map((tablist) => {
     tablist.setAttribute(UUID, '')
-    tablist.setAttribute(OPTIONS, JSON.stringify(options))
     tablist.setAttribute('role', 'tablist')
-    setOpen(tablist, open, options)
+    setOpen(tablist, open)
     return tablist
   })
 }
@@ -72,9 +49,9 @@ export function setTabAttributes (tab, selected) {
 addEvent(UUID, 'click', (event) => {
   if (event.ctrlKey || event.altKey || event.metaKey) return
   for (let el = event.target; el; el = el.parentElement) {
-    if (el.getAttribute('role') === 'tab' && el.parentElement.hasAttribute(UUID)) {
-      const tablist = el.parentElement
-      return setOpen(tablist, el, JSON.parse(tablist.getAttribute(OPTIONS))) || event.preventDefault() // Also prevent links
+    const tablist = el.parentElement
+    if (el.getAttribute('role') === 'tab' && tablist.hasAttribute(UUID)) {
+      return setOpen(tablist, el) || event.preventDefault() // Also prevent links
     }
   }
 })
@@ -108,33 +85,33 @@ function getOpenTabIndex (tabs) {
 /**
  * @param {Element} tablist
  * @param {Number|String|Element} open
- * @param {Options} [options]
  */
-function setOpen (tablist, open, options = {}) { // open can be Number, String or Element
+function setOpen (tablist, open) { // open can be Number, String or Element
   const next = tablist.nextElementSibling ? tablist.nextElementSibling.children : []
   const tabs = queryAll(tablist.children).filter((tab) => tab.nodeName === 'A' || tab.nodeName === 'BUTTON')
-  const panels = tabs.map((tab, i) => document.getElementById(tab.getAttribute('aria-controls')) || next[i])
+  const panels = tabs.map((tab, i) => document.getElementById(tab.getAttribute('aria-controls')) || next[i] || next[0])
   const isOpen = getOpenTabIndex(tabs)
   const willOpen = tabs.reduce((acc, tab, i) => (i === open || tab === open || tab.id === open) ? i : acc, isOpen)
   const isUpdate = isOpen === willOpen || dispatchEvent(tablist, 'tabs.toggle', {isOpen, willOpen, tabs, panels})
   const nextOpen = isUpdate ? willOpen : getOpenTabIndex(tabs) // dispatchEvent can change attributes, so check getOpenPanel again
 
   tabs.forEach((tab, index) => {
-    const selected = index === nextOpen
     const panel = panels[index]
+    const selectedTab = index === nextOpen
+    const selectedPanel = panel === panels[nextOpen]
 
-    // Set correct ids, if they are not already defined
-    panel.id = panel.id || getUUID()
-    tab.id = tab.id || getUUID()
-    tab.setAttribute('aria-controls', panel.id)
-
-    if (!options.dangerouslyPromiseToHandleTabs) {
-      setTabAttributes(tab, selected)
-    }
-    if (!options.dangerouslyPromiseToHandlePanels) {
-      setPanelAttributes(panel, tab.id, selected)
-    }
+    tab.setAttribute('role', 'tab')
+    tab.setAttribute('tabindex', selectedTab - 1)
+    tab.setAttribute('aria-selected', selectedTab)
+    tab.setAttribute('aria-controls', panel.id = panel.id || getUUID())
+    panel.setAttribute(`${ARIA}-labelledby`, tab.id = tab.id || getUUID())
+    panel.setAttribute('role', 'tabpanel')
+    panel.setAttribute('tabindex', 0)
+    panel[selectedPanel ? 'removeAttribute' : 'setAttribute']('hidden', '')
   })
+
+  // Setup after loop as we now know all tabs have IDs
+  panels[nextOpen].setAttribute(`${ARIA}-labelledby`, tabs[nextOpen].id)
 
   return nextOpen
 }

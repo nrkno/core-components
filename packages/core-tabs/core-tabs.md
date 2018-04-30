@@ -7,13 +7,13 @@ category: Components
 
 ```tabs.html
 <div class="my-tabs"> <!-- Direct children must be <a> or <button>. Do not use <li> -->
-  <button>Button tab</button>
-  <button>Nested tabs</button>
-  <a href="#link">Link tab</a>
+  <button id="tab-1">Button tab</button>
+  <button id="tab-2">Nested tabs</button>
+  <a id="tab-3" href="#link">Link tab</a>
 </div>
 <div> <!-- Next element children will become panels of correlating tab -->
   <div>Text of tab 1</div>
-  <div hidden> <!-- hidden prevents flash of unstyled content -->
+  <!--<div hidden> <!-- hidden prevents flash of unstyled content
     <div class="my-tabs">
       <button>Subtab 1</button>
       <button>Subtab 2</button>
@@ -23,7 +23,7 @@ category: Components
       <div>Subpanel 2</div>
     </div>
   </div>
-  <div hidden>Text of tab 3</div>
+  <div hidden>Text of tab 3</div>-->
 </div>
 ```
 ```tabs.js
