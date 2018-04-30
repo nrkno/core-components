@@ -42,17 +42,6 @@ const standardHTML = `
   <section>Text of tab 2</section>
 </div>`
 
-const standardHTMLWithIDs = `
-<div id="tabs">
-  <button id="tab-1" aria-controls="panel-1">Button tab 1</button>
-  <button id="tab-2" aria-controls="panel-2">Button tab 2</button>
-</div>
-<!-- Next element children will become panels of correlating tab -->
-<div id="panels">
-  <div id="panel-1">Text of tab 1</div>
-  <div id="panel-2">Text of tab 2</div>
-</div>`
-
 const standardHTMLWithReUse = `
 <div id="tabs">
   <button id="tab-1" aria-controls="panel-1">Button tab 1</button>
@@ -172,7 +161,6 @@ describe('core-tabs', () => {
     document.body.innerHTML = standardHTMLWithReUse
 
     const tabs = document.querySelector('#tabs')
-    const panels = document.querySelector('#panels')
     const panel = document.querySelector('#panel-1')
 
     coreTabs(tabs, 0)

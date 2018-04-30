@@ -20,32 +20,6 @@ export default function tabs (tablists, open) { // open can be Number, String or
   })
 }
 
-/**
- * Updates a panel element with correct a11y attributes.
- *
- * @param {Element} panel the panel to update
- * @param {string} tabId the tab this panel belongs to
- * @param {boolean} selected tab is selected
- */
-export function setPanelAttributes (panel, tabId, selected) {
-  panel.setAttribute(`${ARIA}-labelledby`, tabId)
-  panel.setAttribute('role', 'tabpanel')
-  panel.setAttribute('tabindex', 0)
-  panel[selected ? 'removeAttribute' : 'setAttribute']('hidden', '')
-}
-
-/**
- * Updates a tab element with correct a11y attributes
- *
- * @param {Element} tab the tab to update
- * @param {boolean} selected tab is selected
- */
-export function setTabAttributes (tab, selected) {
-  tab.setAttribute('role', 'tab')
-  tab.setAttribute('tabindex', selected - 1)
-  tab.setAttribute('aria-selected', selected)
-}
-
 addEvent(UUID, 'click', (event) => {
   if (event.ctrlKey || event.altKey || event.metaKey) return
   for (let el = event.target; el; el = el.parentElement) {
