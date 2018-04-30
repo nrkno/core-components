@@ -80,7 +80,7 @@ export function getUUID (el) {
 /**
 * queryAll
 * @param {String|NodeList|Array|Element} elements A CSS selector string, nodeList, element array, or single element
-* @return {Array} Array of elements
+* @return {Element[]} Array of elements
 */
 export function queryAll (elements, context = document) {
   if (elements) {

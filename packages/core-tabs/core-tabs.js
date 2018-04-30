@@ -5,6 +5,12 @@ const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid att
 const ARIA = IS_ANDROID ? 'data' : 'aria' // Andriod has a bug and reads only label instead of content
 const KEYS = {SPACE: 32, END: 35, HOME: 36, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40}
 
+/**
+ * Initialize core-tabs
+ *
+ * @param {String|NodeList|Element[]|Element} tablists A CSS selector string, nodeList, element array, or single element
+ * @param {Number|String|Element} open index, id or tab-element of the open tab
+ */
 export default function tabs (tablists, open) { // open can be Number, String or Element
   return queryAll(tablists).map((tablist) => {
     tablist.setAttribute(UUID, '')
@@ -17,8 +23,9 @@ export default function tabs (tablists, open) { // open can be Number, String or
 addEvent(UUID, 'click', (event) => {
   if (event.ctrlKey || event.altKey || event.metaKey) return
   for (let el = event.target; el; el = el.parentElement) {
-    if (el.getAttribute('role') === 'tab' && el.parentElement.hasAttribute(UUID)) {
-      return setOpen(el.parentElement, el) || event.preventDefault() // Also prevent links
+    const tablist = el.parentElement
+    if (el.getAttribute('role') === 'tab' && tablist.hasAttribute(UUID)) {
+      return setOpen(tablist, el) || event.preventDefault() // Also prevent links
     }
   }
 })
@@ -45,32 +52,40 @@ addEvent(UUID, 'keydown', (event) => {
   }
 })
 
-function getOpenPanel (panels) {
-  return Math.max(0, panels.indexOf(panels.filter((pan) => !pan.hasAttribute('hidden'))[0]))
+function getOpenTabIndex (tabs) {
+  return Math.max(0, tabs.indexOf(tabs.filter(tab => tab.getAttribute('aria-selected') === true)))
 }
 
+/**
+ * @param {Element} tablist
+ * @param {Number|String|Element} open
+ */
 function setOpen (tablist, open) { // open can be Number, String or Element
-  const next = tablist.nextElementSibling.children
+  const next = tablist.nextElementSibling ? tablist.nextElementSibling.children : []
   const tabs = queryAll(tablist.children).filter((tab) => tab.nodeName === 'A' || tab.nodeName === 'BUTTON')
-  const panels = tabs.map((tab, i) => document.getElementById(tab.getAttribute('aria-controls')) || next[i])
-  const isOpen = getOpenPanel(panels)
+  const panels = tabs.map((tab, i) => document.getElementById(tab.getAttribute('aria-controls')) || next[i] || next[0])
+  const isOpen = getOpenTabIndex(tabs)
   const willOpen = tabs.reduce((acc, tab, i) => (i === open || tab === open || tab.id === open) ? i : acc, isOpen)
   const isUpdate = isOpen === willOpen || dispatchEvent(tablist, 'tabs.toggle', {isOpen, willOpen, tabs, panels})
-  const nextOpen = isUpdate ? willOpen : getOpenPanel(panels) // dispatchEvent can change attributes, so check getOpenPanel again
+  const nextOpen = isUpdate ? willOpen : getOpenTabIndex(tabs) // dispatchEvent can change attributes, so check getOpenPanel again
 
   tabs.forEach((tab, index) => {
-    const selected = index === nextOpen
     const panel = panels[index]
+    const selectedTab = index === nextOpen
+    const selectedPanel = panel === panels[nextOpen]
 
     tab.setAttribute('role', 'tab')
-    tab.setAttribute('tabindex', selected - 1)
-    tab.setAttribute('aria-selected', selected)
+    tab.setAttribute('tabindex', selectedTab - 1)
+    tab.setAttribute('aria-selected', selectedTab)
     tab.setAttribute('aria-controls', panel.id = panel.id || getUUID())
     panel.setAttribute(`${ARIA}-labelledby`, tab.id = tab.id || getUUID())
     panel.setAttribute('role', 'tabpanel')
     panel.setAttribute('tabindex', 0)
-    panel[selected ? 'removeAttribute' : 'setAttribute']('hidden', '')
+    panel[selectedPanel ? 'removeAttribute' : 'setAttribute']('hidden', '')
   })
+
+  // Setup after loop as we now know all tabs have IDs
+  panels[nextOpen].setAttribute(`${ARIA}-labelledby`, tabs[nextOpen].id)
 
   return nextOpen
 }

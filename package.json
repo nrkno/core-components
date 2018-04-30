@@ -2,7 +2,7 @@
   "name": "@nrk/core-components",
   "homepage": "https://static.nrk.no/core-components/latest/",
   "author": "NRK <opensource@nrk.no> (https://www.nrk.no/)",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "license": "MIT",
   "scripts": {
     "build": "npm run build:code && npm run build:docs",
@@ -15,10 +15,14 @@
     "publish:major": "npm run build && node bin/index.js --publish=major",
     "start": "npm-run-all --parallel 'build:code -- --watch' 'build:docs -- -w -b'",
     "static-publish": "npm run build && static-publish --directory=docs --account=nrk-core --latest --major",
-    "test": "npm run lint && npm run build:code && jest"
+    "test:js": "jest",
+    "test": "npm run lint && npm run build:code && npm run test:jest"
   },
   "devDependencies": {
-    "jest": "^22.4.2",
+    "babel-core": "^6.26.3",
+    "babel-jest": "^22.4.3",
+    "babel-preset-env": "^1.6.1",
+    "jest": "^22.4.3",
     "npm-run-all": "^4.1.2",
     "rollup": "0.57.1",
     "rollup-plugin-buble": "0.19.2",
@@ -45,5 +49,15 @@
       "test",
       "expect"
     ]
+  },
+  "babel": {
+    "presets": [
+      "env"
+    ]
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.jsx?$": "babel-jest"
+    }
   }
 }
