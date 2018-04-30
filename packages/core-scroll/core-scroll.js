@@ -6,11 +6,12 @@ const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid att
 const TICK = !IS_BROWSER || window.requestAnimationFrame || window.setTimeout
 const DRAG = {friction: 0.95}
 
-export default function scroll (elements) {
+// https://css-tricks.com/introducing-css-scroll-snap-points/ align, padding
+export default function scroll (elements, options = {}) {
   return queryAll(elements).forEach((element) => {
-    element.setAttribute(UUID, '')
-    element.style.overflow = 'auto'
-    element.style.webkitOverflowScrolling = 'touch'
+    element.setAttribute(UUID, JSON.stringify(options))
+    element.style.webkitOverflowScrolling = 'touch' // Momentum scoll on iPhone
+    element.style.overflow = 'auto' // Ensure scrollability
     return element
   })
 }
@@ -51,14 +52,13 @@ function onMousedown (event) {
       DRAG.prevY = DRAG.nextY = event.pageY
       DRAG.scrollX = el.scrollLeft
       DRAG.scrollY = el.scrollTop
+      DRAG.isDragging = true
+
       document.body.style.cursor = '-webkit-grabbing'
       document.body.style.cursor = 'grabbing'
-
-      DRAG.isDragging = true
-      onMousemove(event)
-      animate()
       window.addEventListener('mousemove', onMousemove, false)
       window.addEventListener('mouseup', onMouseup, false)
+      animate()
     }
   }
 }
@@ -83,10 +83,93 @@ function onWheel () {
 function onClick (event) {
   for (let el = event.target; el; el = el.parentElement) {
     const attr = el.getAttribute(ATTR)
-    const target = attr && document.querySelector(attr.split('@')[0])
+    el = attr && document.querySelector(attr.split('@')[0])
 
-    if (target) {
-      console.log(target)
+    if (el) {
+      DRAG.node = el
+      DRAG.maxX = el.scrollWidth - el.clientWidth
+      DRAG.maxY = el.scrollHeight - el.clientHeight
+      DRAG.prevX = DRAG.nextX = 0
+      DRAG.prevY = DRAG.nextY = 0
+      DRAG.velocityX = 10
+      DRAG.velocityY = 0
+      DRAG.scrollX = el.scrollLeft
+      DRAG.scrollY = el.scrollTop
+      console.log(el, DRAG)
+      tween(el.scrollLeft, 200, 500)
     }
+    break
   }
 }
+
+/**
+ * Constructor for the tween
+ * @param {number} startValue What value does the tween start at
+ * @param {number} distance How far does the tween's value advance from the startValue?
+ * @param {number} duration Amount of time in milliseconds the tween runs for
+ * @param {string} animationType What easing function should be used from the easing library?
+ * See _easingLibrary for a list of potential easing equations.
+ * @param {string} loop Can be left blank, set to loop, or repeat. Loop repeats repeats the animation
+ * in reverse every time. Repeat will run the original tween from the beginning
+ * @returns {self}
+ */
+const TWEEN = {}
+function tween (startValue, distance, duration) {
+  TWEEN.startTime = Date.now()
+  TWEEN.startValue = startValue
+  TWEEN.distance = distance
+  TWEEN.duration = duration
+  update()
+}
+
+function update () {
+  const expired = TWEEN.startTime + TWEEN.duration < Date.now()
+  let total
+
+  if (expired) total = TWEEN.startValue + TWEEN.distance
+  else {
+    total = linear(Date.now() - TWEEN.startTime, TWEEN.startValue, TWEEN.distance, TWEEN.duration)
+    TICK(update)
+  }
+
+  console.log(total)
+
+  return total
+}
+
+/**
+ * @param {number} t Current time in millseconds
+ * @param {number} b Start value
+ * @param {number} c Distance traveled relative to the start value
+ * @param {number} d Duration in milliseconds
+ */
+function linear (t, b, c, d) {
+  t /= d
+  return -c * t * (t - 2) + b
+}
+
+/**
+* Set the tween's properties for the beginning value, distance, duration, and animation type
+* @param {number} startValue What value does the tween start at
+* @param {number} distance How far does the tween's value advance from the startValue?
+* @param {number} duration Amount of time in milliseconds the tween runs for
+* @param {string} animationType What easing function should be used from the easing library?
+* @param {string} loop Can be left blank, set to loop, or repeat. Loop repeats repeats the animation
+* in reverse every time. Repeat will run the original tween from the beginning
+* @returns {self}
+window.Tween.prototype.set = function (startValue, distance, duration, animationType, loop) {
+  this.startValue = typeof startValue === 'number' ? startValue : this.startValue
+  this.distance = typeof distance === 'number' ? distance : this.distance
+  this.duration = typeof duration === 'number' ? duration : this.duration
+  return this
+}
+*/
+
+/**
+* Resets the tween and runs it relative to the current time
+* @returns {self}
+window.Tween.prototype.reset = function () {
+  this.startTime = Date.now()
+  return this
+}
+*/
