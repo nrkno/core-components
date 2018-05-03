@@ -9,7 +9,7 @@ const POPS = 'aria-haspopup'
 export default function toggle (buttons, open) {
   const options = typeof open === 'object' ? open : {open}
 
-  return queryAll(buttons).forEach((button) => {
+  return queryAll(buttons).map((button) => {
     const open = typeof options.open === 'boolean' ? options.open : button.getAttribute(OPEN) === 'true'
     const pops = typeof options.popup === 'boolean' ? options.popup : button.getAttribute(POPS) === 'true'
     const next = button.nextElementSibling
