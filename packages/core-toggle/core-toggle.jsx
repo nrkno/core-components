@@ -13,13 +13,16 @@ export default class Toggle extends React.Component {
   componentWillUnmount () { this.el.removeEventListener('toggle', this.props.onToggle) }
   render () {
     return React.createElement('div', exclude(this.props, DEFAULTS, {ref: (el) => (this.el = el)}),
-      React.Children.map(this.props.children, (child, adjacent) => adjacent
-        ? React.cloneElement(child, {'hidden': !this.props.open})
-        : React.cloneElement(child, {
-          'aria-expanded': String(Boolean(this.props.open)),
-          'aria-haspopup': String(Boolean(this.props.popup))
-        })
-      )
+      React.Children.map(this.props.children, (child, adjacent) => {
+        if (adjacent === 0) {
+          return React.cloneElement(child, {
+            'aria-expanded': String(Boolean(this.props.open)),
+            'aria-haspopup': String(Boolean(this.props.popup))
+          })
+        }
+        if (adjacent === 1) return React.cloneElement(child, {'hidden': !this.props.open})
+        return React.cloneElement(child)
+      })
     )
   }
 }
