@@ -17,10 +17,15 @@ export default class Input extends React.Component {
   }
   render () {
     return React.createElement('div', exclude(this.props, DEFAULTS, {ref: el => (this.el = el)}),
-      React.Children.map(this.props.children, (child, adjacent) => adjacent
-        ? React.cloneElement(child, {'hidden': !this.props.open})
-        : React.cloneElement(child, {'aria-expanded': String(Boolean(this.props.open))})
-      )
+      React.Children.map(this.props.children, (child, adjacent) => {
+        if (adjacent === 0) {
+          return React.cloneElement(child, {
+            'aria-expanded': String(Boolean(this.props.open))
+          })
+        }
+        if (adjacent === 1) return React.cloneElement(child, {'hidden': !this.props.open})
+        return child
+      })
     )
   }
 }

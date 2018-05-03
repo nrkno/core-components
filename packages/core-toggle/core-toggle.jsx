@@ -21,7 +21,7 @@ export default class Toggle extends React.Component {
           })
         }
         if (adjacent === 1) return React.cloneElement(child, {'hidden': !this.props.open})
-        return React.cloneElement(child)
+        return child
       })
     )
   }
