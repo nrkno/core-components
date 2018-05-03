@@ -15,7 +15,7 @@ const FOCUSABLE_ELEMENTS = `
 export default function dialog (dialogs, open) {
   const options = typeof open === 'object' ? open : {open}
 
-  return queryAll(dialogs).forEach((dialog) => {
+  return queryAll(dialogs).map((dialog) => {
     const hasBackdrop = (dialog.nextElementSibling || {}).nodeName === 'BACKDROP'
 
     dialog.setAttribute(UUID, '')

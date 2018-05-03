@@ -9,7 +9,7 @@ export default function input (elements, content) {
   const options = typeof content === 'object' ? content : {content}
   const repaint = typeof options.content === 'string'
 
-  return queryAll(elements).forEach((input) => {
+  return queryAll(elements).map((input) => {
     const list = input.nextElementSibling
 
     input.setAttribute(UUID, '')
