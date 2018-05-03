@@ -20,6 +20,21 @@ export function addEvent (uuid, type, handler, options = false) {
 }
 
 /**
+* debounce
+* @param {Function} callback The function to debounce
+* @param {Number} ms The number of milliseconds to delay
+* @return {Function} The new debounced function
+*/
+export function debounce (callback, ms) {
+  let timer
+  return function (...args) {
+    const self = this
+    clearTimeout(timer)
+    timer = setTimeout(() => callback.apply(self, args), ms)
+  }
+}
+
+/**
 * escapeHTML
 * @param {String} str A string with potential html tokens
 * @return {String} Escaped HTML string according to OWASP recommendation

@@ -1,175 +1,153 @@
 import {name, version} from './package.json'
-import {IS_BROWSER, addEvent, queryAll} from '../utils'
+import {IS_BROWSER, addEvent, debounce, queryAll} from '../utils'
 
-const ATTR = `data-core-scroll`
+const DRAG = {}
+const ATTR = 'data-core-scroll'
 const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid attribute characters
-const TICK = !IS_BROWSER || window.requestAnimationFrame || window.setTimeout
-const DRAG = {friction: 0.95}
+const REDUCED_MOTION = IS_BROWSER && window.matchMedia && window.matchMedia('(prefers-reduced-motion)') // https://css-tricks.com/introduction-reduced-motion-media-query/
+const requestAnimFrame = !IS_BROWSER || window.requestAnimationFrame || window.setTimeout
 
-// https://css-tricks.com/introducing-css-scroll-snap-points/ align, padding
 export default function scroll (elements, options = {}) {
-  return queryAll(elements).forEach((element) => {
-    element.setAttribute(UUID, JSON.stringify(options))
+  return queryAll(elements).map((element) => {
+    element.setAttribute(UUID, '')
+    element.style.overflow = 'scroll' // Ensure visible scrollbars
     element.style.webkitOverflowScrolling = 'touch' // Momentum scoll on iPhone
-    element.style.overflow = 'auto' // Ensure scrollability
+
+    if (options.hideScrollbars) {
+      const barX = element.offsetWidth - element.clientWidth
+      const barY = element.offsetHeight - element.clientHeight
+
+      element.style.height = `${element.parentElement.offsetHeight + barY}px` // Consistent height
+      element.style.marginRight = `-${barX}px`
+      element.style.marginBottom = `-${barY}px`
+    }
+
+    if (options.hasOwnProperty('x') || options.hasOwnProperty('y')) {
+      const to = getScrollEnd(element, options.x, options.y)
+      smoothScroll(element, to.x, to.y)
+    }
+
     return element
   })
 }
 
 addEvent(UUID, 'mousedown', onMousedown)
-addEvent(UUID, 'wheel', onWheel, {passive: true})
+addEvent(UUID, 'scroll', debounce(onScroll, 100), true) // useCapture to catch event without bubbling
+addEvent(UUID, 'wheel', () => (DRAG.move = false), {passive: true}) // Stop animation on wheel scroll
 addEvent(UUID, 'click', onClick)
-
-function animate () {
-  if (DRAG.isDragging) {
-    DRAG.velocityX = DRAG.prevX - (DRAG.prevX = DRAG.nextX)
-    DRAG.velocityY = DRAG.prevY - (DRAG.prevY = DRAG.nextY)
-  } else {
-    DRAG.velocityX *= DRAG.friction
-    DRAG.velocityY *= DRAG.friction
-  }
-
-  const x = Math.round(Math.max(0, Math.min(DRAG.scrollX + DRAG.velocityX, DRAG.maxX)))
-  const y = Math.round(Math.max(0, Math.min(DRAG.scrollY + DRAG.velocityY, DRAG.maxY)))
-  const change = DRAG.isDragging || x !== DRAG.scrollX || y !== DRAG.scrollY
-
-  if (change) {
-    DRAG.node.scrollLeft = DRAG.scrollX = x
-    DRAG.node.scrollTop = DRAG.scrollY = y
-    TICK(animate)
-  }
-}
 
 function onMousedown (event) {
   for (let el = event.target; el; el = el.parentElement) {
     if (el.hasAttribute(UUID)) {
       event.preventDefault() // Prevent text selection
 
-      DRAG.node = el
-      DRAG.maxX = el.scrollWidth - el.clientWidth
-      DRAG.maxY = el.scrollHeight - el.clientHeight
-      DRAG.prevX = DRAG.nextX = event.pageX
-      DRAG.prevY = DRAG.nextY = event.pageY
+      DRAG.move = DRAG.diffX = DRAG.diffY = 0
+      DRAG.pageX = event.pageX
+      DRAG.pageY = event.pageY
       DRAG.scrollX = el.scrollLeft
       DRAG.scrollY = el.scrollTop
-      DRAG.isDragging = true
+      DRAG.node = el
 
       document.body.style.cursor = '-webkit-grabbing'
       document.body.style.cursor = 'grabbing'
-      window.addEventListener('mousemove', onMousemove, false)
-      window.addEventListener('mouseup', onMouseup, false)
-      animate()
+      document.addEventListener('mousemove', onMousemove)
+      document.addEventListener('mouseup', onMouseup)
     }
   }
 }
 
-function onMouseup () {
-  DRAG.isDragging = false
-  document.body.style.cursor = ''
-  window.removeEventListener('mousemove', onMousemove, false)
-  window.removeEventListener('mouseup', onMouseup, false)
-}
-
 function onMousemove (event) {
-  DRAG.nextX = event.pageX
-  DRAG.nextY = event.pageY
+  DRAG.diffX = DRAG.pageX - (DRAG.pageX = event.pageX)
+  DRAG.diffY = DRAG.pageY - (DRAG.pageY = event.pageY)
+  DRAG.node.scrollLeft = DRAG.scrollX += DRAG.diffX
+  DRAG.node.scrollTop = DRAG.scrollY += DRAG.diffY
 }
 
-function onWheel () {
-  DRAG.velocityX = 0
-  DRAG.velocityY = 0
+function onMouseup (event) {
+  document.body.style.cursor = ''
+  document.removeEventListener('mousemove', onMousemove)
+  document.removeEventListener('mouseup', onMouseup)
+  if (!REDUCED_MOTION.matches) {
+    smoothScroll(
+      DRAG.node,
+      DRAG.scrollX + DRAG.diffX * 20,
+      DRAG.scrollY + DRAG.diffY * 20
+    )
+  }
 }
 
 function onClick (event) {
   for (let el = event.target; el; el = el.parentElement) {
-    const attr = el.getAttribute(ATTR)
-    el = attr && document.querySelector(attr.split('@')[0])
-
-    if (el) {
-      DRAG.node = el
-      DRAG.maxX = el.scrollWidth - el.clientWidth
-      DRAG.maxY = el.scrollHeight - el.clientHeight
-      DRAG.prevX = DRAG.nextX = 0
-      DRAG.prevY = DRAG.nextY = 0
-      DRAG.velocityX = 10
-      DRAG.velocityY = 0
-      DRAG.scrollX = el.scrollLeft
-      DRAG.scrollY = el.scrollTop
-      console.log(el, DRAG)
-      tween(el.scrollLeft, 200, 500)
+    const target = el.getAttribute(ATTR)
+    if (target) {
+      scroll(target, {
+        x: el.getAttribute(`${ATTR}-x`),
+        y: el.getAttribute(`${ATTR}-y`)
+      })
     }
-    break
   }
 }
 
-/**
- * Constructor for the tween
- * @param {number} startValue What value does the tween start at
- * @param {number} distance How far does the tween's value advance from the startValue?
- * @param {number} duration Amount of time in milliseconds the tween runs for
- * @param {string} animationType What easing function should be used from the easing library?
- * See _easingLibrary for a list of potential easing equations.
- * @param {string} loop Can be left blank, set to loop, or repeat. Loop repeats repeats the animation
- * in reverse every time. Repeat will run the original tween from the beginning
- * @returns {self}
- */
-const TWEEN = {}
-function tween (startValue, distance, duration) {
-  TWEEN.startTime = Date.now()
-  TWEEN.startValue = startValue
-  TWEEN.distance = distance
-  TWEEN.duration = duration
-  update()
+function onScroll ({target}) {
+  if (!target.hasAttribute || !target.hasAttribute(UUID)) return // target can be document
+  const btns = getControls(target)
+  const nowX = target.scrollLeft
+
+  // btns.forEach((el) => (el.disabled = Number(el.value) === nowX))
 }
 
-function update () {
-  const expired = TWEEN.startTime + TWEEN.duration < Date.now()
-  let total
+function getControls (target) {
+  return queryAll(`[${ATTR}]`).filter((el) => document.querySelector(el.getAttribute(ATTR)) === target)
+}
 
-  if (expired) total = TWEEN.startValue + TWEEN.distance
-  else {
-    total = linear(Date.now() - TWEEN.startTime, TWEEN.startValue, TWEEN.distance, TWEEN.duration)
-    TICK(update)
+function smoothScroll (element, x = 0, y = 0) {
+  const friction = 0.95
+  const nowX = element.scrollLeft
+  const nowY = element.scrollTop
+  const endX = Math.max(0, Math.min(x, element.scrollWidth - element.clientWidth))
+  const endY = Math.max(0, Math.min(y, element.scrollHeight - element.clientHeight))
+  let moveX = endX - nowX
+  let moveY = endY - nowY
+  DRAG.move = true
+
+  if (REDUCED_MOTION.matches) moveX = moveY = 1
+
+  const move = () => {
+    if (DRAG.move && (Math.abs(Math.round(moveX)) || Math.abs(Math.round(moveY)))) {
+      element.scrollLeft = endX - Math.round(moveX *= friction)
+      element.scrollTop = endY - Math.round(moveY *= friction)
+      requestAnimFrame(move)
+    }
   }
-
-  console.log(total)
-
-  return total
+  move()
 }
 
-/**
- * @param {number} t Current time in millseconds
- * @param {number} b Start value
- * @param {number} c Distance traveled relative to the start value
- * @param {number} d Duration in milliseconds
- */
-function linear (t, b, c, d) {
-  t /= d
-  return -c * t * (t - 2) + b
+function getItemFromPosition (element, atX = 0, atY = 0) {
+  const nowX = element.scrollLeft
+  const nowY = element.scrollTop
+  const rect = element.getBoundingClientRect()
+  const stops = queryAll(element.children).reduce((acc, el, x, y) => {
+    const pos = el.getBoundingClientRect()
+    const isVisible = pos.width && pos.height
+    return isVisible ? acc.concat({
+      el,
+      x: x = pos.left - rect.left + nowX,
+      y: y = pos.top - rect.top + nowY,
+      cx: x + (pos.width / 2),
+      cy: y + (pos.height / 2)
+    }) : acc
+  }, [])
+
+  return stops.sort((a, b) => {
+    return Math.abs(a.cx - atX) - Math.abs(b.cx - atX) + Math.abs(a.cy - atY) - Math.abs(b.cy - atY)
+  })[0] || false
 }
 
-/**
-* Set the tween's properties for the beginning value, distance, duration, and animation type
-* @param {number} startValue What value does the tween start at
-* @param {number} distance How far does the tween's value advance from the startValue?
-* @param {number} duration Amount of time in milliseconds the tween runs for
-* @param {string} animationType What easing function should be used from the easing library?
-* @param {string} loop Can be left blank, set to loop, or repeat. Loop repeats repeats the animation
-* in reverse every time. Repeat will run the original tween from the beginning
-* @returns {self}
-window.Tween.prototype.set = function (startValue, distance, duration, animationType, loop) {
-  this.startValue = typeof startValue === 'number' ? startValue : this.startValue
-  this.distance = typeof distance === 'number' ? distance : this.distance
-  this.duration = typeof duration === 'number' ? duration : this.duration
-  return this
-}
-*/
+function getScrollEnd (element, moveX, moveY) {
+  const [, mathX = '', floatX, unitX] = String(moveX || 0).match(/([+-])?\s*([\d.]+)(px|%)?/) || []
+  const [, mathY = '', floatY, unitY] = String(moveY || 0).match(/([+-])?\s*([\d.]+)(px|%)?/) || []
+  const toX = (mathX ? element.scrollLeft : 0) + Number(`${mathX}${floatX}`) * (unitX === '%' ? element.clientWidth / 100 : 1)
+  const toY = (mathY ? element.scrollTop : 0) + Number(`${mathY}${floatY}`) * (unitY === '%' ? element.clientHeight / 100 : 1)
 
-/**
-* Resets the tween and runs it relative to the current time
-* @returns {self}
-window.Tween.prototype.reset = function () {
-  this.startTime = Date.now()
-  return this
+  return getItemFromPosition(element, toX, toY)
 }
-*/
