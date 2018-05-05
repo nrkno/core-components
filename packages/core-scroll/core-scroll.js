@@ -14,17 +14,24 @@ const requestAnim = !IS_BROWSER || window.requestAnimationFrame || window.setTim
 
 export default function scroll (elements, move = '') {
   const options = typeof move === 'object' ? move : {move}
+  const isChange = 'x' in options || 'y' in options || options.move
 
   return queryAll(elements).map((target) => {
-    target.setAttribute(UUID, '')
-    target.style.webkitOverflowScrolling = 'touch' // Momentum scoll on iPhone
-    target.style.overflow = 'scroll' // Ensure visible scrollbars
-    target.style.cursor = '-webkit-grab'
-    target.style.cursor = 'grab'
+    if (!target.hasAttribute(UUID)){ // Reduce read / write operations
+      const scrollbarWidth = target.offsetWidth - target.clientWidth
+      const scrollbarHeight = target.offsetHeight - target.clientHeight
 
-    if (options.hideScrollbars) hideScrollbars(target)
-    scrollTo(target, parseCoordinates(target, options))
-
+      target.setAttribute(UUID, '')
+      target.style.overflow = 'scroll' // Ensure visible scrollbars
+      target.style.willChange = 'scroll-position' // Enhance performace
+      target.style.webkitOverflowScrolling = 'touch' // Momentum scoll on iOS
+      target.style.maxHeight = `calc(100% + ${scrollbarHeight}px)` // Consistent height
+      target.style.marginRight = `-${scrollbarWidth}px`
+      target.style.marginBottom = `-${scrollbarHeight}px`
+      setCursor(target, 'grab')
+      onScroll({target}) // Update state
+    }
+    if (isChange) scrollTo(target, parsePoint(target, options))
     return target
   })
 }
@@ -46,8 +53,8 @@ function onMousedown (event) {
       DRAG.animate = DRAG.diffX = DRAG.diffY = 0 // Reset
       DRAG.target = el
 
-      document.body.style.cursor = el.style.cursor = '-webkit-grabbing'
-      document.body.style.cursor = el.style.cursor = 'grabbing'
+      setCursor(el, 'grabbing')
+      setCursor(document.body, 'grabbing')
       document.addEventListener('mousemove', onMousemove)
       document.addEventListener('mouseup', onMouseup)
     }
@@ -64,24 +71,25 @@ function onMousemove (event) {
 function onMouseup (event) {
   document.removeEventListener('mousemove', onMousemove)
   document.removeEventListener('mouseup', onMouseup)
-  document.body.style.cursor = ''
-  scroll(DRAG.target, {
+  setCursor(document.body, '')
+  setCursor(DRAG.target, 'grab')
+  scrollTo(DRAG.target, {
     x: DRAG.scrollX + DRAG.diffX * VELOCITY,
     y: DRAG.scrollY + DRAG.diffY * VELOCITY
   })
 }
 
-function onScroll ({target}) {
+function onScroll ({type, target}) {
   if (!target.hasAttribute || !target.hasAttribute(UUID)) return // target can be document
-  const pos = {left: target.scrollLeft, up: target.scrollTop}
-  pos.right = target.scrollWidth - target.clientWidth - pos.left
-  pos.down = target.scrollHeight - target.clientHeight - pos.up
+  const move = {left: target.scrollLeft > 0, up: target.scrollTop > 0}
+  move.right = target.scrollLeft < target.scrollWidth - target.clientWidth
+  move.down = target.scrollTop < target.scrollHeight - target.clientHeight
 
   queryAll(`[${ATTR}]`).forEach((button) => {
     const isTarget = document.getElementById(button.getAttribute(ATTR)) === target
-    if (isTarget) button.disabled = !pos[button.value]
+    if (isTarget) button.disabled = !move[button.value]
   })
-  dispatchEvent(target, 'scroll.throttled', pos)
+  if (type) dispatchEvent(target, 'scroll.change', move) // Only dispatch if derrived from native event
 }
 
 function onClick (event) {
@@ -91,18 +99,13 @@ function onClick (event) {
   }
 }
 
-function hideScrollbars (target) {
-  const scrollbarWidth = target.offsetWidth - target.clientWidth
-  const scrollbarHeight = target.offsetHeight - target.clientHeight
-  const parentHeight = target.parentElement.offsetHeight
-
-  target.style.height = `${parentHeight + scrollbarHeight}px` // Consistent height as scrollbars are subtracted
-  target.style.marginRight = `-${scrollbarWidth}px`
-  target.style.marginBottom = `-${scrollbarHeight}px`
+function setCursor (el, cursor) {
+  el.style.cursor = `-webkit-${cursor}`
+  el.style.cursor = cursor
 }
 
 function scrollTo (target, {x, y}) {
-  // Giving the animation an ID works around IE timeout issues
+  // Giving the animation an ID to workaround IE timeout issues
   const uuid = DRAG.animate = Math.floor(Date.now() * Math.random()).toString(16)
   const endX = Math.max(0, Math.min(x, target.scrollWidth - target.clientWidth))
   const endY = Math.max(0, Math.min(y, target.scrollHeight - target.clientHeight))
@@ -114,27 +117,27 @@ function scrollTo (target, {x, y}) {
       target.scrollLeft = endX - Math.round(moveX *= FRICTION)
       target.scrollTop = endY - Math.round(moveY *= FRICTION)
       requestAnim(move)
-    } else onScroll({target}) // Update state
+    }
   }
   move()
 }
 
-function parseCoordinates (target, options) {
-  const move = MOVE[options.move]
-  if (typeof options.x !== 'number') options.x = target.scrollLeft
-  if (typeof options.y !== 'number') options.y = target.scrollTop
-  if (move) {
-    const axis = move.x ? 'x' : 'y'
-    const size = move.x ? 'width' : 'height'
-    const start = move.x ? 'left' : 'top'
+function parsePoint (target, {x, y, move}) {
+  const point = {x, y, move: MOVE[move]}
+  if (typeof point.x !== 'number') point.x = target.scrollLeft
+  if (typeof point.y !== 'number') point.y = target.scrollTop
+  if (point.move) {
+    const axis = point.move.x ? 'x' : 'y'
+    const size = point.move.x ? 'width' : 'height'
+    const start = point.move.x ? 'left' : 'top'
     const bound = target.getBoundingClientRect()
     const scroll = target[axis === 'x' ? 'scrollLeft' : 'scrollTop']
 
     queryAll(target.children).every((el) => { // Use .every as this loop stops on return false
       const rect = el.getBoundingClientRect()
-      options[axis] = rect[start] - bound[start] + scroll
-      return rect[move.prop || options.move] < bound[start] + bound[size] * move[axis]
+      point[axis] = rect[start] - bound[start] + scroll // Update point to child axis coordinate
+      return rect[point.move.prop || move] < bound[start] + bound[size] * point.move[axis]
     })
   }
-  return options
+  return point
 }
