@@ -80,7 +80,6 @@ function setOpen (tablist, open) { // open can be Number, String or Element
     tab.setAttribute('aria-controls', panel.id = panel.id || getUUID())
     panel.setAttribute(`${ARIA}-labelledby`, tab.id = tab.id || getUUID())
     panel.setAttribute('role', 'tabpanel')
-    panel.setAttribute('tabindex', 0)
     panel[selectedPanel ? 'removeAttribute' : 'setAttribute']('hidden', '')
   })
 
