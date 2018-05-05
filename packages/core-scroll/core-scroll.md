@@ -63,17 +63,16 @@ class MyScroll extends React.Component {
     super(props)
     this.state = {right: true}
     this.onLeft = this.onClick.bind(this, 'left')
-    this.onRight = this.onClick.bind(this, 'right')
     this.onChange = this.onChange.bind(this)
   }
   onChange (event) { this.setState(event.detail) }
-  onClick (direction) { this.scroll.update(direction) }
+  onClick (direction) { this.scroll.move(direction) }
   render () {
     return <div>
       <button disabled={!this.state.left} onClick={this.onLeft}>Left</button>
-      <button disabled={!this.state.right} onClick={this.onRight}>Right</button>
+      <button data-core-scroll="my-scroll-jsx" value="right">Right</button>
       <div className="my-wrap">
-        <Scroll className="my-scroll" onChange={this.onChange} ref={(scroll) => (this.scroll = scroll)}>
+        <Scroll className="my-scroll" id="my-scroll-jsx" onChange={this.onChange} ref={(scroll) => (this.scroll = scroll)}>
           <div>1</div><div>2</div><div>3</div><div>4</div><a href="#">5</a>
           <div>6</div><div>7</div><div>8</div><div>9</div><div>10</div>
           <div>11</div><div>12</div><div>13</div><div>14</div><div>15</div>
