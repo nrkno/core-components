@@ -17,7 +17,7 @@ export default function scroll (elements, move = '') {
   const isChange = 'x' in options || 'y' in options || options.move
 
   return queryAll(elements).map((target) => {
-    if (!target.hasAttribute(UUID)){ // Reduce read / write operations
+    if (!target.hasAttribute(UUID)) { // Reduce read / write operations
       const scrollbarWidth = target.offsetWidth - target.clientWidth
       const scrollbarHeight = target.offsetHeight - target.clientHeight
 
