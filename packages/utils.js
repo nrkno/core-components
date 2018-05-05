@@ -20,21 +20,6 @@ export function addEvent (uuid, type, handler, options = false) {
 }
 
 /**
-* debounce
-* @param {Function} callback The function to debounce
-* @param {Number} ms The number of milliseconds to delay
-* @return {Function} The new debounced function
-*/
-export function debounce (callback, ms) {
-  let timer
-  return function (...args) {
-    const self = this
-    clearTimeout(timer)
-    timer = setTimeout(() => callback.apply(self, args), ms)
-  }
-}
-
-/**
 * escapeHTML
 * @param {String} str A string with potential html tokens
 * @return {String} Escaped HTML string according to OWASP recommendation
@@ -90,6 +75,28 @@ export function dispatchEvent (element, name, detail = {}) {
 */
 export function getUUID (el) {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 5)
+}
+
+/**
+* throttle
+* @param {Function} callback The function to debounce
+* @param {Number} ms The threshold of milliseconds between each callback
+* @return {Function} The new throttled function
+*/
+export function throttle (callback, ms) {
+  let last
+  let time
+  return function (...args) {
+    const self = this
+    const now = Date.now()
+    if (last && now < last + ms) {
+      clearTimeout(time)
+      time = setTimeout(() => { last = now; callback.apply(self, args) }, ms)
+    } else {
+      last = now
+      callback.apply(self, args)
+    }
+  }
 }
 
 /**
