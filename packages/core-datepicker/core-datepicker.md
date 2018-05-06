@@ -34,7 +34,7 @@ category: Components
   </label>
   <fieldset>
     <legend>Måned</legend>
-    <label><input type="radio" name="my-months" data-unit="year" value="1">Jan</label>
+    <label><input type="radio" name="my-months" data-unit="month" value="1">Jan</label>
     <label><input type="radio" name="my-months" value="y-2-d">Feb</label>
     <label><input type="radio" name="my-months" value="y-3-d">Mars</label>
     <label><input type="radio" name="my-months" value="y-4-d">April</label>
@@ -69,15 +69,10 @@ category: Components
 ```datepicker.js
 coreDatepicker.days = ['m', 't', 'o', 't', 'f', 'l', 's'] // Change name of days
 
-// Example auto fill months
-document.querySelector('.my-date select[data-unit="month"]').innerHTML =
-  coreDatepicker.months.map((name, index) => {
-    return `<option value="${index + 1}">${name}</option>`
-  }).join('')
-
 // Disable dates
+document.addEventListener('datepicker.change', (event) => event.preventDefault())
 document.addEventListener('datepicker.render', (event) => {
-  const now = Date.now()
+  const now = coreDatepicker.parse('00:00')
   console.log(now)
   event.detail.setDisabled((date) => date < now)
 })
