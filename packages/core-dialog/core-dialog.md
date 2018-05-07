@@ -6,11 +6,11 @@ category: Components
 > `<dialog>` is an element with which the user interacts with to perform some task or decision. `core-dialog` simply adds `dialog` functionality to a `<dialog>` if it is not supported (or extends functionality if is supported). `core-dialog` supports nestability, keyboard navigation containment and restoring focus when dialog is closed.
 
 ```dialog.html
-<button data-core-dialog="#my-dialog">Open dialog</button>
+<button data-core-dialog="my-dialog">Open dialog</button>
 <dialog id="my-dialog" class="my-dialog" aria-label="første dialog tittel">
   <h1>This is a title</h1>
   <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
-  <button data-core-dialog="#my-dialog-nested">Open an additional dialog</button>
+  <button data-core-dialog="my-dialog-nested">Open an additional dialog</button>
   <button data-core-dialog="close">Close</button>
 </dialog>
 <dialog id="my-dialog-nested" class="my-dialog" aria-label="andre dialog tittel">
@@ -104,10 +104,10 @@ class DialogContainerTest extends React.Component {
 ## Usage
 ```html
 <!-- Opening a dialog -->
-<!-- By setting the data-core-dialog attribute with a reference to an element -->
+<!-- By setting the data-core-dialog attribute with a ID reference to an element -->
 <!-- we automatically set up a click handler that will open the dialog -->
 <!-- Note: you need to initialize core-dialog -->
-<button data-core-dialog="#my-dialog">Open dialog</button>
+<button data-core-dialog="my-dialog">Open dialog</button>
 <!-- Closing a dialog -->
 <dialog id="my-dialog">
   <h1>Title of dialog</h1>
