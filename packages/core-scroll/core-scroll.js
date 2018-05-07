@@ -81,21 +81,22 @@ function onMouseup (event) {
 
 function onScroll ({type, target}) {
   if (!target.hasAttribute || !target.hasAttribute(UUID)) return // target can be document
-  const move = {left: target.scrollLeft > 0, up: target.scrollTop > 0}
-  move.right = target.scrollLeft < target.scrollWidth - target.clientWidth
-  move.down = target.scrollTop < target.scrollHeight - target.clientHeight
+  const detail = {left: target.scrollLeft, up: target.scrollTop}
+  detail.right = target.scrollWidth - target.clientWidth - detail.left
+  detail.down = target.scrollTop - target.scrollHeight - detail.right
 
-  queryAll(`[${ATTR}]`).forEach((button) => {
-    const isTarget = document.getElementById(button.getAttribute(ATTR)) === target
-    if (isTarget) button.disabled = !move[button.value]
-  })
-  if (type) dispatchEvent(target, 'scroll.change', move) // Only dispatch if derrived from native event
+  dispatchEvent(target, 'scroll.change', detail)
+  if (target.id) {
+    queryAll(`[${ATTR}]`).forEach((el) => {
+      if (el.getAttribute(ATTR) === target.id) el.disabled = !detail[el.value]
+    })
+  }
 }
 
 function onClick (event) {
   for (let el = event.target; el; el = el.parentElement) {
-    const target = document.getElementById(el.getAttribute(ATTR))
-    if (target) return scroll(target, el.value)
+    const id = el.getAttribute(ATTR)
+    if (id) return scroll(document.getElementById(id), el.value)
   }
 }
 

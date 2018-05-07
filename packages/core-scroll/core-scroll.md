@@ -6,19 +6,11 @@ category: Components
 > `@nrk/core-scroll` enhances any tag with content to be scrollable with mouse interaction on non-touch-devices.
 
 ```scroll.html
-<button data-core-scroll="my-scroll-js" value="up" aria-label="Rull til opp">
-  <svg width="15" height="15" aria-hidden="true"><use xlink:href="#nrk-chevron-up" /></svg>
-</button>
-<button data-core-scroll="my-scroll-js" value="down" aria-label="Rull til ned">
-  <svg width="15" height="15" aria-hidden="true"><use xlink:href="#nrk-chevron-down" /></svg>
-</button>
+<button data-core-scroll="my-scroll-js" value="up" aria-label="Rull opp">&darr;</button>
+<button data-core-scroll="my-scroll-js" value="down" aria-label="Rull ned">&uarr;</button>
 <br>
-<button data-core-scroll="my-scroll-js" value="left" aria-label="Rull til venstre">
-  <svg width="15" height="15" aria-hidden="true"><use xlink:href="#nrk-chevron-left" /></svg>
-</button>
-<button data-core-scroll="my-scroll-js" value="right" aria-label="Rull til høyre">
-  <svg width="15" height="15" aria-hidden="true"><use xlink:href="#nrk-chevron-right" /></svg>
-</button>
+<button data-core-scroll="my-scroll-js" value="left" aria-label="Rull til venstre">&larr;</button>
+<button data-core-scroll="my-scroll-js" value="right" aria-label="Rull til høyre">&rarr;</button>
 <div class="my-wrap">
   <div class="my-scroll" id="my-scroll-js">
     <div>1</div><div>2</div><div>3</div><div>4</div><a href="#">5</a>
@@ -52,7 +44,6 @@ category: Components
     <div>11</div><div>12</div><div>13</div><div>14</div><div>15</div>
   </div>
 </div>
-<script async src="https://static.nrk.no/core-icons/latest/core-icons.min.js"></script>
 ```
 ```scroll.js
 coreScroll('.my-scroll');
@@ -61,18 +52,14 @@ coreScroll('.my-scroll');
 class MyScroll extends React.Component {
   constructor (props) {
     super(props)
-    this.state = {right: true}
-    this.onLeft = this.onClick.bind(this, 'left')
-    this.onChange = this.onChange.bind(this)
+    this.state = {}
   }
-  onChange (event) { this.setState(event.detail) }
-  onClick (direction) { this.scroll.move(direction) }
   render () {
     return <div>
-      <button disabled={!this.state.left} onClick={this.onLeft}>Left</button>
-      <button data-core-scroll="my-scroll-jsx" value="right">Right</button>
+      <button disabled={!this.state.scrollLeft} onClick={this.state.scrollLeft}>Left JSX</button>
+      <button disabled={!this.state.scrollRight} onClick={this.state.scrollRight}>Right JSX</button>
       <div className="my-wrap">
-        <Scroll className="my-scroll" id="my-scroll-jsx" onChange={this.onChange} ref={(scroll) => (this.scroll = scroll)}>
+        <Scroll className="my-scroll" id={this.scrollId} onChange={(state) => this.setState(state)}>
           <div>1</div><div>2</div><div>3</div><div>4</div><a href="#">5</a>
           <div>6</div><div>7</div><div>8</div><div>9</div><div>10</div>
           <div>11</div><div>12</div><div>13</div><div>14</div><div>15</div>
