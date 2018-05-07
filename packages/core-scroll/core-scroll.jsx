@@ -8,6 +8,7 @@ export default class Scroll extends React.Component {
   constructor (props) {
     super(props)
     this.onScroll = this.onScroll.bind(this)
+    this.scrollTo = (options) => coreScroll(this.el, options)
     this.scrollUp = () => coreScroll(this.el, 'up')
     this.scrollDown = () => coreScroll(this.el, 'down')
     this.scrollLeft = () => coreScroll(this.el, 'left')
