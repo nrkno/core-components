@@ -6,8 +6,8 @@ category: Components
 > `@nrk/core-scroll` enhances any tag with content to be scrollable with mouse interaction on non-touch-devices.
 
 ```scroll.html
-<button data-core-scroll="my-scroll-js" value="up" aria-label="Rull opp">&darr;</button>
-<button data-core-scroll="my-scroll-js" value="down" aria-label="Rull ned">&uarr;</button>
+<button data-core-scroll="my-scroll-js" value="up" aria-label="Rull opp">&uarr;</button>
+<button data-core-scroll="my-scroll-js" value="down" aria-label="Rull ned">&darr;</button>
 <br>
 <button data-core-scroll="my-scroll-js" value="left" aria-label="Rull til venstre">&larr;</button>
 <button data-core-scroll="my-scroll-js" value="right" aria-label="Rull til høyre">&rarr;</button>
