@@ -2,6 +2,7 @@ import {name, version} from './package.json'
 import {queryAll, addEvent, dispatchEvent} from '../utils'
 
 const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid attribute characters
+const ATTR = 'data-core-dialog'
 const KEYS = {ESC: 27, TAB: 9}
 const FOCUS_PREVIOUS = `${UUID}-previous`
 const FOCUSABLE_ELEMENTS = `
@@ -15,7 +16,7 @@ const FOCUSABLE_ELEMENTS = `
 export default function dialog (dialogs, open) {
   const options = typeof open === 'object' ? open : {open}
 
-  return queryAll(dialogs).forEach((dialog) => {
+  return queryAll(dialogs).map((dialog) => {
     const hasBackdrop = (dialog.nextElementSibling || {}).nodeName === 'BACKDROP'
 
     dialog.setAttribute(UUID, '')
@@ -35,13 +36,13 @@ addEvent(UUID, 'click', (event) => {
   // We need to do this loop in order for the close button to know which
   // dialog it should close.
   for (let el = event.target, isClose; el; el = el.parentElement) {
-    const action = el.getAttribute('data-core-dialog')
+    const action = el.getAttribute(ATTR)
     const prev = el.previousElementSibling
     isClose = isClose || action === 'close'
 
     if (isClose) el.hasAttribute(UUID) && setOpen(el, false)
     else if (prev && prev.hasAttribute(UUID)) setOpen(prev, false) // Click on backdrop
-    else if (action) dialog(action, true) // Use dialog (not setOpen) to hangle multiple dialogs
+    else if (action) dialog(document.getElementById(action), true) // Target dialog
   }
 })
 

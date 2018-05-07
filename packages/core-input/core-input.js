@@ -9,7 +9,7 @@ export default function input (elements, content) {
   const options = typeof content === 'object' ? content : {content}
   const repaint = typeof options.content === 'string'
 
-  return queryAll(elements).forEach((input) => {
+  return queryAll(elements).map((input) => {
     const list = input.nextElementSibling
 
     input.setAttribute(UUID, '')
@@ -32,7 +32,7 @@ input.highlight = (haystack, needle) => {
 }
 
 addEvent(UUID, 'click', onClickOrFocus)
-addEvent(UUID, 'focus', onClickOrFocus)
+addEvent(UUID, 'focus', onClickOrFocus, true) // Use focus with capturing instead of focusin for old Firefox
 function onClickOrFocus (event) {
   if (event.ctrlKey || event.altKey || event.metaKey || event.defaultPrevented) return
 

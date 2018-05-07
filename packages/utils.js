@@ -1,19 +1,22 @@
 export const IS_BROWSER = typeof window !== 'undefined'
 export const IS_ANDROID = IS_BROWSER && /(android)/i.test(navigator.userAgent) // Bad, but needed
 export const IS_IOS = IS_BROWSER && /iPad|iPhone|iPod/.test(String(navigator.platform))
+export const HAS_EVENT_OPTIONS = ((has = false) => {
+  try { window.addEventListener('test', null, {get passive () { has = true }}) } catch (e) {}
+  return has
+})()
 
 /**
 * addEvent
 * @param {String} uuid An unique ID of the event to bind - ensurnes single instance
 * @param {String} type The type of event to bind
 * @param {Function} handler The function to call on event
+* @param {Boolean|Object} options useCapture or options object for addEventListener. Defaults to false
 */
-export function addEvent (uuid, type, handler) {
-  const useCaptureForOldFirefox = type === 'blur' || type === 'focus'
-  const id = `${uuid}-${type}`
-
-  if (typeof window === 'undefined' || window[id]) return // Ensure single instance
-  document.addEventListener(window[id] = type, handler, useCaptureForOldFirefox)
+export function addEvent (uuid, type, handler, options = false) {
+  if (typeof window === 'undefined' || window[`${uuid}-${type}`]) return // Ensure single instance
+  if (!HAS_EVENT_OPTIONS && typeof options === 'object') options = Boolean(options.capture) // Fix unsupported options
+  document.addEventListener(window[`${uuid}-${type}`] = type, handler, options)
 }
 
 /**
@@ -75,9 +78,31 @@ export function getUUID (el) {
 }
 
 /**
+* throttle
+* @param {Function} callback The function to debounce
+* @param {Number} ms The threshold of milliseconds between each callback
+* @return {Function} The new throttled function
+*/
+export function throttle (callback, ms) {
+  let last
+  let time
+  return function (...args) {
+    const self = this
+    const now = Date.now()
+    if (last && now < last + ms) {
+      clearTimeout(time)
+      time = setTimeout(() => { last = now; callback.apply(self, args) }, ms)
+    } else {
+      last = now
+      callback.apply(self, args)
+    }
+  }
+}
+
+/**
 * queryAll
 * @param {String|NodeList|Array|Element} elements A CSS selector string, nodeList, element array, or single element
-* @return {Array} Array of elements
+* @return {Element[]} Array of elements
 */
 export function queryAll (elements, context = document) {
   if (elements) {
