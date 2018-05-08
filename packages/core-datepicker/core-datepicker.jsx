@@ -16,3 +16,8 @@ export default class Datepicker extends React.Component {
     return React.createElement('div', props, this.props.children)
   }
 }
+
+// Expose API and config
+Datepicker.parse = coreDatepicker.parse
+Datepicker.months = coreDatepicker.months
+Datepicker.days = coreDatepicker.days

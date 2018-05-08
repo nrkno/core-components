@@ -10,10 +10,9 @@ const TYPE = `${ATTR}-type`
 
 export default function datepicker (elements, options) { // options can be String, Timestamp or Date
   return queryAll(elements).map((element) => {
-    const prev = element.getAttribute(UUID) || NaN
-    const prevDate = parse(prev)
+    const prevDate = parse(element.getAttribute(UUID) || Date.now())
     const nextDate = parse(typeof options === 'undefined' ? prevDate : options, prevDate)
-    const isUpdate = Number(prev) === nextDate.getTime() || dispatchEvent(element, 'datepicker.change', {prevDate, nextDate})
+    const isUpdate = prevDate.getTime() === nextDate.getTime() || dispatchEvent(element, 'datepicker.change', {prevDate, nextDate})
     const next = isUpdate ? nextDate : parse(element.getAttribute(UUID) || Date.now())
     const json = new Date(next.getTime() - next.getTimezoneOffset() * 60000).toJSON().match(/\d+/g)
     const unit = {year: next.getFullYear(), month: json[1], day: json[2], hour: json[3], minute: json[4], second: json[5], timestamp: next.getTime()}

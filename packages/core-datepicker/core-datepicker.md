@@ -6,8 +6,7 @@ category: Components
 > `@nrk/core-datepicker` enhances all child `<input>`, `<select>` `<table>` and `<button>` elements with keyboard accessible functionality for selecting date and time. The interface and granularity of date refinement can easily be altered through markup:
 
 ```datepicker.html
-<button data-core-datepicker="my-datepicker" value="now">Nå</button>
-<input type="text" class="my-toggle" placeholder="Velg dato">
+<button class="my-toggle">Velg dato</button>
 <div class="my-datepicker my-dropdown" id="my-datepicker" hidden>
   <input type="timestamp">
   <fieldset>
@@ -63,7 +62,9 @@ category: Components
     </label>
   </fieldset>
   <table></table>
-</div> - JS
+</div>
+<button data-core-datepicker="my-datepicker" value="now">Nå</button>
+<input type="text" id="my-datepicker-output">
 ```
 ```datepicker.js
 // coreDate.days = ['m', 't', 'o', 't', 'f', 'l', 's'] // Change name of days
@@ -71,7 +72,7 @@ category: Components
 // Update GUI
 document.addEventListener('datepicker.change', function (event) {
   if (event.target.id === 'my-datepicker') {
-    document.querySelector('.my-toggle').value = event.detail.nextDate.toLocaleString()
+    document.getElementById('my-datepicker-output').value = event.detail.nextDate.toLocaleString()
   }
 })
 
@@ -84,19 +85,21 @@ class MyDate extends React.Component {
   constructor (props) {
     super(props)
     this.state = {date: new Date()}
+    this.onNow = this.onNow.bind(this)
     this.onChange = this.onChange.bind(this)
   }
-  onChange (event) {
-    this.setState({date: event.detail.nextDate})
-  }
+  onNow () { this.setState({date: Datepicker.parse('now')}) }
+  onChange (event) { this.setState({date: event.detail.nextDate}) }
   render () {
     return <Toggle popup={true}>
-      <input type="text" readOnly value={this.state.date.toLocaleDateString()} />
+      <button>Velg dato JSX</button>
       <Datepicker date={this.state.date} onChange={this.onChange} className="my-datepicker my-dropdown">
         <label>År<input type="year" /></label>
         <label>Måned<select></select></label>
         <table></table>
-      </Datepicker> - JSX
+      </Datepicker>
+      <button onClick={this.onNow}>I dag JSX</button>
+      <input type="text" readOnly value={this.state.date.toLocaleDateString()} />
     </Toggle>
   }
 }
