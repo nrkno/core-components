@@ -59,7 +59,7 @@ class MyScroll extends React.Component {
       <button disabled={!this.state.scrollLeft} onClick={this.state.scrollLeft}>Left JSX</button>
       <button disabled={!this.state.scrollRight} onClick={this.state.scrollRight}>Right JSX</button>
       <div className="my-wrap">
-        <Scroll className="my-scroll" id={this.scrollId} onChange={(state) => this.setState(state)}>
+        <Scroll className="my-scroll" onChange={(state) => this.setState(state)}>
           <div>1</div><div>2</div><div>3</div><div>4</div><a href="#">5</a>
           <div>6</div><div>7</div><div>8</div><div>9</div><div>10</div>
           <div>11</div><div>12</div><div>13</div><div>14</div><div>15</div>

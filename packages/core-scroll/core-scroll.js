@@ -5,7 +5,7 @@ const DRAG = {}
 const ATTR = 'data-core-scroll'
 const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid attribute characters
 const MOVE = {up: {y: -1, prop: 'top'}, down: {y: 1, prop: 'bottom'}, left: {x: -1}, right: {x: 1}}
-const FRICTION = 0.95
+const FRICTION = 0.8
 const VELOCITY = 20
 
 // https://css-tricks.com/introduction-reduced-motion-media-query/
@@ -18,18 +18,20 @@ export default function scroll (elements, move = '') {
 
   return queryAll(elements).map((target) => {
     if (!target.hasAttribute(UUID)) { // Reduce read / write operations
-      const scrollbarWidth = target.offsetWidth - target.clientWidth
-      const scrollbarHeight = target.offsetHeight - target.clientHeight
-
-      target.setAttribute(UUID, '')
+      target.setAttribute(UUID, options.friction)
       target.style.overflow = 'scroll' // Ensure visible scrollbars
       target.style.willChange = 'scroll-position' // Enhance performace
       target.style.webkitOverflowScrolling = 'touch' // Momentum scoll on iOS
+
+      // Must be after setting overflow scroll
+      const scrollbarWidth = target.offsetWidth - target.clientWidth
+      const scrollbarHeight = target.offsetHeight - target.clientHeight
+
       target.style.maxHeight = `calc(100% + ${scrollbarHeight}px)` // Consistent height
       target.style.marginRight = `-${scrollbarWidth}px`
       target.style.marginBottom = `-${scrollbarHeight}px`
       setCursor(target, 'grab')
-      onScroll({target}) // Update state
+      onChange({target}) // Update state
     }
     if (isChange) scrollTo(target, parsePoint(target, options))
     return target
@@ -37,7 +39,8 @@ export default function scroll (elements, move = '') {
 }
 
 addEvent(UUID, 'mousedown', onMousedown)
-addEvent(UUID, 'scroll', throttle(onScroll, 500), true) // useCapture to catch event without bubbling
+addEvent(UUID, 'resize', throttle(onChange, 500)) // Update button states on resize
+addEvent(UUID, 'scroll', throttle(onChange, 500), true) // useCapture to catch event without bubbling
 addEvent(UUID, 'wheel', () => (DRAG.animate = false), {passive: true}) // Stop animation on wheel scroll
 addEvent(UUID, 'click', onClick)
 
@@ -79,13 +82,17 @@ function onMouseup (event) {
   })
 }
 
-function onScroll ({type, target}) {
+function onChange (event) {
+  const target = event.target || event
+  if (event.type === 'resize') return queryAll(`[${UUID}]`).forEach(onChange) // Update all on resize
   if (!target.hasAttribute || !target.hasAttribute(UUID)) return // target can be document
+
   const detail = {left: target.scrollLeft, up: target.scrollTop}
   detail.right = target.scrollWidth - target.clientWidth - detail.left
   detail.down = target.scrollTop - target.scrollHeight - detail.right
 
   dispatchEvent(target, 'scroll.change', detail)
+
   if (target.id) {
     queryAll(`[${ATTR}]`).forEach((el) => {
       if (el.getAttribute(ATTR) === target.id) el.disabled = !detail[el.value]
@@ -107,6 +114,7 @@ function setCursor (el, cursor) {
 
 function scrollTo (target, {x, y}) {
   // Giving the animation an ID to workaround IE timeout issues
+  const friction = Math.min(0.99, target.getAttribute(UUID)) || FRICTION // Avoid friction 1 (infinite)
   const uuid = DRAG.animate = Math.floor(Date.now() * Math.random()).toString(16)
   const endX = Math.max(0, Math.min(x, target.scrollWidth - target.clientWidth))
   const endY = Math.max(0, Math.min(y, target.scrollHeight - target.clientHeight))
@@ -115,8 +123,8 @@ function scrollTo (target, {x, y}) {
 
   const move = () => {
     if (DRAG.animate === uuid && (Math.round(moveX) || Math.round(moveY))) {
-      target.scrollLeft = endX - Math.round(moveX *= FRICTION)
-      target.scrollTop = endY - Math.round(moveY *= FRICTION)
+      target.scrollLeft = endX - Math.round(moveX *= friction)
+      target.scrollTop = endY - Math.round(moveY *= friction)
       requestAnim(move)
     }
   }

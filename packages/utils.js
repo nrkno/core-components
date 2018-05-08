@@ -14,9 +14,9 @@ export const HAS_EVENT_OPTIONS = ((has = false) => {
 * @param {Boolean|Object} options useCapture or options object for addEventListener. Defaults to false
 */
 export function addEvent (uuid, type, handler, options = false) {
-  if (typeof window === 'undefined' || window[`${uuid}-${type}`]) return // Ensure single instance
+  if (typeof window === 'undefined' || window[uuid = `${uuid}-${type}`]) return // Ensure single instance
   if (!HAS_EVENT_OPTIONS && typeof options === 'object') options = Boolean(options.capture) // Fix unsupported options
-  document.addEventListener(window[`${uuid}-${type}`] = type, handler, options)
+  ;(type === 'resize' ? window : document).addEventListener(window[uuid] = type, handler, options)
 }
 
 /**

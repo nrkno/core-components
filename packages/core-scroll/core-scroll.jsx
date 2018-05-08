@@ -2,12 +2,13 @@ import React from 'react'
 import coreScroll from './core-scroll'
 import {exclude} from '../utils'
 
-const DEFAULTS = {onChange: null}
+const DEFAULTS = {onChange: null, friction: null}
 
 export default class Scroll extends React.Component {
   constructor (props) {
     super(props)
     this.onScroll = this.onScroll.bind(this)
+    this.scrollTo = (options) => coreScroll(this.el, options)
     this.scrollUp = () => coreScroll(this.el, 'up')
     this.scrollDown = () => coreScroll(this.el, 'down')
     this.scrollLeft = () => coreScroll(this.el, 'left')
@@ -15,7 +16,7 @@ export default class Scroll extends React.Component {
   }
   componentDidMount () {
     this.el.addEventListener('scroll.change', this.onScroll)
-    coreScroll(this.el)
+    coreScroll(this.el, {friction: this.props.friction})
   }
   componentDidUpdate () { coreScroll(this.el) }
   componentWillUnmount () { this.el.removeEventListener('scroll.change', this.onScroll) }
