@@ -30,7 +30,7 @@ addEvent(UUID, 'click', ({target}) => {
     const next = el.nextElementSibling
 
     if (el.contains(target)) setOpen(el, !open) // Click on toggle
-    else if (pops) setOpen(el, next.contains(target)) // Click in target or outside
+    else if (pops && open) setOpen(el, next.contains(target)) // Click in target or outside
   })
 })
 
