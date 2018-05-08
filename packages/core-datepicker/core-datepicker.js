@@ -33,12 +33,12 @@ datepicker.days = ['man', 'tirs', 'ons', 'tors', 'fre', 'lør', 'søn']
 
 addEvent(UUID, 'change', onChange)
 addEvent(UUID, 'click', ({target}) => {
-  for (let el = target; el; el = el.parentElement) {
+  for (let el = target; el; el = el.parentElement) {
     if (el.nodeName === 'BUTTON') return onChange({target: el})
   }
 })
 addEvent(UUID, 'keydown', (event) => {
-  if (event.ctrlKey || event.metaKey || event.shitKey || event.altKey || !KEYS[event.keyCode]) return
+  if (event.ctrlKey || event.metaKey || event.shitKey || event.altKey || !KEYS[event.keyCode]) return
   for (let el = event.target, table; el; el = el.parentElement) {
     if (!table && el.nodeName === 'TABLE') table = el
     if (table && el.hasAttribute(UUID)) {
@@ -53,7 +53,7 @@ addEvent(UUID, 'keydown', (event) => {
 function onChange ({target}) {
   for (let el = target; el; el = el.parentElement) {
     const elem = document.getElementById(el.getAttribute(ATTR)) || el
-    const mask = elem.hasAttribute(UUID) && (MASK[target.getAttribute(TYPE)] || '*')
+    const mask = elem.hasAttribute(UUID) && (MASK[target.getAttribute(TYPE)] || '*')
     if (mask) return datepicker(elem, mask.replace('*', target.value))
   }
 }
