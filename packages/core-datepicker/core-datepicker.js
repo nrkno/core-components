@@ -3,8 +3,9 @@ import {addEvent, escapeHTML, dispatchEvent, queryAll} from '../utils'
 import parse from '@nrk/simple-date-parse'
 
 const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid attribute characters
-const KEYS = {33: '-1month', 34: '+1month', 35: 'y-m-99', 36: 'y-m-1', 37: '-1day', 38: '-1week', 39: '+1day', 40: '+1week'}
+const KEY_CODES = {33: '-1month', 34: '+1month', 35: 'y-m-99', 36: 'y-m-1', 37: '-1day', 38: '-1week', 39: '+1day', 40: '+1week'}
 const MASK = {year: '*-m-d', month: 'y-*-d', day: 'y-m-*', hour: '*:m', minute: 'h:*', second: 'h:m:*', timestamp: '*'}
+const MS_IN_MINUTES = 60000
 const ATTR = 'data-core-datepicker'
 const TYPE = `${ATTR}-type`
 
@@ -14,7 +15,7 @@ export default function datepicker (elements, options) { // options can be Strin
     const nextDate = parse(typeof options === 'undefined' ? prevDate : options, prevDate)
     const isUpdate = prevDate.getTime() === nextDate.getTime() || dispatchEvent(element, 'datepicker.change', {prevDate, nextDate})
     const next = isUpdate ? nextDate : parse(element.getAttribute(UUID) || Date.now())
-    const json = new Date(next.getTime() - next.getTimezoneOffset() * 60000).toJSON().match(/\d+/g)
+    const json = new Date(next.getTime() - next.getTimezoneOffset() * MS_IN_MINUTES).toJSON().match(/\d+/g)
     const unit = {year: next.getFullYear(), month: json[1], day: json[2], hour: json[3], minute: json[4], second: json[5], timestamp: next.getTime()}
 
     element.setAttribute(UUID, unit.timestamp)
@@ -38,11 +39,11 @@ addEvent(UUID, 'click', ({target}) => {
   }
 })
 addEvent(UUID, 'keydown', (event) => {
-  if (event.ctrlKey || event.metaKey || event.shitKey || event.altKey || !KEYS[event.keyCode]) return
+  if (event.ctrlKey || event.metaKey || event.shitKey || event.altKey || !KEY_CODES[event.keyCode]) return
   for (let el = event.target, table; el; el = el.parentElement) {
-    if (!table && el.nodeName === 'TABLE') table = el
-    if (table && el.hasAttribute(UUID)) {
-      datepicker(el, KEYS[event.keyCode])
+    if (!table && el.nodeName === 'TABLE') table = el // Store table while traversing DOM parents
+    if (table && el.hasAttribute(UUID)) { // Only listen to keyCodes inside table inside datepicker
+      datepicker(el, KEY_CODES[event.keyCode])
       table.querySelector('[aria-pressed="true"]').focus()
       event.preventDefault()
       break
@@ -62,8 +63,8 @@ function input (el, date, unit) {
   const type = el.getAttribute(TYPE) || el.getAttribute('type')
   if (type === 'radio' || type === 'checkbox') el.checked = parse(el.value, date).getTime() === date.getTime()
   else if (unit[type]) {
-    el.setAttribute('type', 'number')
-    el.setAttribute(TYPE, type)
+    el.setAttribute('type', 'number') // Set input type to number
+    el.setAttribute(TYPE, type) // And store original input type
     el.value = unit[type]
   }
 }
