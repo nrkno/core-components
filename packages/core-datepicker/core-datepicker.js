@@ -14,7 +14,8 @@ export default function datepicker (elements, options) { // options can be Strin
     const prevDate = parse(element.getAttribute(UUID) || Date.now())
     const nextDate = parse(typeof options === 'undefined' ? prevDate : options, prevDate)
     const isUpdate = prevDate.getTime() === nextDate.getTime() || dispatchEvent(element, 'datepicker.change', {prevDate, nextDate})
-    const next = isUpdate ? nextDate : parse(element.getAttribute(UUID) || Date.now())
+    const next = isUpdate ? nextDate : parse(element.getAttribute(UUID) || Date.now()) // dispatchEvent can change attributes to parse prevDate again
+
     const json = new Date(next.getTime() - next.getTimezoneOffset() * MS_IN_MINUTES).toJSON().match(/\d+/g)
     const unit = {year: next.getFullYear(), month: json[1], day: json[2], hour: json[3], minute: json[4], second: json[5], timestamp: next.getTime()}
 
