@@ -1,108 +1,110 @@
 import {name, version} from './package.json'
-import {queryAll, addEvent} from '../utils'
+import {addEvent, escapeHTML, dispatchEvent, queryAll} from '../utils'
+import parse from '@nrk/simple-date-parse'
 
 const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid attribute characters
-const DAYS = ['mandag', 'tirsdag', 'onsdag', 'torsdag', 'fredag', 'lørdag', 'søndag']
-const MONTHS = ['januar', 'februar', 'mars', 'april', 'mai', 'juni', 'juli', 'august', 'september', 'oktober', 'november', 'desember']
-const RENDERS = {}
+const KEY_CODES = {33: '-1month', 34: '+1month', 35: 'y-m-99', 36: 'y-m-1', 37: '-1day', 38: '-1week', 39: '+1day', 40: '+1week'}
+const MASK = {year: '*-m-d', month: 'y-*-d', day: 'y-m-*', hour: '*:m', minute: 'h:*', second: 'h:m:*', timestamp: '*'}
+const MS_IN_MINUTES = 60000
+const ATTR = 'data-core-datepicker'
+const TYPE = `${ATTR}-type`
 
-export default function datepicker (elements, date = {}) {
-  const options = date instanceof Date ? {date} : date
-  const dateObj = new Date(options.date || Date.now())
+export default function datepicker (elements, options) { // options can be String, Timestamp or Date
+  return queryAll(elements).map((element) => {
+    const prevDate = parse(element.getAttribute(UUID) || Date.now())
+    const nextDate = parse(typeof options === 'undefined' ? prevDate : options, prevDate)
+    const isUpdate = prevDate.getTime() === nextDate.getTime() || dispatchEvent(element, 'datepicker.change', {prevDate, nextDate})
+    const next = isUpdate ? nextDate : parse(element.getAttribute(UUID) || Date.now()) // dispatchEvent can change attributes to parse prevDate again
 
-  return queryAll(elements).map((input) => {
-    input.setAttribute(UUID, '')
+    const json = new Date(next.getTime() - next.getTimezoneOffset() * MS_IN_MINUTES).toJSON().match(/\d+/g)
+    const unit = {year: next.getFullYear(), month: json[1], day: json[2], hour: json[3], minute: json[4], second: json[5], timestamp: next.getTime()}
 
-    queryAll('[name],table', input.nextElementSibling).forEach((el) => {
-      console.log(el)
-      RENDERS[el.name || el.nodeName.toLowerCase()](el, dateObj)
-    })
+    element.setAttribute(UUID, unit.timestamp)
+    queryAll('select', element).forEach((el) => select(el, next))
+    queryAll('input', element).forEach((el) => input(el, next, unit))
+    queryAll('table', element).forEach((el) => table(el, next))
 
-    return input
+    return element
   })
 }
 
-RENDERS.month = (el, date) => {
-  const month = date.getMonth()
-  el.innerHTML = MONTHS.map((name, i) =>
-    `<option value="${i}"${i === month ? 'selected' : ''}>${i + 1} - ${name}</option>`
-  ).join('')
-}
+// Expose API and config
+datepicker.parse = parse
+datepicker.months = ['januar', 'februar', 'mars', 'april', 'mai', 'juni', 'juli', 'august', 'september', 'oktober', 'november', 'desember']
+datepicker.days = ['man', 'tirs', 'ons', 'tors', 'fre', 'lør', 'søn']
 
-RENDERS.week = (el, date) => {
-  el.value = 0
-}
-
-RENDERS.year = (el, date) => {
-  el.value = date.getFullYear()
-}
-
-RENDERS.table = (el, date) => {
-  const today = new Date()
-  const day = date.getDate()
-  const year = date.getFullYear()
-  const month = date.getMonth()
-  const firstDayOfMonth = new Date(year, month, 1)
-  let current = getMonday(firstDayOfMonth)
-  let html = ''
-
-  for (let i = 0; i < 6; i++) {
-    html += '<tr>'
-    for (let j = 0; j < 7; j++) {
-      const isSameMonth = current.getMonth() === month
-      const isToday = today.setHours(0, 0, 0, 0) === current.setHours(0, 0, 0, 0)
-      const value = current.getDate() // TODO with month
-
-      html += `<td>
-        <button title="${isToday ? 'I dag' : ''}" aria-pressed="${value === day}"  style="${isSameMonth ? '' : 'opacity:.3'}${isToday ? ';color:red' : ''}">
-          ${value}
-        </button>
-      </td>`
-      current.setDate(value + 1)
-    }
-    html += '</tr>'
+addEvent(UUID, 'change', onChange)
+addEvent(UUID, 'click', ({target}) => {
+  for (let el = target; el; el = el.parentElement) {
+    if (el.nodeName === 'BUTTON') return onChange({target: el})
   }
-
-  el.innerHTML = `<caption>${MONTHS[month]}, ${year}</caption>
-  <thead><tr><th>${DAYS.join('</th><th>')}</th></tr></thead>
-  <tbody>${html}</tbody>`
-}
-
-// http://stackoverflow.com/questions/4156434/javascript-get-the-first-day-of-the-week-from-current-date
-function getMonday (date) {
-  const d = new Date(date)
-  const day = d.getDay()
-  const diff = d.getDate() - day + (day ? 1 : -6)
-  return new Date(d.setDate(diff))
-}
-
-function getWeek (date) {
-  var date = new Date(date.getTime());
-   date.setHours(0, 0, 0, 0);
-
-  // Thursday in current week decides the year.
-  date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
-
-  // January 4 is always in week 1.
-  var week1 = new Date(date.getFullYear(), 0, 4);
-
-  var jan4th = new Date(this.getFullYear(), 0, 4);
-  return Math.ceil((((this - jan4th) / 86400000) + jan4th.getDay()+1)/7);
-
-  // Adjust to Thursday in week 1 and count number of weeks from date to week1.
-  return 1 + Math.round(((date.getTime() - jan4th.getTime()) / 86400000 - 3 + (jan4th.getDay() + 6) % 7) / 7);
-}
-
-
-addEvent(UUID, 'change', (event) => {
-  for (let el = event.target; el; el = el.parentElement) {
-    const prev = el.previousElementSibling
-    if (prev && prev.hasAttribute(UUID)) {
-      // datepicker(prev, new Date(
-      //   el.querySelector('[name="year"]').value,
-      //   el.querySelector('[name="month"]').value,
-      //   el.querySelector('[name="day"]:checked').value
-      // ))
+})
+addEvent(UUID, 'keydown', (event) => {
+  if (event.ctrlKey || event.metaKey || event.shitKey || event.altKey || !KEY_CODES[event.keyCode]) return
+  for (let el = event.target, table; el; el = el.parentElement) {
+    if (!table && el.nodeName === 'TABLE') table = el // Store table while traversing DOM parents
+    if (table && el.hasAttribute(UUID)) { // Only listen to keyCodes inside table inside datepicker
+      datepicker(el, KEY_CODES[event.keyCode])
+      table.querySelector('[aria-pressed="true"]').focus()
+      event.preventDefault()
+      break
     }
   }
 })
+
+function onChange ({target}) {
+  for (let el = target; el; el = el.parentElement) {
+    const elem = document.getElementById(el.getAttribute(ATTR)) || el
+    const mask = elem.hasAttribute(UUID) && (MASK[target.getAttribute(TYPE)] || '*')
+    if (mask) return datepicker(elem, mask.replace('*', target.value))
+  }
+}
+
+function input (el, date, unit) {
+  const type = el.getAttribute(TYPE) || el.getAttribute('type')
+  if (type === 'radio' || type === 'checkbox') el.checked = parse(el.value, date).getTime() === date.getTime()
+  else if (unit[type]) {
+    el.setAttribute('type', 'number') // Set input type to number
+    el.setAttribute(TYPE, type) // And store original input type
+    el.value = unit[type]
+  }
+}
+
+function table (table, date) {
+  if (!table.firstElementChild) {
+    table.innerHTML = `
+    <caption></caption><thead><tr><th>${datepicker.days.map(escapeHTML).join('</th><th>')}</th></tr></thead>
+    <tbody>${Array(7).join(`<tr>${Array(8).join(`<td><button></button></td>`)}</tr>`)}</tbody>`
+  }
+
+  const month = date.getMonth()
+  const today = new Date().toJSON().slice(0, 10) // Get ymd part of date
+  let day = parse('y-m-1 mon', date) // Monday in first week of month
+  table.caption.textContent = `${escapeHTML(datepicker.months[month])}, ${date.getFullYear()}`
+
+  queryAll('button', table).forEach((button) => {
+    const isToday = day.toJSON().slice(0, 10) === today
+    const isSelected = day.getTime() === date.getTime()
+    const dayInMonth = day.getDate()
+
+    button.textContent = dayInMonth // Set textContent instead of innerHTML avoids reflow
+    button.value = `${day.getFullYear()}-${day.getMonth() + 1}-${dayInMonth}`
+    button.setAttribute('tabindex', isSelected - 1)
+    button.setAttribute('aria-pressed', isSelected)
+    button.setAttribute('aria-current', isToday && 'date')
+    button.setAttribute('aria-disabled', month !== day.getMonth())
+    day.setDate(dayInMonth + 1)
+  })
+}
+
+function select (select, date) {
+  if (!select.firstElementChild) {
+    select.innerHTML = datepicker.months.map((name, month) =>
+      `<option value="y-${month + 1}-d">${escapeHTML(name)}</option>`
+    ).join('')
+  }
+
+  queryAll(select.children).forEach((option) => {
+    option.selected = parse(option.value, date).getTime() === date.getTime()
+  })
+}

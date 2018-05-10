@@ -1,5 +1,6 @@
-export {default as Toggle} from '../packages/core-toggle/core-toggle.jsx'
+export {default as Datepicker} from '../packages/core-datepicker/core-datepicker.jsx'
 export {default as Dialog} from '../packages/core-dialog/core-dialog.jsx'
 export {default as Input} from '../packages/core-input/core-input.jsx'
-export {default as Tabs} from '../packages/core-tabs/core-tabs.jsx'
 export {default as Scroll} from '../packages/core-scroll/core-scroll.jsx'
+export {default as Tabs} from '../packages/core-tabs/core-tabs.jsx'
+export {default as Toggle} from '../packages/core-toggle/core-toggle.jsx'

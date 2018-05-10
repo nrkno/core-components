@@ -13,5 +13,8 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nrkno/core-components.git"
+  },
+  "devDependencies": {
+    "@nrk/simple-date-parse": "^1.0.0"
   }
 }

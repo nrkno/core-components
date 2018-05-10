@@ -1,10 +1,12 @@
 const buble = require('rollup-plugin-buble')
+const commonjs = require('rollup-plugin-commonjs')
 const json = require('rollup-plugin-json')
+const resolve = require('rollup-plugin-node-resolve')
 const uglify = require('rollup-plugin-uglify')
 const {pkgs, getPackageName} = require('./bin/index.js') // Find all packages
 
 const globals = {'react-dom': 'ReactDOM', react: 'React'} // Do not include react in out package
-const plugins = [json(), buble(), uglify()]
+const plugins = [json(), resolve(), commonjs(), buble(), uglify()]
 
 export default pkgs
   .map((path) => ({path, name: getPackageName(path)})) // Find packages
