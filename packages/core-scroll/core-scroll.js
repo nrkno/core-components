@@ -131,10 +131,6 @@ function scrollTo (target, {x, y}) {
   move()
 }
 
-function getMargin (el, direction) {
-  return
-}
-
 function parsePoint (target, {x, y, move}) {
   const point = {x, y, move: MOVE[move]}
   if (typeof point.x !== 'number') point.x = target.scrollLeft
