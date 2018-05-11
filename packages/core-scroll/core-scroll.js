@@ -138,7 +138,6 @@ function parsePoint (target, {x, y, move}) {
   if (point.move) {
     const axis = point.move.x ? 'x' : 'y'
     const start = point.move.x ? 'left' : 'top'
-    const end = point.move.prop || move
     const bounds = target.getBoundingClientRect()
     const scroll = bounds[start] - target[point.move.x ? 'scrollLeft' : 'scrollTop']
     const edge = bounds[start] + bounds[point.move.x ? 'width' : 'height'] * point.move[axis]
@@ -148,7 +147,7 @@ function parsePoint (target, {x, y, move}) {
       const marg = el.ownerDocument.defaultView.getComputedStyle(el)[`margin-${start}`]
 
       point[axis] = rect[start] - parseInt(marg, 10) - scroll // Update point to child axis coordinate
-      return rect[end] < edge
+      return rect[point.move.prop || move] < edge
     })
   }
   return point
