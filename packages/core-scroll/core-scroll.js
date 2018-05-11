@@ -18,7 +18,7 @@ export default function scroll (elements, move = '') {
 
   return queryAll(elements).map((target) => {
     if (!target.hasAttribute(UUID)) { // Reduce read / write operations
-      target.setAttribute(UUID, options.friction)
+      target.setAttribute(UUID, options.friction || '')
       target.style.overflow = 'scroll' // Ensure visible scrollbars
       target.style.willChange = 'scroll-position' // Enhance performace
       target.style.webkitOverflowScrolling = 'touch' // Momentum scoll on iOS
@@ -30,8 +30,7 @@ export default function scroll (elements, move = '') {
       target.style.maxHeight = `calc(100% + ${scrollbarHeight}px)` // Consistent height
       target.style.marginRight = `-${scrollbarWidth}px`
       target.style.marginBottom = `-${scrollbarHeight}px`
-      setCursor(target, 'grab')
-      onChange({target}) // Update state
+      onChange(target) // Update state
     }
     if (isChange) scrollTo(target, parsePoint(target, options))
     return target
@@ -56,8 +55,8 @@ function onMousedown (event) {
       DRAG.animate = DRAG.diffX = DRAG.diffY = 0 // Reset
       DRAG.target = el
 
-      setCursor(el, 'grabbing')
-      setCursor(document.body, 'grabbing')
+      document.body.style.cursor = el.style.cursor = '-webkit-grabbing'
+      document.body.style.cursor = el.style.cursor = 'grabbing'
       document.addEventListener('mousemove', onMousemove)
       document.addEventListener('mouseup', onMouseup)
     }
@@ -74,8 +73,8 @@ function onMousemove (event) {
 function onMouseup (event) {
   document.removeEventListener('mousemove', onMousemove)
   document.removeEventListener('mouseup', onMouseup)
-  setCursor(document.body, '')
-  setCursor(DRAG.target, 'grab')
+  document.body.style.cursor = ''
+  onChange(DRAG.target) // Updates cursor
   scrollTo(DRAG.target, {
     x: DRAG.scrollX + DRAG.diffX * VELOCITY,
     y: DRAG.scrollY + DRAG.diffY * VELOCITY
@@ -89,10 +88,15 @@ function onChange (event) {
 
   const detail = {left: target.scrollLeft, up: target.scrollTop}
   detail.right = target.scrollWidth - target.clientWidth - detail.left
-  detail.down = target.scrollTop - target.scrollHeight - detail.right
+  detail.down = target.scrollHeight - target.clientHeight - detail.up
+  const cursor = (detail.left || detail.right || detail.up || detail.down) ? 'grab' : ''
 
   dispatchEvent(target, 'scroll.change', detail)
 
+  if (!event.type) { // Do not change cursor while dragging
+    target.style.cursor = `-webkit-${cursor}`
+    target.style.cursor = cursor
+  }
   if (target.id) {
     queryAll(`[${ATTR}]`).forEach((el) => {
       if (el.getAttribute(ATTR) === target.id) el.disabled = !detail[el.value]
@@ -107,14 +111,9 @@ function onClick (event) {
   }
 }
 
-function setCursor (el, cursor) {
-  el.style.cursor = `-webkit-${cursor}`
-  el.style.cursor = cursor
-}
-
 function scrollTo (target, {x, y}) {
   // Giving the animation an ID to workaround IE timeout issues
-  const friction = Math.min(0.99, target.getAttribute(UUID)) || FRICTION // Avoid friction 1 (infinite)
+  const friction = Math.min(0.99, target.getAttribute(UUID)) || FRICTION // Avoid friction 1 (infinite)
   const uuid = DRAG.animate = Math.floor(Date.now() * Math.random()).toString(16)
   const endX = Math.max(0, Math.min(x, target.scrollWidth - target.clientWidth))
   const endY = Math.max(0, Math.min(y, target.scrollHeight - target.clientHeight))
