@@ -131,21 +131,28 @@ function scrollTo (target, {x, y}) {
   move()
 }
 
+function getMargin (el, direction) {
+  return
+}
+
 function parsePoint (target, {x, y, move}) {
   const point = {x, y, move: MOVE[move]}
   if (typeof point.x !== 'number') point.x = target.scrollLeft
   if (typeof point.y !== 'number') point.y = target.scrollTop
   if (point.move) {
     const axis = point.move.x ? 'x' : 'y'
-    const size = point.move.x ? 'width' : 'height'
     const start = point.move.x ? 'left' : 'top'
-    const bound = target.getBoundingClientRect()
-    const scroll = target[axis === 'x' ? 'scrollLeft' : 'scrollTop']
+    const end = point.move.prop || move
+    const bounds = target.getBoundingClientRect()
+    const scroll = bounds[start] - target[point.move.x ? 'scrollLeft' : 'scrollTop']
+    const edge = bounds[start] + bounds[point.move.x ? 'width' : 'height'] * point.move[axis]
 
     queryAll(target.children).every((el) => { // Use .every as this loop stops on return false
       const rect = el.getBoundingClientRect()
-      point[axis] = rect[start] - bound[start] + scroll // Update point to child axis coordinate
-      return rect[point.move.prop || move] < bound[start] + bound[size] * point.move[axis]
+      const marg = el.ownerDocument.defaultView.getComputedStyle(el)[`margin-${start}`]
+
+      point[axis] = rect[start] - parseInt(marg, 10) - scroll // Update point to child axis coordinate
+      return rect[end] < edge
     })
   }
   return point

@@ -73,5 +73,5 @@ class MyScroll extends React.Component {
 ```scroll.css
 #my-scroll-js { height: 200px }
 .my-wrap { overflow: hidden; white-space: nowrap; border: 1px solid; height: 100% }
-.my-scroll > * { box-sizing: border-box; display: inline-block; vertical-align: top; width: 30%; height: 90px; padding: 20px; outline: 1px solid; outline-offset: -10px; transition: 1s }
+.my-scroll > * { box-sizing: border-box; display: inline-block; vertical-align: top; width: 30%; height: 90px; padding: 10px; border: 1px solid; margin: 10px; transition: 1s }
 ```
