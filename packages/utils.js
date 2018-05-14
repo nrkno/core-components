@@ -16,7 +16,8 @@ export const HAS_EVENT_OPTIONS = ((has = false) => {
 export function addEvent (uuid, type, handler, options = false) {
   if (typeof window === 'undefined' || window[uuid = `${uuid}-${type}`]) return // Ensure single instance
   if (!HAS_EVENT_OPTIONS && typeof options === 'object') options = Boolean(options.capture) // Fix unsupported options
-  ;(type === 'resize' ? window : document).addEventListener(window[uuid] = type, handler, options)
+  const node = (type === 'resize' || type === 'load') ? window : document
+  node.addEventListener(window[uuid] = type, handler, options)
 }
 
 /**
