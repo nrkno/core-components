@@ -41,6 +41,7 @@ addEvent(UUID, 'mousedown', onMousedown)
 addEvent(UUID, 'resize', throttle(onChange, 500)) // Update button states on resize
 addEvent(UUID, 'scroll', throttle(onChange, 500), true) // useCapture to catch event without bubbling
 addEvent(UUID, 'wheel', () => (DRAG.animate = false), {passive: true}) // Stop animation on wheel scroll
+addEvent(UUID, 'load', onChange) // Update state when we are sure all CSS is loaded
 addEvent(UUID, 'click', onClick)
 
 function onMousedown (event) {
@@ -85,7 +86,7 @@ function onMouseup (event) {
 
 function onChange (event) {
   const target = event.target || event
-  if (event.type === 'resize') return queryAll(`[${UUID}]`).forEach(onChange) // Update all on resize
+  if (event.type === 'resize' || event.type === 'load') return queryAll(`[${UUID}]`).forEach(onChange) // Update all
   if (!target.hasAttribute || !target.hasAttribute(UUID)) return // target can be document
 
   const detail = {left: target.scrollLeft, up: target.scrollTop}
