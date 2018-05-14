@@ -24,8 +24,8 @@ export default function scroll (elements, move = '') {
       target.style.webkitOverflowScrolling = 'touch' // Momentum scoll on iOS
 
       // Must be after setting overflow scroll
-      const scrollbarWidth = target.offsetWidth - target.clientWidth
-      const scrollbarHeight = target.offsetHeight - target.clientHeight
+      const scrollbarWidth = target.offsetWidth - target.clientWidth + 1 // Plus one fixes safari pixelbug
+      const scrollbarHeight = target.offsetHeight - target.clientHeight + 1 // Plus one fixes safari pixelbug
 
       target.style.maxHeight = `calc(100% + ${scrollbarHeight}px)` // Consistent height
       target.style.marginRight = `-${scrollbarWidth}px`
