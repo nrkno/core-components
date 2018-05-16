@@ -177,7 +177,7 @@ class AjaxInput extends React.Component {
       items: [{name: `Searching for ${value}...`}]
     })
     window.getCountries(value, (data) => { // getCountries defined in JS
-      this.setState({items: data.length ? data : {name: 'No results'}})
+      this.setState({items: data.length ? data : [{name: 'No results'}]})
     })
   }
   render () {
