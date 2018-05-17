@@ -73,11 +73,13 @@ function onMousemove (event) {
 }
 
 function onMouseup (event) {
+  const isMomentum = DRAG.diffX || DRAG.diffY // Click-drag-scrollbar will not create momentum
   document.removeEventListener('mousemove', onMousemove)
   document.removeEventListener('mouseup', onMouseup)
   document.body.style.cursor = ''
-  onChange(DRAG.target) // Updates cursor
-  scrollTo(DRAG.target, {
+  onChange(DRAG.target)
+
+  if(isMomentum) scrollTo(DRAG.target, {
     x: DRAG.scrollX + DRAG.diffX * VELOCITY,
     y: DRAG.scrollY + DRAG.diffY * VELOCITY
   })
