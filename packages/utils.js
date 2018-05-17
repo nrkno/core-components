@@ -64,10 +64,12 @@ export function dispatchEvent (element, name, detail = {}) {
     event = document.createEvent('CustomEvent')
     event.initCustomEvent(name, true, true, detail)
   }
-  element.dispatchEvent(event)
+  // IE reports false event.defultPrevent
+  // but correct return value on element.dispatchEvent
+  const result = element.dispatchEvent(event)
   element[ignore] = null // Remove name from dispatching ignore
 
-  return !event.defaultPrevented // Follow W3C standard for return value
+  return result // Follow W3C standard for return value
 }
 
 /**
