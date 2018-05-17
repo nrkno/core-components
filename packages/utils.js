@@ -64,7 +64,7 @@ export function dispatchEvent (element, name, detail = {}) {
     event = document.createEvent('CustomEvent')
     event.initCustomEvent(name, true, true, detail)
   }
-  // IE reports incorrect event.defaultPrevent
+  // IE reports incorrect event.defaultPrevented
   // but correct return value on element.dispatchEvent
   const result = element.dispatchEvent(event)
   element[ignore] = null // Remove name from dispatching ignore
