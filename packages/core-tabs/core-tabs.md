@@ -40,7 +40,8 @@ coreTabs('.my-tabs')
     <Tabs>
       <div>
         <button>Subtab 1 JSX</button>
-        <button>Subtab 2 JSX</button></div>
+        <button>Subtab 2 JSX</button>
+      </div>
       <div>
         <div>Subpanel 1</div>
         <div>Subpanel 2</div>
