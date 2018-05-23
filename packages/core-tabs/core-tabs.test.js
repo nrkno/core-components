@@ -20,7 +20,6 @@ function expectActivePanel (panel, { labelledby }) {
   expect(panel.getAttribute('aria-labelledby')).toEqual(labelledby)
   expect(panel.getAttribute('aria-labelledby')).toBeTruthy()
   expect(panel.getAttribute('role')).toEqual('tabpanel')
-  expect(panel.getAttribute('tabindex')).toEqual('0')
   expect(panel.hasAttribute('hidden')).toBeFalsy()
 }
 
@@ -28,7 +27,6 @@ function expectInactivePanel (panel, { labelledby }) {
   expect(panel.getAttribute('aria-labelledby')).toEqual(labelledby)
   expect(panel.getAttribute('aria-labelledby')).toBeTruthy()
   expect(panel.getAttribute('role')).toEqual('tabpanel')
-  expect(panel.getAttribute('tabindex')).toEqual('0')
   expect(panel.hasAttribute('hidden')).toBeTruthy()
 }
 const standardHTML = `
