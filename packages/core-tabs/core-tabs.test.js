@@ -51,7 +51,7 @@ const standardHTMLWithReUse = `
 </div>`
 
 describe('core-tabs', () => {
-  it('can init on standard HTML', () => {
+  it('should init on standard HTML', () => {
     document.body.innerHTML = standardHTML
 
     coreTabs('.my-tabs')
@@ -70,7 +70,7 @@ describe('core-tabs', () => {
     expectInactiveTab(tab2, { controls: panel2.id })
     expectInactivePanel(panel2, { labelledby: tab2.id })
   })
-  it('can init on standard HTML with ids, reverse ordered panels', () => {
+  it('should init on standard HTML with ids, reverse ordered panels', () => {
     document.body.innerHTML = `
     <div id="tabs">
       <button id="tab-1" aria-controls="panel-1">Button tab 1</button>
@@ -98,7 +98,7 @@ describe('core-tabs', () => {
     expectInactiveTab(tab2, { controls: panel2.id })
     expectInactivePanel(panel2, { labelledby: tab2.id })
   })
-  it('can init with active tab index', () => {
+  it('should init with active tab index', () => {
     document.body.innerHTML = standardHTML
 
     coreTabs('.my-tabs', 1)
@@ -113,7 +113,7 @@ describe('core-tabs', () => {
     expectActiveTab(tab2, { controls: panel2.id })
     expectActivePanel(panel2, { labelledby: tab2.id })
   })
-  it('can init with active tab element', () => {
+  it('should init with active tab element', () => {
     document.body.innerHTML = standardHTML
 
     const tab1 = document.querySelector('button')
@@ -129,7 +129,7 @@ describe('core-tabs', () => {
     expectActiveTab(tab2, { controls: panel2.id })
     expectActivePanel(panel2, { labelledby: tab2.id })
   })
-  it('can init on html without panels as nextElementSibling. panels found by aria-controls', () => {
+  it('should init on html without panels as nextElementSibling. panels found by aria-controls', () => {
     document.body.innerHTML = `
     <div>
       <div id="my-tabs">
@@ -155,7 +155,7 @@ describe('core-tabs', () => {
       labelledby: document.querySelector('[aria-controls=panel-2]').id
     })
   })
-  it('coreTabs should update panel aria-labelledby when controlled by multiple tabs', () => {
+  it('should update panel aria-labelledby when controlled by multiple tabs', () => {
     document.body.innerHTML = standardHTMLWithReUse
 
     const tabs = document.querySelector('#tabs')
