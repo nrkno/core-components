@@ -18,7 +18,7 @@
     "start:docs": "npm run build:docs -- -w -b",
     "static-publish": "npm run build && static-publish --directory=docs --account=nrk-core --latest --major",
     "test:js": "jest",
-    "test": "npm run lint && npm run build:code && npm run test:jest"
+    "test": "npm run lint && npm run build:code && npm run test:js"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",

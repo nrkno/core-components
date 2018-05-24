@@ -79,10 +79,12 @@ function onMouseup (event) {
   document.body.style.cursor = ''
   onChange(DRAG.target)
 
-  if(isMomentum) scrollTo(DRAG.target, {
-    x: DRAG.scrollX + DRAG.diffX * VELOCITY,
-    y: DRAG.scrollY + DRAG.diffY * VELOCITY
-  })
+  if (isMomentum) {
+    scrollTo(DRAG.target, {
+      x: DRAG.scrollX + DRAG.diffX * VELOCITY,
+      y: DRAG.scrollY + DRAG.diffY * VELOCITY
+    })
+  }
   DRAG.target = null // Prevent memory leak
 }
 
@@ -119,7 +121,7 @@ function onClick (event) {
 
 function scrollTo (target, {x, y}) {
   // Giving the animation an ID to workaround IE timeout issues
-  const friction = Math.min(0.99, target.getAttribute(UUID)) || FRICTION // Avoid friction 1 (infinite)
+  const friction = Math.min(0.99, target.getAttribute(UUID)) || FRICTION // Avoid friction 1 (infinite)
   const uuid = DRAG.animate = Math.floor(Date.now() * Math.random()).toString(16)
   const endX = Math.max(0, Math.min(x, target.scrollWidth - target.clientWidth))
   const endY = Math.max(0, Math.min(y, target.scrollHeight - target.clientHeight))
