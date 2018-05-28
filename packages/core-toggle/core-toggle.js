@@ -5,6 +5,7 @@ const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid att
 const ARIA = IS_ANDROID ? 'data' : 'aria' // Andriod has a bug and reads only label instead of content
 const OPEN = 'aria-expanded'
 const POPS = 'aria-haspopup'
+const KEYS = {ESC: 27}
 
 export default function toggle (buttons, open) {
   const options = typeof open === 'object' ? open : {open}
@@ -22,6 +23,17 @@ export default function toggle (buttons, open) {
     return button
   })
 }
+
+document.addEventListener('keydown', (event) => {
+  if (event.keyCode === KEYS.ESC) {
+    queryAll(`[${UUID}]`).forEach((el) => {
+      const open = el.getAttribute(OPEN) === 'true'
+      const pops = el.getAttribute(POPS) === 'true'
+
+      if (open && pops) setOpen(el, !open)
+    })
+  }
+})
 
 addEvent(UUID, 'click', ({target}) => {
   queryAll(`[${UUID}]`).forEach((el) => {
