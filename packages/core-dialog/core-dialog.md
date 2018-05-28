@@ -21,7 +21,7 @@ category: Components
 <div id="docs-react-dialog"></div>
 ```
 ```dialog.js
-coreDialog('.my-dialog', false)
+coreDialog('.my-dialog', {open: false, type: 'strict'})
 coreInput('.my-input')
 ```
 ```dialog.jsx

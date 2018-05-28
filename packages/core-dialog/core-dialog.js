@@ -25,6 +25,7 @@ export default function dialog (dialogs, open) {
     dialog.setAttribute('aria-modal', true)
     dialog.setAttribute('aria-label', options.label || dialog.getAttribute('aria-label'))
     hasBackdrop || dialog.insertAdjacentElement('afterend', document.createElement('backdrop'))
+    options.type && dialog.setAttribute('data-dialog-type', options.type)
 
     setOpen(dialog, options.open)
     return dialog
@@ -38,10 +39,11 @@ addEvent(UUID, 'click', (event) => {
   for (let el = event.target, isClose; el; el = el.parentElement) {
     const action = el.getAttribute(ATTR)
     const prev = el.previousElementSibling
+    const isStrict = prev && prev.hasAttribute(UUID) && prev.getAttribute('data-dialog-type') === 'strict'
     isClose = isClose || action === 'close'
 
     if (isClose) el.hasAttribute(UUID) && setOpen(el, false)
-    else if (prev && prev.hasAttribute(UUID)) setOpen(prev, false) // Click on backdrop
+    else if (!isStrict && prev && prev.hasAttribute(UUID)) setOpen(prev, false) // Click on backdrop
     else if (action) dialog(document.getElementById(action), true) // Target dialog
   }
 })
@@ -54,9 +56,10 @@ addEvent(UUID, 'transitionend', ({target}) => {
 addEvent(UUID, 'keydown', (event) => {
   const key = event.keyCode
   const dialog = !event.defaultPrevented && (key === KEYS.ESC || key === KEYS.TAB) && getTopLevelDialog()
+  const isStrict = dialog.getAttribute('data-dialog-type') === 'strict'
 
   if (dialog && key === KEYS.TAB) keepFocus(dialog, event)
-  if (dialog && key === KEYS.ESC) setOpen(dialog, false, event.preventDefault())
+  if (dialog && !isStrict && key === KEYS.ESC) setOpen(dialog, false, event.preventDefault())
 })
 
 const getZIndexOfElement = (element) =>
