@@ -17,12 +17,12 @@
     "start:code": "npm run build:code -- --watch",
     "start:docs": "npm run build:docs -- -w -b",
     "static-publish": "npm run build && static-publish --directory=docs --account=nrk-core --latest --major",
-    "test:js": "jest",
+    "test:js": "npm run build:code && jest",
     "test": "npm run lint && jest"
   },
   "devDependencies": {
-    "buble-jest": "^1.0.1",
     "jest": "^23.0.1",
+    "jest-buble": "^2.0.0",
     "npm-run-all": "^4.1.3",
     "react": "^16.3.2",
     "react-dom": "^16.3.2",
@@ -56,7 +56,7 @@
   },
   "jest": {
     "transform": {
-      "^.+\\.jsx?$": "buble-jest"
+      "^.+\\.jsx?$": "jest-buble"
     }
   }
 }
