@@ -1,4 +1,4 @@
-import coreTabs from './core-tabs'
+const coreTabs = require('./core-tabs.min')
 
 function expectActiveTab (tab, { controls }) {
   expect(tab.getAttribute('aria-controls')).toEqual(controls)
