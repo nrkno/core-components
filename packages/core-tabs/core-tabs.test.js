@@ -167,4 +167,13 @@ describe('core-tabs', () => {
     coreTabs(tabs, 1)
     expectActivePanel(panel, {labelledby: tabs.children[1].id})
   })
+  it('should trigger tabs.toggle', () => {
+    document.body.innerHTML = standardHTML
+    document.addEventListener('tabs.toggle', (event) => {
+      expect(event.detail.isOpen).toBe(0)
+      expect(event.detail.willOpen).toBe(1)
+    })
+
+    coreTabs('.my-tabs', 1)
+  })
 })

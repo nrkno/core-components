@@ -53,7 +53,8 @@ addEvent(UUID, 'keydown', (event) => {
 })
 
 function getOpenTabIndex (tabs) {
-  return Math.max(0, tabs.indexOf(tabs.filter(tab => tab.getAttribute('aria-selected') === true)))
+  const open = tabs.filter((tab) => tab.getAttribute('aria-selected') === 'true')[0]
+  return Math.max(0, tabs.indexOf(open))
 }
 
 /**
