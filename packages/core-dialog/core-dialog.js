@@ -56,7 +56,7 @@ addEvent(UUID, 'transitionend', ({target}) => {
 addEvent(UUID, 'keydown', (event) => {
   const key = event.keyCode
   const dialog = !event.defaultPrevented && (key === KEYS.ESC || key === KEYS.TAB) && getTopLevelDialog()
-  const isStrict = dialog.getAttribute('data-dialog-type') === 'strict'
+  const isStrict = dialog && dialog.getAttribute('data-dialog-type') === 'strict'
 
   if (dialog && key === KEYS.TAB) keepFocus(dialog, event)
   if (dialog && !isStrict && key === KEYS.ESC) setOpen(dialog, false, event.preventDefault())
