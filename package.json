@@ -18,7 +18,7 @@
     "start:docs": "npm run build:docs -- -w -b",
     "static-publish": "npm run build && static-publish --directory=docs --account=nrk-core --latest --major",
     "test:js": "npm run build:code && jest",
-    "test": "npm run lint && jest"
+    "test": "npm run lint && npm run test:js"
   },
   "devDependencies": {
     "jest": "^23.0.1",
