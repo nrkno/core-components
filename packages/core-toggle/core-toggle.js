@@ -24,9 +24,15 @@ export default function toggle (buttons, open) {
   })
 }
 
-document.addEventListener('keydown', (event) => {
+addEvent(UUID, 'keydown', (event) => {
   if (event.keyCode === KEYS.ESC) {
-    queryAll(`[${UUID}][${OPEN}="true"][${POPS}="true"]`).forEach((el) => setOpen(el, false))
+    for (let el = event.target; el; el = el.parentElement) {
+      if (el.hasAttribute(UUID)) {
+        const open = el.getAttribute(OPEN) === 'true'
+        const pops = el.getAttribute(POPS) === 'true'
+        if (open && pops) return setOpen(el, false)
+      }
+    }
   }
 })
 
