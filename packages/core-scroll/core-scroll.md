@@ -75,3 +75,62 @@ class MyScroll extends React.Component {
 .my-wrap { overflow: hidden; white-space: nowrap; border: 1px solid; height: 100% }
 .my-scroll > * { box-sizing: border-box; display: inline-block; vertical-align: top; width: 30%; height: 90px; padding: 10px; border: 1px solid; margin: 10px; transition: 1s }
 ```
+
+
+## Usage
+
+
+
+```html
+<!-- Targets an element with id 'my-scroll-js' and moves it in the direction -->
+<!-- specified by the value. -->
+<!-- value="up|down|left|right" -->
+<!-- How much it scrolls depends on the content. It will scroll into view the next -->
+<!-- item that is not fully in view. -->
+<!-- The buttons will automatically be set to disabled if there is no possibility to -->
+<!-- scroll in the specified direction -->
+<button data-core-scroll="my-scroll-js" value="up" aria-label="Rull opp">&uarr;</button>
+
+<!-- The ID used to target with the data-core-scroll attribute -->
+<div id="my-scroll-js">
+  <!-- content that should be scrollable -->
+  <div>1</div>
+  <div>2</div>
+  <div>3</div>
+</div>
+```
+```js
+import coreScroll from '@nrk/core-scroll'
+
+coreScroll(
+  String|Element|Elements,  // Accepts a selector string, NodeList, Element or array of Elements,
+  // Can either be an object with the following attributes and values
+  {
+    move: 'right'|'left'|'up'|'down'     // If the scroll should be moved relative to 
+    x: Number                            // The scrollLeft position the target should be set to
+    y: Number                            // The scrollTop position the target should be set to
+  }
+  // or just a string with the following values
+  'right'|'left'|'up'|'down'
+)
+```
+```jsx
+import Scroll from '@nrk/core-scroll/jsx'
+
+<Scroll onChange={(state) => {}}>
+  {/* elements */}
+</Scroll>
+
+
+// state parameter in the onChange event has the following structure:
+state = {
+  scrollUp: Function|null,
+  scrollDown: Function|null,
+  scrollLeft: Function|null,
+  scrollRight: Function|null
+}
+// These properties are functions that the user can access in order to provide
+// buttons that scroll up/down/left/right. When the prop is set to null, it indicates
+// that it is not possible to scroll further in that given direction.
+
+```
