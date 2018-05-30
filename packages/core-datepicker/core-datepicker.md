@@ -147,7 +147,14 @@ class MyDate extends React.Component {
 ```
 
 ```js
+import coreDatepicker from '@nrk/core-datepicker'
 
+coreDatepicker(
+  String|Element|Elements, // Accepts a selector string, NodeList, Element or array of Elements
+  String|Date              // Specify the date which coreDatepicker should use.
+  // e:g:
+  'now + 2 days'           // Will set the date to the day after tomorrow  
+})
 ```
 
 ```jsx
