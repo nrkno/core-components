@@ -25,12 +25,24 @@ export default function dialog (dialogs, open) {
     dialog.setAttribute('aria-modal', true)
     dialog.setAttribute('aria-label', options.label || dialog.getAttribute('aria-label'))
     hasBackdrop || dialog.insertAdjacentElement('afterend', document.createElement('backdrop'))
-    options.type && dialog.setAttribute('data-dialog-type', options.type)
+    options.strict && dialog.setAttribute('data-dialog-strict', options.strict)
 
     setOpen(dialog, options.open)
     return dialog
   })
 }
+
+// Focus can move outside the dialog when in "strict"-mode, therefore
+// we need to ensure that if that happens we will refocus on the dialog.
+addEvent(UUID, 'focus', (event) => {
+  let hasDialog = false
+  for (let el = event.target; el; el = el.parentElement) {
+    if (el.hasAttribute(UUID)) return (hasDialog = true)
+  }
+
+  const dialog = getTopLevelDialog()
+  if (!hasDialog && dialog) setFocus(dialog)
+}, true)
 
 addEvent(UUID, 'click', (event) => {
   // This functions handles if the user clicked on a open or close button.
@@ -39,7 +51,7 @@ addEvent(UUID, 'click', (event) => {
   for (let el = event.target, isClose; el; el = el.parentElement) {
     const action = el.getAttribute(ATTR)
     const prev = el.previousElementSibling
-    const isStrict = prev && prev.hasAttribute(UUID) && prev.getAttribute('data-dialog-type') === 'strict'
+    const isStrict = prev && prev.hasAttribute(UUID) && Boolean(prev.getAttribute('data-dialog-strict'))
     isClose = isClose || action === 'close'
 
     if (isClose) el.hasAttribute(UUID) && setOpen(el, false)
@@ -56,7 +68,7 @@ addEvent(UUID, 'transitionend', ({target}) => {
 addEvent(UUID, 'keydown', (event) => {
   const key = event.keyCode
   const dialog = !event.defaultPrevented && (key === KEYS.ESC || key === KEYS.TAB) && getTopLevelDialog()
-  const isStrict = dialog && dialog.getAttribute('data-dialog-type') === 'strict'
+  const isStrict = dialog && Boolean(dialog.getAttribute('data-dialog-strict'))
 
   if (dialog && key === KEYS.TAB) keepFocus(dialog, event)
   if (dialog && !isStrict && key === KEYS.ESC) setOpen(dialog, false, event.preventDefault())

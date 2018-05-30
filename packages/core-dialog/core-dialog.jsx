@@ -6,14 +6,14 @@ const DEFAULTS = {hidden: null, onToggle: null}
 
 export default class Dialog extends React.Component {
   componentDidMount () {
-    dialog(this.el, this.props.open)
+    dialog(this.el, exclude(this.props, DEFAULTS))
     this.el.addEventListener('dialog.toggle', this.props.onToggle)
   }
   componentWillUnmount () {
     this.el.removeEventListener('dialog.toggle', this.props.onToggle)
   }
-  componentWillReceiveProps ({open}) {
-    dialog(this.el, open)
+  componentWillReceiveProps (props) {
+    dialog(this.el, exclude(props, DEFAULTS))
   }
   render () {
     return React.createElement('dialog',

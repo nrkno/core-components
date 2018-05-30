@@ -18,10 +18,18 @@ category: Components
   <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero.</p>
   <button data-core-dialog="close">Close</button>
 </dialog>
+<button data-core-dialog="strict-dialog">Open strict dialog</button>
+<dialog id="strict-dialog" class="my-dialog" aria-label="første dialog tittel">
+  <h1>This is a title</h1>
+  <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
+  <button data-core-dialog="close">Close</button>
+</dialog>
 <div id="docs-react-dialog"></div>
 ```
 ```dialog.js
-coreDialog('.my-dialog', {open: false, type: 'strict'})
+coreDialog('#my-dialog', {open: false})
+coreDialog('#my-dialog-nested', {open: false})
+coreDialog('#strict-dialog', {open: false, strict: true})
 coreInput('.my-input')
 ```
 ```dialog.jsx
@@ -31,14 +39,21 @@ class DialogContainerTest extends React.Component {
     super(props)
     this.state = {
       open: false,
+      strictOpen: false,
       contentTitle: 'Dialog for JSX'
     }
     this.toggleDialog = this.toggleDialog.bind(this)
+    this.toggleStrictDialog = this.toggleStrictDialog.bind(this)
     this.handleToggle = this.handleToggle.bind(this)
+    this.handleStrictToggle = this.handleStrictToggle.bind(this)
   }
 
   toggleDialog () {
     this.setState({open: !this.state.open})
+  }
+
+  toggleStrictDialog () {
+    this.setState({strictOpen: !this.state.strictOpen})
   }
 
   handleToggle (event) {
@@ -46,7 +61,13 @@ class DialogContainerTest extends React.Component {
     this.setState({open: !event.detail.isOpen})
   }
 
+  handleStrictToggle (event) {
+    event.preventDefault()
+    this.setState({strictOpen: !event.detail.isOpen})
+  }
+
   render () {
+    const isStrict = true
     return (
       <div>
         <button onClick={this.toggleDialog}>Open dialog jsx</button>
@@ -59,6 +80,18 @@ class DialogContainerTest extends React.Component {
           <h1>{this.state.contentTitle}</h1>
           <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
           <button onClick={this.toggleDialog}>Lukk</button>
+        </Dialog>
+        <button onClick={this.toggleStrictDialog}>Open strict dialog jsx</button>
+        <Dialog
+          className="my-dialog"
+          open={this.state.strictOpen}
+          onToggle={this.handleStrictToggle}
+          aria-label="React dialog"
+          strict="true"
+        >
+          <h1>{this.state.contentTitle}</h1>
+          <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
+          <button onClick={this.toggleStrictDialog}>Lukk</button>
         </Dialog>
       </div>
     )
@@ -124,6 +157,7 @@ import coreDialog from '@nrk/core-dialog'
 // Initialize a specific component or multiple components
 coreDialog(String|Element|Elements, { // Accepts a selector string, NodeList, Element or array of Elements
   open: null,                         // Defaults to true if open is set, otherwise false. Use true|false to force open state
+  strict: true|false,                 // Defaults to false. If set to true the dialog will not close on ESC-key nor on click on backdrop
   label: ''                           // Defaults to aria-label if set or an empty string. Should be implemented in order for the dialog to have a label readable by screen readers
 })
 
@@ -135,7 +169,7 @@ coreDialog('.my-dialog', {open: true, label: 'A super dialog'})
 ```jsx
 import Dialog from '@nrk/core-dialog/jsx'
 
-<Dialog open={true|false} onToggle={function(){}} aria-label="Title of dialog">
+<Dialog open={true|false} strict={'true'| /*or omit attribute*/} onToggle={function(){}} aria-label="Title of dialog">
   <h1>My React/Preact dialog</h1>
   <p>Some content</p>
   <button onClick={closeDialog}></button>
