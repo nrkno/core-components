@@ -110,3 +110,46 @@ class MyDate extends React.Component {
 .my-datepicker button[aria-pressed="true"] { border: 2px solid }
 .my-datepicker button[aria-disabled="true"] { opacity: .3 }
 ```
+
+
+```html
+  <div class="my-datepicker my-dropdown" id="my-datepicker">
+    
+    <input />
+    
+    <!-- If an empty <select> is provided, core-datepicker will populate the select -->
+    <!-- with months and automatically handle the date state when an option is chosen -->
+    <select></select>
+
+    <!-- If an empty <table> is provided, core-datepicker will display all dates -->
+    <!-- for the current/chosen month -->
+    <table></table>
+
+    <!-- To see what is supported in our natural language parser, please visit: -->
+    <!-- https://github.com/nrkno/simple-date-parse -->
+
+    <!-- It is also possible to extend the datepicker with more features -->
+    <!-- As shown in the example, it is possible to provide buttons that moves -->
+    <!-- the date a certain amount of time  -->
+    <fieldset>
+      <legend>Navigasjon</legend>
+      <!-- Dates relative to today/now by using the keyword 'now' -->
+      <button value="now">I dag</button>
+      <button value="now - 1 day|week|month|year">I går/forrige uke/måned/år</button>
+      <button value="now + 1 day|week|month|year">I morgen/neste uke/måned/år</button>
+
+      <!-- Semi-specific dates -->
+      <!-- Will use the first two digits of the current year and set the two last -->
+      <!-- digits of the year 0. Will set the date to 1st of January -->
+      <button value="yy00-01-01">Start of current century</button>
+    </fieldset>
+  </div>
+```
+
+```js
+
+```
+
+```jsx
+
+```
