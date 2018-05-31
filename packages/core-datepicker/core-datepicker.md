@@ -184,3 +184,22 @@ import Datepicker from '@nrk/core-datepicker/jsx'
   <table></table>
 <Datepicker>
 ```
+
+
+## Events
+```js
+document.addEventListener('datepicker.change', (event) => {
+  event.target                        // The datepicker container
+  event.detail.nextDate               // The new date that triggered change
+  event.detail.prevDate               // The previous/current date
+})
+```
+
+## Styling
+
+```css
+.my-datepicker                              /* Target datepicker container */
+.my-datepicker button[aria-current="date"]  /* Target current date (today) in the table */
+.my-datepicker button[aria-pressed="true"]  /* Target the chosen date in the table */
+.my-datepicker button[aria-disabled="true"] /* Target disabled dates in the table */
+```
