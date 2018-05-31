@@ -111,15 +111,28 @@ class MyDate extends React.Component {
 .my-datepicker button[aria-disabled="true"] { opacity: .3 }
 ```
 
-
+## Usage
 ```html
   <div class="my-datepicker my-dropdown" id="my-datepicker">
     
-    <input />
+    <!-- There are different behaviors depending on the type of <input>. -->
+    <!-- When 'radio' or 'checkbox' is used, core-datepicker checks the value field -->
+    <!-- to see if the date specified is matching the values of the <input>s. -->
+    <!-- When any other type is used, core-datepicker sets the type to number -->
+    <!-- and sets the date specified in the value field. -->
+    <input type="radio|checkbox|timestamp|text|number|etc"/>
     
     <!-- If an empty <select> is provided, core-datepicker will populate the select -->
     <!-- with months and automatically handle the date state when an option is chosen -->
     <select></select>
+    <!-- If you use a <select> that is already populated, core-datepicker will not -->
+    <!-- modify it, but handle the dates specified in values -->
+    <select>
+      <option value="2016-m-d">Set year to 2016</option>
+      <option value="19yy-1-1">Back 100 years and set to January 1st.</option>
+      <option value="1985-12-19">December 19, 1985</option>
+    </select>
+
 
     <!-- If an empty <table> is provided, core-datepicker will display all dates -->
     <!-- for the current/chosen month -->
@@ -152,11 +165,22 @@ import coreDatepicker from '@nrk/core-datepicker'
 coreDatepicker(
   String|Element|Elements, // Accepts a selector string, NodeList, Element or array of Elements
   String|Date              // Specify the date which coreDatepicker should use.
-  // e:g:
+  // e.g:
   'now + 2 days'           // Will set the date to the day after tomorrow  
 })
 ```
 
 ```jsx
+import Datepicker from '@nrk/core-datepicker/jsx'
 
+<Datepicker date={String|Date} onChange={function(){}} >
+  {/* Same as with vanilla js */}
+  <input type="radio|checkbox|timestamp|text|number|etc"/>
+
+  {/* Same as with vanilla js */}
+  <select></select> 
+
+  {/* Same as with vanilla js */}
+  <table></table>
+<Datepicker>
 ```
