@@ -87,7 +87,7 @@ class DialogContainerTest extends React.Component {
           open={this.state.strictOpen}
           onToggle={this.handleStrictToggle}
           aria-label="React dialog"
-          strict="true"
+          strict
         >
           <h1>{this.state.contentTitle}</h1>
           <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
@@ -169,7 +169,7 @@ coreDialog('.my-dialog', {open: true, label: 'A super dialog'})
 ```jsx
 import Dialog from '@nrk/core-dialog/jsx'
 
-<Dialog open={true|false} strict={'true'| /*or omit attribute*/} onToggle={function(){}} aria-label="Title of dialog">
+<Dialog open={true|false} strict={true|false} onToggle={function(){}} aria-label="Title of dialog">
   <h1>My React/Preact dialog</h1>
   <p>Some content</p>
   <button onClick={closeDialog}></button>
