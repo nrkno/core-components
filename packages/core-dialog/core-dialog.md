@@ -39,21 +39,14 @@ class DialogContainerTest extends React.Component {
     super(props)
     this.state = {
       open: false,
-      strictOpen: false,
       contentTitle: 'Dialog for JSX'
     }
     this.toggleDialog = this.toggleDialog.bind(this)
-    this.toggleStrictDialog = this.toggleStrictDialog.bind(this)
     this.handleToggle = this.handleToggle.bind(this)
-    this.handleStrictToggle = this.handleStrictToggle.bind(this)
   }
 
   toggleDialog () {
     this.setState({open: !this.state.open})
-  }
-
-  toggleStrictDialog () {
-    this.setState({strictOpen: !this.state.strictOpen})
   }
 
   handleToggle (event) {
@@ -61,13 +54,7 @@ class DialogContainerTest extends React.Component {
     this.setState({open: !event.detail.isOpen})
   }
 
-  handleStrictToggle (event) {
-    event.preventDefault()
-    this.setState({strictOpen: !event.detail.isOpen})
-  }
-
   render () {
-    const isStrict = true
     return (
       <div>
         <button onClick={this.toggleDialog}>Open dialog jsx</button>
@@ -81,24 +68,49 @@ class DialogContainerTest extends React.Component {
           <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
           <button onClick={this.toggleDialog}>Lukk</button>
         </Dialog>
-        <button onClick={this.toggleStrictDialog}>Open strict dialog jsx</button>
+      </div>
+    )
+  }
+}
+
+class StrictDialogContainerTest extends React.Component {
+  constructor (props) {
+    super(props);
+    this.state = {
+      open: false,
+      contentTitle: 'Strict dialog for JSX'
+    }
+    this.toggleDialog = this.toggleDialog.bind(this)
+  }
+
+  toggleDialog () {
+    this.setState({open: !this.state.open})
+  }
+  
+  render () {
+    return (
+      <div>
+        <button data-core-dialog="dialog-jsx">Open strict dialog jsx</button>
         <Dialog
+          id="dialog-jsx"
           className="my-dialog"
-          open={this.state.strictOpen}
           onToggle={this.handleStrictToggle}
           aria-label="React dialog"
           strict
         >
           <h1>{this.state.contentTitle}</h1>
           <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
-          <button onClick={this.toggleStrictDialog}>Lukk</button>
+          <button data-core-dialog="close">Lukk</button>
         </Dialog>
       </div>
     )
   }
 }
 
-<DialogContainerTest />
+<div>
+  <DialogContainerTest />
+  <StrictDialogContainerTest />
+</div>
 ```
 ```dialog.css
 .my-dialog h1 { margin-top: 0 }
