@@ -5,12 +5,17 @@ import {exclude} from '../utils'
 const DEFAULTS = {open: null, popup: null, onToggle: null} // Remove onToggle prop as this is also a native event
 
 export default class Toggle extends React.Component {
+  constructor (props) {
+    super(props)
+    this.onToggle = this.onToggle.bind(this)
+  }
   componentDidMount () {
     coreToggle(this.el.firstElementChild) // Mount client side only to avoid rerender
-    this.el.addEventListener('toggle', this.props.onToggle)
+    this.el.addEventListener('toggle', this.onToggle)
   }
   componentDidUpdate () { coreToggle(this.el.firstElementChild) } // Must mount also on update in case content changes
-  componentWillUnmount () { this.el.removeEventListener('toggle', this.props.onToggle) }
+  componentWillUnmount () { this.el.removeEventListener('toggle', this.onToggle) }
+  onToggle (event) { this.props.onToggle && this.props.onToggle(event) }
   render () {
     return React.createElement('div', exclude(this.props, DEFAULTS, {ref: (el) => (this.el = el)}),
       React.Children.map(this.props.children, (child, adjacent) => {
