@@ -4,12 +4,17 @@ import {exclude} from '../utils'
 
 export default class Tabs extends React.Component {
   static get defaultProps () { return {open: null, onToggle: null} }
+  constructor (props) {
+    super(props)
+    this.onToggle = this.onToggle.bind(this)
+  }
   componentDidMount () {
     coreTabs(this.el.firstElementChild, this.props.open) // Mount client side only to avoid rerender
-    this.el.addEventListener('tabs.toggle', this.props.onToggle)
+    this.el.addEventListener('tabs.toggle', this.onToggle)
   }
   componentDidUpdate () { coreTabs(this.el.firstElementChild, this.props.open) } // In case content changes
-  componentWillUnmount () { this.el.removeEventListener('tabs.toggle', this.props.onToggle) }
+  componentWillUnmount () { this.el.removeEventListener('tabs.toggle', this.onToggle) }
+  onToggle (event) { this.props.onToggle && this.props.onToggle(event) }
   render () {
     const open = this.props.open || 0
     const attr = exclude(this.props, Tabs.defaultProps, {ref: (el) => (this.el = el)})
