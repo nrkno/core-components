@@ -18,8 +18,9 @@ export default function dialog (dialogs, open) {
 
   return queryAll(dialogs).map((dialog) => {
     const hasBackdrop = (dialog.nextElementSibling || {}).nodeName === 'BACKDROP'
+    const isStrict = typeof options.strict === 'boolean' ? options.strict : dialog.getAttribute(UUID) === 'true'
 
-    dialog.setAttribute(UUID, '')
+    dialog.setAttribute(UUID, isStrict)
     dialog.setAttribute('tabindex', -1)
     dialog.setAttribute('role', 'dialog')
     dialog.setAttribute('aria-modal', true)
@@ -31,6 +32,17 @@ export default function dialog (dialogs, open) {
   })
 }
 
+// Focus can move outside the dialog when in "strict"-mode, therefore
+// we need to ensure that if that happens we will refocus on the dialog.
+addEvent(UUID, 'focus', (event) => {
+  for (let el = event.target; el; el = el.parentElement) {
+    if (el.hasAttribute(UUID)) return
+  }
+
+  const dialog = getTopLevelDialog()
+  if (dialog) setFocus(dialog)
+}, true) // use capture to support old Firefox
+
 addEvent(UUID, 'click', (event) => {
   // This functions handles if the user clicked on a open or close button.
   // We need to do this loop in order for the close button to know which
@@ -38,10 +50,10 @@ addEvent(UUID, 'click', (event) => {
   for (let el = event.target, isClose; el; el = el.parentElement) {
     const action = el.getAttribute(ATTR)
     const prev = el.previousElementSibling
-    isClose = isClose || action === 'close'
+    const isBackdrop = prev && prev.getAttribute(UUID) === 'false' && (el = prev)
+    isClose = isClose || isBackdrop || action === 'close'
 
     if (isClose) el.hasAttribute(UUID) && setOpen(el, false)
-    else if (prev && prev.hasAttribute(UUID)) setOpen(prev, false) // Click on backdrop
     else if (action) dialog(document.getElementById(action), true) // Target dialog
   }
 })
@@ -54,9 +66,10 @@ addEvent(UUID, 'transitionend', ({target}) => {
 addEvent(UUID, 'keydown', (event) => {
   const key = event.keyCode
   const dialog = !event.defaultPrevented && (key === KEYS.ESC || key === KEYS.TAB) && getTopLevelDialog()
+  const isClose = dialog && dialog.getAttribute(UUID) === 'false'
 
   if (dialog && key === KEYS.TAB) keepFocus(dialog, event)
-  if (dialog && key === KEYS.ESC) setOpen(dialog, false, event.preventDefault())
+  if (isClose && key === KEYS.ESC) setOpen(dialog, false, event.preventDefault())
 })
 
 const getZIndexOfElement = (element) =>
