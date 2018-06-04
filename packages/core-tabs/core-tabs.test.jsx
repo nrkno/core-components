@@ -1,3 +1,4 @@
+/* globals jest */
 const React = require('react')
 const ReactDOM = require('react-dom')
 const Tabs = require('./jsx')
@@ -69,5 +70,17 @@ describe('core-tabs/jsx', () => {
     expectInactivePanel(document.getElementById('panel-1'))
     expectActiveTab(document.getElementById('tab-2'))
     expectActivePanel(document.getElementById('panel-2'))
+  })
+
+  it('should able to handle onToggle prop updates', () => {
+    const onToggleInitial = jest.fn()
+    const onToggleExpected = jest.fn()
+    mount({ onToggle: onToggleInitial })
+    mount({ onToggle: onToggleExpected }, true)
+
+    document.getElementById('tab-2').click()
+
+    expect(onToggleInitial).toHaveBeenCalledTimes(0)
+    expect(onToggleExpected).toHaveBeenCalledTimes(1)
   })
 })
