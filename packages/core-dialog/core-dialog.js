@@ -32,17 +32,6 @@ export default function dialog (dialogs, open) {
   })
 }
 
-// Focus can move outside the dialog when in "strict"-mode, therefore
-// we need to ensure that if that happens we will refocus on the dialog.
-addEvent(UUID, 'focus', (event) => {
-  for (let el = event.target; el; el = el.parentElement) {
-    if (el.hasAttribute(UUID)) return
-  }
-
-  const dialog = getTopLevelDialog()
-  if (dialog) setFocus(dialog)
-}, true) // use capture to support old Firefox
-
 addEvent(UUID, 'click', (event) => {
   // This functions handles if the user clicked on a open or close button.
   // We need to do this loop in order for the close button to know which
@@ -140,7 +129,7 @@ function keepFocus (dialog, event) {
   const onEdge = focusable[event.shiftKey ? 0 : focusable.length - 1]
 
   // If focus moves us outside the dialog, we need to refocus to inside the dialog
-  if (event.target === onEdge) {
+  if (event.target === onEdge || !dialog.contains(event.target)) {
     event.preventDefault()
     focusable[event.shiftKey ? focusable.length - 1 : 0].focus()
   }

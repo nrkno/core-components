@@ -27,10 +27,10 @@ category: Components
 <div id="docs-react-dialog"></div>
 ```
 ```dialog.js
-coreDialog('#my-dialog', {open: false})
-coreDialog('#my-dialog-nested', {open: false})
-coreDialog('#strict-dialog', {open: false, strict: true})
-coreInput('.my-input')
+coreDialog('#my-dialog', {open: false});
+coreDialog('#my-dialog-nested', {open: false});
+coreDialog('#strict-dialog', {open: false, strict: true});
+coreInput('.my-input');
 ```
 ```dialog.jsx
 
