@@ -2,17 +2,24 @@ import {name, version} from './package.json'
 import {addEvent, escapeHTML, dispatchEvent, queryAll} from '../utils'
 import parse from '@nrk/simple-date-parse'
 
+const ATTR = 'data-core-datepicker'
 const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid attribute characters
 const KEY_CODES = {33: '-1month', 34: '+1month', 35: 'y-m-99', 36: 'y-m-1', 37: '-1day', 38: '-1week', 39: '+1day', 40: '+1week'}
 const MASK = {year: '*-m-d', month: 'y-*-d', day: 'y-m-*', hour: '*:m', minute: 'h:*', second: 'h:m:*', timestamp: '*'}
 const MS_IN_MINUTES = 60000
-const ATTR = 'data-core-datepicker'
-const TYPE = `${ATTR}-type`
 
-export default function datepicker (elements, options) { // options can be String, Timestamp or Date
+export default function datepicker (elements, date) { // options can be String, Timestamp or Date
+  const options = typeof date === 'object' ? date : {date}
+
   return queryAll(elements).map((element) => {
     const prevDate = parse(element.getAttribute(UUID) || Date.now())
-    const nextDate = parse(typeof options === 'undefined' ? prevDate : options, prevDate)
+
+    const date = parse(typeof options.date === 'undefined' ? prevDate : options.date, prevDate)
+    const min = parse(typeof options.min === 'undefined' ? date : (options.min || element.getAttribute(`${UUID}-min`)))
+    const max = parse(typeof options.min === 'undefined' ? date : (options.max || element.getAttribute(`${UUID}-max`)))
+
+    const nextDate = parse(Math.max(min, Math.min(max, date))) // Limit datepicker
+    console.log(Math.max(min, Math.min(max, date)))
     const isUpdate = prevDate.getTime() === nextDate.getTime() || dispatchEvent(element, 'datepicker.change', {prevDate, nextDate})
     const next = isUpdate ? nextDate : parse(element.getAttribute(UUID) || Date.now()) // dispatchEvent can change attributes to parse prevDate again
 
@@ -20,9 +27,11 @@ export default function datepicker (elements, options) { // options can be Strin
     const unit = {year: next.getFullYear(), month: json[1], day: json[2], hour: json[3], minute: json[4], second: json[5], timestamp: next.getTime()}
 
     element.setAttribute(UUID, unit.timestamp)
+    element.setAttribute(`${UUID}-min`, min.getTime())
+    element.setAttribute(`${UUID}-max`, max.getTime())
     queryAll('select', element).forEach((el) => select(el, next))
     queryAll('input', element).forEach((el) => input(el, next, unit))
-    queryAll('table', element).forEach((el) => table(el, next))
+    queryAll('table', element).forEach((el) => table(el, next, min, max))
 
     return element
   })
@@ -52,25 +61,29 @@ addEvent(UUID, 'keydown', (event) => {
   }
 })
 
+function parseOption (options, element, key, fallback) {
+  return parse(typeof options[key] === 'undefined' ? (element.getAttribute(`${UUID}-${key}`) || fallback) : options.min)
+}
+
 function onChange ({target}) {
   for (let el = target; el; el = el.parentElement) {
     const elem = document.getElementById(el.getAttribute(ATTR)) || el
-    const mask = elem.hasAttribute(UUID) && (MASK[target.getAttribute(TYPE)] || '*')
+    const mask = elem.hasAttribute(UUID) && (MASK[target.getAttribute(`${UUID}-type`)] || '*')
     if (mask) return datepicker(elem, mask.replace('*', target.value))
   }
 }
 
 function input (el, date, unit) {
-  const type = el.getAttribute(TYPE) || el.getAttribute('type')
+  const type = el.getAttribute(`${UUID}-type`) || el.getAttribute('type')
   if (type === 'radio' || type === 'checkbox') el.checked = parse(el.value, date).getTime() === date.getTime()
   else if (unit[type]) {
     el.setAttribute('type', 'number') // Set input type to number
-    el.setAttribute(TYPE, type) // And store original input type
+    el.setAttribute(`${UUID}-type`, type) // And store original input type
     el.value = unit[type]
   }
 }
 
-function table (table, date) {
+function table (table, date, min, max) {
   if (!table.firstElementChild) {
     table.innerHTML = `
     <caption></caption><thead><tr><th>${datepicker.days.map(escapeHTML).join('</th><th>')}</th></tr></thead>
