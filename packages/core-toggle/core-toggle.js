@@ -27,10 +27,12 @@ export default function toggle (buttons, open) {
 addEvent(UUID, 'keydown', (event) => {
   if (event.keyCode === KEYS.ESC) {
     for (let el = event.target; el; el = el.parentElement) {
-      if (el.hasAttribute(UUID)) {
+      const prev = el.previousElementSibling
+      const inPopup = prev && prev.hasAttribute(UUID) && (el = prev)
+      if (inPopup || el.hasAttribute(UUID)) {
         const open = el.getAttribute(OPEN) === 'true'
         const pops = el.getAttribute(POPS) === 'true'
-        if (open && pops) return setOpen(el, false)
+        if (open && pops) return setOpen(el, false, el.focus())
       }
     }
   }
