@@ -90,6 +90,7 @@ coreToggle('.my-toggle', {popup: true}) // Make popup
 class MyDate extends React.Component {
   constructor (props) {
     super(props)
+    this.today = Datepicker.parse('00:00')
     this.state = {date: new Date()}
     this.onNow = this.onNow.bind(this)
     this.onChange = this.onChange.bind(this)
@@ -99,10 +100,14 @@ class MyDate extends React.Component {
   render () {
     return <Toggle popup={true}>
       <button>Velg dato JSX</button>
-      <Datepicker date={this.state.date} onChange={this.onChange} className="my-datepicker my-dropdown">
-        <label>År<input type="year" /></label>
-        <label>Måned<select></select></label>
-        <table></table>
+      <Datepicker
+        date={this.state.date}
+        disable={(date) => date < this.today}
+        onChange={this.onChange}
+        className="my-datepicker my-dropdown">
+          <label>År<input type="year" /></label>
+          <label>Måned<select></select></label>
+          <table></table>
       </Datepicker>
       <button onClick={this.onNow}>I dag JSX</button>
       <input type="text" readOnly value={this.state.date.toLocaleDateString()} />
