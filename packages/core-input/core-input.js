@@ -4,6 +4,7 @@ import {IS_IOS, addEvent, escapeHTML, dispatchEvent, queryAll} from '../utils'
 const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid attribute characters
 const KEYS = {ENTER: 13, ESC: 27, PAGEUP: 33, PAGEDOWN: 34, END: 35, HOME: 36, UP: 38, DOWN: 40}
 const ITEM = '[tabindex="-1"]'
+const AJAX_DEBOUNCE = 500
 
 export default function input (elements, content) {
   const options = typeof content === 'object' ? content : {content}
@@ -11,8 +12,9 @@ export default function input (elements, content) {
 
   return queryAll(elements).map((input) => {
     const list = input.nextElementSibling
+    const ajax = typeof options.ajax === 'undefined' ? input.getAttribute(UUID) : options.ajax
 
-    input.setAttribute(UUID, '')
+    input.setAttribute(UUID, ajax || '')
     input.setAttribute(IS_IOS ? 'data-role' : 'role', 'combobox') // iOS does not inform user area is editable if combobox
     input.setAttribute('aria-autocomplete', 'list')
     input.setAttribute('autocomplete', 'off')
@@ -87,7 +89,7 @@ function onSelect (input, detail) {
 }
 
 function onFilter (input, detail) {
-  if (dispatchEvent(input, 'input.filter', detail)) {
+  if (dispatchEvent(input, 'input.filter', detail) && !ajax(input)) {
     queryAll(ITEM, input.nextElementSibling).reduce((acc, item) => {
       const show = item.textContent.toLowerCase().indexOf(input.value.toLowerCase()) !== -1
       item[show ? 'removeAttribute' : 'setAttribute']('hidden', '')
@@ -104,4 +106,22 @@ function setupExpand (input, open = input.getAttribute('aria-expanded') === 'tru
 function setupItem (item, index, items) {
   item.setAttribute('aria-label', `${item.textContent.trim()}, ${index + 1} av ${items.length}`)
   item.setAttribute('tabindex', '-1')
+}
+
+function ajax (input) {
+  const url = input.getAttribute(UUID)
+  const req = ajax.req = ajax.req || new window.XMLHttpRequest()
+  if (!url) return false
+
+  clearTimeout(ajax.timer) // Clear previous search
+  req.abort() // Abort previous request
+  req.onload = () => {
+    try { req.responseJSON = JSON.parse(req.responseText) } catch (err) { req.responseJSON = false }
+    dispatchEvent(input, 'input.ajax', req)
+  }
+  ajax.timer = setTimeout(() => { // Debounce next request 500 milliseconds
+    if (!input.value) return // Abort if input is empty
+    req.open('GET', url.replace('{{value}}', window.encodeURIComponent(input.value)), true)
+    req.send()
+  }, AJAX_DEBOUNCE)
 }
