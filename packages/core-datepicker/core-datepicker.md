@@ -64,16 +64,22 @@ category: Components
   <table></table>
 </div>
 <button data-core-datepicker="my-datepicker" value="now">Nå</button>
+<button data-core-datepicker="my-datepicker" value="+1 week">Neste uke</button>
 <input type="text" id="my-datepicker-output">
 ```
 ```datepicker.js
 // coreDate.days = ['m', 't', 'o', 't', 'f', 'l', 's'] // Change name of days
 
 // Update GUI
+document.addEventListener('datepicker.render', function (event) {
+  if (event.target.id !== 'my-datepicker') return
+  event.detail.disable(function (date) { return date > Date.now() })
+})
+
+// Update output
 document.addEventListener('datepicker.change', function (event) {
-  if (event.target.id === 'my-datepicker') {
-    document.getElementById('my-datepicker-output').value = event.detail.nextDate.toLocaleString()
-  }
+  if (event.target.id !== 'my-datepicker') return
+  document.getElementById('my-datepicker-output').value = event.detail.nextDate.toLocaleString()
 })
 
 // Initialize
@@ -109,4 +115,5 @@ class MyDate extends React.Component {
 .my-datepicker button[aria-current="date"] { border: 1px dashed }
 .my-datepicker button[aria-pressed="true"] { border: 2px solid }
 .my-datepicker button[aria-disabled="true"] { opacity: .3 }
+:disabled { filter: brightness(.7) sepia(1) hue-rotate(-50deg) }
 ```

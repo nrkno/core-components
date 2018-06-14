@@ -12,26 +12,23 @@ export default function datepicker (elements, date) { // options can be String, 
   const options = typeof date === 'object' ? date : {date}
 
   return queryAll(elements).map((element) => {
-    const prevDate = parse(element.getAttribute(UUID) || Date.now())
+    const prevDate = parse(element.getAttribute(UUID) || options.date)
+    let nextDate = parse(typeof options.date === 'undefined' ? prevDate : options.date, prevDate)
+    let disable = () => false
 
-    const date = parse(typeof options.date === 'undefined' ? prevDate : options.date, prevDate)
-    const min = parse(typeof options.min === 'undefined' ? date : (options.min || element.getAttribute(`${UUID}-min`)))
-    const max = parse(typeof options.min === 'undefined' ? date : (options.max || element.getAttribute(`${UUID}-max`)))
+    dispatchEvent(element, 'datepicker.render', {nextDate, prevDate, disable: (fn) => (disable = fn)})
+    if (disable(nextDate)) nextDate = prevDate // Jump back to prev date if next is disabled
 
-    const nextDate = parse(Math.max(min, Math.min(max, date))) // Limit datepicker
-    console.log(Math.max(min, Math.min(max, date)))
     const isUpdate = prevDate.getTime() === nextDate.getTime() || dispatchEvent(element, 'datepicker.change', {prevDate, nextDate})
     const next = isUpdate ? nextDate : parse(element.getAttribute(UUID) || Date.now()) // dispatchEvent can change attributes to parse prevDate again
-
     const json = new Date(next.getTime() - next.getTimezoneOffset() * MS_IN_MINUTES).toJSON().match(/\d+/g)
     const unit = {year: next.getFullYear(), month: json[1], day: json[2], hour: json[3], minute: json[4], second: json[5], timestamp: next.getTime()}
 
     element.setAttribute(UUID, unit.timestamp)
-    element.setAttribute(`${UUID}-min`, min.getTime())
-    element.setAttribute(`${UUID}-max`, max.getTime())
-    queryAll('select', element).forEach((el) => select(el, next))
-    queryAll('input', element).forEach((el) => input(el, next, unit))
-    queryAll('table', element).forEach((el) => table(el, next, min, max))
+    queryAll('button').forEach((el) => button(el, next, disable, element))
+    queryAll('select', element).forEach((el) => select(el, next, disable))
+    queryAll('input', element).forEach((el) => input(el, next, disable, unit))
+    queryAll('table', element).forEach((el) => table(el, next, disable))
 
     return element
   })
@@ -61,10 +58,6 @@ addEvent(UUID, 'keydown', (event) => {
   }
 })
 
-function parseOption (options, element, key, fallback) {
-  return parse(typeof options[key] === 'undefined' ? (element.getAttribute(`${UUID}-${key}`) || fallback) : options.min)
-}
-
 function onChange ({target}) {
   for (let el = target; el; el = el.parentElement) {
     const elem = document.getElementById(el.getAttribute(ATTR)) || el
@@ -73,17 +66,20 @@ function onChange ({target}) {
   }
 }
 
-function input (el, date, unit) {
+function input (el, date, disable, unit) {
   const type = el.getAttribute(`${UUID}-type`) || el.getAttribute('type')
-  if (type === 'radio' || type === 'checkbox') el.checked = parse(el.value, date).getTime() === date.getTime()
-  else if (unit[type]) {
+  if (type === 'radio' || type === 'checkbox') {
+    const val = parse(el.value, date)
+    el.disabled = disable(val)
+    el.checked = val.getTime() === date.getTime()
+  } else if (unit[type]) {
     el.setAttribute('type', 'number') // Set input type to number
     el.setAttribute(`${UUID}-type`, type) // And store original input type
     el.value = unit[type]
   }
 }
 
-function table (table, date, min, max) {
+function table (table, date, disable) {
   if (!table.firstElementChild) {
     table.innerHTML = `
     <caption></caption><thead><tr><th>${datepicker.days.map(escapeHTML).join('</th><th>')}</th></tr></thead>
@@ -102,6 +98,7 @@ function table (table, date, min, max) {
 
     button.textContent = dayInMonth // Set textContent instead of innerHTML avoids reflow
     button.value = `${day.getFullYear()}-${day.getMonth() + 1}-${dayInMonth}`
+    button.disabled = disable(day)
     button.setAttribute('tabindex', isSelected - 1)
     button.setAttribute('aria-pressed', isSelected)
     button.setAttribute('aria-current', isToday && 'date')
@@ -110,7 +107,13 @@ function table (table, date, min, max) {
   })
 }
 
-function select (select, date) {
+function button (el, date, disable, picker) {
+  if(el.getAttribute(ATTR) === picker.id || picker.contains(el)) {
+    el.disabled = disable(parse(el.value, date))
+  }
+}
+
+function select (select, date, disable) {
   if (!select.firstElementChild) {
     select.innerHTML = datepicker.months.map((name, month) =>
       `<option value="y-${month + 1}-d">${escapeHTML(name)}</option>`
@@ -118,6 +121,8 @@ function select (select, date) {
   }
 
   queryAll(select.children).forEach((option) => {
-    option.selected = parse(option.value, date).getTime() === date.getTime()
+    const val = parse(option.value, date)
+    option.disabled = disable(val)
+    option.selected = val.getTime() === date.getTime()
   })
 }
