@@ -8,12 +8,10 @@ const KEY_CODES = {33: '-1month', 34: '+1month', 35: 'y-m-99', 36: 'y-m-1', 37: 
 const MASK = {year: '*-m-d', month: 'y-*-d', day: 'y-m-*', hour: '*:m', minute: 'h:*', second: 'h:m:*', timestamp: '*'}
 const MS_IN_MINUTES = 60000
 
-export default function datepicker (elements, date) { // options can be String, Timestamp or Date
-  const options = typeof date === 'object' ? date : {date}
-
+export default function datepicker (elements, date) { // date can be String, Timestamp or Date
   return queryAll(elements).map((element) => {
-    const prevDate = parse(element.getAttribute(UUID) || options.date)
-    let nextDate = parse(typeof options.date === 'undefined' ? prevDate : options.date, prevDate)
+    const prevDate = parse(element.getAttribute(UUID) || date)
+    let nextDate = parse(typeof date === 'undefined' ? prevDate : date, prevDate)
     let disable = () => false
 
     dispatchEvent(element, 'datepicker.render', {nextDate, prevDate, disable: (fn) => (disable = fn)})
