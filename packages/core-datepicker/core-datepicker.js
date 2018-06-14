@@ -106,7 +106,7 @@ function table (table, date, disable) {
 }
 
 function button (el, date, disable, picker) {
-  if(el.getAttribute(ATTR) === picker.id || picker.contains(el)) {
+  if (el.getAttribute(ATTR) === picker.id || picker.contains(el)) {
     el.disabled = disable(parse(el.value, date))
   }
 }
