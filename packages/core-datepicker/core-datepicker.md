@@ -110,3 +110,107 @@ class MyDate extends React.Component {
 .my-datepicker button[aria-pressed="true"] { border: 2px solid }
 .my-datepicker button[aria-disabled="true"] { opacity: .3 }
 ```
+
+## Usage
+All date values - both HTML markup and JavaScript - accepts accepts dates as numbers, or as natural language in [the format of @nrk/simple-date-parse](https://github.com/nrkno/simple-date-parse).
+
+```html
+  <div class="my-datepicker">
+    <!-- There are different behaviours depending on the type of <input>. -->
+    <!-- When 'radio' or 'checkbox' is used, core-datepicker checks the value field -->
+    <!-- to see if the date specified is matching the values of the <input>s. -->
+    <!-- When any other type is used, core-datepicker sets the type to number -->
+    <!-- and sets the date specified in the value field. -->
+    <input type="radio|checkbox|year|month|day|hour|minute|second|timestamp"/>
+
+    <!-- If an empty <select> is provided, core-datepicker will populate the select -->
+    <!-- with months and automatically handle the date state when an option is chosen -->
+    <select></select>
+
+    <!-- If you use a <select> that is already populated, core-datepicker will not -->
+    <!-- modify it, but handle the dates specified in values -->
+    <select>
+      <option value="2016-m-d">Set year to 2016</option>
+      <option value="19yy-1-1">Back 100 years and set to January 1st.</option>
+      <option value="1985-12-19">December 19, 1985</option>
+    </select>
+
+
+    <!-- If an empty <table> is provided, core-datepicker will display all dates -->
+    <!-- for the current/chosen month -->
+    <table></table>
+
+    <!-- It is also possible to extend the datepicker with more features -->
+    <!-- As shown in the example, it is possible to provide buttons that moves -->
+    <!-- the date a certain amount of time  -->
+    <fieldset>
+      <legend>Navigasjon</legend>
+      <!-- Dates relative to today/now by using the keyword 'now' -->
+      <button value="now">I dag</button>
+      <button value="now - 1 day|week|month|year">I går/forrige uke/måned/år</button>
+      <button value="now + 1 day|week|month|year">I morgen/neste uke/måned/år</button>
+
+      <!-- Semi-specific dates -->
+      <!-- Will use the first two digits of the current year and set the two last -->
+      <!-- digits of the year 0. Will set the date to 1st of January -->
+      <button value="yy00-01-01">Start of current century</button>
+    </fieldset>
+  </div>
+```
+
+```js
+import coreDatepicker from '@nrk/core-datepicker'
+
+coreDatepicker(
+  String|Element|Elements, // Accepts a selector string, NodeList, Element or array of Elements
+  String|Date              // Specify the date which coreDatepicker should use.
+  // e.g:
+  'now + 2 days'           // Will set the date to the day after tomorrow  
+})
+```
+
+```jsx
+import Datepicker from '@nrk/core-datepicker/jsx'
+
+<Datepicker date={String|Date} onChange={function () {}} >
+  <input type="radio|checkbox|year|month|day|hour|minute|second|timestamp"/> <!-- Same as with vanilla js -->  
+  <select></select> <!-- Same as with vanilla js -->
+  <table></table>   <!-- Same as with vanilla js -->
+<Datepicker>
+```
+
+
+## Events
+`'datepicker.render'` event is fired on every render. The `datepicker.render` can be used to disable specific dates or limit timespan (read: max/min). The bubbles and can therefore be detected both from button element itself, or any parent element (read event delegation):
+
+```js
+document.addEventListener('datepicker.render', (event) => {
+  event.target                        // The datepicker container
+  event.detail.nextDate               // The new date that triggered change
+  event.detail.prevDate               // The previous/current date
+  event.detail.disable(function)      // Pass a fuction to the disable parameter to visually dates
+  // Example, disable all future dates: event.detail.disable((date) => date > Date.now())
+})
+```
+
+`'datepicker.change'` event is fired when date is changed by user or programatically (both for VanillaJS and React/Preact components). The `datepicker.change` event is cancelable, meaning you can use `event.preventDefault()` to cancel change. The event also bubbles, and can therefore be detected both from button element itself, or any parent element (read event delegation):
+
+```js
+document.addEventListener('datepicker.change', (event) => {
+  event.target                        // The datepicker container
+  event.detail.nextDate               // The new date that triggered change
+  event.detail.prevDate               // The previous/current date
+})
+```
+
+## Styling
+
+```css
+.my-datepicker                              /* Target datepicker container */
+.my-datepicker button[aria-current="date"]  /* Target current date (today) in the table */
+.my-datepicker button[aria-pressed="true"]  /* Target the chosen date in the table */
+.my-datepicker button[aria-disabled="true"] /* Target dates in next/prev month in the table */
+.my-datepicker button:disabled              /* Target disabled dates */
+.my-datepicker input:disabled               /* Target disabled checkbox/radio dates */
+.my-datepicker input:checked                /* Target selected checkbox/radio dates */
+```
