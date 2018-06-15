@@ -51,9 +51,10 @@ coreInput('.my-input')
 ```js
 import coreInput from '@nrk/core-input'
 
-coreInput(String|Element|Elements, {        // Accepts a selector string, NodeList, Element or array of Elements
-  open: null,                               // Defaults to value of aria-expanded. Use true|false to force open state
-  content: null                             // Set String of HTML content. HTML is used for full flexibility on markup
+coreInput(String|Element|Elements, {    // Accepts a selector string, NodeList, Element or array of Elements
+  open: null,                           // Optional. Defaults to value of aria-expanded. Use true|false to force open state
+  content: null,                        // Optional. Set String of HTML content. HTML is used for full flexibility on markup
+  ajax: null                            // Optional. Fetch external data, example: "https://search.com?q={{value}}"
 })
 
 // Helpers:
@@ -67,7 +68,7 @@ import Input from '@nrk/core-input/jsx'
 // Props like className, style, etc. will be applied as actual attributes
 // <Input> will handle state itself unless you call event.preventDefault() in onFilter or onSelect
 
-<Input open={false} onFilter={(event) => {}} onSelect={(event) => {}}>
+<Input open={false} onFilter={(event) => {}} onSelect={(event) => {}} onAjax={(event) => {}} ajax="https://search.com?q={{value}}">
   <input type="text" />   // First element must result in a input-tag. Accepts both elements and components
   <ul>                    // Next element will be used for items. Accepts both elements and components
     <li><button>Item 1</button></li>                  // Interactive items must be <button> or <a>
@@ -92,10 +93,21 @@ document.addEventListener('input.filter', (event) => {
 
 ```js
 document.addEventListener('input.select', (event) => {
-  event.target                // The core-input element triggering input.filter event
+  event.target                // The core-input element triggering input.select event
   event.detail.relatedTarget  // The content element controlled by input
   event.detail.currentTarget  // The item clicked/selected
   event.detail.value          // The item value
+})
+```
+
+`'input.ajax'` event is fired when the input field receives data from ajax. The event also bubbles, and can therefore be detected both from button element itself, or any parent element (read event delegation):
+
+```js
+document.addEventListener('input.ajax', (event) => {
+  event.target  // The core-input element triggering input.ajax event
+  event.detail  // The ajax request
+  event.detail.responseText  // The response body text
+  event.detail.responseJSON  // The response json. Defaults to false if no JSON found
 })
 ```
 
@@ -125,38 +137,24 @@ You can stop default filtering by calling `event.preventDefault()` on `'input.fi
 <ul class="my-dropdown" hidden></ul>
 ```
 ```input-ajax.js
-// Always debounce and abort requests avoid spamming APIs. Example:
-window.getCountries = function (query, callback) {
-  var self = window.getCountries
-  var xhr = self.xhr = self.xhr || new XMLHttpRequest()
-  var url = 'https://restcountries.eu/rest/v2/name/' +  encodeURIComponent(query) + '?fields=name'
-
-  clearTimeout(self.timer) // Clear previous search
-  xhr.abort() // Abort previous request
-  xhr.onload = function () { callback(JSON.parse(xhr.responseText)) }
-  self.timer = setTimeout(function () { // Debounce next request 500 milliseconds
-    xhr.open('GET', url, true)
-    xhr.send()
-  }, 500)
-}
-
-coreInput('.my-input-ajax') // Initialize
-
+// Initialize
+coreInput('.my-input-ajax', {
+  ajax: 'https://restcountries.eu/rest/v2/name/{{value}}?fields=name'
+})
 document.addEventListener('input.filter', function (event) {
-  if (event.target.className.indexOf('my-input-ajax') === -1) return // Make sure we are on correct input
-  event.preventDefault()  // Stop coreInput from default filtering
-
   var input = event.target
   var value = input.value.trim()
-  if (!value) return coreInput(input, '') // Prevent empty searches
 
-  coreInput(input, '<li><a>Searching for ' + coreInput.highlight(value, value) + '...</a></li>')
-  window.getCountries(value, function (items) {
-    coreInput(input, items.length ? items.slice(0, 10)
-      .map(function (item) { return coreInput.highlight(item.name, value) })    // Hightlight items
-      .map(function (html) { return '<li><button>' + html + '</button></li>' }) // Generate list
-      .join('') : '<li><a>No results</a></li>')
-  })
+  if (input.className.indexOf('my-input-ajax') === -1) return // Make sure we are on correct input
+  coreInput(input, value ? '<li><a>Searching for ' + coreInput.highlight(value, value) + '...</a></li>' : '')
+})
+document.addEventListener('input.ajax', function (event) {
+  if (event.target.className.indexOf('my-input-ajax') === -1) return // Make sure we are on correct input
+  var items = event.detail.responseJSON
+  coreInput(event.target, items.length ? items.slice(0, 10)
+    .map(function (item) { return coreInput.highlight(item.name, event.target.value) }) // Hightlight items
+    .map(function (html) { return '<li><button>' + html + '</button></li>' })           // Generate list
+    .join('') : '<li><a>No results</a></li>')
 })
 ```
 ```input-ajax.jsx
@@ -164,24 +162,24 @@ class AjaxInput extends React.Component {
   constructor (props) {
     super(props)
     this.onFilter = this.onFilter.bind(this)
+    this.onAjax = this.onAjax.bind(this)
     this.state = { items: [], value: '' }
   }
   onFilter (event) {
-    event.preventDefault() // Stop coreInput from default filtering
+    const value = event.target.value
+    const items = value ? [{name: `Searching for ${value}...`}] : []
 
-    const value = event.target.value.trim()
-    if (!value) return this.setState({items: []}) // Prevent empty searches
-
-    this.setState({
-      value: value, // Store value for highlighting
-      items: [{name: `Searching for ${value}...`}]
-    })
-    window.getCountries(value, (data) => { // getCountries defined in JS
-      this.setState({items: data.length ? data : [{name: 'No results'}]})
-    })
+    this.setState({value, items}) // Store value for highlighting
+  }
+  onAjax (event) {
+    const items = event.detail.responseJSON
+    this.setState({items: items.length ? items : [{name: 'No results'}]})
   }
   render () {
-    return <Input onFilter={this.onFilter}>
+    return <Input
+     ajax="https://restcountries.eu/rest/v2/name/{{value}}?fields=name"
+     onFilter={this.onFilter}
+     onAjax={this.onAjax}>
       <input type='text' placeholder='Country... (JSX)' />
       <ul className='my-dropdown'>
         {this.state.items.slice(0, 10).map((item, key) =>
