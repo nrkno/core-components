@@ -1,13 +1,17 @@
 {
   "name": "@nrk/core-dialog",
-  "homepage": "https://nrkno.github.io/core-components/",
+  "homepage": "https://static.nrk.no/core-components/latest/",
   "author": "NRK <opensource@nrk.no> (https://www.nrk.no/)",
   "version": "1.0.4",
   "license": "MIT",
-  "main": "core-dialog.cjs.js",
-  "module": "core-dialog.esm.js",
-  "dependencies": {
+  "main": "core-dialog.min.js",
+  "jsx": "jsx/index.js",
+  "optionalDependencies": {
     "react": "*",
     "react-dom": "*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nrkno/core-components.git"
   }
 }
