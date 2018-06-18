@@ -5,7 +5,7 @@
   "version": "1.0.4",
   "license": "MIT",
   "main": "core-dialog.min.js",
-  "module": "jsx/index.js",
+  "jsx": "jsx/index.js",
   "optionalDependencies": {
     "react": "*",
     "react-dom": "*"
