@@ -2,7 +2,7 @@
   "name": "@nrk/core-dialog",
   "homepage": "https://static.nrk.no/core-components/latest/",
   "author": "NRK <opensource@nrk.no> (https://www.nrk.no/)",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "license": "MIT",
   "main": "core-dialog.min.js",
   "jsx": "jsx/index.js",
