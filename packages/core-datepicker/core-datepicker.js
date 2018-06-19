@@ -93,7 +93,7 @@ function table (table, date, disable) {
   if (!table.firstElementChild) {
     table.innerHTML = `
     <caption></caption><thead><tr><th>${datepicker.days.map(escapeHTML).join('</th><th>')}</th></tr></thead>
-    <tbody>${Array(7).join(`<tr>${Array(8).join(`<td><button></button></td>`)}</tr>`)}</tbody>`
+    <tbody>${Array(7).join(`<tr>${Array(8).join(`<td><button type="button"></button></td>`)}</tr>`)}</tbody>`
   }
 
   const month = date.getMonth()
