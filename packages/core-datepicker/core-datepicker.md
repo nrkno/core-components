@@ -215,6 +215,18 @@ document.addEventListener('datepicker.change', (event) => {
 })
 ```
 
+`'datepicker.change.day'` event is fired when the user clicks a day in the table month view. The `datepicker.change.day` runs before `datepicker.change` event is cancelable, meaning you can use `event.preventDefault()`. The event also bubbles, and can therefore be detected both from button element itself, or any parent element (read event delegation):
+
+```js
+document.addEventListener('datepicker.change', (event) => {
+  event.target                        // The datepicker container
+  event.target.currentTarget          // The button clicked
+  event.target.relatedTarget          // The table containing the button
+  event.detail.nextDate               // The new date that triggered change
+  event.detail.prevDate               // The previous/current date
+})
+```
+
 ## Styling
 
 ```css
