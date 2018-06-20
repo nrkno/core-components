@@ -223,8 +223,8 @@ document.addEventListener('datepicker.change', (event) => {
 ```js
 document.addEventListener('datepicker.click.day', (event) => {
   event.target                        // The datepicker container
-  event.target.currentTarget          // The button clicked
-  event.target.relatedTarget          // The table containing the button
+  event.detail.currentTarget          // The button clicked
+  event.detail.relatedTarget          // The table containing the button
   event.detail.nextDate               // The new date that triggered change
   event.detail.prevDate               // The previous/current date
 })
