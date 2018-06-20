@@ -64,7 +64,7 @@ function onChange ({target}) {
     if (!table && el.nodeName === 'TABLE') table = el // Store table while traversing DOM parents
     if (mask) {
       const nextDate = mask.replace('*', target.value)
-      const isUpdate = !elem.contains(table) || dispatchEvent(elem, 'datepicker.change.day', {
+      const isUpdate = !elem.contains(table) || dispatchEvent(elem, 'datepicker.click.day', {
         currentTarget: target,
         relatedTarget: table,
         prevDate: parse(elem.getAttribute(UUID)),
