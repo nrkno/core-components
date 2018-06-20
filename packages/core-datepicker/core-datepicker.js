@@ -57,10 +57,22 @@ addEvent(UUID, 'keydown', (event) => {
 })
 
 function onChange ({target}) {
-  for (let el = target; el; el = el.parentElement) {
+  for (let el = target, table; el; el = el.parentElement) {
     const elem = document.getElementById(el.getAttribute(ATTR)) || el
     const mask = elem.hasAttribute(UUID) && (MASK[target.getAttribute(`${UUID}-type`)] || '*')
-    if (mask) return datepicker(elem, mask.replace('*', target.value))
+
+    if (!table && el.nodeName === 'TABLE') table = el // Store table while traversing DOM parents
+    if (mask) {
+      const nextDate = mask.replace('*', target.value)
+      const isUpdate = !elem.contains(table) || dispatchEvent(elem, 'datepicker.click.day', {
+        currentTarget: target,
+        relatedTarget: table,
+        prevDate: parse(elem.getAttribute(UUID)),
+        nextDate: parse(nextDate)
+      })
+
+      return isUpdate && datepicker(elem, nextDate)
+    }
   }
 }
 
@@ -81,7 +93,7 @@ function table (table, date, disable) {
   if (!table.firstElementChild) {
     table.innerHTML = `
     <caption></caption><thead><tr><th>${datepicker.days.map(escapeHTML).join('</th><th>')}</th></tr></thead>
-    <tbody>${Array(7).join(`<tr>${Array(8).join(`<td><button></button></td>`)}</tr>`)}</tbody>`
+    <tbody>${Array(7).join(`<tr>${Array(8).join(`<td><button type="button"></button></td>`)}</tr>`)}</tbody>`
   }
 
   const month = date.getMonth()

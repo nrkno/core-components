@@ -2,9 +2,8 @@ import React from 'react'
 import coreScroll from './core-scroll'
 import {exclude} from '../utils'
 
-const DEFAULTS = {onChange: null, friction: null}
-
 export default class Scroll extends React.Component {
+  static get defaultProps () { return {onChange: null, friction: null} }
   constructor (props) {
     super(props)
     this.onScroll = this.onScroll.bind(this)
@@ -31,7 +30,7 @@ export default class Scroll extends React.Component {
     }
   }
   render () {
-    const props = exclude(this.props, DEFAULTS, {ref: el => (this.el = el)})
+    const props = exclude(this.props, Scroll.defaultProps, {ref: el => (this.el = el)})
     return React.createElement('div', props, this.props.children)
   }
 }

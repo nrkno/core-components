@@ -193,6 +193,9 @@ import Datepicker from '@nrk/core-datepicker/jsx'
 
 
 ## Events
+Events run in the order `datepicker.click.day`\* &rarr; `datepicker.render` &rarr; `datepicker.change`
+<br><small>\* datepicker.click.day only fires if user clicked inside the month days grid</small>
+
 `'datepicker.render'` event is fired on every render. The `datepicker.render` can be used to disable specific dates or limit timespan (read: max/min). The bubbles and can therefore be detected both from button element itself, or any parent element (read event delegation):
 
 ```js
@@ -210,6 +213,18 @@ document.addEventListener('datepicker.render', (event) => {
 ```js
 document.addEventListener('datepicker.change', (event) => {
   event.target                        // The datepicker container
+  event.detail.nextDate               // The new date that triggered change
+  event.detail.prevDate               // The previous/current date
+})
+```
+
+`'datepicker.click.day'` event is fired if the user clicks a day in the month days grid. The `datepicker.click.day` runs before `datepicker.change`. The event is cancelable, meaning you can use `event.preventDefault()`. The event also bubbles, and can therefore be detected both from button element itself, or any parent element (read event delegation):
+
+```js
+document.addEventListener('datepicker.click.day', (event) => {
+  event.target                        // The datepicker container
+  event.detail.currentTarget          // The button clicked
+  event.detail.relatedTarget          // The table containing the button
   event.detail.nextDate               // The new date that triggered change
   event.detail.prevDate               // The previous/current date
 })
