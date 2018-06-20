@@ -221,7 +221,7 @@ document.addEventListener('datepicker.change', (event) => {
 `'datepicker.click.day'` event is fired if the user clicks a day in the month days grid. The `datepicker.click.day` runs before `datepicker.change`. The event is cancelable, meaning you can use `event.preventDefault()`. The event also bubbles, and can therefore be detected both from button element itself, or any parent element (read event delegation):
 
 ```js
-document.addEventListener('datepicker.change', (event) => {
+document.addEventListener('datepicker.click.day', (event) => {
   event.target                        // The datepicker container
   event.target.currentTarget          // The button clicked
   event.target.relatedTarget          // The table containing the button
