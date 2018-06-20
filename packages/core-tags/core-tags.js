@@ -12,28 +12,37 @@ export default function tags (elements, content) {
   document.body.appendChild(LIVE) // TODO
 
   return queryAll(elements).map((fieldset) => {
-    const input = fieldset.querySelector('input')
+    const input = fieldset.querySelector('input:not([type="checkbox"])')
     const live = fieldset.querySelector('[aria-live="assertive"]')
 
     fieldset.setAttribute(UUID, '')
     coreInput(input, options)
-    // TODO: Fix addEvent(UUID, 'focus', onClickOrFocus, true) in coreInput
 
     return fieldset
   })
 }
 
 addEvent(UUID, 'input.select', (event) => {
-  event.preventDefault()
-  const button = document.createElement('button')
+  for (let el = event.target; el; el = el.parentElement) {
+    if (el.hasAttribute(UUID)) {
+      event.preventDefault()
+      const button = document.createElement('button')
 
-  button.value = button.textContent = event.detail.value
-  button.insertAdjacentHTML('beforeend', '<span aria-live="assertive"></span>')
-  event.target.insertAdjacentElement('beforebegin', button)
-  event.target.value = ''
-  event.target.focus()
-  coreInput(event.target, {open: false})
-  LIVE.textContent = `${event.detail.value} lagt til`
+      button.value = button.textContent = event.detail.value
+      button.insertAdjacentHTML('beforeend', '<span aria-label="Fjern"></span>')
+      event.target.insertAdjacentElement('beforebegin', button)
+      event.target.value = ''
+      event.target.focus()
+      coreInput(event.target, {open: false})
+      LIVE.textContent = `${event.detail.value} lagt til`
+    }
+  }
+})
+
+addEvent(UUID, 'click', (event) => {
+  // if (event.target.tabIndex === -1) {
+  //   alert('click')
+  // }
 })
 
 addEvent(UUID, 'keydown', ({target, keyCode}) => {

@@ -1,5 +1,5 @@
 import {name, version} from './package.json'
-import {IS_IOS, addEvent, escapeHTML, dispatchEvent, queryAll} from '../utils'
+import {IS_IOS, addEvent, escapeHTML, dispatchEvent, requestAnimFrame, queryAll} from '../utils'
 
 const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid attribute characters
 const KEYS = {ENTER: 13, ESC: 27, PAGEUP: 33, PAGEDOWN: 34, END: 35, HOME: 36, UP: 38, DOWN: 40}
@@ -99,8 +99,10 @@ function onFilter (input, detail) {
 }
 
 function setupExpand (input, open = input.getAttribute('aria-expanded') === 'true') {
-  input.nextElementSibling[open ? 'removeAttribute' : 'setAttribute']('hidden', '')
-  input.setAttribute('aria-expanded', open)
+  requestAnimFrame(() => { // Fixes VoiceOver Safari focus jumping to parentElement
+    input.nextElementSibling[open ? 'removeAttribute' : 'setAttribute']('hidden', '')
+    input.setAttribute('aria-expanded', open)
+  })
 }
 
 function setupItem (item, index, items) {
