@@ -97,12 +97,12 @@ function table (table, date, disable) {
   }
 
   const month = date.getMonth()
-  const today = new Date().toJSON().slice(0, 10) // Get ymd part of date
+  const today = new Date()
   let day = parse('y-m-1 mon', date) // Monday in first week of month
   table.caption.textContent = `${escapeHTML(datepicker.months[month])}, ${date.getFullYear()}`
 
   queryAll('button', table).forEach((button) => {
-    const isToday = day.toJSON().slice(0, 10) === today
+    const isToday = day.getDate() === today.getDate() && day.getMonth() === today.getMonth() && day.getFullYear() === today.getFullYear()
     const isSelected = day.getTime() === date.getTime()
     const dayInMonth = day.getDate()
 
