@@ -61,8 +61,12 @@ addEvent(UUID, 'keydown', (event) => {
   if (isClose && key === KEYS.ESC) setOpen(dialog, false, event.preventDefault())
 })
 
-const getZIndexOfElement = (element) =>
-  Number(window.getComputedStyle(element).getPropertyValue('z-index')) || 1
+const getZIndexOfElement = (element) => {
+  for (var el = element, zIndex = 1; el; el = el.offsetParent) {
+    zIndex += Number(window.getComputedStyle(el).getPropertyValue('z-index')) || 0
+  }
+  return zIndex
+}
 
 // Find the last focused element before opening the dialog
 const getLastFocusedElement = () =>
@@ -72,9 +76,7 @@ const getLastFocusedElement = () =>
 
 const getTopLevelDialog = () =>
   queryAll(`[${UUID}][open]`).sort((a, b) =>
-    // Need to check if a dialog is contained within another. If so
-    // it does not matter if the parent dialog has a higher z-index.
-    getZIndexOfElement(a) > getZIndexOfElement(b) && !a.contains(b)
+    getZIndexOfElement(a) > getZIndexOfElement(b)
   ).pop()
 
 function setOpen (dialog, open) {
