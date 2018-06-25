@@ -72,6 +72,8 @@ const getLastFocusedElement = () =>
 
 const getTopLevelDialog = () =>
   queryAll(`[${UUID}][open]`).sort((a, b) =>
+    // Need to check if a dialog is contained within another. If so
+    // it does not matter if the parent dialog has a higher z-index.
     getZIndexOfElement(a) > getZIndexOfElement(b) && !a.contains(b)
   ).pop()
 
