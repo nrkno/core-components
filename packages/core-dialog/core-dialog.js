@@ -72,7 +72,7 @@ const getLastFocusedElement = () =>
 
 const getTopLevelDialog = () =>
   queryAll(`[${UUID}][open]`).sort((a, b) =>
-    getZIndexOfElement(a) > getZIndexOfElement(b)
+    getZIndexOfElement(a) > getZIndexOfElement(b) && !a.contains(b)
   ).pop()
 
 function setOpen (dialog, open) {
