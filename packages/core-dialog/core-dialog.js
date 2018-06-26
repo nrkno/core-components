@@ -87,7 +87,7 @@ function setOpen (dialog, open) {
   const nextOpen = isUpdate ? willOpen : dialog.hasAttribute('open') // dispatchEvent can change attributes, so check open again
   const backdrop = dialog.nextElementSibling
 
-  if (typeof window.HTMLDialogElement !== 'undefined') { // Native support
+  if (typeof window.HTMLDialogElement !== 'undefined' && typeof dialog.show === 'function') { // Native support
     dialog.open = !nextOpen // Update to opposite value to ensure show/close can run without error
     dialog[nextOpen ? 'show' : 'close']()
   } else dialog[nextOpen ? 'setAttribute' : 'removeAttribute']('open', '') // Toggle open attribute
