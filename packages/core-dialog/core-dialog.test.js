@@ -6,7 +6,6 @@ describe('core-dialog', () => {
   })
 })
 
-// TODO Figure way to get JSDOM happy about <dialog> and insertAdjacentElement
 const standardHTML = `
 <button data-core-dialog="dialog-0">Open dialog 1</button>
 <dialog id="dialog-0">
