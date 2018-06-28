@@ -3,7 +3,7 @@ name: Datepicker
 category: Components
 ---
 
-> `@nrk/core-datepicker` enhances all child `<input>`, `<select>` `<table>` and `<button>` elements with keyboard accessible functionality for selecting date and time. The interface and granularity of date refinement can easily be altered through markup:
+> `@nrk/core-datepicker` enhances all child `input`, `select` `table` and `button` elements with keyboard accessible functionality for selecting date and time. The interface and granularity of date refinement can easily be altered through markup:
 
 ```datepicker.html
 <button class="my-toggle">Velg dato</button>
