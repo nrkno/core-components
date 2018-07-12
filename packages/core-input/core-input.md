@@ -1,16 +1,15 @@
 # Core Input
 
-## `@nrk/core-input` enhances `<input>` fields with keyboard accessible functionality for autocomplete suggestions, search results and smart select box abilities. The default filtering behavior can easily be altered through the `'input.select'` and `'input.filter'` [events](#events).
-[Check out advanced examples →](#advanced-examples)
+## `@nrk/core-input` enhances `<input>` fields with keyboard accessible functionality for autocomplete suggestions, search results and smart select box abilities.
 
 ---
 
 <script src="core-input/core-input.min.js"></script>
 <script src="core-input/jsx/index.js"></script>
 
-## Default filtering
+## Demo
 
-Typing toggles the [hidden attribute](https://developer.mozilla.org/en/docs/Web/HTML/Global_attributes/hidden) on items of type `<button>` and `<a>`, based on matching [textContent](https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent):
+Typing toggles the [hidden attribute](https://developer.mozilla.org/en/docs/Web/HTML/Global_attributes/hidden) on items of type `<button>` and `<a>`, based on matching [textContent](https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent). The default filtering behavior can easily be altered through the `'input.select'` and `'input.filter'` [events](#events).
 
 ```html
 <!--demo-->
@@ -48,6 +47,8 @@ Typing toggles the [hidden attribute](https://developer.mozilla.org/en/docs/Web/
 
 ## Usage
 
+### HTML / JavaScript
+
 *Important: Always use `coreInput.escapeHTML(String)` to safely render data from API or user.*
 
 ```html
@@ -71,6 +72,9 @@ coreInput(String|Element|Elements, {    // Accepts a selector string, NodeList, 
 coreInput('.my-input', '<li><a href="?q=' + coreInput.escapeHTML(input.value) + '">More results</a></li>') // escape html
 coreInput('.my-input', '<li><button>' + coreInput.highlight(item.text, input.value) + '</button></li>') // highlight match
 ```
+
+### React / Preact
+
 ```js
 import CoreInput from '@nrk/core-input/jsx'
 

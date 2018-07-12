@@ -146,6 +146,8 @@
 ## Usage
 All date values - both HTML markup and JavaScript - accepts accepts dates as numbers, or as natural language in [the format of @nrk/simple-date-parse](https://github.com/nrkno/simple-date-parse).
 
+### HTML / JavaScript
+
 ```html
   <div class="my-datepicker">
     <!-- There are different behaviours depending on the type of <input>. -->
@@ -200,6 +202,8 @@ coreDatepicker(
   'now + 2 days'           // Will set the date to the day after tomorrow  
 })
 ```
+
+### React / Preact
 
 ```jsx
 import CoreDatepicker from '@nrk/core-datepicker/jsx'

@@ -4,11 +4,13 @@
 
 ---
 
+## Demo
+
 <script src="core-toggle/core-toggle.min.js"></script>
 <script src="core-toggle/jsx/index.js"></script>
 
 <div class="nrk-grid">
-<div class="nrk-xs-12of12 nrk-md-6of12" style="padding-right:30px"><h2>Default toggle</h2>
+<div class="nrk-xs-12of12 nrk-md-6of12" style="padding-right:30px"><h3>Default toggle</h3>
 Content is only toggled when clicking <code>button</code>. Great for accordions and expand/collapse panels.
 
 ```html
@@ -32,7 +34,7 @@ Content is only toggled when clicking <code>button</code>. Great for accordions 
 ```
 
 </div>
-<div class="nrk-xs-12of12 nrk-md-6of12"><h2>Popup toggle</h2>
+<div class="nrk-xs-12of12 nrk-md-6of12"><h3>Popup toggle</h3>
 Content is toggled when clicking <code>button</code>, and closed when clicking outside content. Great for dropdowns and tooltips.
 
 ```html
@@ -80,6 +82,8 @@ Content is toggled when clicking <code>button</code>, and closed when clicking o
 
 ## Usage
 
+### JavaScript
+
 ```js
 import coreToggle from '@nrk/core-toggle'
 
@@ -88,6 +92,8 @@ coreToggle(String|Element|Elements, { // Accepts a selector string, NodeList, El
   popup: null                         // Defaults to value of aria-haspopup or false. Use true|false to force popup mode
 })
 ```
+
+### React / Preact
 
 ```jsx
 import CoreToggle from '@nrk/core-toggle/jsx'

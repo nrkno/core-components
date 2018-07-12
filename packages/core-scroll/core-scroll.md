@@ -12,6 +12,8 @@
   .my-scroll > * { box-sizing: border-box; display: inline-block; vertical-align: top; width: 30%; height: 90px; padding: 10px; border: 1px solid; margin: 10px; transition: 1s }
 </style>
 
+## Demo
+
 ```html
 <!--demo-->
 <button data-core-scroll="my-scroll-js" value="up" aria-label="Rull opp">&uarr;</button>
@@ -90,6 +92,7 @@
 
 Scroll speed is controlled by `friction` rather than `duration` (a short scroll distance will have a shorter duration and vice versa) for a more natural feeling of motion. Buttons can control a `core-scroll` by targeting its ID and specifying a direction; `left|right|up|down`. The `disabled` is automatically added/removed to controller buttons when there is no more pixels to scroll in specified direction.
 
+### HTML / JavaScript
 ```html
 <button data-core-scroll="my-scroll-js" value="up" aria-label="Rull opp">&uarr;</button>
 <div id="my-scroll-js">
@@ -111,6 +114,8 @@ coreScroll(String|Element|Elements, {                           // Or pass a obj
   friction: 0.8,                       // Optional. Changes scroll speed. Defaults to 0.8
 })
 ```
+
+### React / Preact
 ```jsx
 import CoreScroll from '@nrk/core-scroll/jsx'
 

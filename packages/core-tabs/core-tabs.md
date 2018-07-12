@@ -15,6 +15,8 @@
   .my-vertical-tabs [role="tab"] { display: inline-block }
 </style>
 
+## Demo
+
 ```html
 <!--demo-->
 <div class="my-tabs"> <!-- Direct children must be <a> or <button>. Do not use <li> -->
@@ -70,6 +72,8 @@
 ---
 
 ## Usage
+
+### JavaScript
 ```js
 import coreTabs from '@nrk/core-tabs'
 
@@ -78,6 +82,9 @@ coreTabs(
   open                        // Optional. Can be String: id of tab, Element: tab or Number: index of tab
 )
 ```
+
+### React / Preact
+
 ```js
 import CoreTabs from '@nrk/core-tabs/jsx'
 

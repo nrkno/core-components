@@ -42,6 +42,8 @@
   }
 </style>
 
+## Demo
+
 ```html
 <!--demo-->
 <button data-core-dialog="my-dialog">Open dialog</button>
@@ -156,6 +158,9 @@
 ---
 
 ## Usage
+
+### HTML / JavaScript
+
 ```html
 <!-- Opening a dialog -->
 <!-- By setting the data-core-dialog attribute with a ID reference to an element -->
@@ -186,6 +191,8 @@ coreDialog(String|Element|Elements, { // Accepts a selector string, NodeList, El
 coreDialog('.my-dialog')
 coreDialog('.my-dialog', {open: true, label: 'A super dialog'})
 ```
+
+### React / Preact
 
 ```jsx
 import CoreDialog from '@nrk/core-dialog/jsx'
