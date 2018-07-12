@@ -1,44 +1,54 @@
----
-name: Input
-category: Components
+# Core Input
+
+## `@nrk/core-input` enhances `<input>` fields with keyboard accessible functionality for autocomplete suggestions, search results and smart select box abilities. The default filtering behavior can easily be altered through the `'input.select'` and `'input.filter'` [events](#events).
+[Check out advanced examples →](#advanced-examples)
+
 ---
 
-> `@nrk/core-input` enhances `<input>` fields with keyboard accessible functionality for autocomplete suggestions, search results and smart select box abilities. The default filtering behavior can easily be altered through the `'input.select'` and `'input.filter'` [events](#events).
-[Check out advanced examples →](#advanced-examples)
+<script src="core-input/core-input.min.js"></script>
+<script src="core-input/jsx/index.js"></script>
 
 ## Default filtering
 
 Typing toggles the [hidden attribute](https://developer.mozilla.org/en/docs/Web/HTML/Global_attributes/hidden) on items of type `<button>` and `<a>`, based on matching [textContent](https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent):
 
-```input.html
+```html
+<!--demo-->
 <input type="text" class="my-input" placeholder="Type &quot;C&quot;...">
-<ul class="my-dropdown" hidden>
+<ul hidden>
   <li><button>Chrome</button></li>
   <li><button>Firefox</button></li>
   <li><button>Opera</button></li>
   <li><button>Safari</button></li>
   <li><button>Microsoft Edge</button></li>
 </ul>
+<script>
+  coreInput('.my-input')
+</script>
 ```
-```input.js
-coreInput('.my-input')
+
+```html
+<!--demo-->
+<div id="jsx-input"></div>
+<script type="text/jsx">
+  ReactDOM.render(<CoreInput>
+    <input type='text' placeholder='Type "C"... (JSX)' />
+    <ul className='my-dropdown'>
+      <li><button>Chrome</button></li>
+      <li><button>Firefox</button></li>
+      <li><button>Opera</button></li>
+      <li><button>Safari</button></li>
+      <li><button>Microsoft Edge</button></li>
+    </ul>
+  </CoreInput>, document.getElementById('jsx-input'))
+</script>
 ```
-```input.jsx
-<Input>
-  <input type='text' placeholder='Type "C"... (JSX)' />
-  <ul className='my-dropdown'>
-    <li><button>Chrome</button></li>
-    <li><button>Firefox</button></li>
-    <li><button>Opera</button></li>
-    <li><button>Safari</button></li>
-    <li><button>Microsoft Edge</button></li>
-  </ul>
-</Input>
-```
+
+---
 
 ## Usage
 
-**Important:** Use `coreInput.escapeHTML(String)` to safely render data from API or user.
+*Important: Always use `coreInput.escapeHTML(String)` to safely render data from API or user.*
 
 ```html
 <input type="text" class="my-input">                  <!-- Input element must be a <input> -->
@@ -61,26 +71,29 @@ coreInput(String|Element|Elements, {    // Accepts a selector string, NodeList, 
 coreInput('.my-input', '<li><a href="?q=' + coreInput.escapeHTML(input.value) + '">More results</a></li>') // escape html
 coreInput('.my-input', '<li><button>' + coreInput.highlight(item.text, input.value) + '</button></li>') // highlight match
 ```
-```jsx
-import Input from '@nrk/core-input/jsx'
+```js
+import CoreInput from '@nrk/core-input/jsx'
 
 // All props are optional, and defaults are shown below
 // Props like className, style, etc. will be applied as actual attributes
 // <Input> will handle state itself unless you call event.preventDefault() in onFilter or onSelect
 
-<Input open={false} onFilter={(event) => {}} onSelect={(event) => {}} onAjax={(event) => {}} ajax="https://search.com?q={{value}}">
-  <input type="text" />   // First element must result in a input-tag. Accepts both elements and components
+<CoreInput open={false} onFilter={(event) => {}} onSelect={(event) => {}} onAjax={(event) => {}} ajax="https://search.com?q={{value}}">
+  <input type="text" />   <!-- First element must result in a input-tag. Accepts both elements and components -->
   <ul>                    // Next element will be used for items. Accepts both elements and components
-    <li><button>Item 1</button></li>                  // Interactive items must be <button> or <a>
+    <li><button>Item 1</button></li>                  <!-- Interactive items must be <button> or <a> -->
     <li><button value="Suprise!">Item 2</button></li> // Alternative value can be defined
     <li><a href="https://www.nrk.no/">NRK.no</a></li> // Actual links are recommended when applicable
   </ul>
-</Input>
+</CoreInput>
 ```
 
-## Events
-`'input.filter'` is fired before a default filtering (both for VanillaJS and React/Preact components). The `input.filter` event is cancelable, meaning you can use `event.preventDefault()` to cancel default filtering and respond to users typing yourself. The event also bubbles, and can therefore be detected both from button element itself, or any parent element (read event delegation):
+---
 
+## Events
+
+### input.filter
+`'input.filter'` is fired before a default filtering (both for VanillaJS and React/Preact components). The `input.filter` event is cancelable, meaning you can use `event.preventDefault()` to cancel default filtering and respond to users typing yourself. The event also bubbles, and can therefore be detected both from button element itself, or any parent element (read event delegation):
 
 ```js
 document.addEventListener('input.filter', (event) => {
@@ -89,6 +102,7 @@ document.addEventListener('input.filter', (event) => {
 })
 ```
 
+### input.select
 `'input.select'` event is fired when the user clicks/selects a item (both for VanillaJS and React/Preact components). The `input.select` event is cancelable, meaning you can use `event.preventDefault()` to cancel replacing the input value and handle select-action yourself. The event also bubbles, and can therefore be detected both from button element itself, or any parent element (read event delegation):
 
 ```js
@@ -100,6 +114,7 @@ document.addEventListener('input.select', (event) => {
 })
 ```
 
+### input.ajax
 `'input.ajax'` event is fired when the input field receives data from ajax. The event also bubbles, and can therefore be detected both from button element itself, or any parent element (read event delegation):
 
 ```js
@@ -107,9 +122,11 @@ document.addEventListener('input.ajax', (event) => {
   event.target  // The core-input element triggering input.ajax event
   event.detail  // The ajax request
   event.detail.responseText  // The response body text
-  event.detail.responseJSON  // The response json. Defaults to false if no JSON found
+  event.detail.responseJSON  // The response json. Defaults to false if no valid JSON found
 })
 ```
+
+---
 
 ## Styling
 All styling in documentation is example only. Both the `<button>` and content element receive attributes reflecting the current toggle state:
@@ -127,200 +144,216 @@ All styling in documentation is example only. Both the `<button>` and content el
 .my-input-content mark {}             /* Target highlighted text */
 ```
 
+---
+
 ## Advanced examples
 
-## Input with ajax results
-You can stop default filtering by calling `event.preventDefault()` on `'input.filter'`. Remember to always escape html and debounce requests when fetching data from external sources.
+### Input with ajax results
+Stop default filtering by calling `event.preventDefault()` on `'input.filter'`. Remember to always escape html and debounce requests when fetching data from external sources.
 
-```input-ajax.html
+```html
+<!--demo-->
 <input class="my-input-ajax" placeholder="Country...">
 <ul class="my-dropdown" hidden></ul>
-```
-```input-ajax.js
-// Initialize
-coreInput('.my-input-ajax', {
-  ajax: 'https://restcountries.eu/rest/v2/name/{{value}}?fields=name'
-})
-document.addEventListener('input.filter', function (event) {
-  var input = event.target
-  var value = input.value.trim()
+<script>
+  // Initialize
+  coreInput('.my-input-ajax', {
+    ajax: 'https://restcountries.eu/rest/v2/name/{{value}}?fields=name'
+  })
+  document.addEventListener('input.filter', function (event) {
+    var input = event.target
+    var value = input.value.trim()
 
-  if (input.className.indexOf('my-input-ajax') === -1) return // Make sure we are on correct input
-  coreInput(input, value ? '<li><a>Searching for ' + coreInput.highlight(value, value) + '...</a></li>' : '')
-})
-document.addEventListener('input.ajax', function (event) {
-  if (event.target.className.indexOf('my-input-ajax') === -1) return // Make sure we are on correct input
-  var items = event.detail.responseJSON
-  coreInput(event.target, items.length ? items.slice(0, 10)
-    .map(function (item) { return coreInput.highlight(item.name, event.target.value) }) // Hightlight items
-    .map(function (html) { return '<li><button>' + html + '</button></li>' })           // Generate list
-    .join('') : '<li><a>No results</a></li>')
-})
-```
-```input-ajax.jsx
-class AjaxInput extends React.Component {
-  constructor (props) {
-    super(props)
-    this.onFilter = this.onFilter.bind(this)
-    this.onAjax = this.onAjax.bind(this)
-    this.state = { items: [], value: '' }
-  }
-  onFilter (event) {
-    const value = event.target.value
-    const items = value ? [{name: `Searching for ${value}...`}] : []
-
-    this.setState({value, items}) // Store value for highlighting
-  }
-  onAjax (event) {
-    const items = event.detail.responseJSON
-    this.setState({items: items.length ? items : [{name: 'No results'}]})
-  }
-  render () {
-    return <Input
-     ajax="https://restcountries.eu/rest/v2/name/{{value}}?fields=name"
-     onFilter={this.onFilter}
-     onAjax={this.onAjax}>
-      <input type='text' placeholder='Country... (JSX)' />
-      <ul className='my-dropdown'>
-        {this.state.items.slice(0, 10).map((item, key) =>
-          <li key={key}>
-            <button>
-              <Input.Highlight text={item.name} query={this.state.value} />
-            </button>
-          </li>
-        )}
-      </ul>
-    </Input>
-  }
-}
-<AjaxInput />
+    if (input.className.indexOf('my-input-ajax') === -1) return // Make sure we are on correct input
+    coreInput(input, value ? '<li><button>Searching for ' + coreInput.highlight(value, value) + '...</button></li>' : '')
+  })
+  document.addEventListener('input.ajax', function (event) {
+    if (event.target.className.indexOf('my-input-ajax') === -1) return // Make sure we are on correct input
+    var items = event.detail.responseJSON
+    coreInput(event.target, items.length ? items.slice(0, 10)
+      .map(function (item) { return coreInput.highlight(item.name, event.target.value) }) // Hightlight items
+      .map(function (html) { return '<li><button>' + html + '</button></li>' })           // Generate list
+      .join('') : '<li><button>No results</button></li>')
+  })
+</script>
 ```
 
-## Input with lazy results
-You can also do a hybrid; lazy load items, but let `core-input` still handle filtering:
-```input-lazy.html
+```html
+<!--demo-->
+<div id="jsx-input-ajax"></div>
+<script type="text/jsx">
+  class AjaxInput extends React.Component {
+    constructor (props) {
+      super(props)
+      this.onFilter = this.onFilter.bind(this)
+      this.onAjax = this.onAjax.bind(this)
+      this.state = { items: [], value: '' }
+    }
+    onFilter (event) {
+      const value = event.target.value
+      const items = value ? [{name: `Searching for ${value}...`}] : []
+
+      this.setState({value, items}) // Store value for highlighting
+    }
+    onAjax (event) {
+      const items = event.detail.responseJSON
+      this.setState({items: items.length ? items : [{name: 'No results'}]})
+    }
+    render () {
+      return <CoreInput
+       ajax="https://restcountries.eu/rest/v2/name/{{value}}?fields=name"
+       onFilter={this.onFilter}
+       onAjax={this.onAjax}>
+        <input type='text' placeholder='Country... (JSX)' />
+        <ul className='my-dropdown'>
+          {this.state.items.slice(0, 10).map((item, key) =>
+            <li key={key}>
+              <button>
+                <CoreInput.Highlight text={item.name} query={this.state.value} />
+              </button>
+            </li>
+          )}
+        </ul>
+      </CoreInput>
+    }
+  }
+  ReactDOM.render(<AjaxInput />, document.getElementById('jsx-input-ajax'))
+</script>
+```
+
+### Input with lazy results
+Hybrid solution; lazy load items, but let `core-input` still handle filtering:
+```html
+<!--demo-->
 <input class="my-input-lazy" placeholder="Country...">
 <ul class="my-dropdown" hidden></ul>
-```
-```input-lazy.js
-window.getCountries = function (callback) {
-  var xhr = new XMLHttpRequest()
-  var url = 'https://restcountries.eu/rest/v2/?fields=name'
+<script>
+  window.getCountries = function (callback) {
+    var xhr = new XMLHttpRequest()
+    var url = 'https://restcountries.eu/rest/v2/?fields=name'
 
-  xhr.onload = function () { callback(JSON.parse(xhr.responseText)) }
-  xhr.open('GET', url, true)
-  xhr.send()
-}
-
-document.addEventListener('focus', function (event) {
-  if (event.target.className.indexOf('my-input-lazy') === -1) return // Make sure we are on correct input
-
-  event.target.className = '' // Prevent double execution
-  window.getCountries(function (items) {
-    coreInput(event.target, items
-      .map(function (item) { return '<li><button>' + coreInput.escapeHTML(item.name) + '</button></li>'})
-      .join(''))
-  })
-}, true)
-```
-```input-lazy.jsx
-class LazyInput extends React.Component {
-  constructor (props) {
-    super(props)
-    this.onFocus = this.onFocus.bind(this)
-    this.state = {items: []}
+    xhr.onload = function () { callback(JSON.parse(xhr.responseText)) }
+    xhr.open('GET', url, true)
+    xhr.send()
   }
-  onFocus (event) {
-    this.onFocus = null // Load items only on first interaction
-    window.getCountries((items) => this.setState({items})) // getCountries defined in JS
-  }
-  render () {
-    return <Input onFocus={this.onFocus}>
-      <input type='text' placeholder='Country... (JSX)' />
-      <ul className='my-dropdown'>
-        {this.state.items.map((item, key) =>
-          <li key={key}><button>{item.name}</button></li>
-        )}
-      </ul>
-    </Input>
-  }
-}
 
-<LazyInput />
+  document.addEventListener('focus', function (event) {
+    if (event.target.className.indexOf('my-input-lazy') === -1) return // Make sure we are on correct input
+
+    event.target.className = '' // Prevent double execution
+    window.getCountries(function (items) {
+      coreInput(event.target, items
+        .map(function (item) { return '<li><button>' + coreInput.escapeHTML(item.name) + '</button></li>'})
+        .join(''))
+    })
+  }, true)
+</script>
 ```
 
-## Input with dynamic results
-You can also do synchronous operations, like dynamically populating items based input value:
-```input-dynamic.html
+```html
+<!--demo-->
+<div id="jsx-input-lazy"></div>
+<script type="text/jsx">
+  class LazyInput extends React.Component {
+    constructor (props) {
+      super(props)
+      this.onFocus = this.onFocus.bind(this)
+      this.state = {items: []}
+    }
+    onFocus (event) {
+      this.onFocus = null // Load items only on first interaction
+      window.getCountries((items) => this.setState({items})) // getCountries defined in JS
+    }
+    render () {
+      return <CoreInput onFocus={this.onFocus}>
+        <input type='text' placeholder='Country... (JSX)' />
+        <ul className='my-dropdown'>
+          {this.state.items.map((item, key) =>
+            <li key={key}><button>{item.name}</button></li>
+          )}
+        </ul>
+      </CoreInput>
+    }
+  }
+
+  ReactDOM.render(<LazyInput />, document.getElementById('jsx-input-lazy'))
+</script>
+```
+
+### Input with dynamic results
+Synchronous operation; dynamically populating items based input value:
+```html
+<!--demo-->
 <input class="my-input-dynamic" placeholder="Type your email...">
 <ul class="my-dropdown" hidden></ul>
-```
-```input-dynamic.js
-coreInput('.my-input-dynamic')
+<script>
+  coreInput('.my-input-dynamic')
 
-document.addEventListener('input.filter', (event) => {
-  if (event.target.className.indexOf('my-input-dynamic') === -1) return // Make sure we are on correct input
-  event.preventDefault()
-
-  var mails = ['facebook.com', 'gmail.com', 'hotmail.com', 'mac.com', 'mail.com', 'msn.com', 'live.com']
-  var input = event.target
-  var value = input.value.trim()
-
-  coreInput(input, value ? mails.map(function (mail) {
-    return '<li><button>' + coreInput.highlight(value.replace(/(@.*|$)/, '@' + mail), value) + '</button><li>'
-  }).join('') : '')
-})
-```
-```input-dynamic.jsx
-class DynamicInput extends React.Component {
-  constructor (props) {
-    super(props)
-    this.onFilter = this.onFilter.bind(this)
-    this.mails = ['facebook.com', 'gmail.com', 'hotmail.com', 'mac.com', 'mail.com', 'msn.com', 'live.com']
-    this.state = {items: []}
-  }
-  onFilter (event) {
-    const value = event.target.value.trim()
-    const items = value ? this.mails.map((mail) => value.replace(/(@.*|$)/, `@${mail}`)) : []
-
+  document.addEventListener('input.filter', (event) => {
+    if (event.target.className.indexOf('my-input-dynamic') === -1) return // Make sure we are on correct input
     event.preventDefault()
-    this.setState({value, items})
-  }
-  render () {
-    return <Input onFilter={this.onFilter}>
-      <input type='text' placeholder='Type your email... (JSX)' />
-      <ul className='my-dropdown'>
-        {this.state.items.map((text, key) =>
-          <li key={key}><button><Input.Highlight text={text} query={this.state.value} /></button></li>
-        )}
-      </ul>
-    </Input>
-  }
-}
 
-<DynamicInput />
+    var mails = ['facebook.com', 'gmail.com', 'hotmail.com', 'mac.com', 'mail.com', 'msn.com', 'live.com']
+    var input = event.target
+    var value = input.value.trim()
+
+    coreInput(input, value ? mails.map(function (mail) {
+      return '<li><button>' + coreInput.highlight(value.replace(/(@.*|$)/, '@' + mail), value) + '</button><li>'
+    }).join('') : '')
+  })
+</script>
 ```
+
+```html
+<!--demo-->
+<div id="jsx-input-dynamic"></div>
+<script>
+  class DynamicInput extends React.Component {
+    constructor (props) {
+      super(props)
+      this.onFilter = this.onFilter.bind(this)
+      this.mails = ['facebook.com', 'gmail.com', 'hotmail.com', 'mac.com', 'mail.com', 'msn.com', 'live.com']
+      this.state = {items: []}
+    }
+    onFilter (event) {
+      const value = event.target.value.trim()
+      const items = value ? this.mails.map((mail) => value.replace(/(@.*|$)/, `@${mail}`)) : []
+
+      event.preventDefault()
+      this.setState({value, items})
+    }
+    render () {
+      return <CoreInput onFilter={this.onFilter}>
+        <input type='text' placeholder='Type your email... (JSX)' />
+        <ul className='my-dropdown'>
+          {this.state.items.map((text, key) =>
+            <li key={key}><button><CoreInput.Highlight text={text} query={this.state.value} /></button></li>
+          )}
+        </ul>
+      </CoreInput>
+    }
+  }
+
+  ReactDOM.render(<DynamicInput />, document.getElementById('jsx-input-dynamic'))
+</script>
+```
+
+---
 
 ## FAQ
-<details>
-<summary>Why not use `<datalist>` instead?</summary>
-Despite having a native [`<datalist>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/datalist) element for autocomplete lists, there are several issues regarding [browser support](https://caniuse.com/#feat=details), varying [accessibility](http://accessibleculture.org/articles/2012/03/screen-readers-and-details-summary/) support as well as no ability for custom styling or custom behavior.
-</details>
-<details>
-<summary>Why is there only a subset of aria attributes in use?</summary>
-Despite well documented [examples in the aria 1.1 spesification](https://www.w3.org/TR/2017/NOTE-wai-aria-practices-1.1-20171214/examples/combobox/aria1.1pattern/listbox-combo.html), "best practice" simply becomes unusable in several screen reader due to implementation differences. `core-input` aims to provide a equally good user experience regardless if a screen reader passes events to browser or not (events are often hijacked for quick-navigation). Several techniques and attributes have been thoroughly tested:
-<br><br>
-<ul>
-<li>`aria-activedescendant`/`aria-selected` - ignored in Android, lacks indication of list length in JAWS</li>
-<li>`aria-owns` - full list is read for every keystroke in NVDA</li>
-<li>`role="listbox"` - VoiceOver needs aria-selected to falsely announce "0 selected"</li>
-<li>`role="option"` - falsely announces links and buttons as "text"</li>
-<li>`aria-live="assertive"` - fails to correctly inform user if current target is link or button</li>
-<li>`role="combobox"` - skipped in iOS as VoiceOver fails to inform current field is editable</li>
-</ul>
-</details>
 
-<details>
-<summary>How do I use core-input with multiple tags/output values?</summary>
+### Why not use `<datalist>` instead?
+Despite having a native [`<datalist>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/datalist) element for autocomplete lists, there are several issues regarding [browser support](https://caniuse.com/#feat=details), varying [accessibility](http://accessibleculture.org/articles/2012/03/screen-readers-and-details-summary/) support as well as no ability for custom styling or custom behavior.
+
+### Why is there only a subset of aria attributes in use?
+Despite well documented [examples in the aria 1.1 spesification](https://www.w3.org/TR/2017/NOTE-wai-aria-practices-1.1-20171214/examples/combobox/aria1.1pattern/listbox-combo.html), "best practice" simply becomes unusable in several screen reader due to implementation differences. `core-input` aims to provide a equally good user experience regardless if a screen reader passes events to browser or not (events are often hijacked for quick-navigation). Several techniques and attributes have been thoroughly tested:
+
+- `aria-activedescendant`/`aria-selected` - ignored in Android, lacks indication of list length in JAWS</li>
+- `aria-owns` - full list is read for every keystroke in NVDA</li>
+- `role="listbox"` - VoiceOver needs aria-selected to falsely announce "0 selected"</li>
+- `role="option"` - falsely announces links and buttons as "text"</li>
+- `aria-live="assertive"` - fails to correctly inform user if current target is link or button</li>
+- `role="combobox"` - skipped in iOS as VoiceOver fails to inform current field is editable</li>
+
+### How do I use core-input with multiple tags/output values?
 Tagging and screen readers is a complex matter, requiring more than comma separated values. Currently, tagging is just a part of the wishlist for core-input. If tagging functionality is of interest for your project, please add a +1 to the [tagging task](https://github.com/nrkno/core-components/issues/9), describe your needs in a comment, and you'll be updated about progress.
-</details>

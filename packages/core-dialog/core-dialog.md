@@ -1,11 +1,49 @@
----
-name: Dialog
-category: Components
+# Core Dialog
+
+## `<dialog>` is an element with which the user interacts with to perform some task or decision. `@nrk/core-dialog` simply adds `dialog` functionality to a `<dialog>` if it is not supported (or extends functionality if is supported). `@nrk/core-dialog` supports nestability, keyboard navigation containment and restoring focus when dialog is closed.
+
 ---
 
-> `<dialog>` is an element with which the user interacts with to perform some task or decision. `core-dialog` simply adds `dialog` functionality to a `<dialog>` if it is not supported (or extends functionality if is supported). `core-dialog` supports nestability, keyboard navigation containment and restoring focus when dialog is closed.
+<script src="core-input/core-input.min.js"></script>
+<script src="core-input/jsx/index.js"></script>
+<script src="core-dialog/core-dialog.min.js"></script>
+<script src="core-dialog/jsx/index.js"></script>
+<style>
+  .my-dialog h1 { margin-top: 0 }
+  .my-dialog {
+    position: absolute;
+    margin: auto;
+    top: 5%;
+    left: 0;
+    right: 0;
+    border: 0;
+    padding: 2em;
+    width: 100%;
+    max-width: 300px;
+    background: #fff;
+    transition: .2s;
+  }
 
-```dialog.html
+  .my-dialog + backdrop {
+    position: fixed;
+    background: rgba(0,0,0,.3);
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    transition: .2s;
+  }
+  .my-dialog:not([open]),
+  .my-dialog + backdrop[hidden] {
+    pointer-events: none;
+    visibility: hidden;
+    display: block;
+    opacity: 0;
+  }
+</style>
+
+```html
+<!--demo-->
 <button data-core-dialog="my-dialog">Open dialog</button>
 <dialog id="my-dialog" class="my-dialog" aria-label="første dialog tittel">
   <h1>This is a title</h1>
@@ -25,126 +63,97 @@ category: Components
   <button data-core-dialog="close">Close</button>
 </dialog>
 <div id="docs-react-dialog"></div>
+<script>
+  coreDialog('#my-dialog', {open: false});
+  coreDialog('#my-dialog-nested', {open: false});
+  coreDialog('#strict-dialog', {open: false, strict: true});
+  coreInput('.my-input');
+</script>
 ```
-```dialog.js
-coreDialog('#my-dialog', {open: false});
-coreDialog('#my-dialog-nested', {open: false});
-coreDialog('#strict-dialog', {open: false, strict: true});
-coreInput('.my-input');
-```
-```dialog.jsx
 
-class DialogContainerTest extends React.Component {
-  constructor (props) {
-    super(props)
-    this.state = {
-      open: false,
-      contentTitle: 'Dialog for JSX'
+```html
+<!--demo-->
+<div id="jsx-dialog"></div>
+<div id="jsx-dialog-strict"></div>
+<script type="text/jsx">
+  class DialogContainerDemo extends React.Component {
+    constructor (props) {
+      super(props)
+      this.state = {
+        open: false,
+        contentTitle: 'Dialog for JSX'
+      }
+      this.toggleDialog = this.toggleDialog.bind(this)
+      this.handleToggle = this.handleToggle.bind(this)
     }
-    this.toggleDialog = this.toggleDialog.bind(this)
-    this.handleToggle = this.handleToggle.bind(this)
-  }
 
-  toggleDialog () {
-    this.setState({open: !this.state.open})
-  }
-
-  handleToggle (event) {
-    event.preventDefault()
-    this.setState({open: !event.detail.isOpen})
-  }
-
-  render () {
-    return (
-      <div>
-        <button onClick={this.toggleDialog}>Open dialog jsx</button>
-        <Dialog
-          className="my-dialog"
-          open={this.state.open}
-          onToggle={this.handleToggle}
-          aria-label="React dialog"
-        >
-          <h1>{this.state.contentTitle}</h1>
-          <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
-          <button onClick={this.toggleDialog}>Lukk</button>
-        </Dialog>
-      </div>
-    )
-  }
-}
-
-class StrictDialogContainerTest extends React.Component {
-  constructor (props) {
-    super(props);
-    this.state = {
-      open: false,
-      contentTitle: 'Strict dialog for JSX'
+    toggleDialog () {
+      this.setState({open: !this.state.open})
     }
-    this.toggleDialog = this.toggleDialog.bind(this)
+
+    handleToggle (event) {
+      event.preventDefault()
+      this.setState({open: !event.detail.isOpen})
+    }
+
+    render () {
+      return (
+        <div>
+          <button onClick={this.toggleDialog}>Open dialog jsx</button>
+          <CoreDialog
+            className="my-dialog"
+            open={this.state.open}
+            onToggle={this.handleToggle}
+            aria-label="React dialog"
+          >
+            <h1>{this.state.contentTitle}</h1>
+            <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
+            <button onClick={this.toggleDialog}>Lukk</button>
+          </CoreDialog>
+        </div>
+      )
+    }
   }
 
-  toggleDialog () {
-    this.setState({open: !this.state.open})
-  }
-  
-  render () {
-    return (
-      <div>
-        <button data-core-dialog="dialog-jsx">Open strict dialog jsx</button>
-        <Dialog
-          id="dialog-jsx"
-          className="my-dialog"
-          onToggle={this.handleStrictToggle}
-          aria-label="React dialog"
-          strict
-        >
-          <h1>{this.state.contentTitle}</h1>
-          <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
-          <button data-core-dialog="close">Lukk</button>
-        </Dialog>
-      </div>
-    )
-  }
-}
+  class StrictDialogContainerDemo extends React.Component {
+    constructor (props) {
+      super(props);
+      this.state = {
+        open: false,
+        contentTitle: 'Strict dialog for JSX'
+      }
+      this.toggleDialog = this.toggleDialog.bind(this)
+    }
 
-<div>
-  <DialogContainerTest />
-  <StrictDialogContainerTest />
-</div>
+    toggleDialog () {
+      this.setState({open: !this.state.open})
+    }
+
+    render () {
+      return (
+        <div>
+          <button data-core-dialog="dialog-jsx">Open strict dialog jsx</button>
+          <CoreDialog
+            id="dialog-jsx"
+            className="my-dialog"
+            onToggle={this.handleStrictToggle}
+            aria-label="React dialog"
+            strict>
+            <h1>{this.state.contentTitle}</h1>
+            <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
+            <button data-core-dialog="close">Lukk</button>
+          </CoreDialog>
+        </div>
+      )
+    }
+  }
+
+  ReactDOM.render(<DialogContainerDemo />, document.getElementById('jsx-dialog'))
+  ReactDOM.render(<StrictDialogContainerDemo />, document.getElementById('jsx-dialog-strict'))
+</script>
 ```
-```dialog.css
-.my-dialog h1 { margin-top: 0 }
-.my-dialog {
-  position: absolute;
-  margin: auto;
-  top: 5%;
-  left: 0;
-  right: 0;
-  border: 0;
-  padding: 2em;
-  width: 100%;
-  max-width: 300px;
-  background: #fff;
-  transition: .2s;
-}
 
-.my-dialog + backdrop {
-  position: fixed;
-  background: rgba(0,0,0,.3);
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  transition: .2s;
-}
-.my-dialog:not([open]),
-.my-dialog + backdrop[hidden] {
-  pointer-events: none; /* Allow clicks while animating */
-  visibility: hidden;
-  display: block;
-  opacity: 0;
-}
-```
+---
 
 ## Usage
 ```html
@@ -179,24 +188,26 @@ coreDialog('.my-dialog', {open: true, label: 'A super dialog'})
 ```
 
 ```jsx
-import Dialog from '@nrk/core-dialog/jsx'
+import CoreDialog from '@nrk/core-dialog/jsx'
 
-<Dialog open={true|false} strict={true|false} onToggle={function(){}} aria-label="Title of dialog">
+<CoreDialog open={true|false} strict={true|false} onToggle={function(){}} aria-label="Title of dialog">
   <h1>My React/Preact dialog</h1>
   <p>Some content</p>
   <button onClick={closeDialog}></button>
-</Dialog>
+</CoreDialog>
 
 function closeDialog (event) {
   // change open state/props to false
 }
 ```
 
-## Supporting IE9
-If you need `core-dialog` to support IE9, add the following code in your `<head>` tag:
+### Supporting IE9
+If you need `@nrk/core-dialog` to support IE9, add the following code in your `<head>` tag:
 ```
 <!--[if IE 9]><script>document.createElement('dialog')</script><![endif]-->
 ```
+
+---
 
 ## Events
 
@@ -208,6 +219,8 @@ document.addEventListener('dialog.toggle', (event) => {
 })
 ```
 
+---
+
 ## Styling
 
 ```css
@@ -217,9 +230,8 @@ document.addEventListener('dialog.toggle', (event) => {
 .my-dialog + backdrop[hidden] {}      /* Target backdrop in closed state */
 ```
 
-## FAQ
+---
 
-<details>
-  <summary>Why use `<dialog>` when it is not supported by all browsers?</summary>
-  There is currently [minimal support](https://caniuse.com/#feat=dialog) for the `<dialog>` element. However, to ensure best accessibility, `core-dialog` uses native functionality whenever possible, and augments with `role="dialog"` as a fallback. For more information about the dialog element visit the [W3C HTML 5.2 specification](https://www.w3.org/TR/html52/interactive-elements.html#the-dialog-element). For more information about WAI-ARIA practices for the dialog element visit the [W3C WAI-ARIA Authoring Practices 1.1](https://www.w3.org/TR/wai-aria-practices-1.1/#dialog_modal)
-</details>
+## FAQ
+### Why use `<dialog>` when it is not supported by all browsers?
+There is currently [minimal support](https://caniuse.com/#feat=dialog) for the `<dialog>` element. However, to ensure best accessibility, `@nrk/core-dialog` uses native functionality whenever possible, and augments with `role="dialog"` as a fallback. For more information about the dialog element visit the [W3C HTML 5.2 specification](https://www.w3.org/TR/html52/interactive-elements.html#the-dialog-element). For more information about WAI-ARIA practices for the dialog element visit the [W3C WAI-ARIA Authoring Practices 1.1](https://www.w3.org/TR/wai-aria-practices-1.1/#dialog_modal)

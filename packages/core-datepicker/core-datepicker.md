@@ -1,13 +1,31 @@
----
-name: Datepicker
-category: Components
+# Core Datepicker
+
+## `@nrk/core-datepicker` enhances all child `input`, `select` `table` and `button` elements with keyboard accessible functionality for selecting date and time. The interface and granularity of date refinement can easily be altered through markup.
+
+- Handles both date and time selection
+- Add or remove controls to fit your needs
+- Keyboard accessible
+
 ---
 
-> `@nrk/core-datepicker` enhances all child `input`, `select` `table` and `button` elements with keyboard accessible functionality for selecting date and time. The interface and granularity of date refinement can easily be altered through markup:
+<script src="core-toggle/core-toggle.min.js"></script>
+<script src="core-datepicker/core-datepicker.min.js"></script>
+<script src="core-toggle/jsx/index.js"></script>
+<script src="core-datepicker/jsx/index.js"></script>
+<style>
+  .my-datepicker { position: absolute; padding: 1rem; background: #fff; box-shadow: 0 5px 9px rgba(0,0,0,.4) }
+  .my-datepicker button[aria-current="date"] { border: 1px dashed }
+  .my-datepicker button[aria-pressed="true"] { border: 2px solid }
+  .my-datepicker button[aria-disabled="true"] { opacity: .3 }
+  :disabled { filter: brightness(.7) sepia(1) hue-rotate(-50deg) }
+</style>
 
-```datepicker.html
+## Demo
+
+```html
+<!-- demo -->
 <button class="my-toggle">Velg dato</button>
-<div class="my-datepicker my-dropdown" id="my-datepicker" hidden>
+<div class="my-datepicker" id="my-datepicker" hidden>
   <input type="timestamp">
   <fieldset>
     <legend>Navigasjon</legend>
@@ -66,62 +84,64 @@ category: Components
 <button data-core-datepicker="my-datepicker" value="now">Nå</button>
 <button data-core-datepicker="my-datepicker" value="+1 week">Neste uke</button>
 <input type="text" id="my-datepicker-output">
+<script>
+  // coreDate.days = ['m', 't', 'o', 't', 'f', 'l', 's'] // Change name of days
+
+  // Update GUI
+  document.addEventListener('datepicker.render', function (event) {
+    if (event.target.id !== 'my-datepicker') return
+    event.detail.disable(function (date) { return date > Date.now() })
+  })
+
+  // Update output
+  document.addEventListener('datepicker.change', function (event) {
+    if (event.target.id !== 'my-datepicker') return
+    document.getElementById('my-datepicker-output').value = event.detail.nextDate.toLocaleString()
+  })
+
+  // Initialize
+  coreDatepicker('#my-datepicker')
+  coreToggle('.my-toggle', {popup: true}) // Make popup
+</script>
 ```
-```datepicker.js
-// coreDate.days = ['m', 't', 'o', 't', 'f', 'l', 's'] // Change name of days
 
-// Update GUI
-document.addEventListener('datepicker.render', function (event) {
-  if (event.target.id !== 'my-datepicker') return
-  event.detail.disable(function (date) { return date > Date.now() })
-})
-
-// Update output
-document.addEventListener('datepicker.change', function (event) {
-  if (event.target.id !== 'my-datepicker') return
-  document.getElementById('my-datepicker-output').value = event.detail.nextDate.toLocaleString()
-})
-
-// Initialize
-coreDatepicker('#my-datepicker')
-coreToggle('.my-toggle', {popup: true}) // Make popup
-```
-```datepicker.jsx
-class MyDate extends React.Component {
-  constructor (props) {
-    super(props)
-    this.today = Datepicker.parse('00:00')
-    this.state = {date: new Date()}
-    this.onNow = this.onNow.bind(this)
-    this.onChange = this.onChange.bind(this)
+```html
+<!-- demo -->
+<div id="jsx-datepicker"></div>
+<script type="text/jsx">
+  class MyDate extends React.Component {
+    constructor (props) {
+      super(props)
+      this.today = CoreDatepicker.parse('00:00')
+      this.state = {date: new Date()}
+      this.onNow = this.onNow.bind(this)
+      this.onChange = this.onChange.bind(this)
+    }
+    onNow () { this.setState({date: CoreDatepicker.parse('now')}) }
+    onChange (event) { this.setState({date: event.detail.nextDate}) }
+    render () {
+      return <CoreToggle popup={true}>
+        <button>Velg dato JSX</button>
+        <CoreDatepicker
+          date={this.state.date}
+          disable={(date) => date < this.today}
+          onChange={this.onChange}
+          className="my-datepicker">
+            <label>År<input type="year" /></label>
+            <label>Måned<select></select></label>
+            <table></table>
+        </CoreDatepicker>
+        <button onClick={this.onNow}>I dag JSX</button>
+        <input type="text" readOnly value={this.state.date.toLocaleDateString()} />
+      </CoreToggle>
+    }
   }
-  onNow () { this.setState({date: Datepicker.parse('now')}) }
-  onChange (event) { this.setState({date: event.detail.nextDate}) }
-  render () {
-    return <Toggle popup={true}>
-      <button>Velg dato JSX</button>
-      <Datepicker
-        date={this.state.date}
-        disable={(date) => date < this.today}
-        onChange={this.onChange}
-        className="my-datepicker my-dropdown">
-          <label>År<input type="year" /></label>
-          <label>Måned<select></select></label>
-          <table></table>
-      </Datepicker>
-      <button onClick={this.onNow}>I dag JSX</button>
-      <input type="text" readOnly value={this.state.date.toLocaleDateString()} />
-    </Toggle>
-  }
-}
-<MyDate />
+
+  ReactDOM.render(<MyDate />, document.getElementById('jsx-datepicker'))
+</script>
 ```
-```datepicker.css
-.my-datepicker button[aria-current="date"] { border: 1px dashed }
-.my-datepicker button[aria-pressed="true"] { border: 2px solid }
-.my-datepicker button[aria-disabled="true"] { opacity: .3 }
-:disabled { filter: brightness(.7) sepia(1) hue-rotate(-50deg) }
-```
+
+---
 
 ## Usage
 All date values - both HTML markup and JavaScript - accepts accepts dates as numbers, or as natural language in [the format of @nrk/simple-date-parse](https://github.com/nrkno/simple-date-parse).
@@ -182,19 +202,22 @@ coreDatepicker(
 ```
 
 ```jsx
-import Datepicker from '@nrk/core-datepicker/jsx'
+import CoreDatepicker from '@nrk/core-datepicker/jsx'
 
-<Datepicker date={String|Date} onChange={function () {}} >
+<CoreDatepicker date={String|Date} onChange={function () {}} >
   <input type="radio|checkbox|year|month|day|hour|minute|second|timestamp"/> <!-- Same as with vanilla js -->  
   <select></select> <!-- Same as with vanilla js -->
   <table></table>   <!-- Same as with vanilla js -->
-<Datepicker>
+<CoreDatepicker>
 ```
 
+---
 
 ## Events
 Events run in the order `datepicker.click.day`\* &rarr; `datepicker.render` &rarr; `datepicker.change`
 <br><small>\* datepicker.click.day only fires if user clicked inside the month days grid</small>
+
+### datepicker.render
 
 `'datepicker.render'` event is fired on every render. The `datepicker.render` can be used to disable specific dates or limit timespan (read: max/min). The bubbles and can therefore be detected both from button element itself, or any parent element (read event delegation):
 
@@ -208,6 +231,8 @@ document.addEventListener('datepicker.render', (event) => {
 })
 ```
 
+### datepicker.change
+
 `'datepicker.change'` event is fired when date is changed by user or programatically (both for VanillaJS and React/Preact components). The `datepicker.change` event is cancelable, meaning you can use `event.preventDefault()` to cancel change. The event also bubbles, and can therefore be detected both from button element itself, or any parent element (read event delegation):
 
 ```js
@@ -217,6 +242,8 @@ document.addEventListener('datepicker.change', (event) => {
   event.detail.prevDate               // The previous/current date
 })
 ```
+
+### datepicker.click.day
 
 `'datepicker.click.day'` event is fired if the user clicks a day in the month days grid. The `datepicker.click.day` runs before `datepicker.change`. The event is cancelable, meaning you can use `event.preventDefault()`. The event also bubbles, and can therefore be detected both from button element itself, or any parent element (read event delegation):
 
@@ -230,13 +257,15 @@ document.addEventListener('datepicker.click.day', (event) => {
 })
 ```
 
+---
+
 ## Styling
 
 ```css
 .my-datepicker                              /* Target datepicker container */
-.my-datepicker button[aria-current="date"]  /* Target current date (today) in the table */
-.my-datepicker button[aria-pressed="true"]  /* Target the chosen date in the table */
-.my-datepicker button[aria-disabled="true"] /* Target dates in next/prev month in the table */
+.my-datepicker button[aria-current="date"]  /* Target current date (today) in month view */
+.my-datepicker button[aria-pressed="true"]  /* Target the chosen date in month view */
+.my-datepicker button[aria-disabled="true"] /* Target dates from next or previous month in the month view */
 .my-datepicker button:disabled              /* Target disabled dates */
 .my-datepicker input:disabled               /* Target disabled checkbox/radio dates */
 .my-datepicker input:checked                /* Target selected checkbox/radio dates */

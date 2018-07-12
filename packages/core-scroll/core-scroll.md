@@ -1,11 +1,19 @@
----
-name: Scroll
-category: Components
+# Core Scroll
+
+## `@nrk/core-scroll` enhances any tag with content to be scrollable with mouse interaction on non-touch-devices. `core-scroll` also automatically disables animation for users who prefers [reduced motion](https://css-tricks.com/introduction-reduced-motion-media-query/).
+
 ---
 
-> `@nrk/core-scroll` enhances any tag with content to be scrollable with mouse interaction on non-touch-devices. `core-scroll` also automatically disables animation for users who prefers [reduced motion](https://css-tricks.com/introduction-reduced-motion-media-query/).
+<script src="core-scroll/core-scroll.min.js"></script>
+<script src="core-scroll/jsx/index.js"></script>
+<style>
+  #my-scroll-js { height: 200px }
+  .my-wrap { overflow: hidden; white-space: nowrap; border: 1px solid; height: 100% }
+  .my-scroll > * { box-sizing: border-box; display: inline-block; vertical-align: top; width: 30%; height: 90px; padding: 10px; border: 1px solid; margin: 10px; transition: 1s }
+</style>
 
-```scroll.html
+```html
+<!--demo-->
 <button data-core-scroll="my-scroll-js" value="up" aria-label="Rull opp">&uarr;</button>
 <button data-core-scroll="my-scroll-js" value="down" aria-label="Rull ned">&darr;</button>
 <br>
@@ -44,38 +52,39 @@ category: Components
     <div>11</div><div>12</div><div>13</div><div>14</div><div>15</div>
   </div>
 </div>
-```
-```scroll.js
-coreScroll('.my-scroll');
-```
-```scroll.jsx
-class MyScroll extends React.Component {
-  constructor (props) {
-    super(props)
-    this.state = {}
-  }
-  render () {
-    return <div>
-      <button disabled={!this.state.scrollLeft} onClick={this.state.scrollLeft}>Left JSX</button>
-      <button disabled={!this.state.scrollRight} onClick={this.state.scrollRight}>Right JSX</button>
-      <div className="my-wrap">
-        <Scroll className="my-scroll" onChange={(state) => this.setState(state)}>
-          <div>1</div><div>2</div><div>3</div><div>4</div><a href="#">5</a>
-          <div>6</div><div>7</div><div>8</div><div>9</div><div>10</div>
-          <div>11</div><div>12</div><div>13</div><div>14</div><div>15</div>
-        </Scroll>
-      </div>
-    </div>
-  }
-}
-<MyScroll />
-```
-```scroll.css
-#my-scroll-js { height: 200px }
-.my-wrap { overflow: hidden; white-space: nowrap; border: 1px solid; height: 100% }
-.my-scroll > * { box-sizing: border-box; display: inline-block; vertical-align: top; width: 30%; height: 90px; padding: 10px; border: 1px solid; margin: 10px; transition: 1s }
+<script>
+  coreScroll('.my-scroll');
+</script>
 ```
 
+```html
+<!--demo-->
+<div id="jsx-scroll"></div>
+<script type="text/jsx">
+  class MyScroll extends React.Component {
+    constructor (props) {
+      super(props)
+      this.state = {}
+    }
+    render () {
+      return <div>
+        <button disabled={!this.state.scrollLeft} onClick={this.state.scrollLeft}>Left JSX</button>
+        <button disabled={!this.state.scrollRight} onClick={this.state.scrollRight}>Right JSX</button>
+        <div className="my-wrap">
+          <CoreScroll className="my-scroll" onChange={(state) => this.setState(state)}>
+            <div>1</div><div>2</div><div>3</div><div>4</div><a href="#">5</a>
+            <div>6</div><div>7</div><div>8</div><div>9</div><div>10</div>
+            <div>11</div><div>12</div><div>13</div><div>14</div><div>15</div>
+          </CoreScroll>
+        </div>
+      </div>
+    }
+  }
+  ReactDOM.render(<MyScroll />, document.getElementById('jsx-scroll'))
+</script>
+```
+
+---
 
 ## Usage
 
@@ -103,11 +112,11 @@ coreScroll(String|Element|Elements, {                           // Or pass a obj
 })
 ```
 ```jsx
-import Scroll from '@nrk/core-scroll/jsx'
+import CoreScroll from '@nrk/core-scroll/jsx'
 
-<Scroll onChange={(state) => {}}>
+<CoreScroll onChange={(state) => {}}>
   {/* elements */}
-</Scroll>
+</CoreScroll>
 
 
 // state parameter in the onChange event has the following structure:
@@ -123,6 +132,8 @@ state = {
 
 ```
 
+---
+
 ## Events
 `'scroll.change'` is fired regularly during a scroll. The event is [throttled](https://css-tricks.com/the-difference-between-throttling-and-debouncing/) to achieve better performance. The event bubbles, and can therefore be detected both from button element itself, or any parent element (read event delegation):
 
@@ -136,6 +147,8 @@ document.addEventListener('scroll.change', (event) => {
   event.detail.down   // Amount of pixels remaining in scroll direction down
 })
 ```
+
+---
 
 ## Styling
 All styling in documentation is example only. The `<button>` elements receive `disabled `attributes reflecting the current scroll state:
