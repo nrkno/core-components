@@ -1,10 +1,10 @@
-import buble from 'rollup-plugin-buble'
-import commonjs from 'rollup-plugin-commonjs'
-import json from 'rollup-plugin-json'
-import resolve from 'rollup-plugin-node-resolve'
-import serve from 'rollup-plugin-serve'
-import {uglify} from 'rollup-plugin-uglify'
-import {pkgs, getPackageName} from './bin/index.js' // Find all packages
+const buble = require('rollup-plugin-buble')
+const commonjs = require('rollup-plugin-commonjs')
+const json = require('rollup-plugin-json')
+const resolve = require('rollup-plugin-node-resolve')
+const serve = require('rollup-plugin-serve')
+const {uglify} = require('rollup-plugin-uglify')
+const {pkgs, getPackageName} = require('./bin/index.js') // Find all packages
 
 const server = !process.env.ROLLUP_WATCH || serve('packages')
 const globals = {'react-dom': 'ReactDOM', react: 'React'} // Do not include react in out package

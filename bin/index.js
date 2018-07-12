@@ -1,12 +1,13 @@
-import {execSync} from 'child_process'
-import path from 'path'
-import fs from 'fs'
+const {execSync} = require('child_process')
+const path = require('path')
+const fs = require('fs')
+const args = getProcessArgs()
+const pkgs = getPackagePaths()
 
-export const args = getProcessArgs()
-export const pkgs = getPackagePaths()
+module.exports = {args, pkgs, getProcessArgs, getPackageName, getPackagePaths}
 
 // Utilities -------------------------------------------------------------------
-export function getProcessArgs () {
+function getProcessArgs () {
   return process.argv.slice(2).reduce((args, arg) => {
     const [key, value = true] = arg.split('=')
     args[key.replace(/^-*/g, '')] = value
@@ -14,11 +15,11 @@ export function getProcessArgs () {
   }, {})
 }
 
-export function getPackageName (packagePath) {
+function getPackageName (packagePath) {
   return packagePath.split(path.sep).pop()
 }
 
-export function getPackagePaths () {
+function getPackagePaths () {
   const dir = path.join(process.cwd(), 'packages')
   return fs.readdirSync(dir).reduce((packages, file) => {
     const isPackage = fs.existsSync(path.join(dir, file, 'package.json'))
