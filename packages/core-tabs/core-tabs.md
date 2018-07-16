@@ -1,11 +1,24 @@
----
-name: Tabs
-category: Components
+# Core Tabs
+
+## `@nrk/core-tabs` converts `<button>` and `<a>` elements to keyboard accessible tabs, controlling children of next element sibling (tabpanels). Tabs can be nested and easily extended with custom animations or behaviour through the `tabs.toggle` event.
+
 ---
 
-> `@nrk/core-tabs` converts `<button>` and `<a>` elements to keyboard accessible tabs, controlling children of next element sibling (tabpanels). Tabs can be nested and easily extended with custom animations or behaviour through the `tabs.toggle` event.
+<script src="core-tabs/core-tabs.min.js"></script>
+<script src="core-tabs/jsx/index.js"></script>
+<style>
+  [role="tabpanel"] { background: #eee; padding: 10px }
+  [aria-selected="true"] { border: 2px solid }
 
-```tabs.html
+  .my-vertical-tabs [role="tablist"] { float: left; width: 150px }
+  .my-vertical-tabs [role="tabpanel"] { overflow: hidden }
+  .my-vertical-tabs [role="tab"] { display: inline-block }
+</style>
+
+## Demo
+
+```html
+<!--demo-->
 <div class="my-tabs"> <!-- Direct children must be <a> or <button>. Do not use <li> -->
   <button>Button tab</button>
   <button>Nested tabs</button>
@@ -25,44 +38,42 @@ category: Components
   </div>
   <div hidden>Text of tab 3</div>
 </div>
+<script>
+  coreTabs('.my-tabs')
+</script>
 ```
-```tabs.js
-coreTabs('.my-tabs')
-```
-```tabs.jsx
-<Tabs open={0} onToggle={function(){}} className='my-vertical-tabs'>
-  <div>
-    <button>Button tab JSX</button>
-    <button>Nested tabs JSX</button>
-  </div>
-  <div>
-    <div>Text of tab 1</div>
-    <Tabs>
-      <div>
-        <button>Subtab 1 JSX</button>
-        <button>Subtab 2 JSX</button>
-      </div>
-      <div>
-        <div>Subpanel 1</div>
-        <div>Subpanel 2</div>
-      </div>
-    </Tabs>
-  </div>
-</Tabs>
-```
-```tabs.css
-[role="tabpanel"] { background: #eee; padding: 10px }
-[aria-selected="true"] { border: 2px solid }
 
-.my-vertical-tabs [role="tablist"] { float: left; width: 150px }
-.my-vertical-tabs [role="tabpanel"] { overflow: hidden }
-.my-vertical-tabs [role="tab"] { display: inline-block }
+```html
+<!--demo-->
+<div id="jsx-tabs"></div>
+<script type="text/jsx">
+  ReactDOM.render(<CoreTabs open={0} onToggle={function(){}} className='my-vertical-tabs'>
+    <div>
+      <button>Button tab JSX</button>
+      <button>Nested tabs JSX</button>
+    </div>
+    <div>
+      <div>Text of tab 1</div>
+      <CoreTabs>
+        <div>
+          <button>Subtab 1 JSX</button>
+          <button>Subtab 2 JSX</button>
+        </div>
+        <div>
+          <div>Subpanel 1</div>
+          <div>Subpanel 2</div>
+        </div>
+      </CoreTabs>
+    </div>
+  </CoreTabs>, document.getElementById('jsx-tabs'))
+</script>
 ```
-```tabs.css hidden
-.my-vertical-tabs { margin-top: 2em }
-```
+
+---
 
 ## Usage
+
+### JavaScript
 ```js
 import coreTabs from '@nrk/core-tabs'
 
@@ -71,14 +82,17 @@ coreTabs(
   open                        // Optional. Can be String: id of tab, Element: tab or Number: index of tab
 )
 ```
-```jsx
-import Tabs from '@nrk/core-tabs/jsx'
+
+### React / Preact
+
+```js
+import CoreTabs from '@nrk/core-tabs/jsx'
 
 // All props are optional, and defaults are shown below
 // Props like className, style, etc. will be applied as actual attributes
 // <Tabs> will handle state itself unless you call event.preventDefault() in onToggle
 
-<Tabs open={0} onToggle={(event) => {}}>
+<CoreTabs open={0} onToggle={(event) => {}}>
   <div>                     // First element must contain tabs
     <button>Tab 1</button>  // Tabs items must be <button> or <a>
     <a href="#">Tab 2</a>
@@ -87,8 +101,10 @@ import Tabs from '@nrk/core-tabs/jsx'
     <div>Panel 1</div>      // No need to set hidden attribute in JSX; this is controlled by "open"
     <div>Panel 2</div>
   </div>
-</Tabs>
+</CoreTabs>
 ```
+
+---
 
 ## Events
 `'tabs.toggle'` is fired before toggle (both for VanillaJS and React/Preact components). The `tabs.toggle` event is cancelable, meaning you can use `event.preventDefault()` to cancel default toggling. The event also bubbles, and can therefore be detected both from button element itself, or any parent element (read event delegation):
@@ -109,6 +125,8 @@ document.addEventListener('tabs.toggle', (event) => {
 })
 ```
 
+---
+
 ## Styling
 All styling in documentation is example only. Both the tabs and tabpanels receive attributes reflecting the current toggle state:
 
@@ -122,22 +140,20 @@ All styling in documentation is example only. Both the tabs and tabpanels receiv
 .my-tabpanel[hidden] {}             /* Target only closed panel */
 ```
 
-## FAQ
-<details>
-<summary>Why must tabs be direct children of `core-tabs` element and not inside `<li>`?</summary>
-A `<ul>`/`<li>` structure would seem logical for tabs, but this causes some screen readers to incorrectly announce tabs as single (tab 1 of 1).
-</details>
+---
 
-<details>
-<summary>Does panels always need to direct children of next element?</summary>
+## FAQ
+### Why must tabs be direct children of `core-tabs` element and not inside `<li>`?
+A `<ul>`/`<li>` structure would seem logical for tabs, but this causes some screen readers to incorrectly announce tabs as single (tab 1 of 1).
+
+### Does panels always need to direct children of next element?
 The aria specification does not allow any elements that are focusable by a screen reader to be placed between tabs and panels. Therefore, `@nrk/core-tabs` defaults to use children of next element as panels.
 This behaviour can be overridden, by setting up `id` on panel elements and `aria-controls` on tab element. Use with caution and *only* do this if your project *must* use another DOM structure. Example:
 
-<pre>
+```js
 const tabs = Array.from(document.querySelectorAll('.my-tabs__tab'))
 const panels = Array.from(document.querySelectorAll('.my-tabs__panel'))
 tabs.forEach((tabs, index) => tab.setAttribute('aria-controls', panels[index].id = 'my-panel-' + i))
 
 coreTabs('.my-tabs')
-</pre>
-</details>
+```
