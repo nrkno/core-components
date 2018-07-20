@@ -65,11 +65,11 @@ function onMousedown (event) {
 }
 
 function onMousemove (event) {
-  DRAG.target.style.pointerEvents = 'none' // Prevent links when we know there has been movement
   DRAG.diffX = DRAG.pageX - (DRAG.pageX = event.pageX)
   DRAG.diffY = DRAG.pageY - (DRAG.pageY = event.pageY)
   DRAG.target.scrollLeft = DRAG.scrollX += DRAG.diffX
   DRAG.target.scrollTop = DRAG.scrollY += DRAG.diffY
+  DRAG.target.style.pointerEvents = 'none' // Prevent links when we know there has been movement
 }
 
 function onMouseup (event) {
