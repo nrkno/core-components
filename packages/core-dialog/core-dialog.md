@@ -51,6 +51,8 @@
   <h1>This is a title</h1>
   <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
   <button data-core-dialog="my-dialog-nested">Open an additional dialog</button>
+  <button type="button" autofocus style="visibility: hidden">Should not be focusable</button>
+  <button type="button" autofocus>Autofocus</button>
   <button data-core-dialog="close">Close</button>
 </dialog>
 <dialog id="my-dialog-nested" class="my-dialog" aria-label="andre dialog tittel">
@@ -62,6 +64,7 @@
 <dialog id="strict-dialog" class="my-dialog" aria-label="første dialog tittel">
   <h1>This is a title</h1>
   <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
+  <button>This button does nothing</button>
   <button data-core-dialog="close">Close</button>
 </dialog>
 <div id="docs-react-dialog"></div>
