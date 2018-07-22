@@ -4,6 +4,7 @@
 
 ---
 
+<!--demo
 <script src="core-scroll/core-scroll.min.js"></script>
 <script src="core-scroll/jsx/index.js"></script>
 <style>
@@ -11,6 +12,7 @@
   .my-wrap { overflow: hidden; white-space: nowrap; border: 1px solid; height: 100% }
   .my-scroll > * { box-sizing: border-box; display: inline-block; vertical-align: top; width: 30%; height: 90px; padding: 10px; border: 1px solid; margin: 10px; transition: 1s }
 </style>
+demo-->
 
 ## Demo
 

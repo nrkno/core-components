@@ -4,8 +4,10 @@
 
 ---
 
+<!--demo
 <script src="core-input/core-input.min.js"></script>
 <script src="core-input/jsx/index.js"></script>
+demo-->
 
 ## Demo
 

@@ -4,6 +4,7 @@
 
 ---
 
+<!--demo
 <script src="core-tabs/core-tabs.min.js"></script>
 <script src="core-tabs/jsx/index.js"></script>
 <style>
@@ -14,6 +15,7 @@
   .my-vertical-tabs [role="tabpanel"] { overflow: hidden }
   .my-vertical-tabs [role="tab"] { display: inline-block }
 </style>
+demo-->
 
 ## Demo
 
