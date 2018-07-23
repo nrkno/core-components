@@ -123,8 +123,8 @@ function queryFocusable (context) {
 }
 
 function setFocus (dialog) {
-  const autofocusElements = getVisibleElements(queryAll('[autofocus]', dialog))
-  if (autofocusElements[0]) return autofocusElements[0].focus();
+  const autofocusElements = getVisibleElements(queryAll('[autofocus]', dialog))[0]
+  if (autofocusElements) return autofocusElements.focus();
   (queryFocusable(dialog)[0] || dialog).focus()
 }
 
