@@ -6,12 +6,14 @@
 
 ## Demo
 
+<!--demo
 <script src="core-toggle/core-toggle.min.js"></script>
 <script src="core-toggle/jsx/index.js"></script>
 
 <div class="nrk-grid">
 <div class="nrk-xs-12of12 nrk-md-6of12" style="padding-right:30px"><h3>Default toggle</h3>
 Content is only toggled when clicking <code>button</code>. Great for accordions and expand/collapse panels.
+demo-->
 
 ```html
 <!--demo-->

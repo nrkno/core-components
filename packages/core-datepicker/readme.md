@@ -8,6 +8,7 @@
 
 ---
 
+<!--demo
 <script src="core-toggle/core-toggle.min.js"></script>
 <script src="core-datepicker/core-datepicker.min.js"></script>
 <script src="core-toggle/jsx/index.js"></script>
@@ -19,6 +20,7 @@
   .my-datepicker button[aria-disabled="true"] { opacity: .3 }
   :disabled { filter: brightness(.7) sepia(1) hue-rotate(-50deg) }
 </style>
+demo-->
 
 ## Demo
 
