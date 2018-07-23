@@ -110,15 +110,21 @@ function setOpen (dialog, open) {
   }
 }
 
-function queryFocusable (context) {
-  return queryAll(FOCUSABLE_ELEMENTS, context).filter((el) =>
+function getVisibleElements (elements) {
+  return elements.filter((el) =>
     el.clientWidth &&
     el.clientHeight &&
     window.getComputedStyle(el).getPropertyValue('visibility') !== 'hidden'
   )
 }
 
+function queryFocusable (context) {
+  return getVisibleElements(queryAll(FOCUSABLE_ELEMENTS, context))
+}
+
 function setFocus (dialog) {
+  const autofocusElements = getVisibleElements(queryAll('[autofocus]', dialog))[0]
+  if (autofocusElements) return autofocusElements.focus();
   (queryFocusable(dialog)[0] || dialog).focus()
 }
 
