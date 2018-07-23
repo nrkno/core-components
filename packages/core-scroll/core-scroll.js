@@ -65,11 +65,11 @@ function onMousedown (event) {
 }
 
 function onMousemove (event) {
-  DRAG.preventLink = true // Prevent links when we know there has been movement
   DRAG.diffX = DRAG.pageX - (DRAG.pageX = event.pageX)
   DRAG.diffY = DRAG.pageY - (DRAG.pageY = event.pageY)
   DRAG.target.scrollLeft = DRAG.scrollX += DRAG.diffX
   DRAG.target.scrollTop = DRAG.scrollY += DRAG.diffY
+  DRAG.target.style.pointerEvents = 'none' // Prevent links when we know there has been movement
 }
 
 function onMouseup (event) {
@@ -85,6 +85,7 @@ function onMouseup (event) {
       y: DRAG.scrollY + DRAG.diffY * VELOCITY
     })
   }
+  DRAG.target.style.pointerEvents = '' // Allow events again
   DRAG.target = null // Prevent memory leak
 }
 
@@ -112,7 +113,6 @@ function onChange (event) {
 }
 
 function onClick (event) {
-  if (DRAG.preventLink) DRAG.preventLink = event.preventDefault()
   for (let el = event.target; el; el = el.parentElement) {
     const id = el.getAttribute(ATTR)
     if (id) return scroll(document.getElementById(id), el.value)

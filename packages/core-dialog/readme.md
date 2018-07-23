@@ -4,6 +4,7 @@
 
 ---
 
+<!--demo
 <script src="core-input/core-input.min.js"></script>
 <script src="core-input/jsx/index.js"></script>
 <script src="core-dialog/core-dialog.min.js"></script>
@@ -41,6 +42,7 @@
     opacity: 0;
   }
 </style>
+demo-->
 
 ## Demo
 
