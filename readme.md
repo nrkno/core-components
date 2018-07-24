@@ -1,4 +1,4 @@
-# @nrk/core-components
+# @nrk/core-components ![Build](https://api.travis-ci.org/nrkno/core-components.svg?branch=master)
 
 > `@nrk/core-components` is a kit of lightweight, unstyled and accessible [Javascript](https://stackoverflow.com/questions/20435653/what-is-vanillajs) and [React](https://reactjs.org/) / [Preact](https://github.com/developit/preact-compat) components.
 It provides effortless and flexible usage, while under the hood enhancing markup and functionality for best best user experience across all major browsers and screen readers.

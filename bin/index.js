@@ -4,7 +4,7 @@ const fs = require('fs')
 const args = getProcessArgs()
 const pkgs = getPackagePaths()
 
-module.exports = {args, pkgs, getPackageName}
+module.exports = {args, pkgs, getProcessArgs, getPackageName, getPackagePaths}
 
 // Utilities -------------------------------------------------------------------
 function getProcessArgs () {

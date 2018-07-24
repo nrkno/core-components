@@ -2,9 +2,8 @@ import React from 'react'
 import coreToggle from './core-toggle'
 import {exclude} from '../utils'
 
-const DEFAULTS = {open: null, popup: null, onToggle: null} // Remove onToggle prop as this is also a native event
-
 export default class Toggle extends React.Component {
+  static get defaultProps () { return {open: null, popup: null, onToggle: null} }
   constructor (props) {
     super(props)
     this.onToggle = this.onToggle.bind(this)
@@ -17,7 +16,7 @@ export default class Toggle extends React.Component {
   componentWillUnmount () { this.el.removeEventListener('toggle', this.onToggle) }
   onToggle (event) { this.props.onToggle && this.props.onToggle(event) }
   render () {
-    return React.createElement('div', exclude(this.props, DEFAULTS, {ref: (el) => (this.el = el)}),
+    return React.createElement('div', exclude(this.props, Toggle.defaultProps, {ref: (el) => (this.el = el)}),
       React.Children.map(this.props.children, (child, adjacent) => {
         if (adjacent === 0) {
           return React.cloneElement(child, {

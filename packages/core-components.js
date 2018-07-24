@@ -1,7 +1,0 @@
-export {default as datepicker} from '../packages/core-datepicker/core-datepicker'
-export {default as dialog} from '../packages/core-dialog/core-dialog'
-export {default as input} from '../packages/core-input/core-input'
-export {default as scroll} from '../packages/core-scroll/core-scroll'
-export {default as tabs} from '../packages/core-tabs/core-tabs'
-export {default as tags} from '../packages/core-tags/core-tags'
-export {default as toggle} from '../packages/core-toggle/core-toggle'

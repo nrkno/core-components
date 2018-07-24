@@ -1,0 +1,113 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Core Components</title>
+  <link rel="stylesheet" href="https://static.nrk.no/core-css/major/1/core-css.min.css">
+  <link rel="stylesheet" href="https://static.nrk.no/core-fonts/major/2/core-fonts.min.css">
+  <style>
+    html { font: 100%/1.6 'LFT Etica',sans-serif; color: #26292a; scroll-behavior: smooth; -webkit-font-smoothing: antialiased }
+    pre, code { overflow: auto; background: #f0f5fe } pre { padding: 1em }
+    a { color: #0059b3 }
+
+    .doc-menu ul { list-style: none; margin: 0; padding: 0 30px; font-size: 14px; line-height: 30px }
+    .doc-menu ul ul a { overflow: hidden; max-height: 30px; animation: fadeIn .5s backwards }
+    .doc-menu a { display: block; color: inherit; text-decoration: none }
+    .doc-menu img { float: right; width: 16px; height: 30px }
+
+    .doc-main:empty { min-height: 9000px; opacity: 0 } /* Allow remember scroll position */
+    .doc-main { overflow: hidden; padding: 4rem 7vw; transition: 1s }
+    .doc-main p { max-width: 700px; margin-top: 0; font-size: 1.1rem }
+    .doc-main h1 { font-weight: 300; font-size: 3rem; line-height: 1; margin: 0 }
+    .doc-main h2 { font-weight: 300; font-size: 1.5em; line-height: 1.5; margin: .5em 0; max-width: 650px }
+    .doc-main h3 { font-weight: 600; font-size: 12px; margin: 2em 0 .5em; text-transform: uppercase }
+    .doc-main hr { border: 0; border-top: 1px solid #eee; margin: 4rem -7vw; width: calc(100% + 14vw) }
+    .doc-main ul { padding-left: 25px; list-style: url("data:image/svg+xml,%3Csvg width='25' height='10' viewBox='0 0 7 10' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4-4 4' stroke='%23ccc' stroke-width='2' fill='none'/%3E%3C/svg%3E") }
+    .doc-main td code:only-child { display: block; padding: 1em; margin-right: 1em}
+    .doc-main th { font-weight: 600; font-size: 12px }
+    .doc-main table { width: 100% }
+
+    .doc-demo { background: #f0f5fe; padding: 1rem; margin: 1rem 0 }
+    .doc-demo summary { cursor: pointer; padding: 5px 1rem; font-weight: 600; font-size: 12px; border-top: 2px solid #fff }
+    .doc-demo details { margin: 1rem -1rem -1rem }
+    .doc-demo ul { list-style: none }
+
+    @keyframes fadeIn { from { max-height: 0 } }
+    @media(min-width:700px) {
+      .doc-menu { float: left; box-sizing: border-box; position: sticky; top: 0; padding: 70px 0; width: 270px; min-height: 100vh; border-right: 1px solid #eee }
+    }
+  </style>
+</head>
+<body>
+  <script src="https://static.nrk.no/core-masthead/major/1/core-masthead.html.js"></script>
+  <div class="doc-menu">
+    <ul>
+      <li><a href="?docs.md">Core Components</a></li>
+      <li><a href="?core-datepicker/readme.md">Datepicker</a></li>
+      <li><a href="?core-dialog/readme.md">Dialog</a></li>
+      <li><a href="?core-input/readme.md">Input</a></li>
+      <li><a href="?core-scroll/readme.md">Scroll</a></li>
+      <li><a href="?core-tabs/readme.md">Tabs</a></li>
+      <li><a href="?core-toggle/readme.md">Toggle</a></li>
+      <li><br><a href="https://github.com/nrkno/core-components"><img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/github.svg"> View on Github</a></li>
+      <li><a href="https://github.com/nrkno/core-components/releases"><img src="https://rawgit.com/nrkno/core-icons/master/lib/nrk-poll.svg"> View changelog</a></li>
+      <li><a href="https://github.com/nrkno/core-components/issues/new"><img src="https://rawgit.com/nrkno/core-icons/master/lib/nrk-comment.svg"> Report issue</a></li>
+      <li><a href="https://nrk.slack.com/messages/C49CY4VTP/"><img src="https://rawgit.com/nrkno/core-icons/master/lib/nrk-help.svg"> Get help (NRK only)</a></li>
+    </ul>
+  </div>
+  <main class="doc-main"></main>
+  <script src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/code-prettify/loader/run_prettify.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://unpkg.com/marked/marked.min.js"></script>
+  <script defer>
+    (function(){
+      var file = location.search || document.querySelector('.doc-menu a').search
+      var link = document.querySelector('.doc-menu a[href*="' + file + '"]')
+      var main = document.querySelector('.doc-main')
+      var ajax = new XMLHttpRequest()
+      var mark = new marked.Renderer()
+
+      mark.code = code
+      ajax.onload = function () {
+        var html = ajax.responseText.replace(/<!--\s*demo\n|\ndemo\s*-->/g, '')
+        main.innerHTML = marked(html, {renderer: mark, gfm: true})
+        exec(main.querySelectorAll('script'), link && function () {
+          var toc = [].slice.call(document.querySelectorAll('h2[id]'), 1) // Skip first h2
+          link.style.fontWeight = 600
+          link.insertAdjacentHTML('afterend', '<ul><li>' + toc.map(function (h2) {
+            if (h2.id === location.hash.slice(1)) h2.scrollIntoView(), h2.focus() // Scroll to hash
+            return h2.outerHTML.replace('id="', 'href="#').replace(/h2/g, 'a') // Swap h2 to a
+          }).join('</li><li>') + '</li></ul>')
+        })
+      }
+      ajax.open('GET', file.slice(1), true)
+      ajax.send()
+
+      function code (code, lang) {
+        var raw = code.replace(/<!--\s*demo\s*-->\n*/i, '')
+        var esc = raw.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        var pre = '<pre><code>' + PR.prettyPrintOne(esc, lang) + '</code></pre>'
+        return raw === code ? pre : '<div class="doc-demo">' + raw + '<details><summary>CODE</summary>' + pre + '</details></div>'
+      }
+
+      function exec (scripts, callback) {
+        setTimeout(function () {
+          var source = scripts[0]
+          var target = document.createElement('script')
+          var onload = function () { exec([].slice.call(scripts, 1), callback) }
+
+          if (!source) return callback && callback()
+          else if (source.src) target.src = source.src, target.onload = onload
+          else target.appendChild(document.createTextNode(Babel.transform(source.textContent, {presets: ['es2015', 'react']}).code))
+          source.parentNode.replaceChild(target, source) // Replacing html with node causes script eval
+          if (!source.src) onload() // Inline script is loaded instantly
+        }, 16) // Let parser finish before next script eval
+      }
+    })()
+  </script>
+</body>
+</html>

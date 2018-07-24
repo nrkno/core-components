@@ -61,8 +61,12 @@ addEvent(UUID, 'keydown', (event) => {
   if (isClose && key === KEYS.ESC) setOpen(dialog, false, event.preventDefault())
 })
 
-const getZIndexOfElement = (element) =>
-  Number(window.getComputedStyle(element).getPropertyValue('z-index')) || 1
+const getZIndexOfElement = (element) => {
+  for (var el = element, zIndex = 1; el; el = el.offsetParent) {
+    zIndex += Number(window.getComputedStyle(el).getPropertyValue('z-index')) || 0
+  }
+  return zIndex
+}
 
 // Find the last focused element before opening the dialog
 const getLastFocusedElement = () =>
@@ -83,7 +87,7 @@ function setOpen (dialog, open) {
   const nextOpen = isUpdate ? willOpen : dialog.hasAttribute('open') // dispatchEvent can change attributes, so check open again
   const backdrop = dialog.nextElementSibling
 
-  if (typeof window.HTMLDialogElement !== 'undefined') { // Native support
+  if (typeof window.HTMLDialogElement !== 'undefined' && typeof dialog.show === 'function') { // Native support
     dialog.open = !nextOpen // Update to opposite value to ensure show/close can run without error
     dialog[nextOpen ? 'show' : 'close']()
   } else dialog[nextOpen ? 'setAttribute' : 'removeAttribute']('open', '') // Toggle open attribute
@@ -106,15 +110,21 @@ function setOpen (dialog, open) {
   }
 }
 
-function queryFocusable (context) {
-  return queryAll(FOCUSABLE_ELEMENTS, context).filter((el) =>
+function getVisibleElements (elements) {
+  return elements.filter((el) =>
     el.clientWidth &&
     el.clientHeight &&
     window.getComputedStyle(el).getPropertyValue('visibility') !== 'hidden'
   )
 }
 
+function queryFocusable (context) {
+  return getVisibleElements(queryAll(FOCUSABLE_ELEMENTS, context))
+}
+
 function setFocus (dialog) {
+  const autofocusElements = getVisibleElements(queryAll('[autofocus]', dialog))[0]
+  if (autofocusElements) return autofocusElements.focus();
   (queryFocusable(dialog)[0] || dialog).focus()
 }
 

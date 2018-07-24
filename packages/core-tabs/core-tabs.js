@@ -87,5 +87,5 @@ function setOpen (tablist, open) { // open can be Number, String or Element
   // Setup after loop as we now know all tabs have IDs
   panels[nextOpen].setAttribute(`${ARIA}-labelledby`, tabs[nextOpen].id)
 
-  return nextOpen
+  return isUpdate
 }
