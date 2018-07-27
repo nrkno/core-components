@@ -52,6 +52,20 @@ addEvent(UUID, 'keydown', (event) => {
   }
 })
 
+// Use capture to support older versions of firefox
+addEvent(UUID, 'focus', (event) => {
+  if (event.target && event.target.parentElement.getAttribute('role') === 'tablist') {
+    queryAll(event.target.parentElement.children).forEach((tab) => tab.setAttribute('tabindex', '-1'))
+  }
+}, true)
+
+addEvent(UUID, 'blur', (event) => {
+  if (event.target && event.target.parentElement.getAttribute('role') === 'tablist') {
+    queryAll(event.target.parentElement.children).forEach((tab) =>
+      tab.getAttribute('aria-selected') === 'true' && tab.setAttribute('tabindex', '0'))
+  }
+}, true)
+
 function getOpenTabIndex (tabs) {
   const open = tabs.filter((tab) => tab.getAttribute('aria-selected') === 'true')[0]
   return Math.max(0, tabs.indexOf(open))
