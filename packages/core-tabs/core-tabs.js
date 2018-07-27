@@ -35,7 +35,7 @@ addEvent(UUID, 'keydown', (event) => {
   const tablist = tab.parentElement
 
   if (event.ctrlKey || event.altKey || event.metaKey) return
-  if (tab.getAttribute('role') === 'tab' && tablist.hasAttribute(UUID)) {
+  if (tablist.hasAttribute(UUID)) {
     const tabs = queryAll(tablist.children)
     const open = tabs.indexOf(tab)
     const key = event.keyCode
@@ -51,6 +51,18 @@ addEvent(UUID, 'keydown', (event) => {
     tab.focus()
   }
 })
+
+// Use capture to support older versions of firefox
+addEvent(UUID, 'focus', ({target}) => {
+  queryAll('[role="tab"]').forEach((el) => {
+    const tablist = el.parentElement
+    const selected = el.getAttribute('aria-selected') === 'true'
+
+    if (tablist.hasAttribute(UUID)) {
+      el.tabIndex = (selected && !tablist.contains(target)) ? 0 : -1
+    }
+  })
+}, true)
 
 function getOpenTabIndex (tabs) {
   const open = tabs.filter((tab) => tab.getAttribute('aria-selected') === 'true')[0]
