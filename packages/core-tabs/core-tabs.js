@@ -82,6 +82,7 @@ function setOpen (tablist, open) { // open can be Number, String or Element
     panel.setAttribute(`${ARIA}-labelledby`, tab.id = tab.id || getUUID())
     panel.setAttribute('role', 'tabpanel')
     panel[selectedPanel ? 'removeAttribute' : 'setAttribute']('hidden', '')
+    panel[selectedPanel ? 'setAttribute' : 'removeAttribute']('tabindex', '0')
   })
 
   // Setup after loop as we now know all tabs have IDs
