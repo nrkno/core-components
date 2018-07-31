@@ -46,7 +46,8 @@
       "beforeEach",
       "afterEach",
       "test",
-      "expect"
+      "expect",
+      "jest"
     ]
   },
   "jest": {

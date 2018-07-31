@@ -43,4 +43,27 @@ describe('core-input', () => {
     expect(input.getAttribute('aria-expanded')).toEqual('true')
     expect(suggestions.hasAttribute('hidden')).toBeFalsy()
   })
+
+  it.skip('should set input value to that of clicked suggestion', () => {
+    document.body.innerHTML = standardHTML
+
+    const input = document.getElementsByClassName('my-input')[0]
+    const suggestions = document.querySelector('.my-input + ul')
+    const firefoxBtn = suggestions.querySelector('li:nth-child(2) button')
+    const callback = jest.fn()
+
+    coreInput(input)
+
+    input.addEventListener('input.select', callback)
+    input.click()
+    firefoxBtn.click()
+
+    expect(callback).toHaveBeenCalled()
+    // expect(input.value).toEqual('Firefox')
+    expect(input.getAttribute('role')).toEqual('combobox')
+    expect(input.getAttribute('aria-autocomplete')).toEqual('list')
+    expect(input.getAttribute('autocomplete')).toEqual('off')
+    expect(input.getAttribute('aria-expanded')).toEqual('true')
+    expect(suggestions.hasAttribute('hidden')).toBeFalsy()
+  })
 })
