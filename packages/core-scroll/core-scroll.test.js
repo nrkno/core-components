@@ -18,7 +18,7 @@ describe('core-scroll', () => {
   it('should initialize scroll container with appropriate styling', () => {
     document.body.innerHTML = standardHTML
 
-    const scrollContainer = document.getElementById('my-scroll-js')
+    const scrollContainer = document.querySelector('#my-scroll-js')
     const expectedStyling = 'overflow: scroll; -webkit-overflow-scrolling: touch; max-height: calc(100% + 1px); margin-right: -1px; margin-bottom: -1px;'
 
     coreScroll(scrollContainer)

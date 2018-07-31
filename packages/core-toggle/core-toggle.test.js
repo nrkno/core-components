@@ -49,7 +49,7 @@ describe('toggle', () => {
   it('should initialize button and container with props when core-toggle is called', () => {
     document.body.innerHTML = standardHTML
 
-    const button = document.getElementsByClassName('my-toggle')[0]
+    const button = document.querySelector('.my-toggle')
     const container = document.querySelector('.my-toggle + *')
 
     coreToggle(button)
@@ -60,7 +60,7 @@ describe('toggle', () => {
   it('should open when calling coreToggle with open attribute set to true', () => {
     document.body.innerHTML = standardHTML
 
-    const button = document.getElementsByClassName('my-toggle')[0]
+    const button = document.querySelector('.my-toggle')
     const container = document.querySelector('.my-toggle + *')
 
     coreToggle(button, { open: true })
@@ -71,7 +71,7 @@ describe('toggle', () => {
   it('should close an open container when calling coreToggle with open attribute set to false', () => {
     document.body.innerHTML = standardHTML
 
-    const button = document.getElementsByClassName('my-toggle')[0]
+    const button = document.querySelector('.my-toggle')
     const container = document.querySelector('.my-toggle + *')
 
     coreToggle(button, { open: true })
@@ -83,7 +83,7 @@ describe('toggle', () => {
   it('should set popup attributes when initialized as a popup', () => {
     document.body.innerHTML = standardHTML
 
-    const button = document.getElementsByClassName('my-toggle')[0]
+    const button = document.querySelector('.my-toggle')
     const container = document.querySelector('.my-toggle + *')
 
     coreToggle(button, { popup: true })
@@ -94,7 +94,7 @@ describe('toggle', () => {
   it('should open popup when calling coreToggle with open attribute set to true', () => {
     document.body.innerHTML = standardHTML
 
-    const button = document.getElementsByClassName('my-toggle')[0]
+    const button = document.querySelector('.my-toggle')
     const container = document.querySelector('.my-toggle + *')
 
     coreToggle(button, { popup: true, open: true })
@@ -105,7 +105,7 @@ describe('toggle', () => {
   it('should close popup when calling coreToggle with open attribute set to false', () => {
     document.body.innerHTML = standardHTML
 
-    const button = document.getElementsByClassName('my-toggle')[0]
+    const button = document.querySelector('.my-toggle')
     const container = document.querySelector('.my-toggle + *')
 
     coreToggle(button, { popup: true, open: true })
