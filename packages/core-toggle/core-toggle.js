@@ -28,12 +28,12 @@ addEvent(UUID, 'keydown', (event) => {
   if (event.keyCode === KEYS.ESC) {
     for (let el = event.target; el; el = el.parentElement) {
       const uuid = el.hasAttribute(UUID) || (el = el.previousElementSibling || el).hasAttribute(UUID)
+      const open = el.getAttribute(OPEN) === 'true'
       const pops = el.getAttribute(POPS) === 'true'
 
       if (uuid && pops) {
-        el.focus()
         event.preventDefault() // Prevent leaving maximized safari
-        return setOpen(el, false)
+        if (open) return setOpen(el, false, el.focus())
       }
     }
   }
