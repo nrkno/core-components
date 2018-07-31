@@ -41,11 +41,6 @@ const standardHTML = `
 <div hidden>Content</div>
 `
 
-const badHTML = `
-<a class="my-toggle">Toggle VanillaJS</a>
-<div hidden>Content</div>
-`
-
 describe('toggle', () => {
   it('should exists', () => {
     expect(coreToggle).toBeInstanceOf(Function)
@@ -119,3 +114,10 @@ describe('toggle', () => {
     expectPopupClosed(button, container)
   })
 })
+
+module.exports = {
+  expectOpened,
+  expectClosed,
+  expectPopupOpened,
+  expectPopupClosed
+}
