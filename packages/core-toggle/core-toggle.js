@@ -32,7 +32,7 @@ addEvent(UUID, 'keydown', (event) => {
       if (inPopup || el.hasAttribute(UUID)) {
         const open = el.getAttribute(OPEN) === 'true'
         const pops = el.getAttribute(POPS) === 'true'
-        if (open && pops) return setOpen(el, false, el.focus())
+        if (open && pops) return setOpen(el, false, el.focus(), event.preventDefault()) // Prevent leaving maximized safari
       }
     }
   }

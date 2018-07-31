@@ -15,7 +15,8 @@ Typing toggles the [hidden attribute](https://developer.mozilla.org/en/docs/Web/
 
 ```html
 <!--demo-->
-<input type="text" class="my-input" placeholder="Type &quot;C&quot;...">
+<!-- <ul></ul> -->
+<input type="text" class="my-input" name="my-input" value="Jazz, Rock, Rock" placeholder="Type &quot;C&quot;...">
 <ul hidden>
   <li><button>Chrome</button></li>
   <li><button>Firefox</button></li>
@@ -23,8 +24,34 @@ Typing toggles the [hidden attribute](https://developer.mozilla.org/en/docs/Web/
   <li><button>Safari</button></li>
   <li><button>Microsoft Edge</button></li>
 </ul>
+<style>
+  /*.my-tags, .my-tags li { display: inline; padding: 0 }
+  .my-tags del { display: inline-block; margin: 0 -5px 0 5px; padding: 0 5px; border-left: 1px solid #ccc }
+  .my-tags del::before { content: '\00D7'; display: inline-block }
+  .my-tags del:active { background: red }*/
+</style>
 <script>
-  coreInput('.my-input')
+  coreInput('.my-input', {multiple: true})
+
+  // content -> list
+  // input.render.values
+  // input.render.list
+  /* event.detail.values = [
+    {value: '',  text: '', html: ''},
+    {value: '',  text: '', html: ''}
+  ] */
+
+  document.addEventListener('input.render', (event) => {
+    event.preventDefault()
+    coreInput('.my-input', {
+      value: `
+        <li><button>Hei</button></li>
+        <li><button>Hei</button></li>
+        <li><button>Hei</button></li>
+        <li><button>Hei</button></li>
+      `
+    })
+  })
 </script>
 ```
 
@@ -54,8 +81,9 @@ Typing toggles the [hidden attribute](https://developer.mozilla.org/en/docs/Web/
 *Important: Always use `coreInput.escapeHTML(String)` to safely render data from API or user.*
 
 ```html
+<ul data-core-input="tags"></ul>                      <!-- Can be any tag, but tags should be inside <li> -->
 <input type="text" class="my-input">                  <!-- Input element must be a <input> -->
-<ul hidden>                                           <!-- Can be any tag, but items should be inside <li> -->
+<ul data-core-input="list" hidden>                    <!-- Can be any tag, but items should be inside <li> -->
   <li><button>Item 1</button></li>                    <!-- Items must be <button> or <a> -->
   <li><button value="Suprise!">Item 2</button></li>   <!-- Alternative value can be defined -->
   <li><a href="https://www.nrk.no/">NRK.no</a></li>   <!-- Actual links are recommended when applicable -->

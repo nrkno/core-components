@@ -6,21 +6,25 @@ const KEYS = {ENTER: 13, ESC: 27, PAGEUP: 33, PAGEDOWN: 34, END: 35, HOME: 36, U
 const ITEM = '[tabindex="-1"]'
 const AJAX_DEBOUNCE = 500
 
-export default function input (elements, content) {
-  const options = typeof content === 'object' ? content : {content}
-  const repaint = typeof options.content === 'string'
+export default function input (elements, value = {}) {
+  const options = typeof value === 'object' ? value : {value}
+  const repaintValue = typeof options.value === 'string'
+  const repaintList = typeof options.list === 'string'
 
   return queryAll(elements).map((input) => {
     const list = input.nextElementSibling
-    const ajax = typeof options.ajax === 'undefined' ? input.getAttribute(UUID) : options.ajax
+    const ajax = options.hasOwnProperty('ajax') ? options.ajax : input.getAttribute(UUID)
+    const multiple = options.hasOwnProperty('multiple') ? options.multiple : input.multiple
 
     input.setAttribute(UUID, ajax || '')
     input.setAttribute(IS_IOS ? 'data-role' : 'role', 'combobox') // iOS does not inform user area is editable if combobox
     input.setAttribute('aria-autocomplete', 'list')
     input.setAttribute('autocomplete', 'off')
+    input.multiple = multiple
 
-    if (repaint) list.innerHTML = options.content
-    queryAll('a,button', list).forEach(setupItem)
+    if (multiple) onRenderValue (input) // repaintValue
+    if (repaintList) list.innerHTML = options.list
+    queryAll('a,button', list).forEach(setupListItem)
     setupExpand(input, options.open)
     return input
   })
@@ -35,23 +39,7 @@ input.highlight = (haystack, needle) => {
 
 addEvent(UUID, 'click', onClickOrFocus)
 addEvent(UUID, 'focus', onClickOrFocus, true) // Use focus with capturing instead of focusin for old Firefox
-function onClickOrFocus (event) {
-  if (event.ctrlKey || event.altKey || event.metaKey || event.defaultPrevented) return
-
-  queryAll(`[${UUID}]`).forEach((input) => {
-    const list = input.nextElementSibling
-    const open = input === event.target || list.contains(event.target)
-    const item = event.type === 'click' && open && queryAll(ITEM, list).filter((item) => item.contains(event.target))[0]
-
-    if (item) onSelect(input, {relatedTarget: list, currentTarget: item, value: item.value || item.textContent.trim()})
-    else setupExpand(input, open)
-  })
-}
-
-addEvent(UUID, 'input', ({target: input}) => {
-  if (input.hasAttribute(UUID)) onFilter(input, {relatedTarget: input.nextElementSibling})
-})
-
+addEvent(UUID, 'input', ({target}) => target.hasAttribute(UUID) && onRenderList(target))
 addEvent(UUID, 'keydown', (event) => {
   if (event.ctrlKey || event.altKey || event.metaKey) return
   if (event.target.hasAttribute(UUID)) return onKey(event.target, event) // Quick check
@@ -60,41 +48,85 @@ addEvent(UUID, 'keydown', (event) => {
   }
 })
 
+function onClickOrFocus (event) {
+  if (event.ctrlKey || event.altKey || event.metaKey || event.defaultPrevented) return
+
+  queryAll(`[${UUID}]`).forEach((input) => {
+    const list = input.nextElementSibling
+    const open = input.contains(event.target) || list.contains(event.target)
+    const item = event.type === 'click' && open && queryAll(ITEM, list).filter((item) => item.contains(event.target))[0]
+
+    if (item) onSelect(input, item)
+    else setupExpand(input, open)
+  })
+}
+
 function onKey (input, event) {
+  const {target, keyCode} = event
   const list = input.nextElementSibling
   const focus = queryAll(`${ITEM}:not([hidden])`, list)
   const index = focus.indexOf(document.activeElement)
   let item = false
 
-  if (event.keyCode === KEYS.DOWN) item = focus[index + 1] || focus[0]
-  else if (event.keyCode === KEYS.UP) item = focus[index - 1] || focus.pop()
-  else if (list.contains(event.target)) { // Aditional shortcuts if focus is inside list
-    if (event.keyCode === KEYS.END || event.keyCode === KEYS.PAGEDOWN) item = focus.pop()
-    else if (event.keyCode === KEYS.HOME || event.keyCode === KEYS.PAGEUP) item = focus[0]
-    else if (event.keyCode !== KEYS.ENTER) input.focus()
+  if (keyCode === KEYS.ENTER && target === input && input.multiple) onSelect(input, input, event.preventDefault())
+  else if (keyCode === KEYS.DOWN) item = focus[index + 1] || focus[0]
+  else if (keyCode === KEYS.UP) item = focus[index - 1] || focus.pop()
+  else if (list.contains(target)) { // Aditional shortcuts if focus is inside list
+    if (keyCode === KEYS.END || keyCode === KEYS.PAGEDOWN) item = focus.pop()
+    else if (keyCode === KEYS.HOME || keyCode === KEYS.PAGEUP) item = focus[0]
+    else if (keyCode !== KEYS.ENTER) input.focus()
   }
 
-  if (!list.hasAttribute('hidden') && event.keyCode === KEYS.ESC) event.preventDefault()
-  setupExpand(input, event.keyCode !== KEYS.ESC)
+  if (!list.hasAttribute('hidden') && keyCode === KEYS.ESC) event.preventDefault()
+  setupExpand(input, keyCode !== KEYS.ESC)
   if (item !== false) event.preventDefault() // event.preventDefault even if empty list
   if (item) item.focus()
 }
 
-function onSelect (input, detail) {
+function onSelect (input, currentTarget) {
+  const relatedTarget = input.nextElementSibling
+  const value = (currentTarget.value || currentTarget.textContent).trim();
+  const detail = {relatedTarget, currentTarget, value, multiple: input.multiple}
+
   if (dispatchEvent(input, 'input.select', detail)) {
-    input.value = detail.value
+    if (input.multiple) {
+      if (value) {
+        input.previousElementSibling.insertAdjacentHTML('beforeend', `
+          <li><label role="text" tabindex="0">
+            <input type="hidden" name="${input.name}" value="${value}">
+            &nbsp;${value}&nbsp;
+          </label></li>
+        `)
+      }
+      input.value = ''
+    } else {
+      input.value = value
+    }
     input.focus()
     setupExpand(input, false)
   }
 }
 
-function onFilter (input, detail) {
-  if (dispatchEvent(input, 'input.filter', detail) && !ajax(input)) {
-    queryAll(ITEM, input.nextElementSibling).reduce((acc, item) => {
+function onRenderList (input) {
+  const list = input.nextElementSibling
+  if (dispatchEvent(input, 'input.render.list', {relatedTarget: list}) && !ajax(input)) {
+    queryAll(ITEM, list).reduce((acc, item) => {
       const show = item.textContent.toLowerCase().indexOf(input.value.toLowerCase()) !== -1
       item[show ? 'removeAttribute' : 'setAttribute']('hidden', '')
       return show ? acc.concat(item) : acc
-    }, []).forEach(setupItem)
+    }, []).forEach(setupListItem)
+  }
+}
+
+function onRenderTags (input) {
+  if (dispatchEvent(input, 'input.value', {})) {
+    input.insertAdjacentHTML('beforebegin', `<ul class="nrk-grid">${input.value.split(/\s*,\s*/).map((value) => `
+      <li><label role="text" tabindex="0"> <!-- TODO role text? -->
+        <input type="hidden" name="${input.name}" value="${value}">
+        &nbsp;${value}&nbsp;
+      </label></li>
+    `).join('')}</ul>`)
+    input.value = ''
   }
 }
 
@@ -105,7 +137,16 @@ function setupExpand (input, open = input.getAttribute('aria-expanded') === 'tru
   })
 }
 
-function setupItem (item, index, items) {
+function addValue () {
+
+}
+
+function removeValue () {
+
+}
+
+function setupListItem (item, index, items) {
+  if (item.nodeName === 'BUTTON') item.type = 'button'
   item.setAttribute('aria-label', `${item.textContent.trim()}, ${index + 1} av ${items.length}`)
   item.setAttribute('tabindex', '-1')
 }
