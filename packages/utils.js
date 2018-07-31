@@ -81,6 +81,15 @@ export function getUUID (el) {
 }
 
 /**
+* requestAnimFrame (super simple polyfill)
+*/
+export function requestAnimFrame (fn) {
+  if (typeof window !== 'undefined') {
+    (window.requestAnimationFrame || window.setTimeout)(fn)
+  }
+}
+
+/**
 * throttle
 * @param {Function} callback The function to debounce
 * @param {Number} ms The threshold of milliseconds between each callback

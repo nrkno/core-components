@@ -4,11 +4,23 @@
 
 ---
 
+## Installation
+
+```bash
+npm install @nrk/core-toggle --save-exact
+```
+```js
+import coreToggle from '@nrk/core-toggle'     // Vanilla JS
+import CoreToggle from '@nrk/core-toggle/jsx' // ...or React/Preact compatible JSX
+```
+
+---
+
 ## Demo
 
 <!--demo
 <script src="core-toggle/core-toggle.min.js"></script>
-<script src="core-toggle/jsx/index.js"></script>
+<script src="core-toggle/core-toggle.jsx.js"></script>
 
 <div class="nrk-grid">
 <div class="nrk-xs-12of12 nrk-md-6of12" style="padding-right:30px"><h3>Default toggle</h3>

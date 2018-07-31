@@ -8,11 +8,23 @@
 
 ---
 
+## Installation
+
+```bash
+npm install @nrk/core-datepicker --save-exact
+```
+```js
+import coreDatepicker from '@nrk/core-datepicker'     // Vanilla JS
+import CoreDatepicker from '@nrk/core-datepicker/jsx' // ...or React/Preact compatible JSX
+```
+
+---
+
 <!--demo
 <script src="core-toggle/core-toggle.min.js"></script>
+<script src="core-toggle/core-toggle.jsx.js"></script>
 <script src="core-datepicker/core-datepicker.min.js"></script>
-<script src="core-toggle/jsx/index.js"></script>
-<script src="core-datepicker/jsx/index.js"></script>
+<script src="core-datepicker/core-datepicker.jsx.js"></script>
 <style>
   .my-datepicker { position: absolute; padding: 1rem; background: #fff; box-shadow: 0 5px 9px rgba(0,0,0,.4) }
   .my-datepicker button[aria-current="date"] { border: 1px dashed }

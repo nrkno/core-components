@@ -4,11 +4,21 @@
 
 ---
 
+## Installation
+
+```bash
+npm install @nrk/core-dialog --save-exact
+```
+```js
+import coreDialog from '@nrk/core-dialog'     // Vanilla JS
+import CoreDialog from '@nrk/core-dialog/jsx' // ...or React/Preact compatible JSX
+```
+
+---
+
 <!--demo
-<script src="core-input/core-input.min.js"></script>
-<script src="core-input/jsx/index.js"></script>
 <script src="core-dialog/core-dialog.min.js"></script>
-<script src="core-dialog/jsx/index.js"></script>
+<script src="core-dialog/core-dialog.jsx.js"></script>
 <style>
   .my-dialog h1 { margin-top: 0 }
   .my-dialog {
@@ -74,7 +84,7 @@ demo-->
   coreDialog('#my-dialog', {open: false});
   coreDialog('#my-dialog-nested', {open: false});
   coreDialog('#strict-dialog', {open: false, strict: true});
-  coreInput('.my-input');
+
 </script>
 ```
 

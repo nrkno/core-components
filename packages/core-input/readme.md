@@ -4,9 +4,21 @@
 
 ---
 
+## Installation
+
+```bash
+npm install @nrk/core-input --save-exact
+```
+```js
+import coreInput from '@nrk/core-input'     // Vanilla JS
+import CoreInput from '@nrk/core-input/jsx' // ...or React/Preact compatible JSX
+```
+
+---
+
 <!--demo
 <script src="core-input/core-input.min.js"></script>
-<script src="core-input/jsx/index.js"></script>
+<script src="core-input/core-input.jsx.js"></script>
 demo-->
 
 ## Demo
@@ -152,9 +164,8 @@ All styling in documentation is example only. Both the `<button>` and content el
 
 ---
 
-## Advanced examples
+## Demo: Ajax
 
-### Input with ajax results
 Stop default filtering by calling `event.preventDefault()` on `'input.filter'`. Remember to always escape html and debounce requests when fetching data from external sources.
 
 ```html
@@ -227,7 +238,7 @@ Stop default filtering by calling `event.preventDefault()` on `'input.filter'`. 
 </script>
 ```
 
-### Input with lazy results
+## Demo: Lazy
 Hybrid solution; lazy load items, but let `core-input` still handle filtering:
 ```html
 <!--demo-->
@@ -286,7 +297,7 @@ Hybrid solution; lazy load items, but let `core-input` still handle filtering:
 </script>
 ```
 
-### Input with dynamic results
+## Demo: Dynamic
 Synchronous operation; dynamically populating items based input value:
 ```html
 <!--demo-->
