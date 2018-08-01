@@ -166,7 +166,7 @@ All styling in documentation is example only. Both the `<button>` and content el
 
 ## Demo: Ajax
 
-Stop default filtering by calling `event.preventDefault()` on `'input.filter'`. Remember to always escape html and debounce requests when fetching data from external sources.
+Ajax requests can be stopped by calling `event.preventDefault()` on `'input.filter'`. Remember to always escape html and debounce requests when fetching data from external sources. The http request sent by `@nrk/core-input` will have header `X-Requested-With: XMLHttpRequest` for easier [server side detection and CSRF prevention](https://www.owasp.org/index.php/Cross-Site_Request_Forgery_%28CSRF%29_Prevention_Cheat_Sheet#Protecting_REST_Services:_Use_of_Custom_Request_Headers).
 
 ```html
 <!--demo-->
