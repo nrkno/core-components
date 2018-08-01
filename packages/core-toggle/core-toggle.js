@@ -40,6 +40,7 @@ addEvent(UUID, 'keydown', (event) => {
 })
 
 addEvent(UUID, 'click', ({target}) => {
+  if (event.defaultPrevented) return false // Do not toggle if someone run event.preventDefault()
   queryAll(`[${UUID}]`).forEach((el) => {
     const open = el.getAttribute(OPEN) === 'true'
     const pops = el.getAttribute(POPS) === 'true'
