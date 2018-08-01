@@ -4,9 +4,21 @@
 
 ---
 
+## Installation
+
+```bash
+npm install @nrk/core-scroll --save-exact
+```
+```js
+import coreScroll from '@nrk/core-scroll'     // Vanilla JS
+import CoreScroll from '@nrk/core-scroll/jsx' // ...or React/Preact compatible JSX
+```
+
+---
+
 <!--demo
 <script src="core-scroll/core-scroll.min.js"></script>
-<script src="core-scroll/jsx/index.js"></script>
+<script src="core-scroll/core-scroll.jsx.js"></script>
 <style>
   #my-scroll-js { height: 200px }
   .my-wrap { overflow: hidden; white-space: nowrap; border: 1px solid; height: 100% }

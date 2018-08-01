@@ -8,6 +8,8 @@ yarn-error*
 *.code-workspace
 *.tar
 **/*.min.js
+**/*.jsx.js
+**/*.cjs.js
 **/*.js.map
 jsx/
 docs/

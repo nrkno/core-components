@@ -4,9 +4,21 @@
 
 ---
 
+## Installation
+
+```bash
+npm install @nrk/core-tabs --save-exact
+```
+```js
+import coreTabs from '@nrk/core-tabs'     // Vanilla JS
+import CoreTabs from '@nrk/core-tabs/jsx' // ...or React/Preact compatible JSX
+```
+
+---
+
 <!--demo
 <script src="core-tabs/core-tabs.min.js"></script>
-<script src="core-tabs/jsx/index.js"></script>
+<script src="core-tabs/core-tabs.jsx.js"></script>
 <style>
   [role="tabpanel"] { background: #eee; padding: 10px }
   [aria-selected="true"] { border: 2px solid }

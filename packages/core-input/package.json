@@ -4,12 +4,8 @@
   "author": "NRK <opensource@nrk.no> (https://www.nrk.no/)",
   "version": "1.1.0",
   "license": "MIT",
-  "main": "core-input.min.js",
+  "main": "core-input.cjs.js",
   "jsx": "jsx/index.js",
-  "optionalDependencies": {
-    "react": "*",
-    "react-dom": "*"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nrkno/core-components.git"

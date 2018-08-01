@@ -27,18 +27,20 @@ export default function toggle (buttons, open) {
 addEvent(UUID, 'keydown', (event) => {
   if (event.keyCode === KEYS.ESC) {
     for (let el = event.target; el; el = el.parentElement) {
-      const prev = el.previousElementSibling
-      const inPopup = prev && prev.hasAttribute(UUID) && (el = prev)
-      if (inPopup || el.hasAttribute(UUID)) {
-        const open = el.getAttribute(OPEN) === 'true'
-        const pops = el.getAttribute(POPS) === 'true'
-        if (open && pops) return setOpen(el, false, el.focus())
+      const uuid = el.hasAttribute(UUID) || (el = el.previousElementSibling || el).hasAttribute(UUID)
+      const open = el.getAttribute(OPEN) === 'true'
+      const pops = el.getAttribute(POPS) === 'true'
+
+      if (uuid && pops) {
+        event.preventDefault() // Prevent leaving maximized safari
+        if (open) return setOpen(el, false, el.focus())
       }
     }
   }
 })
 
-addEvent(UUID, 'click', ({target}) => {
+addEvent(UUID, 'click', ({target, defaultPrevented}) => {
+  if (defaultPrevented) return false // Do not toggle if someone run event.preventDefault()
   queryAll(`[${UUID}]`).forEach((el) => {
     const open = el.getAttribute(OPEN) === 'true'
     const pops = el.getAttribute(POPS) === 'true'

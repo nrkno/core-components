@@ -32,11 +32,11 @@
     .doc-demo { background: #f0f5fe; padding: 1rem; margin: 1rem 0 }
     .doc-demo summary { cursor: pointer; padding: 5px 1rem; font-weight: 600; font-size: 12px; border-top: 2px solid #fff }
     .doc-demo details { margin: 1rem -1rem -1rem }
-    .doc-demo ul { list-style: none }
+    .doc-demo ul { list-style: none; padding: 0 }
 
     @keyframes fadeIn { from { max-height: 0 } }
     @media(min-width:700px) {
-      .doc-menu { float: left; box-sizing: border-box; position: sticky; top: 0; padding: 70px 0; width: 270px; min-height: 100vh; border-right: 1px solid #eee }
+      .doc-menu { float: left; box-sizing: border-box; position: -webkit-sticky; position: sticky; top: 0; padding: 70px 0; width: 270px; min-height: 100vh; border-right: 1px solid #eee }
     }
   </style>
 </head>

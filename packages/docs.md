@@ -5,12 +5,15 @@
 ---
 
 ## Installation
+
+<small>Components are individually installed for individual versioning:</small>
+
 ```bash
-npm install @nrk/core-toggle --save         # Individual installation for individual versioning
+npm install @nrk/core-toggle --save-exact
 ```
 ```js
-import coreToggle from '@nrk/core-toggle'   // Vanilla JS
-import Toggle from '@nrk/core-toggle/jsx'   // ...or React/Preact compatible JSX
+import coreToggle from '@nrk/core-toggle'     // Vanilla JS
+import CoreToggle from '@nrk/core-toggle/jsx' // ...or React/Preact compatible JSX
 ```
 
 ---
