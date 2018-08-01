@@ -84,9 +84,7 @@ export function getUUID (el) {
 * requestAnimFrame (super simple polyfill)
 */
 export function requestAnimFrame (fn) {
-  if (typeof window !== 'undefined') {
-    (window.requestAnimationFrame || window.setTimeout)(fn)
-  }
+  (window.requestAnimationFrame || window.setTimeout)(fn)
 }
 
 /**
