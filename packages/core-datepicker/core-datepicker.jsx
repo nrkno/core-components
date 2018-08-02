@@ -1,9 +1,10 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import coreDatepicker from './core-datepicker'
 import {exclude} from '../utils'
 
 export default class Datepicker extends React.Component {
-  static get defaultProps () { return {date: null, disable: null, onChange: null, onClickDay: null} }
+  static get defaultProps () { return {date: null, disable: null, onRender: null, onChange: null, onClickDay: null} }
   constructor (props) {
     super(props)
     this.onClickDay = this.onClickDay.bind(this)
@@ -35,3 +36,15 @@ export default class Datepicker extends React.Component {
 Datepicker.parse = coreDatepicker.parse
 Datepicker.months = coreDatepicker.months
 Datepicker.days = coreDatepicker.days
+
+Datepicker.propTypes = {
+  disable: PropTypes.func,
+  onRender: PropTypes.func,
+  onChange: PropTypes.func,
+  onClickDay: PropTypes.func,
+  date: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+    PropTypes.instanceOf(Date)
+  ]).isRequired
+}

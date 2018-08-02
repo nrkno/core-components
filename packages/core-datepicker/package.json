@@ -12,5 +12,8 @@
   },
   "devDependencies": {
     "@nrk/simple-date-parse": "1.0.2"
+  },
+  "dependencies": {
+    "prop-types": "15.6.2"
   }
 }
