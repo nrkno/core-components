@@ -46,5 +46,5 @@ Datepicker.propTypes = {
     PropTypes.string,
     PropTypes.number,
     PropTypes.instanceOf(Date)
-  ]).isRequired
+  ])
 }
