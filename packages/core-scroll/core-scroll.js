@@ -1,5 +1,5 @@
 import {name, version} from './package.json'
-import {IS_BROWSER, addEvent, dispatchEvent, throttle, queryAll} from '../utils'
+import {IS_BROWSER, addEvent, dispatchEvent, requestAnimFrame, throttle, queryAll} from '../utils'
 
 const DRAG = {}
 const ATTR = 'data-core-scroll'
@@ -10,7 +10,6 @@ const VELOCITY = 20
 
 // https://css-tricks.com/introduction-reduced-motion-media-query/
 const requestJump = IS_BROWSER && window.matchMedia && window.matchMedia('(prefers-reduced-motion)').matches
-const requestAnim = !IS_BROWSER || window.requestAnimationFrame || window.setTimeout
 
 export default function scroll (elements, move = '') {
   const options = typeof move === 'object' ? move : {move}
@@ -113,9 +112,12 @@ function onChange (event) {
 }
 
 function onClick (event) {
+  if (event.defaultPrevented) return
   for (let el = event.target; el; el = el.parentElement) {
-    const id = el.getAttribute(ATTR)
-    if (id) return scroll(document.getElementById(id), el.value)
+    const target = document.getElementById(el.getAttribute(ATTR))
+    if (target && dispatchEvent(target, 'scroll.click', {move: el.value})) {
+      return scroll(target, el.value)
+    }
   }
 }
 
@@ -132,7 +134,7 @@ function scrollTo (target, {x, y}) {
     if (DRAG.animate === uuid && (Math.round(moveX) || Math.round(moveY))) {
       target.scrollLeft = endX - Math.round(moveX *= friction)
       target.scrollTop = endY - Math.round(moveY *= friction)
-      requestAnim(move)
+      requestAnimFrame(move)
     }
   }
   move()
