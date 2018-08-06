@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import dialog from './core-dialog'
 import { exclude } from '../utils'
 
@@ -20,4 +21,10 @@ export default class Dialog extends React.Component {
       exclude(this.props, Dialog.defaultProps, {ref: el => (this.el = el)}),
       this.props.children)
   }
+}
+
+Dialog.propTypes = {
+  onToggle: PropTypes.func,
+  strict: PropTypes.bool,
+  open: PropTypes.bool
 }

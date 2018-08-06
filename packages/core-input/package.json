@@ -9,5 +9,8 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nrkno/core-components.git"
+  },
+  "dependencies": {
+    "prop-types": "15.6.2"
   }
 }

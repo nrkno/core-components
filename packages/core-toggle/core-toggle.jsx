@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import coreToggle from './core-toggle'
 import {exclude} from '../utils'
 
@@ -29,4 +30,10 @@ export default class Toggle extends React.Component {
       })
     )
   }
+}
+
+Toggle.propTypes = {
+  open: PropTypes.bool,
+  popup: PropTypes.bool,
+  onToggle: PropTypes.func
 }
