@@ -29,6 +29,14 @@ const standardHTML = `
 `
 
 describe('core-input', () => {
+  beforeEach(() => {
+    jest.spyOn(window, 'requestAnimationFrame').mockImplementation(cb => cb())
+  })
+
+  afterEach(() => {
+    window.requestAnimationFrame.mockRestore()
+  })
+
   it('should exists', () => {
     expect(coreInput).toBeInstanceOf(Function)
   })
