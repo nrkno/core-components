@@ -113,7 +113,7 @@ describe('core-input', () => {
     expect(document.querySelectorAll('button[hidden]').length).toEqual(4)
   })
 
-  it.skip('should set type="button" on all buttons in list', () => {
+  it('should set type="button" on all buttons in list', () => {
     document.body.innerHTML = standardHTML
 
     coreInput(document.querySelector('.my-input'))
@@ -122,3 +122,8 @@ describe('core-input', () => {
     })
   })
 })
+
+module.exports = {
+  expectOpenedState,
+  expectClosedState
+}
