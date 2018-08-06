@@ -7,29 +7,56 @@ const {uglify} = require('rollup-plugin-uglify')
 const {pkgs, getPackageName} = require('./bin/index.js') // Find all packages
 
 const server = !process.env.ROLLUP_WATCH || serve('packages')
-const globals = {'react-dom': 'ReactDOM', react: 'React'} // Do not include react in out package
-const plugins = [json(), resolve(), commonjs(), buble(), uglify(), server]
+const globals = {'react-dom': 'ReactDOM', react: 'React', 'prop-types': 'PropTypes'} // Exclude from output
+const pluginsCJS = [json(), resolve(), commonjs(), buble(), server]
+const pluginsUMD = pluginsCJS.concat(uglify)
 
-export default pkgs
-  .map((path) => ({path, name: getPackageName(path)})) // Find packages
-  .reduce((all, {path, name}) => all.concat({
-    input: `${path}/${name}.js`, // JS
+export default pkgs.reduce((all, path) => {
+  const pkg = require(`${path}/package.json`)
+  const file = getPackageName(path)
+  const banner = `/*! @nrk/${file} v${pkg.version} - Copyright (c) 2017-${new Date().getFullYear()} NRK */`
+  const nameCamelCase = file.replace(/-./g, (m) => m.slice(-1).toUpperCase())
+  const nameTitleCase = nameCamelCase.replace(/./, (m) => m.toUpperCase())
+
+  return all.concat({
+    input: `${path}/${file}.js`, // JS CJS
+    plugins: pluginsCJS,
     output: {
-      file: `${path}/${name}.min.js`,
-      name: name.replace(/-./g, (m) => m.slice(-1).toUpperCase()), // camelCase
-      sourcemap: true,
-      format: 'umd'
-    },
-    plugins
+      format: 'cjs',
+      file: `${path}/${file}.cjs.js`,
+      name: nameCamelCase
+    }
   }, {
-    input: `${path}/${name}.jsx`, // JSX
+    input: `${path}/${file}.js`, // JS UMD
+    plugins: pluginsUMD,
     output: {
-      file: `${path}/jsx/index.js`,
-      name: name.replace(/(^|-)./g, (m) => m.slice(-1).toUpperCase()), // TitleCase
-      sourcemap: true,
       format: 'umd',
-      globals
-    },
+      file: `${path}/${file}.min.js`,
+      name: nameCamelCase,
+      sourcemap: true,
+      banner
+    }
+  }, {
+    input: `${path}/${file}.jsx`, // JSX CJS
     external: Object.keys(globals),
-    plugins
-  }), [])
+    plugins: pluginsCJS,
+    output: {
+      format: 'cjs',
+      file: `${path}/jsx.js`,
+      name: nameTitleCase,
+      globals
+    }
+  }, {
+    input: `${path}/${file}.jsx`, // JSX UMD
+    external: Object.keys(globals),
+    plugins: pluginsUMD,
+    output: {
+      format: 'umd',
+      file: `${path}/${file}.jsx.js`,
+      name: nameTitleCase,
+      sourcemap: true,
+      globals,
+      banner
+    }
+  })
+}, [])

@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import coreScroll from './core-scroll'
 import {exclude} from '../utils'
 
@@ -33,4 +34,9 @@ export default class Scroll extends React.Component {
     const props = exclude(this.props, Scroll.defaultProps, {ref: el => (this.el = el)})
     return React.createElement('div', props, this.props.children)
   }
+}
+
+Scroll.propTypes = {
+  onChange: PropTypes.func,
+  friction: PropTypes.number
 }

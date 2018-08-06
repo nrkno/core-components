@@ -4,10 +4,21 @@
 
 ---
 
-<script src="core-input/core-input.min.js"></script>
-<script src="core-input/jsx/index.js"></script>
+## Installation
+
+```bash
+npm install @nrk/core-dialog --save-exact
+```
+```js
+import coreDialog from '@nrk/core-dialog'     // Vanilla JS
+import CoreDialog from '@nrk/core-dialog/jsx' // ...or React/Preact compatible JSX
+```
+
+---
+
+<!--demo
 <script src="core-dialog/core-dialog.min.js"></script>
-<script src="core-dialog/jsx/index.js"></script>
+<script src="core-dialog/core-dialog.jsx.js"></script>
 <style>
   .my-dialog h1 { margin-top: 0 }
   .my-dialog {
@@ -41,6 +52,7 @@
     opacity: 0;
   }
 </style>
+demo-->
 
 ## Demo
 
@@ -51,6 +63,8 @@
   <h1>This is a title</h1>
   <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
   <button data-core-dialog="my-dialog-nested">Open an additional dialog</button>
+  <button type="button" autofocus style="visibility: hidden">Should not be focusable</button>
+  <button type="button" autofocus>Autofocus</button>
   <button data-core-dialog="close">Close</button>
 </dialog>
 <dialog id="my-dialog-nested" class="my-dialog" aria-label="andre dialog tittel">
@@ -62,6 +76,7 @@
 <dialog id="strict-dialog" class="my-dialog" aria-label="første dialog tittel">
   <h1>This is a title</h1>
   <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
+  <button type="button">This button does nothing</button>
   <button data-core-dialog="close">Close</button>
 </dialog>
 <div id="docs-react-dialog"></div>
@@ -69,7 +84,7 @@
   coreDialog('#my-dialog', {open: false});
   coreDialog('#my-dialog-nested', {open: false});
   coreDialog('#strict-dialog', {open: false, strict: true});
-  coreInput('.my-input');
+
 </script>
 ```
 

@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import coreTabs from './core-tabs'
 import {exclude} from '../utils'
 
@@ -32,4 +33,9 @@ export default class Tabs extends React.Component {
       })
     )
   }
+}
+
+Tabs.propTypes = {
+  onToggle: PropTypes.func,
+  open: PropTypes.node // => Number / String / Element
 }

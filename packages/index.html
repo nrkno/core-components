@@ -32,11 +32,11 @@
     .doc-demo { background: #f0f5fe; padding: 1rem; margin: 1rem 0 }
     .doc-demo summary { cursor: pointer; padding: 5px 1rem; font-weight: 600; font-size: 12px; border-top: 2px solid #fff }
     .doc-demo details { margin: 1rem -1rem -1rem }
-    .doc-demo ul { list-style: none }
+    .doc-demo ul { list-style: none; padding: 0 }
 
     @keyframes fadeIn { from { max-height: 0 } }
     @media(min-width:700px) {
-      .doc-menu { float: left; box-sizing: border-box; position: sticky; top: 0; padding: 70px 0; width: 270px; min-height: 100vh; border-right: 1px solid #eee }
+      .doc-menu { float: left; box-sizing: border-box; position: -webkit-sticky; position: sticky; top: 0; padding: 70px 0; width: 270px; min-height: 100vh; border-right: 1px solid #eee }
     }
   </style>
 </head>
@@ -45,12 +45,12 @@
   <div class="doc-menu">
     <ul>
       <li><a href="?docs.md">Core Components</a></li>
-      <li><a href="?core-datepicker/core-datepicker.md">Datepicker</a></li>
-      <li><a href="?core-dialog/core-dialog.md">Dialog</a></li>
-      <li><a href="?core-input/core-input.md">Input</a></li>
-      <li><a href="?core-scroll/core-scroll.md">Scroll</a></li>
-      <li><a href="?core-tabs/core-tabs.md">Tabs</a></li>
-      <li><a href="?core-toggle/core-toggle.md">Toggle</a></li>
+      <li><a href="?core-datepicker/readme.md">Datepicker</a></li>
+      <li><a href="?core-dialog/readme.md">Dialog</a></li>
+      <li><a href="?core-input/readme.md">Input</a></li>
+      <li><a href="?core-scroll/readme.md">Scroll</a></li>
+      <li><a href="?core-tabs/readme.md">Tabs</a></li>
+      <li><a href="?core-toggle/readme.md">Toggle</a></li>
       <li><br><a href="https://github.com/nrkno/core-components"><img src="https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/github.svg"> View on Github</a></li>
       <li><a href="https://github.com/nrkno/core-components/releases"><img src="https://rawgit.com/nrkno/core-icons/master/lib/nrk-poll.svg"> View changelog</a></li>
       <li><a href="https://github.com/nrkno/core-components/issues/new"><img src="https://rawgit.com/nrkno/core-icons/master/lib/nrk-comment.svg"> Report issue</a></li>
@@ -58,8 +58,13 @@
     </ul>
   </div>
   <main class="doc-main"></main>
+  <script>window.process={env:{NODE_ENV:'development'}}</script>
+  <script src="https://unpkg.com/prop-types@15/prop-types.js"></script>
   <script src="https://unpkg.com/react@16/umd/react.production.min.js"></script>
   <script src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>
+  <!-- <script src="https://unpkg.com/preact@8"></script>
+  <script src="https://unpkg.com/preact-compat@3"></script>
+  <script>React = ReactDOM = preactCompat</script> -->
   <script src="https://unpkg.com/code-prettify/loader/run_prettify.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script src="https://unpkg.com/marked/marked.min.js"></script>
@@ -73,7 +78,8 @@
 
       mark.code = code
       ajax.onload = function () {
-        main.innerHTML = marked(ajax.responseText, {renderer: mark, gfm: true})
+        var html = ajax.responseText.replace(/<!--\s*demo\n|\ndemo\s*-->/g, '')
+        main.innerHTML = marked(html, {renderer: mark, gfm: true})
         exec(main.querySelectorAll('script'), link && function () {
           var toc = [].slice.call(document.querySelectorAll('h2[id]'), 1) // Skip first h2
           link.style.fontWeight = 600

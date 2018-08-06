@@ -2,16 +2,15 @@
   "name": "@nrk/core-dialog",
   "homepage": "https://static.nrk.no/core-components/latest/",
   "author": "NRK <opensource@nrk.no> (https://www.nrk.no/)",
-  "version": "1.0.6",
+  "version": "1.0.8",
   "license": "MIT",
-  "main": "core-dialog.min.js",
+  "main": "core-dialog.cjs.js",
   "jsx": "jsx/index.js",
-  "optionalDependencies": {
-    "react": "*",
-    "react-dom": "*"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nrkno/core-components.git"
+  },
+  "dependencies": {
+    "prop-types": "15.6.2"
   }
 }
