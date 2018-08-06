@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import coreInput from './core-input'
 import {exclude} from '../utils'
 
@@ -40,3 +41,11 @@ Input.Highlight = ({text, query = ''}) =>
   React.createElement('span', {dangerouslySetInnerHTML: {
     __html: coreInput.highlight(text, query) // We know coreInput escapes, so this is safe
   }})
+
+Input.propTypes = {
+  onFilter: PropTypes.func,
+  onSelect: PropTypes.func,
+  onAjax: PropTypes.func,
+  ajax: PropTypes.string,
+  open: PropTypes.bool
+}

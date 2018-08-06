@@ -2,7 +2,7 @@
   "name": "@nrk/core-datepicker",
   "homepage": "https://static.nrk.no/core-components/latest/",
   "author": "NRK <opensource@nrk.no> (https://www.nrk.no/)",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "license": "MIT",
   "main": "core-datepicker.cjs.js",
   "jsx": "jsx/index.js",
@@ -12,5 +12,8 @@
   },
   "devDependencies": {
     "@nrk/simple-date-parse": "1.0.2"
+  },
+  "dependencies": {
+    "prop-types": "15.6.2"
   }
 }

@@ -7,7 +7,7 @@ const {uglify} = require('rollup-plugin-uglify')
 const {pkgs, getPackageName} = require('./bin/index.js') // Find all packages
 
 const server = !process.env.ROLLUP_WATCH || serve('packages')
-const globals = {'react-dom': 'ReactDOM', react: 'React'} // Do not include react in out package
+const globals = {'react-dom': 'ReactDOM', react: 'React', 'prop-types': 'PropTypes'} // Exclude from output
 const pluginsCJS = [json(), resolve(), commonjs(), buble(), server]
 const pluginsUMD = pluginsCJS.concat(uglify)
 
@@ -42,7 +42,7 @@ export default pkgs.reduce((all, path) => {
     plugins: pluginsCJS,
     output: {
       format: 'cjs',
-      file: `${path}/jsx/index.js`,
+      file: `${path}/jsx.js`,
       name: nameTitleCase,
       globals
     }
