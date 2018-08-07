@@ -167,6 +167,16 @@ document.addEventListener('scroll.change', (event) => {
 })
 ```
 
+`'scroll.click'` is fired when clicking a button controlling `@nrk/core-scroll`. The event bubbles, and can therefore be detected both from button element itself, or any parent element (read event delegation):
+
+
+```js
+document.addEventListener('scroll.click', (event) => {
+  event.target        // The core-scroll element triggering scroll.change event
+  event.detail.move   // Direction to move (left, right, up, down)
+})
+```
+
 ---
 
 ## Styling
