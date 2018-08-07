@@ -29,9 +29,9 @@ export default function scroll (elements, move = '') {
       target.style.maxHeight = `calc(100% + ${scrollbarHeight}px)` // Consistent height
       target.style.marginRight = `-${scrollbarWidth}px`
       target.style.marginBottom = `-${scrollbarHeight}px`
-      onChange(target) // Update state
     }
     if (isChange) scrollTo(target, parsePoint(target, options))
+    else onChange(target) // Updates button states
     return target
   })
 }
@@ -104,6 +104,7 @@ function onChange (event) {
     target.style.cursor = `-webkit-${cursor}`
     target.style.cursor = cursor
   }
+
   if (target.id) {
     queryAll(`[${ATTR}]`).forEach((el) => {
       if (el.getAttribute(ATTR) === target.id) el.disabled = !detail[el.value]
@@ -142,6 +143,11 @@ function scrollTo (target, {x, y}) {
 
 function parsePoint (target, {x, y, move}) {
   const point = {x, y, move: MOVE[move]}
+  // {
+  //   to: 'left|top|right|bottom|Element'
+  //   x: 'left|top|right|bottom|px'
+  //   y: 'left|top|right|bottom|px'
+  // }
   if (typeof point.x !== 'number') point.x = target.scrollLeft
   if (typeof point.y !== 'number') point.y = target.scrollTop
   if (point.move) {
