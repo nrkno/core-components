@@ -69,7 +69,7 @@ demo-->
   </div>
 </div>
 <script>
-  // coreScroll('.my-scroll');
+  coreScroll('.my-scroll');
 </script>
 ```
 
