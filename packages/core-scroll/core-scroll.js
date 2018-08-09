@@ -5,13 +5,12 @@ const DRAG = {}
 const ATTR = 'data-core-scroll'
 const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid attribute characters
 const MOVE = {up: {y: -1, prop: 'top'}, down: {y: 1, prop: 'bottom'}, left: {x: -1}, right: {x: 1}}
+const SIGNIFICANT_DRAG_THRESHOLD = 10
 const FRICTION = 0.8
 const VELOCITY = 20
 
 // https://css-tricks.com/introduction-reduced-motion-media-query/
 const requestJump = IS_BROWSER && window.matchMedia && window.matchMedia('(prefers-reduced-motion)').matches
-
-const SIGNIFICANT_DRAG_THRESHOLD = 10
 
 export default function scroll (elements, move = '') {
   const options = typeof move === 'object' ? move : {move}
