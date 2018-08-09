@@ -5,6 +5,7 @@ const DRAG = {}
 const ATTR = 'data-core-scroll'
 const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid attribute characters
 const MOVE = {up: {y: -1, prop: 'top'}, down: {y: 1, prop: 'bottom'}, left: {x: -1}, right: {x: 1}}
+const SIGNIFICANT_DRAG_THRESHOLD = 10
 const FRICTION = 0.8
 const VELOCITY = 20
 
@@ -50,6 +51,8 @@ function onMousedown (event) {
 
       DRAG.pageX = event.pageX
       DRAG.pageY = event.pageY
+      DRAG.diffSumX = 0
+      DRAG.diffSumY = 0
       DRAG.scrollX = el.scrollLeft
       DRAG.scrollY = el.scrollTop
       DRAG.animate = DRAG.diffX = DRAG.diffY = 0 // Reset
@@ -63,12 +66,29 @@ function onMousedown (event) {
   }
 }
 
+/**
+ * Check that the current drag is significant.
+ *
+ * When the user clicks on an element and the cursor moves slightly, it is most
+ * likely that the user wanted to click in stead of drag.
+ */
+function isSignificantDrag () {
+  return (
+    Math.abs(DRAG.diffSumX) > SIGNIFICANT_DRAG_THRESHOLD ||
+    Math.abs(DRAG.diffSumY) > SIGNIFICANT_DRAG_THRESHOLD
+  )
+}
+
 function onMousemove (event) {
   DRAG.diffX = DRAG.pageX - (DRAG.pageX = event.pageX)
   DRAG.diffY = DRAG.pageY - (DRAG.pageY = event.pageY)
+  DRAG.diffSumX += DRAG.diffX
+  DRAG.diffSumY += DRAG.diffY
   DRAG.target.scrollLeft = DRAG.scrollX += DRAG.diffX
   DRAG.target.scrollTop = DRAG.scrollY += DRAG.diffY
-  DRAG.target.style.pointerEvents = 'none' // Prevent links when we know there has been movement
+  if (isSignificantDrag()) {
+    DRAG.target.style.pointerEvents = 'none' // Prevent links when we know there has been movement
+  }
 }
 
 function onMouseup (event) {
