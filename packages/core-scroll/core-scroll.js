@@ -11,6 +11,8 @@ const VELOCITY = 20
 // https://css-tricks.com/introduction-reduced-motion-media-query/
 const requestJump = IS_BROWSER && window.matchMedia && window.matchMedia('(prefers-reduced-motion)').matches
 
+const SIGNIFICANT_DRAG_THRESHOLD = 10
+
 export default function scroll (elements, move = '') {
   const options = typeof move === 'object' ? move : {move}
   const isChange = 'x' in options || 'y' in options || options.move
@@ -63,12 +65,28 @@ function onMousedown (event) {
   }
 }
 
+/**
+ * Check that the current drag is significant.
+ *
+ * When the user clicks on an element and the cursor moves slightly, it is most
+ * likely that the user wanted to click in stead of drag.
+ */
+function isSignificantDrag () {
+  return (
+    DRAG.target != null &&
+    (Math.abs(DRAG.scrollX) > SIGNIFICANT_DRAG_THRESHOLD ||
+      Math.abs(DRAG.scrollY) > SIGNIFICANT_DRAG_THRESHOLD)
+  )
+}
+
 function onMousemove (event) {
   DRAG.diffX = DRAG.pageX - (DRAG.pageX = event.pageX)
   DRAG.diffY = DRAG.pageY - (DRAG.pageY = event.pageY)
   DRAG.target.scrollLeft = DRAG.scrollX += DRAG.diffX
   DRAG.target.scrollTop = DRAG.scrollY += DRAG.diffY
-  DRAG.target.style.pointerEvents = 'none' // Prevent links when we know there has been movement
+  if (isSignificantDrag()) {
+    DRAG.target.style.pointerEvents = 'none' // Prevent links when we know there has been movement
+  }
 }
 
 function onMouseup (event) {
