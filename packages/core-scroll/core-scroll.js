@@ -5,6 +5,7 @@ const DRAG = {}
 const ATTR = 'data-core-scroll'
 const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid attribute characters
 const MOVE = {up: {y: -1, prop: 'top'}, down: {y: 1, prop: 'bottom'}, left: {x: -1}, right: {x: 1}}
+const THRESHOLD = 3 // Mouse needs to move 3px per frame to stop click events
 const FRICTION = 0.8
 const VELOCITY = 20
 
@@ -68,7 +69,11 @@ function onMousemove (event) {
   DRAG.diffY = DRAG.pageY - (DRAG.pageY = event.pageY)
   DRAG.target.scrollLeft = DRAG.scrollX += DRAG.diffX
   DRAG.target.scrollTop = DRAG.scrollY += DRAG.diffY
-  DRAG.target.style.pointerEvents = 'none' // Prevent links when we know there has been movement
+
+   // Small movements is likelig a click and not a drag
+  if (Math.abs(DRAG.diffX) > THRESHOLD || Math.abs(DRAG.diffY) > THRESHOLD) {
+    DRAG.target.style.pointerEvents = 'none' // Prevent links when we know there has been movement
+  }
 }
 
 function onMouseup (event) {
