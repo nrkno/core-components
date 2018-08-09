@@ -1,16 +1,16 @@
 import {name, version} from './package.json'
-import {IS_BROWSER, addEvent, dispatchEvent, throttle, queryAll} from '../utils'
+import {IS_BROWSER, addEvent, dispatchEvent, requestAnimFrame, throttle, queryAll} from '../utils'
 
 const DRAG = {}
 const ATTR = 'data-core-scroll'
 const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid attribute characters
 const MOVE = {up: {y: -1, prop: 'top'}, down: {y: 1, prop: 'bottom'}, left: {x: -1}, right: {x: 1}}
+const SIGNIFICANT_DRAG_THRESHOLD = 10
 const FRICTION = 0.8
 const VELOCITY = 20
 
 // https://css-tricks.com/introduction-reduced-motion-media-query/
 const requestJump = IS_BROWSER && window.matchMedia && window.matchMedia('(prefers-reduced-motion)').matches
-const requestAnim = !IS_BROWSER || window.requestAnimationFrame || window.setTimeout
 
 export default function scroll (elements, move = '') {
   const options = typeof move === 'object' ? move : {move}
@@ -30,9 +30,9 @@ export default function scroll (elements, move = '') {
       target.style.maxHeight = `calc(100% + ${scrollbarHeight}px)` // Consistent height
       target.style.marginRight = `-${scrollbarWidth}px`
       target.style.marginBottom = `-${scrollbarHeight}px`
-      onChange(target) // Update state
     }
     if (isChange) scrollTo(target, parsePoint(target, options))
+    else onChange(target) // Updates button states
     return target
   })
 }
@@ -51,6 +51,8 @@ function onMousedown (event) {
 
       DRAG.pageX = event.pageX
       DRAG.pageY = event.pageY
+      DRAG.diffSumX = 0
+      DRAG.diffSumY = 0
       DRAG.scrollX = el.scrollLeft
       DRAG.scrollY = el.scrollTop
       DRAG.animate = DRAG.diffX = DRAG.diffY = 0 // Reset
@@ -64,12 +66,29 @@ function onMousedown (event) {
   }
 }
 
+/**
+ * Check that the current drag is significant.
+ *
+ * When the user clicks on an element and the cursor moves slightly, it is most
+ * likely that the user wanted to click in stead of drag.
+ */
+function isSignificantDrag () {
+  return (
+    Math.abs(DRAG.diffSumX) > SIGNIFICANT_DRAG_THRESHOLD ||
+    Math.abs(DRAG.diffSumY) > SIGNIFICANT_DRAG_THRESHOLD
+  )
+}
+
 function onMousemove (event) {
   DRAG.diffX = DRAG.pageX - (DRAG.pageX = event.pageX)
   DRAG.diffY = DRAG.pageY - (DRAG.pageY = event.pageY)
+  DRAG.diffSumX += DRAG.diffX
+  DRAG.diffSumY += DRAG.diffY
   DRAG.target.scrollLeft = DRAG.scrollX += DRAG.diffX
   DRAG.target.scrollTop = DRAG.scrollY += DRAG.diffY
-  DRAG.target.style.pointerEvents = 'none' // Prevent links when we know there has been movement
+  if (isSignificantDrag()) {
+    DRAG.target.style.pointerEvents = 'none' // Prevent links when we know there has been movement
+  }
 }
 
 function onMouseup (event) {
@@ -105,6 +124,7 @@ function onChange (event) {
     target.style.cursor = `-webkit-${cursor}`
     target.style.cursor = cursor
   }
+
   if (target.id) {
     queryAll(`[${ATTR}]`).forEach((el) => {
       if (el.getAttribute(ATTR) === target.id) el.disabled = !detail[el.value]
@@ -113,9 +133,12 @@ function onChange (event) {
 }
 
 function onClick (event) {
+  if (event.defaultPrevented) return
   for (let el = event.target; el; el = el.parentElement) {
-    const id = el.getAttribute(ATTR)
-    if (id) return scroll(document.getElementById(id), el.value)
+    const target = document.getElementById(el.getAttribute(ATTR))
+    if (target && dispatchEvent(target, 'scroll.click', {move: el.value})) {
+      return scroll(target, el.value)
+    }
   }
 }
 
@@ -132,7 +155,7 @@ function scrollTo (target, {x, y}) {
     if (DRAG.animate === uuid && (Math.round(moveX) || Math.round(moveY))) {
       target.scrollLeft = endX - Math.round(moveX *= friction)
       target.scrollTop = endY - Math.round(moveY *= friction)
-      requestAnim(move)
+      requestAnimFrame(move)
     }
   }
   move()
@@ -140,6 +163,11 @@ function scrollTo (target, {x, y}) {
 
 function parsePoint (target, {x, y, move}) {
   const point = {x, y, move: MOVE[move]}
+  // {
+  //   to: 'left|top|right|bottom|Element'
+  //   x: 'left|top|right|bottom|px'
+  //   y: 'left|top|right|bottom|px'
+  // }
   if (typeof point.x !== 'number') point.x = target.scrollLeft
   if (typeof point.y !== 'number') point.y = target.scrollTop
   if (point.move) {
