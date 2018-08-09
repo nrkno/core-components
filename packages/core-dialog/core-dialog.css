@@ -1,0 +1,31 @@
+.core-dialog {
+  position: absolute;
+  margin: auto;
+  top: 5%;
+  left: 0;
+  right: 0;
+  border: 0;
+  padding: 2em;
+  width: 100%;
+  max-width: 300px;
+  background: #fff;
+  transition: .2s;
+}
+
+.core-dialog + backdrop {
+  position: fixed;
+  background: rgba(0,0,0,.3);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  transition: .2s;
+}
+
+.core-dialog:not([open]),
+.core-dialog + backdrop[hidden] {
+  pointer-events: none;
+  visibility: hidden;
+  display: block;
+  opacity: 0;
+}

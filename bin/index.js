@@ -57,3 +57,11 @@ if (args.publish) {
   execSync(`git push && git push --tags`, {cwd: process.cwd(), stdio: 'inherit'})
   console.log('') // Insert new line
 }
+
+// CSS: convert ----------------------------------------------------------------
+if (args.css) {
+  const file = path.join(process.cwd(), 'packages/core-dialog/core-dialog')
+  const css = String(fs.readFileSync(`${file}.css`))
+
+  fs.writeFileSync(`${file}.scss`, css.replace(/\.([^{]+)/g, '@mixin $1()')) // SCSS
+}

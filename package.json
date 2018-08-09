@@ -6,6 +6,7 @@
   "license": "MIT",
   "scripts": {
     "build": "rollup --config",
+    "build:css": "node bin/index.js --css",
     "install": "node bin/index.js --install",
     "lint": "standard",
     "publish:patch": "npm run build && node bin/index.js --publish=patch",
