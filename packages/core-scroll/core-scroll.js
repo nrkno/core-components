@@ -23,9 +23,12 @@ export default function scroll (elements, move = '') {
       target.style.willChange = 'scroll-position' // Enhance performace
       target.style.webkitOverflowScrolling = 'touch' // Momentum scoll on iOS
 
-      // Must be after setting overflow scroll
-      const scrollbarWidth = target.offsetWidth - target.clientWidth + 1 // Plus one fixes safari pixelbug
-      const scrollbarHeight = target.offsetHeight - target.clientHeight + 1 // Plus one fixes safari pixelbug
+      // Calculate scrollBareSizes for hiding
+      // Must be after setting overflow:scroll
+      // Default to 18px (max reports scrollbar size 0 when "auto hiding")
+      // Plus one fixes safari pixelbug
+      const scrollbarWidth = (target.offsetWidth - target.clientWidth || 18) + 1
+      const scrollbarHeight = (target.offsetHeight - target.clientHeight || 18) + 1
 
       target.style.maxHeight = `calc(100% + ${scrollbarHeight}px)` // Consistent height
       target.style.marginRight = `-${scrollbarWidth}px`
