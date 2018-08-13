@@ -9,7 +9,7 @@ const {pkgs, getPackageName} = require('./bin/index.js') // Find all packages
 const server = !process.env.ROLLUP_WATCH || serve('packages')
 const globals = {'react-dom': 'ReactDOM', react: 'React', 'prop-types': 'PropTypes'} // Exclude from output
 const pluginsCJS = [json(), resolve(), commonjs(), buble(), server]
-const pluginsUMD = pluginsCJS.concat(uglify)
+const pluginsUMD = pluginsCJS.concat(uglify({output: {comments: /^!/}}))
 
 export default pkgs.reduce((all, path) => {
   const pkg = require(`${path}/package.json`)
