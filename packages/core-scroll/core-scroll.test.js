@@ -19,7 +19,7 @@ describe('core-scroll', () => {
     document.body.innerHTML = standardHTML
 
     const scrollContainer = document.querySelector('#my-scroll-js')
-    const expectedStyling = 'overflow: scroll; -webkit-overflow-scrolling: touch; max-height: calc(100% + 1px); margin-right: -1px; margin-bottom: -1px;'
+    const expectedStyling = 'overflow: scroll; -webkit-overflow-scrolling: touch; max-height: calc(100% + 19px); margin-right: -1px; margin-bottom: -1px;'
 
     coreScroll(scrollContainer)
     expect(scrollContainer.getAttribute('style')).toEqual(expectedStyling)
