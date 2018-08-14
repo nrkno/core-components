@@ -20,8 +20,8 @@ import CoreScroll from '@nrk/core-scroll/jsx' // ...or React/Preact compatible J
 <script src="core-scroll/core-scroll.min.js"></script>
 <script src="core-scroll/core-scroll.jsx.js"></script>
 <style>
-  #my-scroll-js { height: 200px }
-  .my-wrap { overflow: hidden; white-space: nowrap; border: 1px solid; height: 100% }
+  .my-wrap-js { height: 200px }
+  .my-wrap { overflow: hidden; white-space: nowrap; border: 1px solid }
   .my-scroll > * { box-sizing: border-box; display: inline-block; vertical-align: top; width: 30%; height: 90px; padding: 10px; border: 1px solid; margin: 10px; transition: 1s }
 </style>
 demo-->
@@ -35,7 +35,7 @@ demo-->
 <br>
 <button data-core-scroll="my-scroll-js" value="left" aria-label="Rull til venstre">&larr;</button>
 <button data-core-scroll="my-scroll-js" value="right" aria-label="Rull til høyre">&rarr;</button>
-<div class="my-wrap">
+<div class="my-wrap my-wrap-js">
   <div class="my-scroll" id="my-scroll-js">
     <div>1</div><div>2</div><div>3</div><div>4</div><a href="#">5</a>
     <div>6</div><div>7</div><div>8</div><div>9</div><div>10</div>

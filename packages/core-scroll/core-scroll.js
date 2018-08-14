@@ -6,7 +6,7 @@ const ATTR = 'data-core-scroll'
 const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid attribute characters
 const MOVE = {up: {y: -1, prop: 'top'}, down: {y: 1, prop: 'bottom'}, left: {x: -1}, right: {x: 1}}
 const SIGNIFICANT_DRAG_THRESHOLD = 10
-const FALLBACK_SCROLLBAR_SIZE = 18
+const SCROLLBAR_SIZE_AUTO_HIDING = 18
 const FRICTION = 0.8
 const VELOCITY = 20
 
@@ -20,20 +20,7 @@ export default function scroll (elements, move = '') {
   return queryAll(elements).map((target) => {
     if (!target.hasAttribute(UUID)) { // Reduce read / write operations
       target.setAttribute(UUID, options.friction || '')
-      target.style.overflow = 'scroll' // Ensure visible scrollbars
-      target.style.willChange = 'scroll-position' // Enhance performace
-      target.style.webkitOverflowScrolling = 'touch' // Momentum scoll on iOS
-
-      // Calculate scrollBareSizes for hiding
-      // Must be after setting overflow:scroll
-      // Default to 18px (max reports scrollbar size 0 when "auto hiding")
-      // Plus one fixes safari pixelbug
-      const scrollbarWidth = (target.offsetWidth - target.clientWidth || FALLBACK_SCROLLBAR_SIZE) + 1
-      const scrollbarHeight = (target.offsetHeight - target.clientHeight || FALLBACK_SCROLLBAR_SIZE) + 1
-
-      target.style.maxHeight = `calc(100% + ${scrollbarHeight}px)` // Consistent height
-      target.style.marginRight = `-${scrollbarWidth}px`
-      target.style.marginBottom = `-${scrollbarHeight}px`
+      hideScrollbars(target)
     }
     if (isChange) scrollTo(target, parsePoint(target, options))
     else onChange(target) // Updates button states
@@ -68,6 +55,27 @@ function onMousedown (event) {
       document.addEventListener('mouseup', onMouseup)
     }
   }
+}
+
+function hideScrollbars (element) {
+  element.style.overflow = 'scroll' // Ensure visible scrollbars
+  element.style.willChange = 'scroll-position' // Enhance performance
+  element.style.webkitOverflowScrolling = 'touch' // Momentum scoll on iOS
+
+  // Calculate sizes for hiding, must be after setting overflow:scroll
+  // OSX reports barSize 0 because of auto hiding, use fallback size
+  const barWidth = element.offsetWidth - element.clientWidth
+  const barHeight = element.offsetHeight - element.clientHeight
+  const hideWidth = (barWidth || SCROLLBAR_SIZE_AUTO_HIDING) + 1 // +1 fixes safari pixelbug
+  const hideHeight = (barHeight || SCROLLBAR_SIZE_AUTO_HIDING) + 1
+
+  // Ensure same height both when subtracing visible and hidden scrollbars
+  // Also ensure height does not grow higher than parent element
+  element.style.marginRight = `-${hideWidth}px`
+  element.style.marginBottom = `-${hideHeight}px`
+  element.style.paddingRight = `${hideWidth - barWidth}px`
+  element.style.paddingBottom = `${hideHeight - barHeight}px`
+  element.style.maxHeight = `calc(100% + ${hideHeight}px)`
 }
 
 /**
