@@ -63,13 +63,11 @@ function hideScrollbars (element) {
   element.style.webkitOverflowScrolling = 'touch' // Momentum scoll on iOS
 
   // Calculate sizes for hiding, must be after setting overflow:scroll
+  // OSX reports barSize 0 because of auto hiding, use fallback size
   const barWidth = element.offsetWidth - element.clientWidth
   const barHeight = element.offsetHeight - element.clientHeight
-
-  // OSX reports barSize 0 because of auto hiding, use fallback size
   const hideWidth = (barWidth || SCROLLBAR_SIZE_AUTO_HIDING) + 1 // +1 fixes safari pixelbug
   const hideHeight = (barHeight || SCROLLBAR_SIZE_AUTO_HIDING) + 1
-
 
   // Ensure same height both when subtracing visible and hidden scrollbars
   // Also ensure height does not grow higher than parent element
