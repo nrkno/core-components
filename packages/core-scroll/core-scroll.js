@@ -59,14 +59,14 @@ function onMousedown (event) {
 
 function hideScrollbars (element) {
   element.style.overflow = 'scroll' // Ensure visible scrollbars
-  element.style.willChange = 'scroll-position' // Enhance performace
+  element.style.willChange = 'scroll-position' // Enhance performance
   element.style.webkitOverflowScrolling = 'touch' // Momentum scoll on iOS
 
   // Calculate sizes for hiding, must be after setting overflow:scroll
   const barWidth = element.offsetWidth - element.clientWidth
   const barHeight = element.offsetHeight - element.clientHeight
 
-  // OSX reports barSize 0 becase of auto hiding, use fallback size
+  // OSX reports barSize 0 because of auto hiding, use fallback size
   const hideWidth = (barWidth || SCROLLBAR_SIZE_AUTO_HIDING) + 1 // +1 fixes safari pixelbug
   const hideHeight = (barHeight || SCROLLBAR_SIZE_AUTO_HIDING) + 1
 
