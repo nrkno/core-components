@@ -5,7 +5,6 @@
   "version": "3.0.1",
   "license": "MIT",
   "main": "core-scroll.cjs.js",
-  "jsx": "jsx/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nrkno/core-components.git"

@@ -5,7 +5,6 @@
   "version": "1.2.3",
   "license": "MIT",
   "main": "core-datepicker.cjs.js",
-  "jsx": "jsx/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nrkno/core-components.git"
