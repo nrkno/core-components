@@ -5,7 +5,6 @@
   "version": "1.1.8",
   "license": "MIT",
   "main": "core-toggle.cjs.js",
-  "jsx": "jsx/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nrkno/core-components.git"
