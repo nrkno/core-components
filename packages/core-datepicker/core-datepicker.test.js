@@ -219,5 +219,29 @@ describe('core-datepicker', () => {
       expect(jan1Btn.getAttribute('aria-pressed')).toEqual('true')
       expect(jan12Btn.getAttribute('aria-pressed')).toEqual('false')
     })
+
+    it('should disable the dates specified by disable method', () => {
+      document.body.innerHTML = standardHTML
+      const datepickerEl = document.querySelector('.my-datepicker')
+      const tableEl = datepickerEl.querySelector('table')
+      // Fri Jan 12 2018
+      const current = new Date(1515774608994)
+
+      datepickerEl.addEventListener('datepicker.render', (event) => {
+        event.detail.disable((date) => date > current)
+      })
+
+      coreDatepicker(datepickerEl, current)
+
+      const currentBtn = tableEl.querySelector('tbody tr:nth-child(2) td:nth-child(5) button')
+      const prevBtn = tableEl.querySelector('tbody tr:nth-child(2) td:nth-child(4) button')
+      const nextBtn = tableEl.querySelector('tbody tr:nth-child(2) td:nth-child(6) button')
+
+      expect(currentBtn.hasAttribute('disabled')).toBe(false)
+      expect(prevBtn.hasAttribute('disabled')).toBe(false)
+      expect(nextBtn.hasAttribute('disabled')).toBe(true)
+      tableEl.querySelectorAll('tbody tr:nth-child(3) td')
+        .forEach((td) => expect(td.children[0].hasAttribute('disabled')).toEqual(true))
+    })
   })
 })
