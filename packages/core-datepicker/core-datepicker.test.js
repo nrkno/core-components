@@ -48,7 +48,7 @@ describe('core-datepicker', () => {
     const now = new Date()
 
     coreDatepicker(datepickerEl, now.getTime())
-    expect(datepickerEl.querySelector('input').value).toEqual(now.getTime().toString())
+    expect(Number(datepickerEl.querySelector('input').value)).toEqual(now.getTime())
   })
 
   it('should change month names in select when replacing months property', () => {
@@ -87,7 +87,7 @@ describe('core-datepicker', () => {
       inputEl.type = 'year'
 
       coreDatepicker(datepickerEl, now.getTime())
-      expect(inputEl.value).toEqual(now.getFullYear().toString())
+      expect(Number(inputEl.value)).toEqual(now.getFullYear())
     })
 
     it('should set selected month if input is type month', () => {
@@ -95,14 +95,12 @@ describe('core-datepicker', () => {
       const datepickerEl = document.querySelector('.my-datepicker')
       const inputEl = datepickerEl.querySelector('input')
       const now = new Date()
-      let expectedMonth = (now.getMonth() + 1).toString()
-      expectedMonth = expectedMonth.length === 1 ? `0${expectedMonth}` : expectedMonth
 
       // Test month type
       inputEl.type = 'month'
 
       coreDatepicker(datepickerEl, now.getTime())
-      expect(inputEl.value).toEqual(expectedMonth)
+      expect(Number(inputEl.value)).toEqual(now.getMonth() + 1)
     })
 
     it('should set selected day if input is type day', () => {
@@ -115,7 +113,7 @@ describe('core-datepicker', () => {
       inputEl.type = 'day'
 
       coreDatepicker(datepickerEl, now.getTime())
-      expect(inputEl.value).toEqual(now.getDate().toString())
+      expect(Number(inputEl.value)).toEqual(now.getDate())
     })
 
     it('should set selected hour if input is type hour', () => {
@@ -128,7 +126,7 @@ describe('core-datepicker', () => {
       inputEl.type = 'hour'
 
       coreDatepicker(datepickerEl, now.getTime())
-      expect(inputEl.value).toEqual(now.getHours().toString())
+      expect(Number(inputEl.value)).toEqual(now.getHours())
     })
 
     it('should set selected minute if input is type minute', () => {
@@ -141,7 +139,7 @@ describe('core-datepicker', () => {
       inputEl.type = 'minute'
 
       coreDatepicker(datepickerEl, now.getTime())
-      expect(inputEl.value).toEqual(now.getMinutes().toString())
+      expect(Number(inputEl.value)).toEqual(now.getMinutes())
     })
 
     it('should set selected second if input is type second', () => {
@@ -154,7 +152,7 @@ describe('core-datepicker', () => {
       inputEl.type = 'second'
 
       coreDatepicker(datepickerEl, now.getTime())
-      expect(inputEl.value).toEqual(now.getSeconds().toString())
+      expect(Number(inputEl.value)).toEqual(now.getSeconds())
     })
   })
 
