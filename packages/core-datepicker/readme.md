@@ -169,6 +169,8 @@ All date values - both HTML markup and JavaScript - accepts accepts dates as num
     <!-- to see if the date specified is matching the values of the <input>s. -->
     <!-- When any other type is used, core-datepicker sets the type to number -->
     <!-- and sets the date specified in the value field. -->
+    <!-- NOTE: Other input types are not handled by core-datepicker to allow -->
+    <!-- more customizability with other elements inside core-datepicker container -->
     <input type="radio|checkbox|year|month|day|hour|minute|second|timestamp"/>
 
     <!-- If an empty <select> is provided, core-datepicker will populate the select -->

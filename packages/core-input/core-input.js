@@ -108,6 +108,7 @@ function setupExpand (input, open = input.getAttribute('aria-expanded') === 'tru
 function setupItem (item, index, items) {
   item.setAttribute('aria-label', `${item.textContent.trim()}, ${index + 1} av ${items.length}`)
   item.setAttribute('tabindex', '-1')
+  item.setAttribute('type', 'button')
 }
 
 function ajax (input) {
