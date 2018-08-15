@@ -6,7 +6,6 @@ const ATTR = 'data-core-scroll'
 const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid attribute characters
 const MOVE = {up: {y: -1, prop: 'top'}, down: {y: 1, prop: 'bottom'}, left: {x: -1}, right: {x: 1}}
 const SIGNIFICANT_DRAG_THRESHOLD = 10
-const SCROLLBAR_SIZE_AUTO_HIDING = 18
 const FRICTION = 0.8
 const VELOCITY = 20
 
