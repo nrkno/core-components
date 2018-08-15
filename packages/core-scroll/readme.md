@@ -1,6 +1,6 @@
 # Core Scroll
 
-## `@nrk/core-scroll` enhances any tag with content to be scrollable with mouse interaction on non-touch-devices. `core-scroll` also automatically disables animation for users who prefers [reduced motion](https://css-tricks.com/introduction-reduced-motion-media-query/).
+## `@nrk/core-scroll` enhances any tag with content to be scrollable with mouse interaction on non-touch-devices. `core-scroll` also hides the scrollbars and automatically disables animation for users who prefers [reduced motion](https://css-tricks.com/introduction-reduced-motion-media-query/).
 
 ---
 
@@ -20,8 +20,8 @@ import CoreScroll from '@nrk/core-scroll/jsx' // ...or React/Preact compatible J
 <script src="core-scroll/core-scroll.min.js"></script>
 <script src="core-scroll/core-scroll.jsx.js"></script>
 <style>
+  .my-wrap { overflow: hidden; white-space: nowrap; height: 100%; border: 1px solid }
   .my-wrap-js { height: 200px }
-  .my-wrap { overflow: hidden; white-space: nowrap; border: 1px solid }
   .my-scroll > * { box-sizing: border-box; display: inline-block; vertical-align: top; width: 30%; height: 90px; padding: 10px; border: 1px solid; margin: 10px; transition: 1s }
 </style>
 demo-->
@@ -104,7 +104,7 @@ demo-->
 
 ## Usage
 
-Scroll speed is controlled by `friction` rather than `duration` (a short scroll distance will have a shorter duration and vice versa) for a more natural feeling of motion. Buttons can control a `core-scroll` by targeting its ID and specifying a direction; `left|right|up|down`. The `disabled` is automatically added/removed to controller buttons when there is no more pixels to scroll in specified direction.
+Scroll speed is controlled by `friction` rather than `duration` (a short scroll distance will have a shorter duration and vice versa) for a more natural feeling of motion. Buttons can control a `core-scroll` by targeting its ID and specifying a direction; `left|right|up|down`. The `disabled` is automatically added/removed to controller buttons when there is no more pixels to scroll in specified direction. Important: `@nrk/core-scroll` manipulates styling to hide scrollbars, [see how to work with margin and height &rarr;](#styling)
 
 ### HTML / JavaScript
 ```html
@@ -180,7 +180,26 @@ document.addEventListener('scroll.click', (event) => {
 ---
 
 ## Styling
-All styling in documentation is example only. The `<button>` elements receive `disabled `attributes reflecting the current scroll state:
+
+### Scrollbar hiding
+
+`@nrk/core-scroll` adds negative margins in some browsers to hide scrollbars. Therefore, make sure to place `@nrk/core-scroll` inside a wrapper element with `overflow: hidden`:
+
+```
+<div style="overflow:hidden"><div id="core-scroll"></div></div>
+```
+
+### Setting height
+
+By default, `@nrk/core-scroll` scales based on content. If you want to set a fixed height, set this on the wrapper element (not directly on the `@nrk/core-scroll` element):
+
+✅ Do | 🚫 Don't
+:-- | :--
+`<div style="overflow:hidden;height:200px"><div id="core-scroll"></div></div>` | `<div style="overflow:hidden"><div id="core-scroll" style="height:200px"></div></div>`
+
+### Button states
+
+The `<button>` elements receive `disabled` attributes reflecting the current scroll state:
 
 ```css
 .my-scroll-button {}                  /* Target button in any state */
