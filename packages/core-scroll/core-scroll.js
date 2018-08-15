@@ -6,7 +6,6 @@ const ATTR = 'data-core-scroll'
 const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid attribute characters
 const MOVE = {up: {y: -1, prop: 'top'}, down: {y: 1, prop: 'bottom'}, left: {x: -1}, right: {x: 1}}
 const SIGNIFICANT_DRAG_THRESHOLD = 10
-const SCROLLBAR_SIZE_AUTO_HIDING = 18
 const FRICTION = 0.8
 const VELOCITY = 20
 
@@ -58,24 +57,23 @@ function onMousedown (event) {
 }
 
 function hideScrollbars (element) {
+  if (!document.getElementById(UUID)) { // Hide scrollbar in WebKit
+    document.head.insertAdjacentHTML('beforeend',
+      `<style id="${UUID}">[${UUID}]::-webkit-scrollbar{display:none}</style>`)
+  }
+
   element.style.overflow = 'scroll' // Ensure visible scrollbars
   element.style.willChange = 'scroll-position' // Enhance performance
   element.style.webkitOverflowScrolling = 'touch' // Momentum scoll on iOS
 
   // Calculate sizes for hiding, must be after setting overflow:scroll
-  // OSX reports barSize 0 because of auto hiding, use fallback size
   const barWidth = element.offsetWidth - element.clientWidth
   const barHeight = element.offsetHeight - element.clientHeight
-  const hideWidth = (barWidth || SCROLLBAR_SIZE_AUTO_HIDING) + 1 // +1 fixes safari pixelbug
-  const hideHeight = (barHeight || SCROLLBAR_SIZE_AUTO_HIDING) + 1
 
-  // Ensure same height both when subtracing visible and hidden scrollbars
   // Also ensure height does not grow higher than parent element
-  element.style.marginRight = `-${hideWidth}px`
-  element.style.marginBottom = `-${hideHeight}px`
-  element.style.paddingRight = `${hideWidth - barWidth}px`
-  element.style.paddingBottom = `${hideHeight - barHeight}px`
-  element.style.maxHeight = `calc(100% + ${hideHeight}px)`
+  element.style.marginRight = `-${barWidth}px`
+  element.style.marginBottom = `-${barHeight}px`
+  element.style.maxHeight = `calc(100% + ${barHeight}px)`
 }
 
 /**
