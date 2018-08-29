@@ -36,7 +36,7 @@ addEvent(UUID, 'click', onClick)
 
 function onMousedown (event) {
   for (let el = event.target; el; el = el.parentElement) {
-    if (!event.defaultPrevented && el.hasAttribute(UUID)) {
+    if (!event.defaultPrevented && el.hasAttribute && el.hasAttribute(UUID)) {
       event.preventDefault() // Prevent text selection and enable nesting
 
       DRAG.pageX = event.pageX
@@ -121,24 +121,24 @@ function onMouseup (event) {
 function onChange (event) {
   const target = event.target || event
   if (event.type === 'resize' || event.type === 'load') return queryAll(`[${UUID}]`).forEach(onChange) // Update all
-  if (!target.hasAttribute || !target.hasAttribute(UUID)) return // target can be document
+  if (target.hasAttribute && target.hasAttribute(UUID)) { // target can be document
+    const detail = {left: target.scrollLeft, up: target.scrollTop}
+    detail.right = target.scrollWidth - target.clientWidth - detail.left
+    detail.down = target.scrollHeight - target.clientHeight - detail.up
+    const cursor = (detail.left || detail.right || detail.up || detail.down) ? 'grab' : ''
 
-  const detail = {left: target.scrollLeft, up: target.scrollTop}
-  detail.right = target.scrollWidth - target.clientWidth - detail.left
-  detail.down = target.scrollHeight - target.clientHeight - detail.up
-  const cursor = (detail.left || detail.right || detail.up || detail.down) ? 'grab' : ''
+    dispatchEvent(target, 'scroll.change', detail)
 
-  dispatchEvent(target, 'scroll.change', detail)
+    if (!event.type) { // Do not change cursor while dragging
+      target.style.cursor = `-webkit-${cursor}`
+      target.style.cursor = cursor
+    }
 
-  if (!event.type) { // Do not change cursor while dragging
-    target.style.cursor = `-webkit-${cursor}`
-    target.style.cursor = cursor
-  }
-
-  if (target.id) {
-    queryAll(`[${ATTR}]`).forEach((el) => {
-      if (el.getAttribute(ATTR) === target.id) el.disabled = !detail[el.value]
-    })
+    if (target.id) {
+      queryAll(`[${ATTR}]`).forEach((el) => {
+        if (el.getAttribute(ATTR) === target.id) el.disabled = !detail[el.value]
+      })
+    }
   }
 }
 
