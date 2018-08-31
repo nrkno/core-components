@@ -206,3 +206,6 @@ The `<button>` elements receive `disabled` attributes reflecting the current scr
 .my-scroll-button:disabled {}         /* Target button in disabled state */
 .my-scroll-button:not(:disabled) {}   /* Target button in enabled state */
 ```
+
+### NB: Safari bug
+If you are creating a horizontal layout, you might experience unwanted vertical scrolling in Safari. This happens when children of <code>@nrk/core-scroll</code> have half-pixel height values (due to images/videos/elements with aspect-ratio sizing). Avoid the vertical scrolling by setting  <code>padding-bottom: 1px</code> on the <code>@nrk/core-scroll</code> element.
