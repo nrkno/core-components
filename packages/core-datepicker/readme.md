@@ -27,9 +27,9 @@ import CoreDatepicker from '@nrk/core-datepicker/jsx' // ...or React/Preact comp
 <script src="core-datepicker/core-datepicker.jsx.js"></script>
 <style>
   .my-datepicker { position: absolute; padding: 1rem; background: #fff; box-shadow: 0 5px 9px rgba(0,0,0,.4) }
-  .my-datepicker button[aria-current="date"] { border: 1px dashed }
-  .my-datepicker button[aria-pressed="true"] { border: 2px solid }
   .my-datepicker button[aria-disabled="true"] { opacity: .3 }
+  .my-datepicker button[aria-current="date"] { border: 1px dashed }
+  .my-datepicker button[data-core-datepicker-selected="true"] { border: 2px solid }
   :disabled { filter: brightness(.7) sepia(1) hue-rotate(-50deg) }
 </style>
 demo-->
@@ -225,9 +225,9 @@ coreDatepicker(
 import CoreDatepicker from '@nrk/core-datepicker/jsx'
 
 <CoreDatepicker date={String|Date} onChange={function () {}} >
-  <input type="radio|checkbox|year|month|day|hour|minute|second|timestamp"/> <!-- Same as with vanilla js -->  
-  <select></select> <!-- Same as with vanilla js -->
-  <table></table>   <!-- Same as with vanilla js -->
+  <input type="radio|checkbox|year|month|day|hour|minute|second|timestamp"/> /* Same as with vanilla js */
+  <select></select> /* Same as with vanilla js */
+  <table></table>   /* Same as with vanilla js */
 <CoreDatepicker>
 ```
 
@@ -283,10 +283,10 @@ document.addEventListener('datepicker.click.day', (event) => {
 
 ```css
 .my-datepicker                              /* Target datepicker container */
-.my-datepicker button[aria-current="date"]  /* Target current date (today) in month view */
-.my-datepicker button[aria-pressed="true"]  /* Target the chosen date in month view */
-.my-datepicker button[aria-disabled="true"] /* Target dates from next or previous month in the month view */
-.my-datepicker button:disabled              /* Target disabled dates */
-.my-datepicker input:disabled               /* Target disabled checkbox/radio dates */
 .my-datepicker input:checked                /* Target selected checkbox/radio dates */
+.my-datepicker input:disabled               /* Target disabled checkbox/radio dates */
+.my-datepicker button:disabled              /* Target disabled dates */
+.my-datepicker button[aria-current="date"]  /* Target current date (today) in month view */
+.my-datepicker button[aria-disabled="true"] /* Target dates from next or previous month in the month view */
+.my-datepicker button[data-core-datepicker-selected="true"]  /* Target the chosen date in month view */
 ```

@@ -103,7 +103,7 @@ import coreToggle from '@nrk/core-toggle'
 
 coreToggle(String|Element|Elements, { // Accepts a selector string, NodeList, Element or array of Elements
   open: null,                         // Defaults to value of aria-expanded or false. Use true|false to force open state
-  popup: null                         // Defaults to value of aria-haspopup or false. Use true|false to force popup mode
+  popup: false                         // Defaults to false. Use true to enable click-outside-to-close
 })
 ```
 

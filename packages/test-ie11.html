@@ -1,0 +1,199 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Core Components</title>
+</head>
+<body>
+  <script src="core-toggle/core-toggle.min.js"></script>
+  <style>.my-dropdown{display:block}.my-dropdown[hidden]{display:none}</style>
+
+  <button class="my-toggle">Toggle VanillaJS</button>
+  <div hidden>Content</div>
+  <script>
+    coreToggle('.my-toggle') // Optionally pass {open: true|false} as second argument to open/close
+  </script>
+
+  <button class="my-popup">Popup VanillaJS</button>
+  <ul class="my-dropdown" hidden>
+    <li><a href="#">Link</a></li>
+    <li>
+      <button class="my-popup">Can also be nested</button>
+      <ul class="my-dropdown" hidden>
+        <li><a href="#">Sub-link</a></li>
+      </ul>
+    </li>
+  </ul>
+  <script>
+    coreToggle('.my-popup', {popup: true})
+  </script>
+
+
+  <!-- <script src="core-dialog/core-dialog.min.js"></script>
+  <style>
+    .my-dialog h1 { margin-top: 0 }
+    .my-dialog {
+      position: absolute;
+      margin: auto;
+      top: 5%;
+      left: 0;
+      right: 0;
+      border: 0;
+      padding: 2em;
+      width: 100%;
+      max-width: 300px;
+      background: #fff;
+      transition: .2s;
+    }
+
+    .my-dialog + backdrop {
+      position: fixed;
+      background: rgba(0,0,0,.3);
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      transition: .2s;
+    }
+    .my-dialog:not([open]),
+    .my-dialog + backdrop[hidden] {
+      pointer-events: none;
+      visibility: hidden;
+      display: block;
+      opacity: 0;
+    }
+  </style>
+  <button data-core-dialog="my-dialog">Open dialog</button>
+  <dialog id="my-dialog" class="my-dialog" aria-label="første dialog tittel">
+    <h1>This is a title</h1>
+    <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
+    <button data-core-dialog="my-dialog-nested">Open an additional dialog</button>
+    <button type="button" autofocus style="visibility: hidden">Should not be focusable</button>
+    <button type="button" autofocus>Autofocus</button>
+    <button data-core-dialog="close">Close</button>
+  </dialog>
+  <dialog id="my-dialog-nested" class="my-dialog" aria-label="andre dialog tittel">
+    <h1>Another dialog, triggered inside the first dialog</h1>
+    <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero.</p>
+    <button data-core-dialog="close">Close</button>
+  </dialog>
+  <button data-core-dialog="strict-dialog">Open strict dialog</button>
+  <dialog id="strict-dialog" class="my-dialog" aria-label="første dialog tittel">
+    <h1>This is a title</h1>
+    <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
+    <button type="button">This button does nothing</button>
+    <button data-core-dialog="close">Close</button>
+  </dialog>
+  <div id="docs-react-dialog"></div>
+  <script>
+    coreDialog('#my-dialog', {open: false});
+    coreDialog('#my-dialog-nested', {open: false});
+    coreDialog('#strict-dialog', {open: false, strict: true});
+
+  </script> -->
+
+  <!-- <script src="core-datepicker/core-datepicker.min.js"></script>
+  <style>
+    .my-datepicker button[aria-disabled="true"] { opacity: .3 }
+    .my-datepicker button[aria-current="date"] { border: 1px dashed }
+    .my-datepicker button[data-core-datepicker-selected="true"] { border: 2px solid }
+    :disabled { filter: brightness(.7) sepia(1) hue-rotate(-50deg) }
+  </style>
+  <div class="my-datepicker" id="my-datepicker">
+    <input type="timestamp">
+    <fieldset>
+      <legend>Navigasjon</legend>
+      <button value="now">I dag</button>
+      <button value="now - 1 day">I går</button>
+      <button value="now + 1 day">I morgen</button>
+      <button value="- 1 week">Tilbake en uke</button>
+      <button value="+ 1 week">Fremover en uke</button>
+      <button value="now tuesday - 1 week">Tirsdag sist uke</button>
+      <button value="now + 10 years">Om ti år</button>
+      <button value="yy00-01-01 - 100 years">Forrige århundre</button>
+    </fieldset>
+    <label>
+      År
+      <select>
+        <option value="2016-m-d">2016</option>
+        <option value="2017-m-d">2017</option>
+        <option value="2018-m-d">2018</option>
+        <option value="2019-m-d">2019</option>
+      </select>
+    </label>
+    <label>Måned<select></select></label>
+    <fieldset>
+      <legend>Måned</legend>
+      <label><input type="radio" name="my-months" value="y-1-d">Jan</label>
+      <label><input type="radio" name="my-months" value="y-2-d">Feb</label>
+      <label><input type="radio" name="my-months" value="y-3-d">Mars</label>
+      <label><input type="radio" name="my-months" value="y-4-d">April</label>
+      <label><input type="radio" name="my-months" value="y-5-d">Mai</label>
+      <label><input type="radio" name="my-months" value="y-6-d">Juni</label>
+      <label><input type="radio" name="my-months" value="y-7-d">Juli</label>
+      <label><input type="radio" name="my-months" value="y-8-d">Aug</label>
+      <label><input type="radio" name="my-months" value="y-9-d">Sep</label>
+      <label><input type="radio" name="my-months" value="y-10-d">Okt</label>
+      <label><input type="radio" name="my-months" value="y-11-d">Nov</label>
+      <label><input type="radio" name="my-months" value="y-12-d">Des</label>
+    </fieldset>
+    <label><span>År</span><input type="year"></label>
+    <label><span>Måned</span><input type="month"></label>
+    <fieldset>
+      <legend>Klokke</legend>
+      <label>Time<input type="hour"></label>
+      <label>Minutt<input type="minute"></label>
+      <label>
+        <span>Time</span>
+        <select>
+          <option>-</option>
+          <option value="11:m">11</option>
+          <option value="12:m">12</option>
+          <option value="13:m">13</option>
+        </select>
+      </label>
+    </fieldset>
+    <table></table>
+  </div>
+  <button data-core-datepicker="my-datepicker" value="now">Nå</button>
+  <button data-core-datepicker="my-datepicker" value="+1 week">Neste uke</button>
+  <input type="text" id="my-datepicker-output">
+  <script>
+    // Update GUI
+    document.addEventListener('datepicker.render', function (event) {
+      if (event.target.id !== 'my-datepicker') return
+      event.detail.disable(function (date) { return date > Date.now() })
+    })
+
+    // Update output
+    document.addEventListener('datepicker.change', function (event) {
+      if (event.target.id !== 'my-datepicker') return
+      document.getElementById('my-datepicker-output').value = event.detail.nextDate.toLocaleString()
+    })
+
+    // Initialize
+    coreDatepicker('#my-datepicker')
+  </script> -->
+
+  <!-- <style>
+    .my-wrap { overflow: hidden; white-space: nowrap; height: 100%; border: 1px solid }
+    .my-wrap-js { height: 200px }
+    .my-scroll > * { box-sizing: border-box; display: inline-block; vertical-align: top; width: 30%; height: 90px; padding: 10px; border: 1px solid; margin: 10px; transition: 1s }
+  </style>
+  <button data-core-scroll="my-scroll-js" value="left" aria-label="Rull til venstre">&larr;</button>
+  <button data-core-scroll="my-scroll-js" value="right" aria-label="Rull til høyre">&rarr;</button>
+  <div class="my-wrap">
+    <div class="my-scroll" id="my-scroll-js">
+      <div>1</div><div>2</div><div>3</div><div>4</div><a href="#">5</a>
+      <div>6</div><div>7</div><div>8</div><div>9</div><div>10</div>
+      <div>11</div><div>12</div><div>13</div><div>14</div><div>15</div>
+    </div>
+  </div>
+  <script src="core-scroll/core-scroll.min.js"></script>
+  <script>
+    coreScroll('.my-scroll');
+  </script> -->
+</body>
+</html>

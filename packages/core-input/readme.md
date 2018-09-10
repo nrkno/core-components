@@ -19,6 +19,7 @@ import CoreInput from '@nrk/core-input/jsx' // ...or React/Preact compatible JSX
 <!--demo
 <script src="core-input/core-input.min.js"></script>
 <script src="core-input/core-input.jsx.js"></script>
+<style>li button:focus {outline: 3px solid rgb(94, 158, 215)}</style>
 demo-->
 
 ## Demo

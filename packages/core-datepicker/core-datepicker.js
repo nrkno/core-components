@@ -49,7 +49,7 @@ addEvent(UUID, 'keydown', (event) => {
     if (!table && el.nodeName === 'TABLE') table = el // Store table while traversing DOM parents
     if (table && el.hasAttribute(UUID)) { // Only listen to keyCodes inside table inside datepicker
       datepicker(el, KEY_CODES[event.keyCode])
-      table.querySelector('[aria-pressed="true"]').focus()
+      table.querySelector(`[${ATTR}-selected="true"]`).focus()
       event.preventDefault()
       break
     }
@@ -110,9 +110,9 @@ function table (table, date, disable) {
     button.value = `${day.getFullYear()}-${day.getMonth() + 1}-${dayInMonth}`
     button.disabled = disable(day)
     button.setAttribute('tabindex', isSelected - 1)
-    button.setAttribute('aria-pressed', isSelected)
-    button.setAttribute('aria-current', isToday && 'date')
+    button.setAttribute(`${ATTR}-selected`, isSelected)
     button.setAttribute('aria-disabled', month !== day.getMonth())
+    button[isToday ? 'setAttribute' : 'removeAttribute']('aria-current', 'date')
     day.setDate(dayInMonth + 1)
   })
 }
