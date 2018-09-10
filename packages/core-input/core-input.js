@@ -62,21 +62,21 @@ addEvent(UUID, 'keydown', (event) => {
 
 function onKey (input, event) {
   const list = input.nextElementSibling
-  const focus = queryAll(`${ITEM}:not([hidden])`, list)
-  const index = focus.indexOf(document.activeElement)
+  const focusable = [input].concat(queryAll(`${ITEM}:not([hidden])`, list))
+  const index = focusable.indexOf(document.activeElement)
   let item = false
 
-  if (event.keyCode === KEYS.DOWN) item = focus[index + 1] || focus[0]
-  else if (event.keyCode === KEYS.UP) item = focus[index - 1] || focus.pop()
+  if (event.keyCode === KEYS.DOWN) item = focusable[index + 1] || focusable[0]
+  else if (event.keyCode === KEYS.UP) item = focusable[index - 1] || focusable.pop()
   else if (list.contains(event.target)) { // Aditional shortcuts if focus is inside list
-    if (event.keyCode === KEYS.END || event.keyCode === KEYS.PAGEDOWN) item = focus.pop()
-    else if (event.keyCode === KEYS.HOME || event.keyCode === KEYS.PAGEUP) item = focus[0]
+    if (event.keyCode === KEYS.END || event.keyCode === KEYS.PAGEDOWN) item = focusable.pop()
+    else if (event.keyCode === KEYS.HOME || event.keyCode === KEYS.PAGEUP) item = focusable[1]
     else if (event.keyCode !== KEYS.ENTER) input.focus()
   }
 
-  if (!list.hasAttribute('hidden') && event.keyCode === KEYS.ESC) event.preventDefault()
+  // Prevent leaving maximized safari and event.preventDefault even if undefined item (empty list)
+  if (event.keyCode === KEYS.ESC || item !== false) event.preventDefault()
   setupExpand(input, event.keyCode !== KEYS.ESC)
-  if (item !== false) event.preventDefault() // event.preventDefault even if empty list
   if (item) item.focus()
 }
 

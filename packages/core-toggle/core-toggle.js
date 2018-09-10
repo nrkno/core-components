@@ -4,7 +4,7 @@ import {IS_ANDROID, addEvent, dispatchEvent, getUUID, queryAll} from '../utils'
 const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid attribute characters
 const ARIA = IS_ANDROID ? 'data' : 'aria' // Andriod has a bug and reads only label instead of content
 const OPEN = 'aria-expanded'
-const POPS = 'aria-haspopup'
+const POPS = 'data-haspopup' // aria-haspopup triggers forms mode in JAWS, therefore data-
 const KEYS = {ESC: 27}
 
 export default function toggle (buttons, open) {

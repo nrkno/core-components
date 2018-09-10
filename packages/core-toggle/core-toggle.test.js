@@ -17,22 +17,22 @@ function expectOpenAttributes (button, container) {
 }
 
 function expectOpened (button, container) {
-  expect(button.getAttribute('aria-haspopup')).toEqual('false')
+  expect(button.getAttribute('data-haspopup')).toEqual('false')
   expectOpenAttributes(button, container)
 }
 
 function expectClosed (button, container) {
-  expect(button.getAttribute('aria-haspopup')).toEqual('false')
+  expect(button.getAttribute('data-haspopup')).toEqual('false')
   expectClosedAttributes(button, container)
 }
 
 function expectPopupOpened (button, container) {
-  expect(button.getAttribute('aria-haspopup')).toEqual('true')
+  expect(button.getAttribute('data-haspopup')).toEqual('true')
   expectOpenAttributes(button, container)
 }
 
 function expectPopupClosed (button, container) {
-  expect(button.getAttribute('aria-haspopup')).toEqual('true')
+  expect(button.getAttribute('data-haspopup')).toEqual('true')
   expectClosedAttributes(button, container)
 }
 
