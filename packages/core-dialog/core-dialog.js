@@ -52,7 +52,7 @@ addEvent(UUID, 'click', (event) => {
 addEvent(UUID, 'transitionend', ({target}) => {
   const isInside = target.contains(document.activeElement)
   if (!isInside && target.hasAttribute(UUID) && target.hasAttribute('open')) setFocus(target)
-  else if (OPENER) setTimeout(() => OPENER = OPENER.focus(), 16) // Move focus after paint
+  else if (OPENER) setTimeout(() => (OPENER = OPENER.focus()), 16) // Move focus after paint
 })
 
 addEvent(UUID, 'keydown', (event) => {

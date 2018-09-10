@@ -22,7 +22,7 @@ export default class Toggle extends React.Component {
         if (adjacent === 0) {
           return React.cloneElement(child, {
             'aria-expanded': String(Boolean(this.props.open)),
-            'aria-haspopup': String(Boolean(this.props.popup))
+            'data-haspopup': String(Boolean(this.props.popup))
           })
         }
         if (adjacent === 1) return React.cloneElement(child, {'hidden': !this.props.open})

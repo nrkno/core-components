@@ -198,7 +198,7 @@ describe('core-datepicker', () => {
       // Set date to January so we can always assume 31 days in the month
       nowJan.setMonth(0)
 
-      coreDatepicker(datepickerEl)
+      coreDatepicker(datepickerEl, nowJan)
 
       expect(tableEl.querySelectorAll('tbody td button[aria-disabled="false"]').length).toEqual(31)
     })
@@ -214,8 +214,8 @@ describe('core-datepicker', () => {
       const jan12Btn = tableEl.querySelector('tbody tr:nth-child(2) td:nth-child(5) button')
 
       jan1Btn.click()
-      expect(jan1Btn.getAttribute('aria-pressed')).toEqual('true')
-      expect(jan12Btn.getAttribute('aria-pressed')).toEqual('false')
+      expect(jan1Btn.getAttribute('data-core-datepicker-selected')).toEqual('true')
+      expect(jan12Btn.getAttribute('data-core-datepicker-selected')).toEqual('false')
     })
 
     it('should disable the dates specified by disable method', () => {
