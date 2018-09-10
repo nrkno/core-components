@@ -1,10 +1,10 @@
-import {name, version} from './package.json'
-import {IS_BROWSER, addEvent, dispatchEvent, requestAnimFrame, throttle, queryAll} from '../utils'
+import { name, version } from './package.json'
+import { IS_BROWSER, addEvent, dispatchEvent, requestAnimFrame, throttle, queryAll } from '../utils'
 
 const DRAG = {}
 const ATTR = 'data-core-scroll'
 const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid attribute characters
-const MOVE = {up: {y: -1, prop: 'top'}, down: {y: 1, prop: 'bottom'}, left: {x: -1}, right: {x: 1}}
+const MOVE = { up: { y: -1, prop: 'top' }, down: { y: 1, prop: 'bottom' }, left: { x: -1 }, right: { x: 1 } }
 const SIGNIFICANT_DRAG_THRESHOLD = 10
 const FRICTION = 0.8
 const VELOCITY = 20
@@ -13,7 +13,7 @@ const VELOCITY = 20
 const requestJump = IS_BROWSER && window.matchMedia && window.matchMedia('(prefers-reduced-motion)').matches
 
 export default function scroll (elements, move = '') {
-  const options = typeof move === 'object' ? move : {move}
+  const options = typeof move === 'object' ? move : { move }
   const isChange = 'x' in options || 'y' in options || options.move
 
   return queryAll(elements).map((target) => {
@@ -30,7 +30,7 @@ export default function scroll (elements, move = '') {
 addEvent(UUID, 'mousedown', onMousedown)
 addEvent(UUID, 'resize', throttle(onChange, 500)) // Update button states on resize
 addEvent(UUID, 'scroll', throttle(onChange, 500), true) // useCapture to catch event without bubbling
-addEvent(UUID, 'wheel', () => (DRAG.animate = false), {passive: true}) // Stop animation on wheel scroll
+addEvent(UUID, 'wheel', () => (DRAG.animate = false), { passive: true }) // Stop animation on wheel scroll
 addEvent(UUID, 'load', onChange) // Update state when we are sure all CSS is loaded
 addEvent(UUID, 'click', onClick)
 
@@ -122,7 +122,7 @@ function onChange (event) {
   const target = event.target || event
   if (event.type === 'resize' || event.type === 'load') return queryAll(`[${UUID}]`).forEach(onChange) // Update all
   if (target.hasAttribute && target.hasAttribute(UUID)) { // target can be document
-    const detail = {left: target.scrollLeft, up: target.scrollTop}
+    const detail = { left: target.scrollLeft, up: target.scrollTop }
     detail.right = target.scrollWidth - target.clientWidth - detail.left
     detail.down = target.scrollHeight - target.clientHeight - detail.up
     const cursor = (detail.left || detail.right || detail.up || detail.down) ? 'grab' : ''
@@ -146,13 +146,13 @@ function onClick (event) {
   if (event.defaultPrevented) return
   for (let el = event.target; el; el = el.parentElement) {
     const target = document.getElementById(el.getAttribute(ATTR))
-    if (target && dispatchEvent(target, 'scroll.click', {move: el.value})) {
+    if (target && dispatchEvent(target, 'scroll.click', { move: el.value })) {
       return scroll(target, el.value)
     }
   }
 }
 
-function scrollTo (target, {x, y}) {
+function scrollTo (target, { x, y }) {
   // Giving the animation an ID to workaround IE timeout issues
   const friction = Math.min(0.99, target.getAttribute(UUID)) || FRICTION // Avoid friction 1 (infinite)
   const uuid = DRAG.animate = Math.floor(Date.now() * Math.random()).toString(16)
@@ -171,8 +171,8 @@ function scrollTo (target, {x, y}) {
   move()
 }
 
-function parsePoint (target, {x, y, move}) {
-  const point = {x, y, move: MOVE[move]}
+function parsePoint (target, { x, y, move }) {
+  const point = { x, y, move: MOVE[move] }
   // {
   //   to: 'left|top|right|bottom|Element'
   //   x: 'left|top|right|bottom|px'

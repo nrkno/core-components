@@ -4,7 +4,7 @@ import dialog from './core-dialog'
 import { exclude } from '../utils'
 
 export default class Dialog extends React.Component {
-  static get defaultProps () { return {strict: null, onToggle: null} }
+  static get defaultProps () { return { strict: null, onToggle: null } }
   constructor (props) {
     super(props)
     this.onToggle = this.onToggle.bind(this)
@@ -17,7 +17,7 @@ export default class Dialog extends React.Component {
   componentWillUnmount () { this.el.removeEventListener('dialog.toggle', this.onToggle) }
   onToggle (event) { this.props.onToggle && this.props.onToggle(event) }
   render () {
-    const props = exclude(this.props, Dialog.defaultProps, {ref: el => (this.el = el)})
+    const props = exclude(this.props, Dialog.defaultProps, { ref: el => (this.el = el) })
     return React.createElement('dialog', props, this.props.children)
   }
 }

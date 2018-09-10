@@ -2,7 +2,7 @@ export const IS_BROWSER = typeof window !== 'undefined'
 export const IS_ANDROID = IS_BROWSER && /(android)/i.test(navigator.userAgent) // Bad, but needed
 export const IS_IOS = IS_BROWSER && /iPad|iPhone|iPod/.test(String(navigator.platform))
 export const HAS_EVENT_OPTIONS = ((has = false) => {
-  try { window.addEventListener('test', null, {get passive () { has = true }}) } catch (e) {}
+  try { window.addEventListener('test', null, { get passive () { has = true } }) } catch (e) {}
   return has
 })()
 
@@ -25,7 +25,7 @@ export function addEvent (uuid, type, handler, options = false) {
 * @param {String} str A string with potential html tokens
 * @return {String} Escaped HTML string according to OWASP recommendation
 */
-const ESCAPE_MAP = {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', '/': '&#x2F;', '\'': '&#x27;'}
+const ESCAPE_MAP = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', '/': '&#x2F;', '\'': '&#x27;' }
 export function escapeHTML (str) {
   return String(str || '').replace(/[&<>"'/]/g, (char) => ESCAPE_MAP[char])
 }
@@ -59,7 +59,7 @@ export function dispatchEvent (element, name, detail = {}) {
   else element[ignore] = true // Add name to dispatching ignore
 
   if (typeof window.CustomEvent === 'function') {
-    event = new window.CustomEvent(name, {bubbles: true, cancelable: true, detail})
+    event = new window.CustomEvent(name, { bubbles: true, cancelable: true, detail })
   } else {
     event = document.createEvent('CustomEvent')
     event.initCustomEvent(name, true, true, detail)

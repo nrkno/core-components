@@ -1,13 +1,13 @@
-import {name, version} from './package.json'
-import {IS_IOS, addEvent, escapeHTML, dispatchEvent, requestAnimFrame, queryAll} from '../utils'
+import { name, version } from './package.json'
+import { IS_IOS, addEvent, escapeHTML, dispatchEvent, requestAnimFrame, queryAll } from '../utils'
 
 const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid attribute characters
-const KEYS = {ENTER: 13, ESC: 27, PAGEUP: 33, PAGEDOWN: 34, END: 35, HOME: 36, UP: 38, DOWN: 40}
+const KEYS = { ENTER: 13, ESC: 27, PAGEUP: 33, PAGEDOWN: 34, END: 35, HOME: 36, UP: 38, DOWN: 40 }
 const ITEM = '[tabindex="-1"]'
 const AJAX_DEBOUNCE = 500
 
 export default function input (elements, content) {
-  const options = typeof content === 'object' ? content : {content}
+  const options = typeof content === 'object' ? content : { content }
   const repaint = typeof options.content === 'string'
 
   return queryAll(elements).map((input) => {
@@ -43,13 +43,13 @@ function onClickOrFocus (event) {
     const open = input === event.target || list.contains(event.target)
     const item = event.type === 'click' && open && queryAll(ITEM, list).filter((item) => item.contains(event.target))[0]
 
-    if (item) onSelect(input, {relatedTarget: list, currentTarget: item, value: item.value || item.textContent.trim()})
+    if (item) onSelect(input, { relatedTarget: list, currentTarget: item, value: item.value || item.textContent.trim() })
     else setupExpand(input, open)
   })
 }
 
-addEvent(UUID, 'input', ({target: input}) => {
-  if (input.hasAttribute(UUID)) onFilter(input, {relatedTarget: input.nextElementSibling})
+addEvent(UUID, 'input', ({ target: input }) => {
+  if (input.hasAttribute(UUID)) onFilter(input, { relatedTarget: input.nextElementSibling })
 })
 
 addEvent(UUID, 'keydown', (event) => {

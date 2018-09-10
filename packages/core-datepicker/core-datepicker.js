@@ -1,11 +1,11 @@
-import {name, version} from './package.json'
-import {addEvent, escapeHTML, dispatchEvent, queryAll} from '../utils'
+import { name, version } from './package.json'
+import { addEvent, escapeHTML, dispatchEvent, queryAll } from '../utils'
 import parse from '@nrk/simple-date-parse'
 
 const ATTR = 'data-core-datepicker'
 const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid attribute characters
-const KEY_CODES = {33: '-1month', 34: '+1month', 35: 'y-m-99', 36: 'y-m-1', 37: '-1day', 38: '-1week', 39: '+1day', 40: '+1week'}
-const MASK = {year: '*-m-d', month: 'y-*-d', day: 'y-m-*', hour: '*:m', minute: 'h:*', second: 'h:m:*', timestamp: '*'}
+const KEY_CODES = { 33: '-1month', 34: '+1month', 35: 'y-m-99', 36: 'y-m-1', 37: '-1day', 38: '-1week', 39: '+1day', 40: '+1week' }
+const MASK = { year: '*-m-d', month: 'y-*-d', day: 'y-m-*', hour: '*:m', minute: 'h:*', second: 'h:m:*', timestamp: '*' }
 const MS_IN_MINUTES = 60000
 
 export default function datepicker (elements, date) { // date can be String, Timestamp or Date
@@ -14,13 +14,13 @@ export default function datepicker (elements, date) { // date can be String, Tim
     let nextDate = parse(typeof date === 'undefined' ? prevDate : date, prevDate)
     let disable = () => false
 
-    dispatchEvent(element, 'datepicker.render', {nextDate, prevDate, disable: (fn) => (disable = fn)})
+    dispatchEvent(element, 'datepicker.render', { nextDate, prevDate, disable: (fn) => (disable = fn) })
     if (disable(nextDate)) nextDate = prevDate // Jump back to prev date if next is disabled
 
-    const isUpdate = prevDate.getTime() === nextDate.getTime() || dispatchEvent(element, 'datepicker.change', {prevDate, nextDate})
+    const isUpdate = prevDate.getTime() === nextDate.getTime() || dispatchEvent(element, 'datepicker.change', { prevDate, nextDate })
     const next = isUpdate ? nextDate : parse(element.getAttribute(UUID) || Date.now()) // dispatchEvent can change attributes to parse prevDate again
     const json = new Date(next.getTime() - next.getTimezoneOffset() * MS_IN_MINUTES).toJSON().match(/\d+/g)
-    const unit = {year: next.getFullYear(), month: json[1], day: json[2], hour: json[3], minute: json[4], second: json[5], timestamp: next.getTime()}
+    const unit = { year: next.getFullYear(), month: json[1], day: json[2], hour: json[3], minute: json[4], second: json[5], timestamp: next.getTime() }
 
     element.setAttribute(UUID, unit.timestamp)
     queryAll('button').forEach((el) => button(el, next, disable, element))
@@ -38,9 +38,9 @@ datepicker.months = ['januar', 'februar', 'mars', 'april', 'mai', 'juni', 'juli'
 datepicker.days = ['man', 'tirs', 'ons', 'tors', 'fre', 'lør', 'søn']
 
 addEvent(UUID, 'change', onChange)
-addEvent(UUID, 'click', ({target}) => {
+addEvent(UUID, 'click', ({ target }) => {
   for (let el = target; el; el = el.parentElement) {
-    if (el.nodeName === 'BUTTON') return onChange({target: el})
+    if (el.nodeName === 'BUTTON') return onChange({ target: el })
   }
 })
 addEvent(UUID, 'keydown', (event) => {
@@ -56,7 +56,7 @@ addEvent(UUID, 'keydown', (event) => {
   }
 })
 
-function onChange ({target}) {
+function onChange ({ target }) {
   for (let el = target, table; el; el = el.parentElement) {
     const elem = document.getElementById(el.getAttribute(ATTR)) || el
     const mask = elem.hasAttribute(UUID) && (MASK[target.getAttribute(`${UUID}-type`)] || '*')

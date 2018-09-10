@@ -1,10 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import coreInput from './core-input'
-import {exclude} from '../utils'
+import { exclude } from '../utils'
 
 export default class Input extends React.Component {
-  static get defaultProps () { return {open: null, ajax: null, onAjax: null, onFilter: null, onSelect: null} }
+  static get defaultProps () { return { open: null, ajax: null, onAjax: null, onFilter: null, onSelect: null } }
   constructor (props) {
     super(props)
     this.onFilter = this.onFilter.bind(this)
@@ -27,20 +27,20 @@ export default class Input extends React.Component {
   onSelect (event) { this.props.onSelect && this.props.onSelect(event) }
   onAjax (event) { this.props.onAjax && this.props.onAjax(event) }
   render () {
-    return React.createElement('div', exclude(this.props, Input.defaultProps, {ref: el => (this.el = el)}),
+    return React.createElement('div', exclude(this.props, Input.defaultProps, { ref: el => (this.el = el) }),
       React.Children.map(this.props.children, (child, adjacent) => {
-        if (adjacent === 0) return React.cloneElement(child, {'aria-expanded': String(Boolean(this.props.open))})
-        if (adjacent === 1) return React.cloneElement(child, {'hidden': !this.props.open})
+        if (adjacent === 0) return React.cloneElement(child, { 'aria-expanded': String(Boolean(this.props.open)) })
+        if (adjacent === 1) return React.cloneElement(child, { 'hidden': !this.props.open })
         return child
       })
     )
   }
 }
 
-Input.Highlight = ({text, query = ''}) =>
-  React.createElement('span', {dangerouslySetInnerHTML: {
+Input.Highlight = ({ text, query = '' }) =>
+  React.createElement('span', { dangerouslySetInnerHTML: {
     __html: coreInput.highlight(text, query) // We know coreInput escapes, so this is safe
-  }})
+  } })
 
 Input.propTypes = {
   onFilter: PropTypes.func,

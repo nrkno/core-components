@@ -164,10 +164,10 @@ describe('core-tabs', () => {
     const panel = document.querySelector('#panel-1')
 
     coreTabs(tabs, 0)
-    expectActivePanel(panel, {labelledby: tabs.children[0].id})
+    expectActivePanel(panel, { labelledby: tabs.children[0].id })
 
     coreTabs(tabs, 1)
-    expectActivePanel(panel, {labelledby: tabs.children[1].id})
+    expectActivePanel(panel, { labelledby: tabs.children[1].id })
   })
   it('should trigger tabs.toggle', () => {
     document.body.innerHTML = standardHTML

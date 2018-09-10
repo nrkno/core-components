@@ -1,7 +1,7 @@
 const React = require('react')
 const ReactDOM = require('react-dom')
 const CoreInput = require('./jsx')
-const {expectOpenedState, expectClosedState} = require('./core-input.test.js')
+const { expectOpenedState, expectClosedState } = require('./core-input.test.js')
 
 const mount = (props = {}, keepInstance) => {
   if (!keepInstance) {
@@ -58,7 +58,7 @@ describe('core-input/jsx', () => {
 
   it('should set input value to that of clicked suggestion', () => {
     const callback = jest.fn()
-    mount({onSelect: callback})
+    mount({ onSelect: callback })
 
     const input = document.querySelector('.my-input')
     const suggestions = document.querySelector('.my-input + ul')

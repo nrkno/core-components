@@ -52,7 +52,7 @@ describe('core-tabs/jsx', () => {
   })
 
   it('should use prop to select on initial render', () => {
-    mount({open: 1})
+    mount({ open: 1 })
 
     expectInactiveTab(document.getElementById('tab-1'))
     expectInactivePanel(document.getElementById('panel-1'))
@@ -64,7 +64,7 @@ describe('core-tabs/jsx', () => {
     mount()
 
     // tab1 is selected by default, but we change it after initial render.
-    mount({open: 1}, true)
+    mount({ open: 1 }, true)
 
     expectInactiveTab(document.getElementById('tab-1'))
     expectInactivePanel(document.getElementById('panel-1'))

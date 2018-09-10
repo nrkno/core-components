@@ -1,9 +1,9 @@
-import {name, version} from './package.json'
-import {IS_ANDROID, addEvent, dispatchEvent, getUUID, queryAll} from '../utils'
+import { name, version } from './package.json'
+import { IS_ANDROID, addEvent, dispatchEvent, getUUID, queryAll } from '../utils'
 
 const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid attribute characters
 const ARIA = IS_ANDROID ? 'data' : 'aria' // Andriod has a bug and reads only label instead of content
-const KEYS = {SPACE: 32, END: 35, HOME: 36, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40}
+const KEYS = { SPACE: 32, END: 35, HOME: 36, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40 }
 
 /**
  * Initialize core-tabs
@@ -53,7 +53,7 @@ addEvent(UUID, 'keydown', (event) => {
 })
 
 // Use capture to support older versions of firefox
-addEvent(UUID, 'focus', ({target}) => {
+addEvent(UUID, 'focus', ({ target }) => {
   queryAll('[role="tab"]').forEach((el) => {
     const tablist = el.parentElement
     const selected = el.getAttribute('aria-selected') === 'true'
@@ -79,7 +79,7 @@ function setOpen (tablist, open) { // open can be Number, String or Element
   const panels = tabs.map((tab, i) => document.getElementById(tab.getAttribute('aria-controls')) || next[i] || next[0])
   const isOpen = getOpenTabIndex(tabs)
   const willOpen = tabs.reduce((acc, tab, i) => (i === open || tab === open || tab.id === open) ? i : acc, isOpen)
-  const isUpdate = isOpen === willOpen || dispatchEvent(tablist, 'tabs.toggle', {isOpen, willOpen, tabs, panels})
+  const isUpdate = isOpen === willOpen || dispatchEvent(tablist, 'tabs.toggle', { isOpen, willOpen, tabs, panels })
   const nextOpen = isUpdate ? willOpen : getOpenTabIndex(tabs) // dispatchEvent can change attributes, so check getOpenPanel again
 
   tabs.forEach((tab, index) => {

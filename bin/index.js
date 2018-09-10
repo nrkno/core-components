@@ -1,10 +1,10 @@
-const {execSync} = require('child_process')
+const { execSync } = require('child_process')
 const path = require('path')
 const fs = require('fs')
 const args = getProcessArgs()
 const pkgs = getPackagePaths()
 
-module.exports = {args, pkgs, getProcessArgs, getPackageName, getPackagePaths}
+module.exports = { args, pkgs, getProcessArgs, getPackageName, getPackagePaths }
 
 // Utilities -------------------------------------------------------------------
 function getProcessArgs () {
@@ -31,7 +31,7 @@ function getPackagePaths () {
 if (args.install) {
   pkgs.forEach((path) => {
     console.log(`Installing ${getPackageName(path)}`)
-    execSync('npm install', {cwd: path, stdio: 'inherit'})
+    execSync('npm install', { cwd: path, stdio: 'inherit' })
     console.log('') // Insert new line
   })
 }
@@ -45,15 +45,15 @@ if (args.publish) {
   // Update packages
   update.forEach((path) => {
     console.log(`Publishing ${getPackageName(path)}`)
-    execSync(`npm version ${args.publish} -m 'Release ${args.publish} %s'`, {cwd: path, stdio: 'inherit'})
-    execSync(`git push && git push --tags && npm publish --access public`, {cwd: path, stdio: 'inherit'})
+    execSync(`npm version ${args.publish} -m 'Release ${args.publish} %s'`, { cwd: path, stdio: 'inherit' })
+    execSync(`git push && git push --tags && npm publish --access public`, { cwd: path, stdio: 'inherit' })
     console.log('') // Insert new line
   })
 
   // Update main package
   console.log(`Updating version for core-components`)
-  execSync(`git commit -am "${action} ${names}" && git push`, {cwd: process.cwd(), stdio: 'inherit'})
-  execSync(`npm version ${args.publish}`, {cwd: process.cwd(), stdio: 'inherit'})
-  execSync(`git push && git push --tags`, {cwd: process.cwd(), stdio: 'inherit'})
+  execSync(`git commit -am "${action} ${names}" && git push`, { cwd: process.cwd(), stdio: 'inherit' })
+  execSync(`npm version ${args.publish}`, { cwd: process.cwd(), stdio: 'inherit' })
+  execSync(`git push && git push --tags`, { cwd: process.cwd(), stdio: 'inherit' })
   console.log('') // Insert new line
 }

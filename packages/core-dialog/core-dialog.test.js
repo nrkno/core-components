@@ -51,7 +51,7 @@ describe('core-dialog', () => {
       const dialog = document.querySelector('#dialog-0')
 
       simplePolyfillInsertAdjacentElement()
-      coreDialog(dialog, {open: true})
+      coreDialog(dialog, { open: true })
       expect(dialog.hasAttribute('open')).toBeTruthy()
     })
   })
@@ -73,7 +73,7 @@ describe('core-dialog', () => {
       simplePolyfillInsertAdjacentElement()
       coreDialog(dialog, true)
       expect(dialog.hasAttribute('open')).toBeTruthy()
-      coreDialog(dialog, {open: false})
+      coreDialog(dialog, { open: false })
       expect(dialog.hasAttribute('open')).toBeFalsy()
     })
   })

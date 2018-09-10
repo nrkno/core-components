@@ -1,10 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import coreScroll from './core-scroll'
-import {exclude, requestAnimFrame} from '../utils'
+import { exclude, requestAnimFrame } from '../utils'
 
 export default class Scroll extends React.Component {
-  static get defaultProps () { return {onChange: null, friction: null} }
+  static get defaultProps () { return { onChange: null, friction: null } }
   constructor (props) {
     super(props)
     this.onScroll = this.onScroll.bind(this)
@@ -16,14 +16,14 @@ export default class Scroll extends React.Component {
   }
   componentDidMount () {
     this.el.addEventListener('scroll.change', this.onScroll)
-    requestAnimFrame(() => coreScroll(this.el, {friction: this.props.friction})) // Make sure DOM has rendered
+    requestAnimFrame(() => coreScroll(this.el, { friction: this.props.friction })) // Make sure DOM has rendered
   }
   componentDidUpdate (prevProps, prevState) {
     if (this.skipUpdate) this.skipUpdate = false // Update is from scroll.change, so prevent infinite loop
     else coreScroll(this.el)
   }
   componentWillUnmount () { this.el.removeEventListener('scroll.change', this.onScroll) }
-  onScroll ({detail}) {
+  onScroll ({ detail }) {
     if (this.props.onChange) {
       this.skipUpdate = true
       this.props.onChange({
@@ -35,7 +35,7 @@ export default class Scroll extends React.Component {
     }
   }
   render () {
-    const props = exclude(this.props, Scroll.defaultProps, {ref: el => (this.el = el)})
+    const props = exclude(this.props, Scroll.defaultProps, { ref: el => (this.el = el) })
     return React.createElement('div', props, this.props.children)
   }
 }

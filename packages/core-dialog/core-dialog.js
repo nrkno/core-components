@@ -1,10 +1,10 @@
-import {name, version} from './package.json'
-import {queryAll, addEvent, dispatchEvent} from '../utils'
+import { name, version } from './package.json'
+import { queryAll, addEvent, dispatchEvent } from '../utils'
 
 let OPENER
 const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid attribute characters
 const ATTR = 'data-core-dialog'
-const KEYS = {ESC: 27, TAB: 9}
+const KEYS = { ESC: 27, TAB: 9 }
 const OPENER_ATTR = `${UUID}-opener`
 const FOCUSABLE_ELEMENTS = `
   [tabindex]:not([disabled]),
@@ -15,7 +15,7 @@ const FOCUSABLE_ELEMENTS = `
   textarea:not([disabled])`
 
 export default function dialog (dialogs, open) {
-  const options = typeof open === 'object' ? open : {open}
+  const options = typeof open === 'object' ? open : { open }
 
   return queryAll(dialogs).map((dialog) => {
     const hasBackdrop = (dialog.nextElementSibling || {}).nodeName === 'BACKDROP'
@@ -44,12 +44,12 @@ addEvent(UUID, 'click', (event) => {
     isClose = isClose || isBackdrop || action === 'close'
 
     if (isClose) el.hasAttribute(UUID) && setOpen(el, false)
-    else if (action) dialog(document.getElementById(action), {open: true, opener: el}) // Target dialog
+    else if (action) dialog(document.getElementById(action), { open: true, opener: el }) // Target dialog
   }
 })
 
 // Ensure focus is set after animations
-addEvent(UUID, 'transitionend', ({target}) => {
+addEvent(UUID, 'transitionend', ({ target }) => {
   const isInside = target.contains(document.activeElement)
   if (!isInside && target.hasAttribute(UUID) && target.hasAttribute('open')) setFocus(target)
   else if (OPENER) setTimeout(() => (OPENER = OPENER.focus()), 16) // Move focus after paint
@@ -89,7 +89,7 @@ function setOpen (dialog, open, opener = document.activeElement) {
   const isOpen = dialog.hasAttribute('open')
   const willOpen = typeof open === 'boolean' ? open : (open === 'toggle' ? !isOpen : isOpen)
   const isNative = typeof window.HTMLDialogElement !== 'undefined' && typeof dialog.show === 'function'
-  const isUpdate = isOpen === willOpen || dispatchEvent(dialog, 'dialog.toggle', {isOpen, willOpen})
+  const isUpdate = isOpen === willOpen || dispatchEvent(dialog, 'dialog.toggle', { isOpen, willOpen })
   const nextOpen = isUpdate ? willOpen : dialog.hasAttribute('open') // dispatchEvent can change attributes, so check open again
   const backdrop = dialog.nextElementSibling
 

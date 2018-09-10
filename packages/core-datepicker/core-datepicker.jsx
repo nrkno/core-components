@@ -1,10 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import coreDatepicker from './core-datepicker'
-import {exclude} from '../utils'
+import { exclude } from '../utils'
 
 export default class Datepicker extends React.Component {
-  static get defaultProps () { return {date: null, disable: null, onRender: null, onChange: null, onClickDay: null} }
+  static get defaultProps () { return { date: null, disable: null, onRender: null, onChange: null, onClickDay: null } }
   constructor (props) {
     super(props)
     this.onClickDay = this.onClickDay.bind(this)
@@ -27,7 +27,7 @@ export default class Datepicker extends React.Component {
   onChange (event) { this.props.onChange && this.props.onChange(event) }
   onRender (event) { this.props.disable && event.detail.disable(this.props.disable) }
   render () {
-    const props = exclude(this.props, Datepicker.defaultProps, {ref: el => (this.el = el)})
+    const props = exclude(this.props, Datepicker.defaultProps, { ref: el => (this.el = el) })
     return React.createElement('div', props, this.props.children)
   }
 }
