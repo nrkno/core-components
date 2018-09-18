@@ -12,4 +12,3 @@ yarn-error*
 **/*.cjs.js
 **/*.js.map
 **/jsx.js
-docs/
