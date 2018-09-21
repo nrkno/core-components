@@ -193,14 +193,10 @@ describe('core-datepicker', () => {
     it('should display the current month with all dates', () => {
       document.body.innerHTML = standardHTML
       const datepickerEl = document.querySelector('.my-datepicker')
-      const tableEl = datepickerEl.querySelector('table')
-      const nowJan = new Date()
-      // Set date to January so we can always assume 31 days in the month
-      nowJan.setMonth(0)
+      const nowJan = new Date('2018-01-01') // So we know the months has 31 days and starts on monday
 
       coreDatepicker(datepickerEl, nowJan)
-
-      expect(tableEl.querySelectorAll('tbody td button[aria-disabled="false"]').length).toEqual(31)
+      expect(datepickerEl.querySelectorAll('table button')[30].textContent).toEqual('31')
     })
     it('should change date if a day is clicked', () => {
       document.body.innerHTML = standardHTML

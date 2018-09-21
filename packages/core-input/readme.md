@@ -64,7 +64,7 @@ Typing toggles the [hidden attribute](https://developer.mozilla.org/en/docs/Web/
 
 ### HTML / JavaScript
 
-*Important: Always use `coreInput.escapeHTML(String)` to safely render data from API or user.*
+<small><b>Important:</b> Always use `coreInput.escapeHTML(String)` to safely render data from API or user.</small>
 
 ```html
 <input type="text" class="my-input">                  <!-- Input element must be a <input> -->
@@ -165,6 +165,12 @@ All styling in documentation is example only. Both the `<button>` and content el
 
 ---
 
+## Ajax
+
+When using `@nrk/core-input` with the `ajax: https://search.com?q={{value}}` functionality, make sure to implement both a `Searching...` status (while fetching data from the server), and a `No hits` status (if server responds with no results). These status indicators are highly recommended, but not provided by default as the context of use will affect the optimal textual formulation. [See example implementation →](#demo-ajax)
+
+---
+
 ## Demo: Ajax
 
 Ajax requests can be stopped by calling `event.preventDefault()` on `'input.filter'`. Remember to always escape html and debounce requests when fetching data from external sources. The http request sent by `@nrk/core-input` will have header `X-Requested-With: XMLHttpRequest` for easier [server side detection and CSRF prevention](https://www.owasp.org/index.php/Cross-Site_Request_Forgery_%28CSRF%29_Prevention_Cheat_Sheet#Protecting_REST_Services:_Use_of_Custom_Request_Headers).
@@ -239,6 +245,8 @@ Ajax requests can be stopped by calling `event.preventDefault()` on `'input.filt
 </script>
 ```
 
+---
+
 ## Demo: Lazy
 Hybrid solution; lazy load items, but let `core-input` still handle filtering:
 ```html
@@ -297,6 +305,8 @@ Hybrid solution; lazy load items, but let `core-input` still handle filtering:
   ReactDOM.render(<LazyInput />, document.getElementById('jsx-input-lazy'))
 </script>
 ```
+
+---
 
 ## Demo: Dynamic
 Synchronous operation; dynamically populating items based input value:

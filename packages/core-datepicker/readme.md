@@ -99,8 +99,6 @@ demo-->
 <button data-core-datepicker="my-datepicker" value="+1 week">Neste uke</button>
 <input type="text" id="my-datepicker-output">
 <script>
-  // coreDate.days = ['m', 't', 'o', 't', 'f', 'l', 's'] // Change name of days
-
   // Update GUI
   document.addEventListener('datepicker.render', function (event) {
     if (event.target.id !== 'my-datepicker') return
@@ -281,6 +279,8 @@ document.addEventListener('datepicker.click.day', (event) => {
 
 ## Styling
 
+### CSS
+
 ```css
 .my-datepicker                              /* Target datepicker container */
 .my-datepicker input:checked                /* Target selected checkbox/radio dates */
@@ -289,4 +289,20 @@ document.addEventListener('datepicker.click.day', (event) => {
 .my-datepicker button[aria-current="date"]  /* Target current date (today) in month view */
 .my-datepicker button[aria-disabled="true"] /* Target dates from next or previous month in the month view */
 .my-datepicker button[data-core-datepicker-selected="true"]  /* Target the chosen date in month view */
+```
+
+---
+
+## Language
+
+`@nrk/core-datepicker` defaults to Norwegian Bookmål text without abbreviations (writing `September` instead of `Sept`). This can be configured by setting the `days` and `months` properties. Note that abbreviations should always be at least 3 characters long to ensure a better experience for screen reader users (for instance writing `Mon`, `Tue`... instead of `m`, `t`...).
+
+```js
+//JS
+coreDatepicker.days = ['man', 'tir', 'ons', 'tor', 'fre', 'lør', 'søn'] // Change name of days
+coreDatepicker.months = ['jan', 'feb', ...] // Change name of months
+
+//JSX
+CoreDatepicker.days = ['man', 'tir', 'ons', 'tor', 'fre', 'lør', 'søn'] // Change name of days
+CoreDatepicker.months = ['jan', 'feb', ...] // Change name of months
 ```

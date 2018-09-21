@@ -50,20 +50,18 @@ addEvent(UUID, 'click', (event) => {
 
 // Ensure focus is set after animations
 addEvent(UUID, 'transitionend', ({ target }) => {
-  const isInside = target.contains(document.activeElement)
-  if (!isInside && target.hasAttribute(UUID) && target.hasAttribute('open')) setFocus(target)
+  if (target.hasAttribute(UUID) && target.hasAttribute('open')) setFocus(target)
   else if (OPENER) setTimeout(() => (OPENER = OPENER && OPENER.focus()), 16) // Move focus after paint
 })
 
 addEvent(UUID, 'keydown', (event) => {
   const key = event.keyCode
-  const dialog = !event.defaultPrevented && (key === KEYS.ESC || key === KEYS.TAB) && getTopLevelDialog()
-  const isClose = dialog && dialog.getAttribute(UUID) === 'false'
+  const dialog = (key === KEYS.ESC || key === KEYS.TAB) && getTopLevelDialog()
 
   if (dialog && key === KEYS.TAB) keepFocus(dialog, event)
-  if (isClose && key === KEYS.ESC) {
-    setOpen(dialog, false)
-    event.preventDefault()
+  if (dialog && key === KEYS.ESC && dialog.getAttribute(UUID) === 'false') {
+    if (!event.defaultPrevented) setOpen(dialog, false) // Only close if not prevented
+    event.preventDefault() // Prevent leaving maximized window in Safari
   }
 })
 
@@ -92,6 +90,7 @@ function setOpen (dialog, open, opener = document.activeElement) {
   const isUpdate = isOpen === willOpen || dispatchEvent(dialog, 'dialog.toggle', { isOpen, willOpen })
   const nextOpen = isUpdate ? willOpen : dialog.hasAttribute('open') // dispatchEvent can change attributes, so check open again
   const backdrop = dialog.nextElementSibling
+  const lastFocus = isUpdate && getLastFocusedElement() // Store before open, as native dialog moves focus to [autofocus]
 
   if (isNative) {
     dialog.open = !nextOpen // Update to opposite value to ensure show/close can run without error
@@ -101,8 +100,7 @@ function setOpen (dialog, open, opener = document.activeElement) {
   }
   backdrop[nextOpen ? 'removeAttribute' : 'setAttribute']('hidden', '')
 
-  if (isUpdate) { // Update if no event.preventDefault
-    const lastFocus = getLastFocusedElement()
+  if (isUpdate) {
     const lastIndex = Number(lastFocus && lastFocus.getAttribute(OPENER_ATTR)) || 0
     const topZIndex = Math.max(...queryAll('*').map(getZIndexOfElement))
 
@@ -130,6 +128,7 @@ function queryFocusable (context) {
 }
 
 function setFocus (dialog) {
+  if (dialog.contains(document.activeElement)) return // Do not move if focus is allready inside
   const autofocusElement = getVisibleElements(queryAll('[autofocus]', dialog))[0]
   const focusElement = autofocusElement || queryFocusable(dialog)[0] || dialog
   focusElement.focus()

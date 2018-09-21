@@ -58,11 +58,12 @@ addEvent(UUID, 'keydown', (event) => {
   for (let el = event.target, prev; el; el = el.parentElement) { // Check if inside list
     if ((prev = el.previousElementSibling) && prev.hasAttribute(UUID)) return onKey(prev, event)
   }
-})
+}, true) // Use capture to enable checking defaultPrevented (from ESC key) in parents
 
 function onKey (input, event) {
   const list = input.nextElementSibling
   const focusable = [input].concat(queryAll(`${ITEM}:not([hidden])`, list))
+  const isClosing = event.keyCode === KEYS.ESC && input.getAttribute('aria-expanded') === 'true'
   const index = focusable.indexOf(document.activeElement)
   let item = false
 
@@ -75,8 +76,8 @@ function onKey (input, event) {
   }
 
   // Prevent leaving maximized safari and event.preventDefault even if undefined item (empty list)
-  if (event.keyCode === KEYS.ESC || item !== false) event.preventDefault()
   setupExpand(input, event.keyCode !== KEYS.ESC)
+  if (item !== false || isClosing) event.preventDefault()
   if (item) item.focus()
 }
 
@@ -91,8 +92,11 @@ function onSelect (input, detail) {
 function onFilter (input, detail) {
   if (dispatchEvent(input, 'input.filter', detail) && !ajax(input)) {
     queryAll(ITEM, input.nextElementSibling).reduce((acc, item) => {
+      const list = item.parentElement.nodeName === 'LI' && item.parentElement
       const show = item.textContent.toLowerCase().indexOf(input.value.toLowerCase()) !== -1
-      item[show ? 'removeAttribute' : 'setAttribute']('hidden', '')
+      const attr = show ? 'removeAttribute' : 'setAttribute'
+      if (list) list[attr]('hidden', '') // JAWS requires hiding of <li> too (if they exsist)
+      item[attr]('hidden', '')
       return show ? acc.concat(item) : acc
     }, []).forEach(setupItem)
   }
