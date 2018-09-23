@@ -14,6 +14,8 @@ export default function input (elements, content) {
     const list = input.nextElementSibling
     const ajax = typeof options.ajax === 'undefined' ? input.getAttribute(UUID) : options.ajax
 
+
+
     input.setAttribute(UUID, ajax || '')
     input.setAttribute(IS_IOS ? 'data-role' : 'role', 'combobox') // iOS does not inform user area is editable if combobox
     input.setAttribute('aria-autocomplete', 'list')
@@ -95,7 +97,7 @@ function onFilter (input, detail) {
       const list = item.parentElement.nodeName === 'LI' && item.parentElement
       const show = item.textContent.toLowerCase().indexOf(input.value.toLowerCase()) !== -1
       const attr = show ? 'removeAttribute' : 'setAttribute'
-      if (list) list[attr]('hidden', '') // JAWS requires hiding of <li> too (if they exsist)
+      if (list) list[attr]('hidden', '') // JAWS requires hiding of <li> too (if they exist)
       item[attr]('hidden', '')
       return show ? acc.concat(item) : acc
     }, []).forEach(setupItem)
@@ -126,10 +128,12 @@ function ajax (input) {
     try { req.responseJSON = JSON.parse(req.responseText) } catch (err) { req.responseJSON = false }
     dispatchEvent(input, 'input.ajax', req)
   }
-  ajax.timer = setTimeout(() => { // Debounce next request 500 milliseconds
+  ajax.timer = setTimeout(() => {
     if (!input.value) return // Abort if input is empty
-    req.open('GET', url.replace('{{value}}', window.encodeURIComponent(input.value)), true)
-    req.setRequestHeader('X-Requested-With', 'XMLHttpRequest') // https://en.wikipedia.org/wiki/List_of_HTTP_header_fields#Requested-With
-    req.send()
-  }, AJAX_DEBOUNCE)
+    if (dispatchEvent(input, 'input.ajax.beforeSend', req)) {
+      req.open('GET', url.replace('{{value}}', window.encodeURIComponent(input.value)), true)
+      req.setRequestHeader('X-Requested-With', 'XMLHttpRequest') // https://en.wikipedia.org/wiki/List_of_HTTP_header_fields#Requested-With
+      req.send()
+    }
+  }, AJAX_DEBOUNCE) // Debounce request
 }

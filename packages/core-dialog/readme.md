@@ -238,7 +238,7 @@ Though not strictly required, the `<button>` opening a `@nrk/core-dialog` should
 
 ### Autofocus
 
-If you have form elements inside a `@nrk/core-dialog`, you can optionally add a `autofocus` attribute to the most prominent form element. This helps the user navigate quickly when toggle is opened.
+If you have form elements inside a `@nrk/core-dialog`, you can optionally add an `autofocus` attribute to the most prominent form element. This helps the user navigate quickly when toggle is opened.
 
 ---
 

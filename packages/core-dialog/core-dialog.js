@@ -128,7 +128,7 @@ function queryFocusable (context) {
 }
 
 function setFocus (dialog) {
-  if (dialog.contains(document.activeElement)) return // Do not move if focus is allready inside
+  if (dialog.contains(document.activeElement)) return // Do not move if focus is already inside
   const autofocusElement = getVisibleElements(queryAll('[autofocus]', dialog))[0]
   const focusElement = autofocusElement || queryFocusable(dialog)[0] || dialog
   focusElement.focus()
