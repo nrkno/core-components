@@ -134,7 +134,7 @@ document.addEventListener('input.select', (event) => {
 ```
 
 ### input.ajax.beforeSend
-The `'input.ajax.beforeSend'` event is fired before sending debounced ajax requests. If you wish to alter the [XMLHttpRequest](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest), use `event.preventDefault()` and execute [XHR methods](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest#Methods) on the `event.detail`. If not prevented, requests are sent using the `GET` method and the header `'X-Requested-With': 'XMLHttpRequest'`. The event bubbles, and can therefore be detected both from the input element itself, or any parent element (read event delegation):
+The `'input.ajax.beforeSend'` event is fired before sending debounced ajax requests. If you wish to alter the [XMLHttpRequest](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest), use `event.preventDefault()` and then execute [XHR methods](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest#Methods) on the `event.detail`. If not prevented, requests are sent using the `GET` method and the header `'X-Requested-With': 'XMLHttpRequest'`. The event bubbles, and can therefore be detected both from the input element itself, or any parent element (read event delegation):
 
 ```js
 document.addEventListener('input.ajax.beforeSend', (event) => {

@@ -14,8 +14,6 @@ export default function input (elements, content) {
     const list = input.nextElementSibling
     const ajax = typeof options.ajax === 'undefined' ? input.getAttribute(UUID) : options.ajax
 
-
-
     input.setAttribute(UUID, ajax || '')
     input.setAttribute(IS_IOS ? 'data-role' : 'role', 'combobox') // iOS does not inform user area is editable if combobox
     input.setAttribute('aria-autocomplete', 'list')
