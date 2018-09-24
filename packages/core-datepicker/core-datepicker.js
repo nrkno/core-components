@@ -96,10 +96,9 @@ function table (table, date, disable) {
     <tbody>${Array(7).join(`<tr>${Array(8).join(`<td><button type="button"></button></td>`)}</tr>`)}</tbody>`
   }
 
-  const month = date.getMonth()
   const today = new Date()
   let day = parse('y-m-1 mon', date) // Monday in first week of month
-  table.caption.textContent = `${escapeHTML(datepicker.months[month])}, ${date.getFullYear()}`
+  table.caption.textContent = `${escapeHTML(datepicker.months[date.getMonth()])}, ${date.getFullYear()}`
 
   queryAll('button', table).forEach((button) => {
     const isToday = day.getDate() === today.getDate() && day.getMonth() === today.getMonth() && day.getFullYear() === today.getFullYear()
@@ -111,8 +110,9 @@ function table (table, date, disable) {
     button.disabled = disable(day)
     button.setAttribute('tabindex', isSelected - 1)
     button.setAttribute(`${ATTR}-selected`, isSelected)
-    button.setAttribute('aria-disabled', month !== day.getMonth())
+    button.setAttribute('aria-label', `${dayInMonth}. ${datepicker.months[day.getMonth()]}`)
     button[isToday ? 'setAttribute' : 'removeAttribute']('aria-current', 'date')
+    button[isSelected ? 'setAttribute' : 'removeAttribute']('autofocus', '')
     day.setDate(dayInMonth + 1)
   })
 }

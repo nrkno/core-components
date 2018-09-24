@@ -84,7 +84,6 @@ demo-->
   coreDialog('#my-dialog', {open: false});
   coreDialog('#my-dialog-nested', {open: false});
   coreDialog('#strict-dialog', {open: false, strict: true});
-
 </script>
 ```
 
@@ -223,11 +222,23 @@ function closeDialog (event) {
 }
 ```
 
+---
+
+## Markup
+
 ### Supporting IE9
 If you need `@nrk/core-dialog` to support IE9, add the following code in your `<head>` tag:
 ```
 <!--[if IE 9]><script>document.createElement('dialog')</script><![endif]-->
 ```
+
+### Elements order
+
+Though not strictly required, the `<button>` opening a `@nrk/core-dialog` should be placed directly before the `<dialog>` itself. This eases the mental model for screen reader users.
+
+### Autofocus
+
+If you have form elements inside a `@nrk/core-dialog`, you can optionally add an `autofocus` attribute to the most prominent form element. This helps the user navigate quickly when toggle is opened.
 
 ---
 

@@ -113,6 +113,22 @@ describe('toggle', () => {
 
     expectPopupClosed(button, container)
   })
+
+  it('should respect existing aria-controls attribute if target is found', () => {
+    document.body.innerHTML = `
+      <div><button class="my-toggle" aria-controls="content">Toggle VanillaJS</button></div>
+      <div id="content" hidden>Content</div>`
+
+    const button = document.querySelector('.my-toggle')
+    const container = document.querySelector('#content')
+
+    coreToggle(button, { open: false })
+    expect(button.getAttribute('aria-controls')).toEqual('content')
+    expectClosedAttributes(button, container)
+
+    coreToggle(button, { open: true })
+    expectOpenAttributes(button, container)
+  })
 })
 
 module.exports = {

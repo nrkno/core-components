@@ -64,7 +64,7 @@ Typing toggles the [hidden attribute](https://developer.mozilla.org/en/docs/Web/
 
 ### HTML / JavaScript
 
-*Important: Always use `coreInput.escapeHTML(String)` to safely render data from API or user.*
+<small><b>Important:</b> Always use `coreInput.escapeHTML(String)` to safely render data from API or user.</small>
 
 ```html
 <input type="text" class="my-input">                  <!-- Input element must be a <input> -->
@@ -112,7 +112,7 @@ import CoreInput from '@nrk/core-input/jsx'
 ## Events
 
 ### input.filter
-`'input.filter'` is fired before a default filtering (both for VanillaJS and React/Preact components). The `input.filter` event is cancelable, meaning you can use `event.preventDefault()` to cancel default filtering and respond to users typing yourself. The event also bubbles, and can therefore be detected both from button element itself, or any parent element (read event delegation):
+`'input.filter'` is fired before a default filtering (both for VanillaJS and React/Preact components). The `input.filter` event is cancelable, meaning you can use `event.preventDefault()` to cancel default filtering and respond to users typing yourself. The event also bubbles, and can therefore be detected both from the input element itself, or any parent element (read event delegation):
 
 ```js
 document.addEventListener('input.filter', (event) => {
@@ -122,7 +122,7 @@ document.addEventListener('input.filter', (event) => {
 ```
 
 ### input.select
-`'input.select'` event is fired when the user clicks/selects a item (both for VanillaJS and React/Preact components). The `input.select` event is cancelable, meaning you can use `event.preventDefault()` to cancel replacing the input value and handle select-action yourself. The event also bubbles, and can therefore be detected both from button element itself, or any parent element (read event delegation):
+`'input.select'` event is fired when the user clicks/selects a item (both for VanillaJS and React/Preact components). The `input.select` event is cancelable, meaning you can use `event.preventDefault()` to cancel replacing the input value and handle select-action yourself. The event also bubbles, and can therefore be detected both from the button element itself, or any parent element (read event delegation):
 
 ```js
 document.addEventListener('input.select', (event) => {
@@ -133,8 +133,29 @@ document.addEventListener('input.select', (event) => {
 })
 ```
 
+### input.ajax.beforeSend
+The `'input.ajax.beforeSend'` event is fired before sending debounced ajax requests. If you wish to alter the [XMLHttpRequest](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest), use `event.preventDefault()` and then execute [XHR methods](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest#Methods) on the `event.detail`. If not prevented, requests are sent using the `GET` method and the header `'X-Requested-With': 'XMLHttpRequest'`. The event bubbles, and can therefore be detected both from the input element itself, or any parent element (read event delegation):
+
+```js
+document.addEventListener('input.ajax.beforeSend', (event) => {
+  event.target  // The core-input element triggering input.ajax.beforeSend event
+  event.detail  // The XMLHttpRequest object
+})
+```
+
+```js
+// Example
+document.addEventListener('input.ajax.beforeSend', (event) => {
+  event.preventDefault() // Stop default behaviour
+  event.detail.open('POST', 'https://example.com')
+  event.detail.setRequestHeader('Content-Type', 'application/json')
+  event.detail.setRequestHeader('my-custom-header', 'my-custom-value')
+  event.detail.send(JSON.stringify({query: event.target.value}))
+})
+```
+
 ### input.ajax
-`'input.ajax'` event is fired when the input field receives data from ajax. The event also bubbles, and can therefore be detected both from button element itself, or any parent element (read event delegation):
+`'input.ajax'` event is fired when the input field receives data from ajax. The event also bubbles, and can therefore be detected both from the input element itself, or any parent element (read event delegation):
 
 ```js
 document.addEventListener('input.ajax', (event) => {
@@ -162,6 +183,16 @@ All styling in documentation is example only. Both the `<button>` and content el
 .my-input-content :focus {}           /* Target focused item */
 .my-input-content mark {}             /* Target highlighted text */
 ```
+
+---
+
+## Ajax
+
+When using `@nrk/core-input` with the `ajax: https://search.com?q={{value}}` functionality, make sure to implement both a `Searching...` status (while fetching data from the server), and a `No hits` status (if server responds with no results). These status indicators are highly recommended, but not provided by default as the context of use will affect the optimal textual formulation. [See example implementation →](#demo-ajax)
+
+### Customise the request
+
+If you need to alter default headers, request method or post data, use the [`input.ajax.beforeSend` event  →](#input-ajax-beforesend)
 
 ---
 
@@ -239,6 +270,8 @@ Ajax requests can be stopped by calling `event.preventDefault()` on `'input.filt
 </script>
 ```
 
+---
+
 ## Demo: Lazy
 Hybrid solution; lazy load items, but let `core-input` still handle filtering:
 ```html
@@ -297,6 +330,8 @@ Hybrid solution; lazy load items, but let `core-input` still handle filtering:
   ReactDOM.render(<LazyInput />, document.getElementById('jsx-input-lazy'))
 </script>
 ```
+
+---
 
 ## Demo: Dynamic
 Synchronous operation; dynamically populating items based input value:

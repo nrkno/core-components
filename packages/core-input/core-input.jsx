@@ -46,6 +46,9 @@ Input.propTypes = {
   onFilter: PropTypes.func,
   onSelect: PropTypes.func,
   onAjax: PropTypes.func,
-  ajax: PropTypes.string,
-  open: PropTypes.bool
+  open: PropTypes.bool,
+  ajax: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.object
+  ])
 }

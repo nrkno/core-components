@@ -60,6 +60,12 @@ Content is toggled when clicking <code>button</code>, and closed when clicking o
     <button class="my-popup">Can also be nested</button>
     <ul class="my-dropdown" hidden>
       <li><a href="#">Sub-link</a></li>
+      <li>
+        <label>
+          <span class="nrk-sr">Skriv her</span>
+          <input type="text" autofocus>
+        </label>
+      </li>
     </ul>
   </li>
 </ul>
@@ -98,12 +104,17 @@ Content is toggled when clicking <code>button</code>, and closed when clicking o
 
 ### JavaScript
 
+```html
+<button class="my-toggle">Toggle VanillaJS</button>
+<div hidden>Content</div>
+```
+
 ```js
 import coreToggle from '@nrk/core-toggle'
 
 coreToggle(String|Element|Elements, { // Accepts a selector string, NodeList, Element or array of Elements
   open: null,                         // Defaults to value of aria-expanded or false. Use true|false to force open state
-  popup: false                         // Defaults to false. Use true to enable click-outside-to-close
+  popup: false                        // Defaults to false. Use true to enable click-outside-to-close
 })
 ```
 
@@ -121,6 +132,25 @@ import CoreToggle from '@nrk/core-toggle/jsx'
   <div>Content</div>             // Next element will be toggled. Accepts both elements and components
 </CoreToggle>
 ```
+
+---
+
+## Markup
+
+### With aria-controls
+
+Putting the toggle button directly before the content is highly recommended, as this fulfills all accessibility requirements by default. There might be scenarios though, where styling makes this DOM structure impractical. In such cases, give the toggle button an `aria-controls` attribute, and the content an `id` with corresponding value. Make sure there is no text between the button and toggle content, as this will break the experience for screen reader users:
+
+```html
+<div>
+  <button class="my-toggle" aria-controls="content">Toggle VanillaJS</button>
+</div>
+<div id="content" hidden>Content</div>
+```
+
+### Autofocus
+
+If you have form elements inside a `@nrk/core-toggle`, you can optionally add a `autofocus` attribute to the most prominent form element. This helps the user navigate quickly when toggle is opened.
 
 ---
 
