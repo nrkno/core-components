@@ -88,10 +88,10 @@ export function requestAnimFrame (fn) {
 }
 
 /**
-* throttle
+* debounce
 * @param {Function} callback The function to debounce
 * @param {Number} ms The threshold of milliseconds between each callback
-* @return {Function} The new throttled function
+* @return {Function} The new debounced function
 */
 export function debounce (callback, ms) {
   let last
@@ -109,6 +109,11 @@ export function debounce (callback, ms) {
   }
 }
 
+/**
+ * throttle
+ * @param {Function} callback  The new throttled function
+ * @param {Number} ms The threshold of milliseconds between each callback
+ */
 export function throttle (callback, ms) {
   let args
   let timer
