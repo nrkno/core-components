@@ -1,5 +1,5 @@
 import { name, version } from './package.json'
-import { IS_BROWSER, addEvent, dispatchEvent, requestAnimFrame, throttle, queryAll } from '../utils'
+import { IS_BROWSER, addEvent, debounce, dispatchEvent, requestAnimFrame, throttle, queryAll } from '../utils'
 
 const DRAG = {}
 const ATTR = 'data-core-scroll'
@@ -28,7 +28,7 @@ export default function scroll (elements, move = '') {
 }
 
 addEvent(UUID, 'mousedown', onMousedown)
-addEvent(UUID, 'resize', throttle(onChange, 500)) // Update button states on resize
+addEvent(UUID, 'resize', debounce(onChange, 500)) // Update button states on resize
 addEvent(UUID, 'scroll', throttle(onChange, 500), true) // useCapture to catch event without bubbling
 addEvent(UUID, 'wheel', () => (DRAG.animate = false), { passive: true }) // Stop animation on wheel scroll
 addEvent(UUID, 'load', onChange) // Update state when we are sure all CSS is loaded

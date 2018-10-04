@@ -93,7 +93,7 @@ export function requestAnimFrame (fn) {
 * @param {Number} ms The threshold of milliseconds between each callback
 * @return {Function} The new throttled function
 */
-export function throttle (callback, ms) {
+export function debounce (callback, ms) {
   let last
   let time
   return function (...args) {
@@ -105,6 +105,18 @@ export function throttle (callback, ms) {
     } else {
       last = now
       callback.apply(self, args)
+    }
+  }
+}
+
+export function throttle (callback, ms) {
+  let inThrottle
+  return function (...args) {
+    const self = this
+    if (!inThrottle) {
+      inThrottle = true
+      callback.apply(self, args)
+      setTimeout(() => (inThrottle = false), ms)
     }
   }
 }
