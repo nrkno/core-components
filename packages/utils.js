@@ -110,13 +110,15 @@ export function debounce (callback, ms) {
 }
 
 export function throttle (callback, ms) {
-  let inThrottle
-  return function (...args) {
-    const self = this
-    if (!inThrottle) {
-      inThrottle = true
-      callback.apply(self, args)
-      setTimeout(() => (inThrottle = false), ms)
+  let args
+  let timer
+  return function (...argument) {
+    args = argument
+    if (!timer) {
+      timer = setTimeout(function () {
+        callback.apply(this, args)
+        timer = null
+      }, ms)
     }
   }
 }
