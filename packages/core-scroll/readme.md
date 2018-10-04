@@ -127,13 +127,17 @@ coreScroll(String|Element|Elements, {                           // Or pass a obj
   y: Number,                           // Optional. The scrollTop
   friction: 0.8,                       // Optional. Changes scroll speed. Defaults to 0.8
 })
+coreScroll(String|Element|Elements, '', {
+  resizeMs: 250,
+  scrollMs: 100
+}) // Optionally send in a third argument to customize the debounce rate of the resize event and the throttle rate of the scroll event
 ```
 
 ### React / Preact
 ```jsx
 import CoreScroll from '@nrk/core-scroll/jsx'
 
-<CoreScroll onChange={(state) => {}}>
+<CoreScroll onChange={(state) => {}} settings={{resizeMs: 250, scrollMs: 100}}>
   {/* elements */}
 </CoreScroll>
 
