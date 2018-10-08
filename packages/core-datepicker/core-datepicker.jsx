@@ -34,8 +34,8 @@ export default class Datepicker extends React.Component {
 
 // Expose API and config
 Datepicker.parse = coreDatepicker.parse
-Datepicker.months = coreDatepicker.months
-Datepicker.days = coreDatepicker.days
+Datepicker.setMonths = (months) => (coreDatepicker.months = months)
+Datepicker.setDays = (days) => (coreDatepicker.days = days)
 
 Datepicker.propTypes = {
   disable: PropTypes.func,

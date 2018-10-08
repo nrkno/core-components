@@ -121,6 +121,8 @@ demo-->
 <!-- demo -->
 <div id="jsx-datepicker"></div>
 <script type="text/jsx">
+  CoreDatepicker.setMonths(['January', 'Febuary', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'])
+  CoreDatepicker.setDays(['mon', 'tue', 'wed', 'thur', 'fri', 'sat', 'sun'])
   class MyDate extends React.Component {
     constructor (props) {
       super(props)
