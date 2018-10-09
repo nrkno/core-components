@@ -37,6 +37,9 @@ datepicker.parse = parse
 datepicker.months = ['januar', 'februar', 'mars', 'april', 'mai', 'juni', 'juli', 'august', 'september', 'oktober', 'november', 'desember']
 datepicker.days = ['man', 'tirs', 'ons', 'tors', 'fre', 'lør', 'søn']
 
+datepicker.setMonths = (months) => (datepicker.months = months)
+datepicker.setDays = (days) => (datepicker.days = days)
+
 addEvent(UUID, 'change', onChange)
 addEvent(UUID, 'click', ({ target }) => {
   for (let el = target; el; el = el.parentElement) {

@@ -99,6 +99,12 @@ demo-->
 <button data-core-datepicker="my-datepicker" value="+1 week">Neste uke</button>
 <input type="text" id="my-datepicker-output">
 <script>
+  // Change labels of months
+  coreDatepicker.setMonths(['January', 'Febuary', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'])
+  
+  // Change labels of days
+  //coreDatepicker.setDays(['mon', 'tue', 'etc...'])
+
   // Update GUI
   document.addEventListener('datepicker.render', function (event) {
     if (event.target.id !== 'my-datepicker') return
