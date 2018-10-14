@@ -100,10 +100,10 @@ demo-->
 <input type="text" id="my-datepicker-output">
 <script>
   // Change labels of months
-  coreDatepicker.setMonths(['January', 'Febuary', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'])
-  
+  coreDatepicker.months = ['January', 'Febuary', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+
   // Change labels of days
-  //coreDatepicker.setDays(['mon', 'tue', 'etc...'])
+  //coreDatepicker.days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
   // Update GUI
   document.addEventListener('datepicker.render', function (event) {
@@ -127,8 +127,10 @@ demo-->
 <!-- demo -->
 <div id="jsx-datepicker"></div>
 <script type="text/jsx">
-  CoreDatepicker.setMonths(['January', 'Febuary', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'])
-  CoreDatepicker.setDays(['mon', 'tue', 'wed', 'thur', 'fri', 'sat', 'sun'])
+  // Change labels
+  CoreDatepicker.months = ['January', 'Febuary', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+  CoreDatepicker.days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+
   class MyDate extends React.Component {
     constructor (props) {
       super(props)
