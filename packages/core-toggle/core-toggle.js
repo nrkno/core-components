@@ -59,7 +59,7 @@ function setOpen (button, open) {
   const willOpen = typeof open === 'boolean' ? open : (open === 'toggle' ? !isOpen : isOpen)
   const isUpdate = isOpen === willOpen || dispatchEvent(button, 'toggle', { relatedTarget: content, isOpen, willOpen })
   const nextOpen = isUpdate ? willOpen : button.getAttribute(OPEN) === 'true' // dispatchEvent can change attributes
-  const focus = nextOpen && content.querySelector('[autofocus]')
+  const focus = !isOpen && nextOpen && content.querySelector('[autofocus]')
 
   if (focus) setTimeout(() => focus && focus.focus()) // Move focus on next render (if element stil exists)
 

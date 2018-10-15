@@ -5,6 +5,12 @@ import { exclude } from '../utils'
 
 export default class Datepicker extends React.Component {
   static get defaultProps () { return { date: null, disable: null, onRender: null, onChange: null, onClickDay: null } }
+  static set months (months) { coreDatepicker.months = months }
+  static set days (days) { coreDatepicker.days = days }
+  static get months () { return coreDatepicker.months }
+  static get days () { return coreDatepicker.days }
+  static parse (...args) { return coreDatepicker.parse(...args) }
+
   constructor (props) {
     super(props)
     this.onClickDay = this.onClickDay.bind(this)
@@ -31,11 +37,6 @@ export default class Datepicker extends React.Component {
     return React.createElement('div', props, this.props.children)
   }
 }
-
-// Expose API and config
-Datepicker.parse = coreDatepicker.parse
-Datepicker.months = coreDatepicker.months
-Datepicker.days = coreDatepicker.days
 
 Datepicker.propTypes = {
   disable: PropTypes.func,

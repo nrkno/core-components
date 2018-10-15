@@ -99,6 +99,12 @@ demo-->
 <button data-core-datepicker="my-datepicker" value="+1 week">Neste uke</button>
 <input type="text" id="my-datepicker-output">
 <script>
+  // Change labels of months
+  coreDatepicker.months = ['January', 'Febuary', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+
+  // Change labels of days
+  //coreDatepicker.days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+
   // Update GUI
   document.addEventListener('datepicker.render', function (event) {
     if (event.target.id !== 'my-datepicker') return
@@ -121,6 +127,10 @@ demo-->
 <!-- demo -->
 <div id="jsx-datepicker"></div>
 <script type="text/jsx">
+  // Change labels
+  CoreDatepicker.months = ['January', 'Febuary', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+  CoreDatepicker.days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+
   class MyDate extends React.Component {
     constructor (props) {
       super(props)
