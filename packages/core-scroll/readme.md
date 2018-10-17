@@ -30,6 +30,7 @@ demo-->
 
 ```html
 <!--demo-->
+<form target="_blank">
 <button data-core-scroll="my-scroll-js" value="up" aria-label="Rull opp">&uarr;</button>
 <button data-core-scroll="my-scroll-js" value="down" aria-label="Rull ned">&darr;</button>
 <br>
@@ -37,7 +38,12 @@ demo-->
 <button data-core-scroll="my-scroll-js" value="right" aria-label="Rull til høyre">&rarr;</button>
 <div class="my-wrap my-wrap-js">
   <div class="my-scroll" id="my-scroll-js">
-    <div>1</div><div>2</div><div>3</div><div>4</div><a href="#">5</a>
+    <div contenteditable="true">Hello</div><select>
+  <option value="volvo">Volvo</option>
+  <option value="saab">Saab</option>
+  <option value="mercedes">Mercedes</option>
+  <option value="audi">Audi</option>
+</select><button type="submit">Click me</button><div>4</div><a href="#">5</a>
     <div>6</div><div>7</div><div>8</div><div>9</div><div>10</div>
     <div>11</div><div>12</div><div>13</div><div>14</div><div>15</div>
     <br>
@@ -68,6 +74,7 @@ demo-->
     <div>11</div><div>12</div><div>13</div><div>14</div><div>15</div>
   </div>
 </div>
+</form>
 <script>
   coreScroll('.my-scroll');
 </script>
