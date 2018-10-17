@@ -263,6 +263,8 @@ document.addEventListener('dialog.toggle', (event) => {
 .my-dialog + backdrop[hidden] {}      /* Target backdrop in closed state */
 ```
 
+**Note** : There is a z-index limit for the backdrop at 2000000000. Do not use higher z-index values in your site in order for `core-dialog` to work properly. The limit exists because some browser extensions, like [ghostery](https://chrome.google.com/webstore/detail/ghostery-%E2%80%93-privacy-ad-blo/mlomiejdfkolichcflejclcbmpeaniij?hl=en) have absurdly high z-indexes.
+
 ---
 
 ## FAQ

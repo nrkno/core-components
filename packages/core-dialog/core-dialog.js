@@ -102,7 +102,7 @@ function setOpen (dialog, open, opener = document.activeElement) {
 
   if (isUpdate) {
     const lastIndex = Number(lastFocus && lastFocus.getAttribute(OPENER_ATTR)) || 0
-    const topZIndex = Math.max(...queryAll('*').map(getZIndexOfElement))
+    const topZIndex = Math.max(...queryAll('*').map(getZIndexOfElement), 2000000000) // Avoid high z-indexes from extensions. techjunkie.com/maximum-z-index-value
 
     if (nextOpen) {
       dialog.style.zIndex = topZIndex + 2
