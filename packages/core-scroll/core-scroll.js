@@ -8,6 +8,7 @@ const MOVE = { up: { y: -1, prop: 'top' }, down: { y: 1, prop: 'bottom' }, left:
 const SIGNIFICANT_DRAG_THRESHOLD = 10
 const FRICTION = 0.8
 const VELOCITY = 20
+const NEEDS_MOUSEDOWN = /INPUT|TEXTAREA|SELECT/
 
 // https://css-tricks.com/introduction-reduced-motion-media-query/
 const requestJump = IS_BROWSER && window.matchMedia && window.matchMedia('(prefers-reduced-motion)').matches
@@ -36,6 +37,7 @@ addEvent(UUID, 'click', onClick)
 
 function onMousedown (event) {
   for (let el = event.target; el; el = el.parentElement) {
+    if (el.contentEditable === 'true' || NEEDS_MOUSEDOWN.test(el.nodeName)) return // No dragging when user clicks input fields
     if (!event.defaultPrevented && el.hasAttribute && el.hasAttribute(UUID)) {
       event.preventDefault() // Prevent text selection and enable nesting
 
