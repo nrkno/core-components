@@ -16,7 +16,7 @@ export default class Scroll extends React.Component {
   }
   componentDidMount () {
     this.el.addEventListener('scroll.change', this.onScroll)
-    requestAnimFrame(() => coreScroll(this.el, { friction: this.props.friction }, this.props.settings)) // Make sure DOM has rendered
+    requestAnimFrame(() => coreScroll(this.el, { friction: this.props.friction })) // Make sure DOM has rendered
   }
   componentDidUpdate (prevProps, prevState) {
     if (this.skipUpdate) this.skipUpdate = false // Update is from scroll.change, so prevent infinite loop
