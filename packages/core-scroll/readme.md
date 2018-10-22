@@ -127,17 +127,14 @@ coreScroll(String|Element|Elements, {                           // Or pass a obj
   y: Number,                           // Optional. The scrollTop
   friction: 0.8,                       // Optional. Changes scroll speed. Defaults to 0.8
 })
-coreScroll(String|Element|Elements, '', {
-  resizeMs: 250,
-  scrollMs: 100
-}) // Optionally send in a third argument to customize the debounce rate of the resize event and the throttle rate of the scroll event
+coreScroll(String|Element|Elements, '') // Optionally send in a third argument to customize the debounce rate of the resize event and the throttle rate of the scroll event
 ```
 
 ### React / Preact
 ```jsx
 import CoreScroll from '@nrk/core-scroll/jsx'
 
-<CoreScroll onChange={(state) => {}} settings={{resizeMs: 250, scrollMs: 100}}>
+<CoreScroll onChange={(state) => {}}>
   {/* elements */}
 </CoreScroll>
 
@@ -158,7 +155,9 @@ state = {
 ---
 
 ## Events
-`'scroll.change'` is fired regularly during a scroll. The event is [throttled](https://css-tricks.com/the-difference-between-throttling-and-debouncing/) to achieve better performance. The event bubbles, and can therefore be detected both from button element itself, or any parent element (read event delegation):
+
+### scroll.change
+`'scroll.change'` is fired regularly during a scroll. The event is [throttled](https://css-tricks.com/the-difference-between-throttling-and-debouncing/) to run every 500ms and ensure better performance. The event bubbles, and can therefore be detected both from button element itself, or any parent element (read event delegation):
 
 
 ```js
@@ -171,6 +170,8 @@ document.addEventListener('scroll.change', (event) => {
 })
 ```
 
+
+### scroll.click
 `'scroll.click'` is fired when clicking a button controlling `@nrk/core-scroll`. The event bubbles, and can therefore be detected both from button element itself, or any parent element (read event delegation):
 
 
@@ -179,6 +180,20 @@ document.addEventListener('scroll.click', (event) => {
   event.target        // The core-scroll element triggering scroll.change event
   event.detail.move   // Direction to move (left, right, up, down)
 })
+```
+
+### scroll
+`'scroll'` [is a native event](https://developer.mozilla.org/en-US/docs/Web/Events/scroll) fired for every scrolled pixel. Be cautious about performance when listening to `scroll`; heavy or many read/write operations will slow down your page. The event does not bubble, and you therefore need [`useCapture`](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#Parameters) set to true when listening for `scroll` events from a parent element:
+
+```js
+document.addEventListener('scroll', (event) => {
+  event.target        // NB: Can be any scrolling element since this is a native event
+
+  // Example check if the event.target is the correct @nrk/core-scoll
+  if (event.target.id === 'ID-OF-MY-CORE-SCROLL-HERE') {
+    // Do Something
+  }
+}, true) // Note the true parameter, activating capture listening
 ```
 
 ---

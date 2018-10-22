@@ -88,37 +88,13 @@ export function requestAnimFrame (fn) {
 }
 
 /**
-* debounce
-* @param {Function} callback The function to debounce
-* @param {Number} ms The threshold of milliseconds between each callback
-* @return {Function} The new debounced function
-*/
-export function debounce (callback, ms) {
-  let last
-  let time
-  return function (...args) {
-    const self = this
-    const now = Date.now()
-    if (last && now < last + ms) {
-      clearTimeout(time)
-      time = setTimeout(() => { last = now; callback.apply(self, args) }, ms)
-    } else {
-      last = now
-      callback.apply(self, args)
-    }
-  }
-}
-
-/**
  * throttle
  * @param {Function} callback  The new throttled function
  * @param {Number} ms The threshold of milliseconds between each callback
  */
 export function throttle (callback, ms) {
-  let args
   let timer
-  return function (...argument) {
-    args = argument
+  return function (...args) {
     if (!timer) {
       timer = setTimeout(function () {
         callback.apply(this, args)

@@ -1,5 +1,5 @@
 import { name, version } from './package.json'
-import { IS_BROWSER, addEvent, debounce, dispatchEvent, requestAnimFrame, throttle, queryAll } from '../utils'
+import { IS_BROWSER, addEvent, dispatchEvent, requestAnimFrame, throttle, queryAll } from '../utils'
 
 const DRAG = {}
 const ATTR = 'data-core-scroll'
@@ -13,15 +13,13 @@ const NEEDS_MOUSEDOWN = /INPUT|TEXTAREA|SELECT/
 // https://css-tricks.com/introduction-reduced-motion-media-query/
 const requestJump = IS_BROWSER && window.matchMedia && window.matchMedia('(prefers-reduced-motion)').matches
 
-export default function scroll (elements, move = '', settings = {}) {
+export default function scroll (elements, move = '') {
   const options = typeof move === 'object' ? move : { move }
   const isChange = 'x' in options || 'y' in options || options.move
 
   return queryAll(elements).map((target) => {
     if (!target.hasAttribute(UUID)) { // Reduce read / write operations
       target.setAttribute(UUID, options.friction || '')
-      addEvent(UUID, 'resize', debounce(onChange, settings.resizeMs || 500)) // Update button states on resize
-      addEvent(UUID, 'scroll', throttle(onChange, settings.scrollMs || 500), true) // useCapture to catch event without bubbling
       hideScrollbars(target)
     }
     if (isChange) scrollTo(target, parsePoint(target, options))
@@ -31,6 +29,8 @@ export default function scroll (elements, move = '', settings = {}) {
 }
 
 addEvent(UUID, 'mousedown', onMousedown)
+addEvent(UUID, 'resize', throttle(onChange, 500)) // Update button states on resize
+addEvent(UUID, 'scroll', throttle(onChange, 500), { passive: true, capture: true }) // capture catches events without bubbling
 addEvent(UUID, 'wheel', () => (DRAG.animate = false), { passive: true }) // Stop animation on wheel scroll
 addEvent(UUID, 'load', onChange) // Update state when we are sure all CSS is loaded
 addEvent(UUID, 'click', onClick)
