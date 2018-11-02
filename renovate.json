@@ -1,7 +1,7 @@
 {
-  "extends": [
-    "config:base"
-  	"schedule:earlyMondays", 
-  	":pinOnlyDevDependencies"
-  ]
+	"extends": [
+		"config:base",
+		"schedule:earlyMondays",
+		":pinOnlyDevDependencies"
+	]
 }
