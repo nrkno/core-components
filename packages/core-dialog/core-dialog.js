@@ -49,8 +49,8 @@ addEvent(UUID, 'click', (event) => {
 })
 
 // Ensure focus is set after animations
-addEvent(UUID, 'transitionend', ({ target }) => {
-  if (target.hasAttribute(UUID) && target.hasAttribute('open')) setFocus(target)
+addEvent(UUID, 'transitionend', ({ target }) => { // NB: target can be document
+  if (target.hasAttribute && target.hasAttribute(UUID) && target.hasAttribute('open')) setFocus(target)
   else if (OPENER) setTimeout(() => (OPENER = OPENER && OPENER.focus()), 16) // Move focus after paint
 })
 
