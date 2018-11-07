@@ -1,5 +1,5 @@
 import { name, version } from './package.json'
-import { IS_ANDROID, addEvent, dispatchEvent, getUUID, queryAll } from '../utils'
+import { IS_ANDROID, IS_IOS, addEvent, dispatchEvent, getUUID, queryAll } from '../utils'
 
 const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid attribute characters
 const ARIA = IS_ANDROID ? 'data' : 'aria' // Andriod has a bug and reads only label instead of content
@@ -9,6 +9,7 @@ const KEYS = { ESC: 27 }
 
 export default function toggle (buttons, open) {
   const options = typeof open === 'object' ? open : { open }
+  if (IS_IOS) document.documentElement.style.cursor = 'pointer' // Fix iOS events for closing {popup: true} https://stackoverflow.com/questions/14795944/jquery-click-events-not-working-in-ios#16006333
 
   return queryAll(buttons).map((button) => {
     const open = typeof options.open === 'boolean' ? options.open : button.getAttribute(OPEN) === 'true'
