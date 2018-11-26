@@ -1,5 +1,5 @@
 import { name, version } from './package.json'
-import { addEvent, dispatchEvent, queryAll } from '../utils'
+import { dispatchEvent, queryAll } from '../utils'
 
 const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid attribute characters
 
@@ -18,11 +18,13 @@ export default function progress (elements, value) {
       progress.setAttribute('aria-label', options.value)
     } else if (options.hasOwnProperty('value')) {
       progress.value = Number(options.value) || 0
-      progress.setAttribute('aria-label', `${progress.value / progress.max * 100}%`)
+      const percent = progress.value / progress.max * 100
+
+      progress.setAttribute('aria-label', `${percent}%`)
+
+      dispatchEvent(UUID, 'progress.changed', { percent })
     }
 
     return progress
   })
 }
-
-addEvent(UUID, 'click', () => console.log('progress jo!'))
