@@ -1,0 +1,15 @@
+{
+  "name": "@nrk/core-progress",
+  "homepage": "https://static.nrk.no/core-components/latest/",
+  "author": "NRK <opensource@nrk.no> (https://www.nrk.no/)",
+  "version": "1.0.0",
+  "license": "MIT",
+  "main": "core-progress.cjs.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nrkno/core-components.git"
+  },
+  "dependencies": {
+    "prop-types": "15.6.2"
+  }
+}

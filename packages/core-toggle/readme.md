@@ -156,7 +156,7 @@ If you have form elements inside a `@nrk/core-toggle`, you can optionally add a 
 
 ## Events
 
-Before a `@nrk/core-toggle` changes open state, a [toggle event](https://www.w3schools.com/jsref/event_ontoggle.asp) is fired (both for VanillaJS and React/Preact components). The toggle event is cancelable, meaning you can use [`event.preventDefault()`](https://developer.mozilla.org/en-US/docs/Web/API/Event/preventDefault) to cancel toggling. The event also [bubbles](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Building_blocks/Events#Event_bubbling_and_capture), and can therefore be detected both from button element itself, or any parent element (read [event delegation](https://stackoverflow.com/questions/1687296/what-is-dom-event-delegation)):
+Before a `@nrk/core-toggle` changes open state, a [toggle event](https://www.w3schools.com/jsref/event_ontoggle.asp) is fired (both for VanillaJS and React/Preact components). The toggle event is cancelable, meaning you can use [`event.preventDefault()`](https://developer.mozilla.org/en-US/docs/Web/API/Event/preventDefault) to cancel toggling. The event also [bubbles](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Building_blocks/Events#Event_bubbling_and_capture), and can therefore be detected both from the button element itself, or any parent element (read [event delegation](https://stackoverflow.com/questions/1687296/what-is-dom-event-delegation)):
 
 ```js
 document.addEventListener('toggle', (event) => {
