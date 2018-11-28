@@ -15,19 +15,18 @@ export default function progress (elements, value) {
     const percentage = Math.round(newValue / max * 100) || 0
     const noChanges = newValue === oldValue && max === progress.getAttribute('max') && indeterminate !== progress.hasAttribute('value')
     const canUpdate = noChanges || dispatchEvent(progress, 'progress.change', { value: newValue, max, percentage, indeterminate })
+    const setValue = canUpdate ? newValue : oldValue
 
-    progress.setAttribute(UUID, canUpdate ? newValue : oldValue)
+    progress.setAttribute(UUID, setValue)
     progress.setAttribute('role', 'img')
 
-    if (canUpdate) {
-      if (indeterminate) {
-        progress.removeAttribute('value')
-        progress.setAttribute('aria-label', newValue)
-      } else {
-        progress.setAttribute('value', newValue)
-        progress.setAttribute('max', max)
-        progress.setAttribute('aria-label', `${percentage}%`)
-      }
+    if (indeterminate) {
+      progress.removeAttribute('value')
+      progress.setAttribute('aria-label', setValue)
+    } else {
+      progress.setAttribute('value', setValue)
+      progress.setAttribute('max', max)
+      progress.setAttribute('aria-label', `${percentage}%`)
     }
 
     // handle old browsers and gracefully degrade the progress element
