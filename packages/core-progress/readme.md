@@ -1,6 +1,6 @@
 # Core Progress
 
-## `@nrk/core-progress` enhances any tag with content to be scrollable with mouse interaction on non-touch-devices. `core-scroll` also hides the scrollbars and automatically disables animation for users who prefers [reduced motion](https://css-tricks.com/introduction-reduced-motion-media-query/).
+## `@nrk/core-progress` enhances the `<progress>` element and makes it universally accessible
 
 ---
 
@@ -28,14 +28,87 @@ demo-->
 
 ```html
 <!--demo-->
-<label>Progress: Feilet
-  <progress class="my-progress" max="100"></progress>
+<label>Progress:
+  <progress class="my-progress" value="20" max="100"></progress>
 </label>
 <script>
-  coreProgress('.my-progress', 'Laster...');
-  // coreProgress('.my-progress', 20);
-  // coreProgress('.my-progress', { value: 20 });
-  // coreProgress('.my-progress', { value: 20, max: 100 });
-  coreProgress('.my-progress', { max: 100 });
+  // optional: init progress when attributes value or max are not present:
+  // coreProgress('.my-progress', {value: 0, max: 100}); 
+  coreProgress('.my-progress', 50); // update progress
 </script>
 ```
+
+```html
+<!--demo-->
+<label>Indeterminate progress:
+  <progress class="my-indeterminate-progress" max="100"></progress>
+</label>
+<script>
+  // Progress is indeterminate when no value attribute is present. 
+  coreProgress('.my-indeterminate-progress', 'Loading...'); 
+</script>
+```
+
+```html
+<!--demo-->
+<div id="jsx-progress"></div>
+<script type="text/jsx">
+  class MyProgress extends React.Component {
+    constructor (props) {
+      super(props)
+      this.state = { value: 50, max: 100 }
+    }
+    render () {
+      return <label> Progress JSX: 
+        <CoreProgress className="my-jsx-progress" value={this.state.value} max={this.state.max} onChange={(state) => this.setState(state)} />
+      </label>
+    }
+  }
+  ReactDOM.render(<MyProgress />, document.getElementById('jsx-progress'))
+</script>
+```
+
+## Usage
+
+### HTML / Javascript
+
+```html
+<label>Progress:
+  <progress class="my-progress"></progress>
+</label>
+```
+
+```js
+coreProgress(
+  selector, // Selector string or HTML Element
+  value // See table below
+);
+```
+
+Value type | Example | Description
+:-- | :-- | :--
+Integer | `50` | An integer updates the progress value directly
+String | `'Loading...'` | A string will indicate that the progress is indeterminate. The same string will be read by screen readers.
+Object | `{value: 50, max: 100}` | An object can define a value and/or a max value
+
+### React / Preact
+
+```js
+import CoreProgress from '@nrk/core-progress/jsx'
+
+<CoreProgress value={Number|String} max={Number} onChange={(event) => {}} />
+```
+
+## Events
+
+```js
+document.addEventListener('progress.change', (event) => {
+  event.target                  // The progress element
+  event.detail.value            // The current progress value 
+  event.detail.max              // The max progress value
+  event.detail.percentage       // The calculated percentage from (value / max * 100)
+  event.detail.indeterminate    // True if the progress is indeterminate (no value attribute)
+})
+```
+
+---
