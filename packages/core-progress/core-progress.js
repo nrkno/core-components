@@ -5,15 +5,14 @@ const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid att
 
 export default function progress (elements, value) {
   const options = typeof value === 'object' ? value : { value }
-  let indeterminate
 
   return queryAll(elements).map((progress) => {
-    indeterminate = !progress.hasAttribute('value') && Number(options.value) !== parseFloat(options.value) // handle numeric string values
     const isNative = typeof window.HTMLProgressElement !== 'undefined'
     const oldValue = progress.getAttribute(UUID) || progress.getAttribute('value') || '0'
-    const newValue = (options.value && String(options.value)) || oldValue
-    const max = Number(options.max) || progress.getAttribute('max') || '1'
-    const percentage = Math.round(Number(newValue) / max * 100) || 0
+    const newValue = String(options.value || oldValue)
+    const max = String(options.max || progress.getAttribute('max') || 1)
+    const indeterminate = Number(newValue) !== parseFloat(newValue) // handle numeric string values
+    const percentage = Math.round(newValue / max * 100) || 0
     const noChanges = newValue === oldValue && max === progress.getAttribute('max') && indeterminate !== progress.hasAttribute('value')
     const canUpdate = noChanges || dispatchEvent(progress, 'progress.change', { value: newValue, max, percentage, indeterminate })
 

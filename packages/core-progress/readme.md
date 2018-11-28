@@ -67,6 +67,7 @@ demo-->
   ReactDOM.render(<MyProgress />, document.getElementById('jsx-progress'))
 </script>
 ```
+---
 
 ## Usage
 
@@ -85,10 +86,12 @@ coreProgress(
 );
 ```
 
-Value type | Example | Description
+### Possible values
+
+Type | Example | Description
 :-- | :-- | :--
 Integer | `50` | An integer updates the progress value directly
-String | `'Loading...'` | A string will indicate that the progress is indeterminate. The same string will be read by screen readers.
+String | `'Loading...'` | A non-numerical string will indicate that the progress is indeterminate. The same string will be read by screen readers.
 Object | `{value: 50, max: 100}` | An object can define a value and/or a max value
 
 ### React / Preact
@@ -99,7 +102,12 @@ import CoreProgress from '@nrk/core-progress/jsx'
 <CoreProgress value={Number|String} max={Number} onChange={(event) => {}} />
 ```
 
+---
+
 ## Events
+
+Before a `@nrk/core-progress` changes state, a `progress.change` event is fired (both for VanillaJS and React/Preact components). The event is cancelable, meaning you can use [`event.preventDefault()`](https://developer.mozilla.org/en-US/docs/Web/API/Event/preventDefault) to cancel the state change. The event also [bubbles](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Building_blocks/Events#Event_bubbling_and_capture), and can therefore be detected both from the progress element itself, or any parent element (read [event delegation](https://stackoverflow.com/questions/1687296/what-is-dom-event-delegation)):
+
 
 ```js
 document.addEventListener('progress.change', (event) => {
@@ -110,5 +118,10 @@ document.addEventListener('progress.change', (event) => {
   event.detail.indeterminate    // True if the progress is indeterminate (no value attribute)
 })
 ```
-
 ---
+
+## Styling
+
+The progress element can be a bit hard to style nicely, but [CSS-tricks](https://css-tricks.com/html5-progress-element/) has some nice tips on how to make it pretty!
+
+> NOTE: Old browsers that don't support the progress element will get a `<style>` tag injected into `<head>`, which shows the percentage only.
