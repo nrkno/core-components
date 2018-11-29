@@ -29,11 +29,11 @@ demo-->
 ```html
 <!--demo-->
 <label>Progress:
-  <progress class="my-progress" value="20" max="100"></progress>
+  <progress class="my-progress" value="20" max="100" />
 </label>
 <script>
   // optional: init progress when attributes value or max are not present:
-  // coreProgress('.my-progress', {value: 0, max: 100}); 
+  // coreProgress('.my-progress'); 
   coreProgress('.my-progress', 50); // update progress
 </script>
 ```
@@ -41,7 +41,7 @@ demo-->
 ```html
 <!--demo-->
 <label>Indeterminate progress:
-  <progress class="my-indeterminate-progress" max="100"></progress>
+  <progress class="my-indeterminate-progress" max="100" />
 </label>
 <script>
   // Progress is indeterminate when no value attribute is present. 
@@ -75,7 +75,7 @@ demo-->
 
 ```html
 <label>Progress:
-  <progress class="my-progress"></progress>
+  <progress class="my-progress" />
 </label>
 ```
 
@@ -93,6 +93,7 @@ Type | Example | Description
 Integer | `50` | An integer updates the progress value directly
 String | `'Loading...'` | A non-numerical string will indicate that the progress is indeterminate. The same string will be read by screen readers.
 Object | `{value: 50, max: 100}` | An object can define a value and/or a max value
+undefined | - | When no value is passed, the progress element will automatically get all attributes set to their default values. After running `coreProgress('.my-progress')`, the markup will look like this: `<progress class="my-progress" data-nrk-core-progress-1-0-1="0" role="img" value="0" max="1" aria-label="0%" />`
 
 ### React / Preact
 
