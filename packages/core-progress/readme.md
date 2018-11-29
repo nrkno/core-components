@@ -33,7 +33,7 @@ demo-->
 </label>
 <script>
   // optional: init progress when attributes value or max are not present:
-  // coreProgress('.my-progress', {value: 0, max: 100}); 
+  // coreProgress('.my-progress'); 
   coreProgress('.my-progress', 50); // update progress
 </script>
 ```
@@ -93,6 +93,7 @@ Type | Example | Description
 Integer | `50` | An integer updates the progress value directly
 String | `'Loading...'` | A non-numerical string will indicate that the progress is indeterminate. The same string will be read by screen readers.
 Object | `{value: 50, max: 100}` | An object can define a value and/or a max value
+undefined | - | When no value is passed, the progress element will automatically get all attributes set to their default values. After running `coreProgress('.my-progress')`, the markup will be optimized for accessibility.
 
 ### React / Preact
 
