@@ -93,7 +93,7 @@ Type | Example | Description
 Integer | `50` | An integer updates the progress value directly
 String | `'Loading...'` | A non-numerical string will indicate that the progress is indeterminate. The same string will be read by screen readers.
 Object | `{value: 50, max: 100}` | An object can define a value and/or a max value
-undefined | - | When no value is passed, the progress element will automatically get all attributes set to their default values. After running `coreProgress('.my-progress')`, the markup will look like this: `<progress class="my-progress" data-nrk-core-progress-1-0-1="0" role="img" value="0" max="1" aria-label="0%"></progress>`
+undefined | - | When no value is passed, the progress element will automatically get all attributes set to their default values. After running `coreProgress('.my-progress')`, the markup will be optimized for accessibility.
 
 ### React / Preact
 
