@@ -115,7 +115,7 @@ function setOpen (dialog, open, opener = document.activeElement) {
 }
 
 function getVisibleElements (elements) {
-  return [].concat(elements).filter((el) => // Allow both array and single elements
+  return [].concat(elements || []).filter((el) => // Allow both array and single elements
     el.clientWidth &&
     el.clientHeight &&
     window.getComputedStyle(el).getPropertyValue('visibility') !== 'hidden'
