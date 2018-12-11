@@ -226,6 +226,15 @@ function closeDialog (event) {
 
 ## Markup
 
+### Required focusable element
+
+Your dialog must contain `<input>`, `<button>`, `<select>`, `<textarea>`, `<a>`
+or element with `tabindex="-1"` to helps the user navigate quickly into the `@nrk/nrk-dialog`.
+As a best practice; if your dialog contains a form element, use `autofocus`.
+If you dialog is without form elements, start your dialog
+content with `<h1 tabindex="-1">Dialog title</h1>`.
+
+
 ### Supporting IE9
 If you need `@nrk/core-dialog` to support IE9, add the following code in your `<head>` tag:
 ```
@@ -235,10 +244,6 @@ If you need `@nrk/core-dialog` to support IE9, add the following code in your `<
 ### Elements order
 
 Though not strictly required, the `<button>` opening a `@nrk/core-dialog` should be placed directly before the `<dialog>` itself. This eases the mental model for screen reader users.
-
-### Autofocus
-
-If you have form elements inside a `@nrk/core-dialog`, you can optionally add an `autofocus` attribute to the most prominent form element. This helps the user navigate quickly when toggle is opened.
 
 ---
 
