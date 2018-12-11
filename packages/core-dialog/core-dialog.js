@@ -137,7 +137,7 @@ function setFocus (dialog) {
  * @param {Object} event keyboard event from keydown
  */
 function keepFocus (dialog, event) {
-  const focusable = queryFocusable(dialog)
+  const focusable = queryAll(FOCUSABLE_ELEMENTS, dialog).filter(isVisible)
   const onEdge = focusable[event.shiftKey ? 0 : focusable.length - 1]
 
   // If focus moves us outside the dialog, we need to refocus to inside the dialog
