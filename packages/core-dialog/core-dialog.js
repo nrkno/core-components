@@ -18,15 +18,16 @@ export default function dialog (dialogs, open) {
   const options = typeof open === 'object' ? open : { open }
 
   return queryAll(dialogs).map((dialog) => {
+    const hasFocusable = queryAll(FOCUSABLE_ELEMENTS, dialog).length
     const hasBackdrop = (dialog.nextElementSibling || {}).nodeName === 'BACKDROP'
     const isStrict = typeof options.strict === 'boolean' ? options.strict : dialog.getAttribute(UUID) === 'true'
 
     dialog.setAttribute(UUID, isStrict)
-    dialog.setAttribute('tabindex', -1)
     dialog.setAttribute('role', 'dialog')
     dialog.setAttribute('aria-modal', true)
     dialog.setAttribute('aria-label', options.label || dialog.getAttribute('aria-label'))
-    hasBackdrop || dialog.insertAdjacentElement('afterend', document.createElement('backdrop'))
+    if (!hasBackdrop) dialog.insertAdjacentElement('afterend', document.createElement('backdrop'))
+    if (!hasFocusable) console.warn('@nrk/core-dialog initialized without focusable elements. Please add [tabindex="-1"] the main element of', dialog)
 
     setOpen(dialog, options.open, options.opener)
     return dialog
@@ -115,23 +116,18 @@ function setOpen (dialog, open, opener = document.activeElement) {
   }
 }
 
-function getVisibleElements (elements) {
-  return elements.filter((el) =>
-    el.clientWidth &&
-    el.clientHeight &&
+function isVisible (el) {
+  return el.clientWidth && el.clientHeight &&
     window.getComputedStyle(el).getPropertyValue('visibility') !== 'hidden'
-  )
-}
-
-function queryFocusable (context) {
-  return getVisibleElements(queryAll(FOCUSABLE_ELEMENTS, context))
 }
 
 function setFocus (dialog) {
   if (dialog.contains(document.activeElement)) return // Do not move if focus is already inside
-  const autofocusElement = getVisibleElements(queryAll('[autofocus]', dialog))[0]
-  const focusElement = autofocusElement || queryFocusable(dialog)[0] || dialog
-  focusElement.focus()
+  queryAll('[autofocus]', dialog)
+    .concat(queryAll(FOCUSABLE_ELEMENTS, dialog))
+    .concat(dialog)
+    .filter(isVisible)
+    .every(el => el.focus()) // Only focuses the first visible element
 }
 
 /**
@@ -141,7 +137,7 @@ function setFocus (dialog) {
  * @param {Object} event keyboard event from keydown
  */
 function keepFocus (dialog, event) {
-  const focusable = queryFocusable(dialog)
+  const focusable = queryAll(FOCUSABLE_ELEMENTS, dialog).filter(isVisible)
   const onEdge = focusable[event.shiftKey ? 0 : focusable.length - 1]
 
   // If focus moves us outside the dialog, we need to refocus to inside the dialog

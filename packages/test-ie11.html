@@ -1,13 +1,35 @@
 <!doctype html>
 <html>
 <head>
-  <meta charset="utf-8"/>
+  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>Core Components</title>
+  <script>document.createElement('progress')</script>
 </head>
 <body>
-  <script src="core-toggle/core-toggle.min.js"></script>
+  <progress></progress>
+  <script src="core-progress/core-progress.min.js"></script>
+  <script>
+    coreProgress('progress', {max: 100, value: 20})
+  </script>
+
+
+  <!-- <script src="https://unpkg.com/prop-types@15/prop-types.js"></script>
+  <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+  <script src="core-progress/core-progress.jsx.js"></script>
+  <div id="jsx-progress"></div>
+  <script>
+    ReactDOM.render(React.createElement(CoreProgress, {
+      className: 'my-jsx-progress',
+      value: 20,
+      max: 100,
+      onChange: console.log
+    }), document.getElementById('jsx-progress'))
+  </script> -->
+
+  <!-- <script src="core-toggle/core-toggle.min.js"></script>
   <style>.my-dropdown{display:block}.my-dropdown[hidden]{display:none}</style>
 
   <button class="my-toggle">Toggle VanillaJS</button>
@@ -28,7 +50,7 @@
   </ul>
   <script>
     coreToggle('.my-popup', {popup: true})
-  </script>
+  </script> -->
 
 
   <!-- <script src="core-dialog/core-dialog.min.js"></script>

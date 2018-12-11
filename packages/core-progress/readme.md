@@ -33,7 +33,7 @@ demo-->
 </label>
 <script>
   // optional: init progress when attributes value or max are not present:
-  // coreProgress('.my-progress'); 
+  // coreProgress('.my-progress');
   coreProgress('.my-progress', 50); // update progress
 </script>
 ```
@@ -44,8 +44,8 @@ demo-->
   <progress class="my-indeterminate-progress" max="100"></progress>
 </label>
 <script>
-  // Progress is indeterminate when no value attribute is present. 
-  coreProgress('.my-indeterminate-progress', 'Loading...'); 
+  // Progress is indeterminate when no value attribute is present.
+  coreProgress('.my-indeterminate-progress', 'Loading...');
 </script>
 ```
 
@@ -59,7 +59,7 @@ demo-->
       this.state = { value: 50, max: 100 }
     }
     render () {
-      return <label> Progress JSX: 
+      return <label> Progress JSX:
         <CoreProgress className="my-jsx-progress" value={this.state.value} max={this.state.max} onChange={(state) => this.setState(state)} />
       </label>
     }
@@ -86,14 +86,14 @@ coreProgress(
 );
 ```
 
-### Possible values
+### Possible `value`s
 
 Type | Example | Description
 :-- | :-- | :--
-Integer | `50` | An integer updates the progress value directly
-String | `'Loading...'` | A non-numerical string will indicate that the progress is indeterminate. The same string will be read by screen readers.
-Object | `{value: 50, max: 100}` | An object can define a value and/or a max value
-undefined | - | When no value is passed, the progress element will automatically get all attributes set to their default values. After running `coreProgress('.my-progress')`, the markup will be optimized for accessibility.
+Integer | `coreProgress(el, 50)` | An integer updates the progress value directly
+String | `coreProgress(el, 'Loading...')` | A non-numerical string will indicate that the progress is indeterminate. The same string will be read by screen readers.
+Object | `coreProgress(el, {value: 50, max: 100})` | An object can define a value and/or a max value
+undefined | `coreProgress(el)` | When no value is passed, the progress element will automatically get pick up values from markup attributes and enhance accessibility.
 
 ### React / Preact
 
@@ -113,7 +113,7 @@ Before a `@nrk/core-progress` changes state, a `progress.change` event is fired 
 ```js
 document.addEventListener('progress.change', (event) => {
   event.target                  // The progress element
-  event.detail.value            // The current progress value 
+  event.detail.value            // The current progress value
   event.detail.max              // The max progress value
   event.detail.percentage       // The calculated percentage from (value / max * 100)
   event.detail.indeterminate    // True if the progress is indeterminate (no value attribute)
@@ -124,5 +124,4 @@ document.addEventListener('progress.change', (event) => {
 ## Styling
 
 The progress element can be a bit hard to style nicely, but [CSS-tricks](https://css-tricks.com/html5-progress-element/) has some nice tips on how to make it pretty!
-
-> NOTE: Old browsers that don't support the progress element will get a `<style>` tag injected into `<head>`, which shows the percentage only.
+*Note: As Internet Explorer 9 does not support `<progress>`, `@nrk/core-progress` instead shows progress as a percentage string.*
