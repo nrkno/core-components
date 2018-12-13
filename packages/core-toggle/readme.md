@@ -16,16 +16,13 @@ import CoreToggle from '@nrk/core-toggle/jsx' // ...or React/Preact compatible J
 
 
 
-## Demo
+## Demo: Default
 
 <!--demo
 <script src="core-toggle/core-toggle.min.js"></script>
 <script src="core-toggle/core-toggle.jsx.js"></script>
-
-<div class="nrk-grid">
-<div class="nrk-xs-12of12 nrk-md-6of12" style="padding-right:30px"><h3>Default toggle</h3>
-Content is only toggled when clicking <code>button</code>. Great for accordions and expand/collapse panels.
 demo-->
+Content is only toggled when clicking `button`. Great for accordions and expand/collapse panels.
 
 ```html
 <!--demo-->
@@ -47,9 +44,9 @@ demo-->
 </script>
 ```
 
-</div>
-<div class="nrk-xs-12of12 nrk-md-6of12"><h3>Popup toggle</h3>
-Content is toggled when clicking <code>button</code>, and closed when clicking outside content. Great for dropdowns and tooltips.
+## Demo: Popup
+
+Content is toggled when clicking `button`, and closed when clicking outside content. Great for dropdowns and tooltips.
 
 ```html
 <!--demo-->
@@ -60,12 +57,7 @@ Content is toggled when clicking <code>button</code>, and closed when clicking o
     <button class="my-popup">Can also be nested</button>
     <ul class="my-dropdown" hidden>
       <li><a href="#">Sub-link</a></li>
-      <li>
-        <label>
-          <span class="nrk-sr">Skriv her</span>
-          <input type="text" autofocus>
-        </label>
-      </li>
+      <li><input type="text" autofocus aria-label="Skriv her"></li>
     </ul>
   </li>
 </ul>
@@ -94,9 +86,6 @@ Content is toggled when clicking <code>button</code>, and closed when clicking o
   </CoreToggle>, document.getElementById('jsx-toggle-popup'))
 </script>
 ```
-
-</div>
-</div>
 
 
 
