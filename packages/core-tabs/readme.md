@@ -1,8 +1,8 @@
 # Core Tabs
 
-## `@nrk/core-tabs` converts `<button>` and `<a>` elements to keyboard accessible tabs, controlling children of next element sibling (tabpanels). Tabs can be nested and easily extended with custom animations or behaviour through the `tabs.toggle` event.
+> `@nrk/core-tabs` converts `<button>` and `<a>` elements to keyboard accessible tabs, controlling children of next element sibling (tabpanels). Tabs can be nested and easily extended with custom animations or behaviour through the `tabs.toggle` event.
 
----
+
 
 ## Installation
 
@@ -14,7 +14,7 @@ import coreTabs from '@nrk/core-tabs'     // Vanilla JS
 import CoreTabs from '@nrk/core-tabs/jsx' // ...or React/Preact compatible JSX
 ```
 
----
+
 
 <!--demo
 <script src="core-tabs/core-tabs.min.js"></script>
@@ -83,7 +83,7 @@ demo-->
 </script>
 ```
 
----
+
 
 ## Usage
 
@@ -118,7 +118,7 @@ import CoreTabs from '@nrk/core-tabs/jsx'
 </CoreTabs>
 ```
 
----
+
 
 ## Events
 `'tabs.toggle'` is fired before toggle (both for VanillaJS and React/Preact components). The `tabs.toggle` event is cancelable, meaning you can use `event.preventDefault()` to cancel default toggling. The event also bubbles, and can therefore be detected both from button element itself, or any parent element (read event delegation):
@@ -139,7 +139,7 @@ document.addEventListener('tabs.toggle', (event) => {
 })
 ```
 
----
+
 
 ## Styling
 All styling in documentation is example only. Both the tabs and tabpanels receive attributes reflecting the current toggle state:
@@ -154,7 +154,7 @@ All styling in documentation is example only. Both the tabs and tabpanels receiv
 .my-tabpanel[hidden] {}             /* Target only closed panel */
 ```
 
----
+
 
 ## FAQ
 ### Why must tabs be direct children of `core-tabs` element and not inside `<li>`?

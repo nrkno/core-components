@@ -1,12 +1,12 @@
 # Core Datepicker
 
-## `@nrk/core-datepicker` enhances all child `input`, `select` `table` and `button` elements with keyboard accessible functionality for selecting date and time. The interface and granularity of date refinement can easily be altered through markup.
+> `@nrk/core-datepicker` enhances all child `input`, `select` `table` and `button` elements with keyboard accessible functionality for selecting date and time. The interface and granularity of date refinement can easily be altered through markup.
 
 - Handles both date and time selection
 - Add or remove controls to fit your needs
 - Keyboard accessible
 
----
+
 
 ## Installation
 
@@ -18,7 +18,7 @@ import coreDatepicker from '@nrk/core-datepicker'     // Vanilla JS
 import CoreDatepicker from '@nrk/core-datepicker/jsx' // ...or React/Preact compatible JSX
 ```
 
----
+
 
 <!--demo
 <script src="core-toggle/core-toggle.min.js"></script>
@@ -163,7 +163,7 @@ demo-->
 </script>
 ```
 
----
+
 
 ## Usage
 All date values - both HTML markup and JavaScript - accepts accepts dates as numbers, or as natural language in [the format of @nrk/simple-date-parse](https://github.com/nrkno/simple-date-parse).
@@ -239,7 +239,7 @@ import CoreDatepicker from '@nrk/core-datepicker/jsx'
 <CoreDatepicker>
 ```
 
----
+
 
 ## Events
 Events run in the order `datepicker.click.day`\* &rarr; `datepicker.render` &rarr; `datepicker.change`
@@ -285,7 +285,7 @@ document.addEventListener('datepicker.click.day', (event) => {
 })
 ```
 
----
+
 
 ## Styling
 
@@ -301,7 +301,7 @@ document.addEventListener('datepicker.click.day', (event) => {
 .my-datepicker button[data-core-datepicker-selected="true"]  /* Target the chosen date in month view */
 ```
 
----
+
 
 ## Language
 

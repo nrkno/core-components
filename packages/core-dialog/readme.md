@@ -1,8 +1,8 @@
 # Core Dialog
 
-## `<dialog>` is an element with which the user interacts with to perform some task or decision. `@nrk/core-dialog` simply adds `dialog` functionality to a `<dialog>` if it is not supported (or extends functionality if is supported). `@nrk/core-dialog` supports nestability, keyboard navigation containment and restoring focus when dialog is closed.
+> `<dialog>` is an element with which the user interacts with to perform some task or decision. `@nrk/core-dialog` simply adds `dialog` functionality to a `<dialog>` if it is not supported (or extends functionality if is supported). `@nrk/core-dialog` supports nestability, keyboard navigation containment and restoring focus when dialog is closed.
 
----
+
 
 ## Installation
 
@@ -14,7 +14,7 @@ import coreDialog from '@nrk/core-dialog'     // Vanilla JS
 import CoreDialog from '@nrk/core-dialog/jsx' // ...or React/Preact compatible JSX
 ```
 
----
+
 
 <!--demo
 <script src="core-dialog/core-dialog.min.js"></script>
@@ -169,7 +169,7 @@ demo-->
 </script>
 ```
 
----
+
 
 ## Usage
 
@@ -222,7 +222,7 @@ function closeDialog (event) {
 }
 ```
 
----
+
 
 ## Markup
 
@@ -245,7 +245,7 @@ If you need `@nrk/core-dialog` to support IE9, add the following code in your `<
 
 Though not strictly required, the `<button>` opening a `@nrk/core-dialog` should be placed directly before the `<dialog>` itself. This eases the mental model for screen reader users.
 
----
+
 
 ## Events
 
@@ -257,7 +257,7 @@ document.addEventListener('dialog.toggle', (event) => {
 })
 ```
 
----
+
 
 ## Styling
 
@@ -270,7 +270,7 @@ document.addEventListener('dialog.toggle', (event) => {
 
 **Note** : There is a z-index limit for the backdrop at 2000000000. Do not use higher z-index values in your site in order for `core-dialog` to work properly. The limit exists because some browser extensions, like [ghostery](https://chrome.google.com/webstore/detail/ghostery-%E2%80%93-privacy-ad-blo/mlomiejdfkolichcflejclcbmpeaniij?hl=en) have absurdly high z-indexes. The issue is further explained [here](https://techjunkie.com/maximum-z-index-value).
 
----
+
 
 ## FAQ
 ### Why use `<dialog>` when it is not supported by all browsers?
