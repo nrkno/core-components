@@ -1,8 +1,8 @@
 # Core Toggle
 
-## `@nrk/core-toggle` simply makes a `<button>` toggle the visibility of next element sibling. Toggles can be nested and easily extended with custom animations or behavior through the [toggle event](#events). It has two modes:
+> `@nrk/core-toggle` simply makes a `<button>` toggle the visibility of next element sibling. Toggles can be nested and easily extended with custom animations or behavior through the [toggle event](#events). It has two modes:
 
----
+
 
 ## Installation
 
@@ -14,7 +14,7 @@ import coreToggle from '@nrk/core-toggle'     // Vanilla JS
 import CoreToggle from '@nrk/core-toggle/jsx' // ...or React/Preact compatible JSX
 ```
 
----
+
 
 ## Demo
 
@@ -98,7 +98,7 @@ Content is toggled when clicking <code>button</code>, and closed when clicking o
 </div>
 </div>
 
----
+
 
 ## Usage
 
@@ -133,7 +133,7 @@ import CoreToggle from '@nrk/core-toggle/jsx'
 </CoreToggle>
 ```
 
----
+
 
 ## Markup
 
@@ -152,7 +152,7 @@ Putting the toggle button directly before the content is highly recommended, as 
 
 If you have form elements inside a `@nrk/core-toggle`, you can optionally add a `autofocus` attribute to the most prominent form element. This helps the user navigate quickly when toggle is opened.
 
----
+
 
 ## Events
 
@@ -167,7 +167,7 @@ document.addEventListener('toggle', (event) => {
 })
 ```
 
----
+
 
 ## Styling
 
@@ -183,7 +183,7 @@ All styling in documentation is example only. Both the `<button>` and content el
 .my-toggle-content[hidden] {}         /* Target only closed content */
 ```
 
----
+
 
 ## FAQ
 

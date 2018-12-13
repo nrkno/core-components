@@ -1,8 +1,8 @@
 # Core Progress
 
-## `@nrk/core-progress` enhances the `<progress>` element and makes it universally accessible
+> `@nrk/core-progress` enhances the `<progress>` element and makes it universally accessible
 
----
+
 
 ## Installation
 
@@ -14,7 +14,7 @@ import coreProgress from '@nrk/core-progress'     // Vanilla JS
 import coreProgress from '@nrk/core-progress/jsx' // ...or React/Preact compatible JSX
 ```
 
----
+
 
 <!--demo
 <script src="core-progress/core-progress.min.js"></script>
@@ -67,7 +67,7 @@ demo-->
   ReactDOM.render(<MyProgress />, document.getElementById('jsx-progress'))
 </script>
 ```
----
+
 
 ## Usage
 
@@ -103,7 +103,7 @@ import CoreProgress from '@nrk/core-progress/jsx'
 <CoreProgress value={Number|String} max={Number} onChange={(event) => {}} />
 ```
 
----
+
 
 ## Events
 
@@ -119,7 +119,7 @@ document.addEventListener('progress.change', (event) => {
   event.detail.indeterminate    // True if the progress is indeterminate (no value attribute)
 })
 ```
----
+
 
 ## Styling
 

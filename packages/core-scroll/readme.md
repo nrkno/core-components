@@ -1,8 +1,8 @@
 # Core Scroll
 
-## `@nrk/core-scroll` enhances any tag with content to be scrollable with mouse interaction on non-touch-devices. `core-scroll` also hides the scrollbars and automatically disables animation for users who prefers [reduced motion](https://css-tricks.com/introduction-reduced-motion-media-query/).
+> `@nrk/core-scroll` enhances any tag with content to be scrollable with mouse interaction on non-touch-devices. `core-scroll` also hides the scrollbars and automatically disables animation for users who prefers [reduced motion](https://css-tricks.com/introduction-reduced-motion-media-query/).
 
----
+
 
 ## Installation
 
@@ -14,7 +14,7 @@ import coreScroll from '@nrk/core-scroll'     // Vanilla JS
 import CoreScroll from '@nrk/core-scroll/jsx' // ...or React/Preact compatible JSX
 ```
 
----
+
 
 <!--demo
 <script src="core-scroll/core-scroll.min.js"></script>
@@ -100,7 +100,7 @@ demo-->
 </script>
 ```
 
----
+
 
 ## Usage
 
@@ -152,7 +152,7 @@ state = {
 
 ```
 
----
+
 
 ## Events
 
@@ -196,7 +196,7 @@ document.addEventListener('scroll', (event) => {
 }, true) // Note the true parameter, activating capture listening
 ```
 
----
+
 
 ## Styling
 

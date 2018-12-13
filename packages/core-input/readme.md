@@ -1,8 +1,8 @@
 # Core Input
 
-## `@nrk/core-input` enhances `<input>` fields with keyboard accessible functionality for autocomplete suggestions, search results and smart select box abilities.
+> `@nrk/core-input` enhances `<input>` fields with keyboard accessible functionality for autocomplete suggestions, search results and smart select box abilities.
 
----
+
 
 ## Installation
 
@@ -14,7 +14,7 @@ import coreInput from '@nrk/core-input'     // Vanilla JS
 import CoreInput from '@nrk/core-input/jsx' // ...or React/Preact compatible JSX
 ```
 
----
+
 
 <!--demo
 <script src="core-input/core-input.min.js"></script>
@@ -58,7 +58,7 @@ Typing toggles the [hidden attribute](https://developer.mozilla.org/en/docs/Web/
 </script>
 ```
 
----
+
 
 ## Usage
 
@@ -107,7 +107,7 @@ import CoreInput from '@nrk/core-input/jsx'
 </CoreInput>
 ```
 
----
+
 
 ## Events
 
@@ -166,7 +166,7 @@ document.addEventListener('input.ajax', (event) => {
 })
 ```
 
----
+
 
 ## Styling
 All styling in documentation is example only. Both the `<button>` and content element receive attributes reflecting the current toggle state:
@@ -184,7 +184,7 @@ All styling in documentation is example only. Both the `<button>` and content el
 .my-input-content mark {}             /* Target highlighted text */
 ```
 
----
+
 
 ## Ajax
 
@@ -194,7 +194,7 @@ When using `@nrk/core-input` with the `ajax: https://search.com?q={{value}}` fun
 
 If you need to alter default headers, request method or post data, use the [`input.ajax.beforeSend` event  →](#input-ajax-beforesend)
 
----
+
 
 ## Demo: Ajax
 
@@ -270,7 +270,7 @@ Ajax requests can be stopped by calling `event.preventDefault()` on `'input.filt
 </script>
 ```
 
----
+
 
 ## Demo: Lazy
 Hybrid solution; lazy load items, but let `core-input` still handle filtering:
@@ -331,7 +331,7 @@ Hybrid solution; lazy load items, but let `core-input` still handle filtering:
 </script>
 ```
 
----
+
 
 ## Demo: Dynamic
 Synchronous operation; dynamically populating items based input value:
@@ -391,7 +391,7 @@ Synchronous operation; dynamically populating items based input value:
 </script>
 ```
 
----
+
 
 ## FAQ
 
