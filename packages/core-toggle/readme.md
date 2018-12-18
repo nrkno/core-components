@@ -52,17 +52,17 @@ Content is toggled when clicking `button`, and closed when clicking outside cont
 <!--demo-->
 <button class="my-popup">Popup VanillaJS</button>
 <ul class="my-dropdown" hidden>
-  <li><a href="#">Link</a></li>
+  <li><a>Link</a></li>
   <li>
     <button class="my-popup">Can also be nested</button>
     <ul class="my-dropdown" hidden>
-      <li><a href="#">Sub-link</a></li>
+      <li><a>Sub-link</a></li>
       <li><input type="text" autofocus aria-label="Skriv her"></li>
     </ul>
   </li>
 </ul>
 <script>
-  coreToggle('.my-popup', {popup: true})
+  coreToggle('.my-popup', { popup: 'Example picker' })
 </script>
 ```
 
@@ -70,12 +70,12 @@ Content is toggled when clicking `button`, and closed when clicking outside cont
 <!--demo-->
 <div id="jsx-toggle-popup"></div>
 <script type="text/jsx">
-  ReactDOM.render(<CoreToggle popup>
+  ReactDOM.render(<CoreToggle popup='Example picker'>
     <button>Popup JSX</button>
     <ul className='my-dropdown'>
       <li><a href='#'>Link</a></li>
       <li>
-        <CoreToggle popup>
+        <CoreToggle popup='Example picker'>
           <button>Can also be nested</button>
           <ul className='my-dropdown'>
             <li><a href='#'>Sub-link</a></li>
@@ -88,6 +88,27 @@ Content is toggled when clicking `button`, and closed when clicking outside cont
 ```
 
 
+## Demo: Select
+
+Listen to the `toggle.select` event and update the button's value from the selected item
+to create a component that behaves like a `<select>`:
+
+```html
+<!--demo-->
+<button class="my-popup-value">Select number</button>
+<ul class="my-dropdown" hidden>
+  <li><button>One</button></li>
+  <li><button>Two</button></li>
+  <li><button>Three</button></li>
+</ul>
+<script>
+  document.addEventListener('toggle.select', (event) => {
+      if (event.target.className !== 'my-popup-value') return
+      coreToggle(event.target, { value: event.detail.value, open: false })
+  })
+  coreToggle('.my-popup-value', { popup: 'Number picker'})
+</script>
+```
 
 ## Usage
 
@@ -103,7 +124,8 @@ import coreToggle from '@nrk/core-toggle'
 
 coreToggle(String|Element|Elements, { // Accepts a selector string, NodeList, Element or array of Elements
   open: null,                         // Defaults to value of aria-expanded or false. Use true|false to force open state
-  popup: false                        // Defaults to false. Use true to enable click-outside-to-close
+  popup: false|String                 // Defaults to false. Use string to enable popup (click-outside-to-close)
+  value: undefined|String             // Defaults to existing markup value. Pass string to change the button's innerHTML.
 })
 ```
 
@@ -145,7 +167,10 @@ If you have form elements inside a `@nrk/core-toggle`, you can optionally add a 
 
 ## Events
 
+### toggle
+
 Before a `@nrk/core-toggle` changes open state, a [toggle event](https://www.w3schools.com/jsref/event_ontoggle.asp) is fired (both for VanillaJS and React/Preact components). The toggle event is cancelable, meaning you can use [`event.preventDefault()`](https://developer.mozilla.org/en-US/docs/Web/API/Event/preventDefault) to cancel toggling. The event also [bubbles](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Building_blocks/Events#Event_bubbling_and_capture), and can therefore be detected both from the button element itself, or any parent element (read [event delegation](https://stackoverflow.com/questions/1687296/what-is-dom-event-delegation)):
+
 
 ```js
 document.addEventListener('toggle', (event) => {
@@ -156,6 +181,20 @@ document.addEventListener('toggle', (event) => {
 })
 ```
 
+### toggle.select
+
+The `toggle.select` event is fired whenever an item is selected inside a toggle with the `popup` option enabled.
+Useful for setting the value of the toggle button with the selected value.
+
+
+```js
+document.addEventListener('toggle.select', (event) => {
+  event.target                              // The buttom element triggering the event
+  event.detail.relatedTarget                // The content element controlled by button
+  event.detail.currentTarget                // The item element selected
+  event.detail.value                        // The selected item's value
+})
+```
 
 
 ## Styling

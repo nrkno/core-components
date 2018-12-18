@@ -4,66 +4,83 @@ import { IS_ANDROID, IS_IOS, addEvent, dispatchEvent, getUUID, queryAll } from '
 const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid attribute characters
 const ARIA = IS_ANDROID ? 'data' : 'aria' // Andriod has a bug and reads only label instead of content
 const OPEN = 'aria-expanded'
-const POPS = 'data-haspopup' // aria-haspopup triggers forms mode in JAWS, therefore data-
+const POPUP = 'data-haspopup' // aria-haspopup triggers forms mode in JAWS, therefore data-
 const KEYS = { ESC: 27 }
 
-export default function toggle (buttons, open) {
+export default function toggle (toggles, open) {
   const options = typeof open === 'object' ? open : { open }
-  if (IS_IOS) document.documentElement.style.cursor = 'pointer' // Fix iOS events for closing {popup: true} https://stackoverflow.com/questions/14795944/jquery-click-events-not-working-in-ios#16006333
+  if (IS_IOS) document.documentElement.style.cursor = 'pointer' // Fix iOS events for closing popups (https://stackoverflow.com/a/16006333/8819615)
 
-  return queryAll(buttons).map((button) => {
-    const open = typeof options.open === 'boolean' ? options.open : button.getAttribute(OPEN) === 'true'
-    const pops = typeof options.popup === 'boolean' ? options.popup : button.getAttribute(POPS) === 'true'
-    const content = getContentElement(button)
+  return queryAll(toggles).map((toggle) => {
+    const isOpen = toggle.getAttribute(OPEN) === 'true'
+    const open = typeof options.open === 'boolean' ? options.open : (options.open === 'toggle' ? !isOpen : isOpen)
+    const popup = typeof options.popup === 'string' ? options.popup : toggle.getAttribute(POPUP)
+    const content = getContentElement(toggle)
 
-    button.setAttribute(UUID, '')
-    button.setAttribute(POPS, pops)
-    button.setAttribute('aria-controls', content.id = content.id || getUUID())
-    content.setAttribute(`${ARIA}-labelledby`, button.id = button.id || getUUID())
-    setOpen(button, open)
-    return button
+    toggle.setAttribute(UUID, '')
+    toggle[popup ? 'setAttribute' : 'removeAttribute'](POPUP, popup)
+    toggle.setAttribute('aria-controls', content.id = content.id || getUUID())
+    content.setAttribute(`${ARIA}-labelledby`, toggle.id = toggle.id || getUUID())
+    setOpen(toggle, open)
+    if (options.value) toggle.innerHTML = options.value
+    if (popup) toggle.setAttribute('aria-label', `${toggle.textContent}, ${popup}`)
+    return toggle
   })
 }
 
-function getContentElement (button) {
-  return document.getElementById(button.getAttribute('aria-controls')) || button.nextElementSibling
+function getContentElement (toggle) {
+  return document.getElementById(toggle.getAttribute('aria-controls')) || toggle.nextElementSibling
 }
 
 addEvent(UUID, 'keydown', (event) => {
   if (event.keyCode !== KEYS.ESC) return
   for (let el = event.target; el; el = el.parentElement) {
-    const button = (el.id && document.querySelector(`[aria-controls="${el.id}"]`)) || el
+    const toggle = (el.id && document.querySelector(`[aria-controls="${el.id}"]`)) || el
 
-    if (button.hasAttribute(UUID) && button.getAttribute(POPS) === 'true' && button.getAttribute(OPEN) === 'true') {
+    if (toggle.hasAttribute(UUID) && toggle.hasAttribute(POPUP) && toggle.getAttribute(OPEN) === 'true') {
       event.preventDefault() // Prevent leaving maximized window in Safari
-      button.focus()
-      return setOpen(button, false)
+      toggle.focus()
+      return setOpen(toggle, false)
     }
   }
 }, true) // Use capture to enable checking defaultPrevented (from ESC key) in parents
 
 addEvent(UUID, 'click', ({ target, defaultPrevented }) => {
   if (defaultPrevented) return false // Do not toggle if someone run event.preventDefault()
-  queryAll(`[${UUID}]`).forEach((el) => {
-    const open = el.getAttribute(OPEN) === 'true'
-    const pops = el.getAttribute(POPS) === 'true'
-    const content = getContentElement(el)
 
-    if (el.contains(target)) setOpen(el, !open) // Click on toggle
-    else if (pops && open) setOpen(el, content.contains(target)) // Click in content or outside
+  for (let el = target, item; el; el = el.parentElement) {
+    const toggle = item && el.id && document.querySelector(`[${UUID}][aria-controls="${el.id}"]`)
+    if ((el.nodeName === 'BUTTON' || el.nodeName === 'A') && !el.hasAttribute(UUID)) item = el // interactive element clicked
+    if (toggle) {
+      dispatchEvent(toggle, 'toggle.select', {
+        relatedTarget: getContentElement(toggle),
+        currentTarget: item,
+        value: item.textContent.trim()
+      })
+      break
+    }
+  }
+
+  queryAll(`[${UUID}]`).forEach((toggle) => {
+    const open = toggle.getAttribute(OPEN) === 'true'
+    const popup = toggle.hasAttribute(POPUP)
+    const content = getContentElement(toggle)
+
+    if (toggle.contains(target)) setOpen(toggle, !open) // Click on toggle
+    else if (popup && open) setOpen(toggle, content.contains(target)) // Click in content or outside
   })
 })
 
-function setOpen (button, open) {
-  const content = getContentElement(button)
-  const isOpen = button.getAttribute(OPEN) === 'true'
+function setOpen (toggle, open) {
+  const content = getContentElement(toggle)
+  const isOpen = toggle.getAttribute(OPEN) === 'true'
   const willOpen = typeof open === 'boolean' ? open : (open === 'toggle' ? !isOpen : isOpen)
-  const isUpdate = isOpen === willOpen || dispatchEvent(button, 'toggle', { relatedTarget: content, isOpen, willOpen })
-  const nextOpen = isUpdate ? willOpen : button.getAttribute(OPEN) === 'true' // dispatchEvent can change attributes
+  const isUpdate = isOpen === willOpen || dispatchEvent(toggle, 'toggle', { relatedTarget: content, isOpen, willOpen })
+  const nextOpen = isUpdate ? willOpen : toggle.getAttribute(OPEN) === 'true' // dispatchEvent can change attributes
   const focus = !isOpen && nextOpen && content.querySelector('[autofocus]')
 
   if (focus) setTimeout(() => focus && focus.focus()) // Move focus on next render (if element stil exists)
 
-  button.setAttribute(OPEN, nextOpen)
+  toggle.setAttribute(OPEN, nextOpen)
   content[nextOpen ? 'removeAttribute' : 'setAttribute']('hidden', '')
 }

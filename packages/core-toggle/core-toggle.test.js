@@ -1,40 +1,6 @@
+/* global expect, describe, it */
+
 const coreToggle = require('./core-toggle.min')
-
-function expectClosedAttributes (button, container) {
-  expect(button.getAttribute('aria-expanded')).toEqual('false')
-  expect(button.getAttribute('aria-controls')).toEqual(container.id)
-
-  expect(container.hasAttribute('hidden')).toBeTruthy()
-  expect(container.getAttribute('aria-labelledby')).toEqual(button.id)
-}
-
-function expectOpenAttributes (button, container) {
-  expect(button.getAttribute('aria-expanded')).toEqual('true')
-  expect(button.getAttribute('aria-controls')).toEqual(container.id)
-
-  expect(container.hasAttribute('hidden')).toBeFalsy()
-  expect(container.getAttribute('aria-labelledby')).toEqual(button.id)
-}
-
-function expectOpened (button, container) {
-  expect(button.getAttribute('data-haspopup')).toEqual('false')
-  expectOpenAttributes(button, container)
-}
-
-function expectClosed (button, container) {
-  expect(button.getAttribute('data-haspopup')).toEqual('false')
-  expectClosedAttributes(button, container)
-}
-
-function expectPopupOpened (button, container) {
-  expect(button.getAttribute('data-haspopup')).toEqual('true')
-  expectOpenAttributes(button, container)
-}
-
-function expectPopupClosed (button, container) {
-  expect(button.getAttribute('data-haspopup')).toEqual('true')
-  expectClosedAttributes(button, container)
-}
 
 const standardHTML = `
 <button class="my-toggle">Toggle VanillaJS</button>
@@ -46,94 +12,73 @@ describe('toggle', () => {
     expect(coreToggle).toBeInstanceOf(Function)
   })
 
-  it('should initialize button and container with props when core-toggle is called', () => {
+  it('should initialize button and container', () => {
     document.body.innerHTML = standardHTML
-
     const button = document.querySelector('.my-toggle')
     const container = document.querySelector('.my-toggle + *')
-
     coreToggle(button)
-
-    expectClosed(button, container)
+    expect(button.hasAttribute('data-haspopup')).toEqual(false)
+    expect(button.getAttribute('aria-expanded')).toEqual('false')
+    expect(button.getAttribute('aria-controls')).toEqual(container.id)
+    expect(container.hasAttribute('hidden')).toEqual(true)
+    expect(container.getAttribute('aria-labelledby')).toEqual(button.id)
   })
 
-  it('should open when calling coreToggle with open attribute set to true', () => {
+  it('should open with open attribute', () => {
     document.body.innerHTML = standardHTML
-
     const button = document.querySelector('.my-toggle')
     const container = document.querySelector('.my-toggle + *')
-
     coreToggle(button, { open: true })
-
-    expectOpened(button, container)
+    expect(container.hasAttribute('hidden')).toEqual(false)
+    expect(button.getAttribute('aria-expanded')).toEqual('true')
   })
 
-  it('should close an open container when calling coreToggle with open attribute set to false', () => {
+  it('should close an opened toggle', () => {
     document.body.innerHTML = standardHTML
-
     const button = document.querySelector('.my-toggle')
     const container = document.querySelector('.my-toggle + *')
-
     coreToggle(button, { open: true })
     coreToggle(button, { open: false })
-
-    expectClosed(button, container)
+    expect(container.hasAttribute('hidden')).toEqual(true)
   })
 
-  it('should set popup attributes when initialized as a popup', () => {
+  it('should initialize as popup', () => {
     document.body.innerHTML = standardHTML
+    const button = document.querySelector('.my-toggle')
+    coreToggle(button, { popup: 'Test' })
+    expect(button.hasAttribute('data-haspopup')).toEqual(true)
+  })
 
+  it('should open popup with open', () => {
+    document.body.innerHTML = standardHTML
     const button = document.querySelector('.my-toggle')
     const container = document.querySelector('.my-toggle + *')
-
-    coreToggle(button, { popup: true })
-
-    expectPopupClosed(button, container)
+    coreToggle(button, { popup: 'Tekst', open: true })
+    expect(button.getAttribute('data-haspopup')).toEqual('Tekst')
+    expect(container.hasAttribute('hidden')).toEqual(false)
   })
 
-  it('should open popup when calling coreToggle with open attribute set to true', () => {
+  it('should close popup', () => {
     document.body.innerHTML = standardHTML
-
     const button = document.querySelector('.my-toggle')
     const container = document.querySelector('.my-toggle + *')
-
-    coreToggle(button, { popup: true, open: true })
-
-    expectPopupOpened(button, container)
+    coreToggle(button, { popup: 'Tekst', open: true })
+    coreToggle(button, { open: false })
+    expect(container.hasAttribute('hidden')).toEqual(true)
   })
 
-  it('should close popup when calling coreToggle with open attribute set to false', () => {
-    document.body.innerHTML = standardHTML
-
-    const button = document.querySelector('.my-toggle')
-    const container = document.querySelector('.my-toggle + *')
-
-    coreToggle(button, { popup: true, open: true })
-    coreToggle(button, { popup: true, open: false })
-
-    expectPopupClosed(button, container)
-  })
-
-  it('should respect existing aria-controls attribute if target is found', () => {
+  it('should respect existing aria-controls', () => {
     document.body.innerHTML = `
       <div><button class="my-toggle" aria-controls="content">Toggle VanillaJS</button></div>
       <div id="content" hidden>Content</div>`
-
     const button = document.querySelector('.my-toggle')
     const container = document.querySelector('#content')
-
     coreToggle(button, { open: false })
-    expect(button.getAttribute('aria-controls')).toEqual('content')
-    expectClosedAttributes(button, container)
-
+    expect(container.hasAttribute('hidden')).toEqual(true)
     coreToggle(button, { open: true })
-    expectOpenAttributes(button, container)
+    expect(container.hasAttribute('hidden')).toEqual(false)
+    expect(button.getAttribute('aria-expanded')).toEqual('true')
+    expect(button.getAttribute('aria-controls')).toEqual(container.id)
+    expect(container.getAttribute('aria-labelledby')).toEqual(button.id)
   })
 })
-
-module.exports = {
-  expectOpened,
-  expectClosed,
-  expectPopupOpened,
-  expectPopupClosed
-}
