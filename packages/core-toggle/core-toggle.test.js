@@ -53,8 +53,8 @@ describe('toggle', () => {
     document.body.innerHTML = standardHTML
     const button = document.querySelector('.my-toggle')
     const container = document.querySelector('.my-toggle + *')
-    coreToggle(button, { popup: true, open: true })
-    expect(button.hasAttribute('data-haspopup')).toEqual(false)
+    coreToggle(button, { popup: 'Tekst', open: true })
+    expect(button.getAttribute('data-haspopup')).toEqual('Tekst')
     expect(container.hasAttribute('hidden')).toEqual(false)
   })
 
@@ -62,8 +62,8 @@ describe('toggle', () => {
     document.body.innerHTML = standardHTML
     const button = document.querySelector('.my-toggle')
     const container = document.querySelector('.my-toggle + *')
-    coreToggle(button, { popup: true, open: true })
-    coreToggle(button, { popup: true, open: false })
+    coreToggle(button, { popup: 'Tekst', open: true })
+    coreToggle(button, { open: false })
     expect(container.hasAttribute('hidden')).toEqual(true)
   })
 

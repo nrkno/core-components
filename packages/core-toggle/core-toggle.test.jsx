@@ -41,18 +41,20 @@ describe('core-toggle/jsx', () => {
   })
 
   it('should initialize as popup', () => {
-    mount({ popup: true })
+    mount({ popup: 'Tekst' })
     const button = document.querySelector(`[${UUID}]`)
     const container = document.querySelector(`[${UUID}] + *`)
     expect(container.hasAttribute('hidden')).toEqual(true)
+    expect(button.getAttribute('data-haspopup')).toEqual('Tekst')
     expect(button.getAttribute('aria-expanded')).toEqual('false')
   })
 
-  it('should open as a popup when popup and open prop is set to true', () => {
-    mount({ open: true, popup: true })
+  it('should open popup with open', () => {
+    mount({ open: true, popup: 'Tekst' })
     const button = document.querySelector(`[${UUID}]`)
     const container = document.querySelector(`[${UUID}] + *`)
-    expect(button.hasAttribute('data-haspopup')).toEqual(true)
     expect(container.hasAttribute('hidden')).toEqual(false)
+    expect(button.getAttribute('data-haspopup')).toEqual('Tekst')
+    expect(button.getAttribute('aria-expanded')).toEqual('true')
   })
 })
