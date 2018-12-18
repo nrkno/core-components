@@ -1,8 +1,9 @@
+/* global expect, describe, it */
+
 const React = require('react')
 const ReactDOM = require('react-dom')
 const CoreToggle = require('./jsx')
 const { name, version } = require('./package.json')
-const { expectOpened, expectClosed, expectPopupOpened, expectPopupClosed } = require('./core-toggle.test.js')
 
 const UUID = `data-${name}-${version}`.replace(/\W+/g, '-')
 const mount = (props = {}, keepInstance) => {
@@ -22,30 +23,36 @@ describe('core-toggle/jsx', () => {
     const wrapper = mount()
     const button = document.querySelector(`[${UUID}]`)
     const container = document.querySelector(`[${UUID}] + *`)
-
     expect(wrapper.props.open).toBeNull()
     expect(wrapper.props.popup).toBeNull()
-    expectClosed(button, container)
+    expect(container.hasAttribute('hidden')).toEqual(true)
+    expect(button.hasAttribute('data-haspopup')).toEqual(false)
+    expect(button.getAttribute('aria-expanded')).toEqual('false')
+    expect(button.getAttribute('aria-controls')).toEqual(container.id)
+    expect(container.getAttribute('aria-labelledby')).toEqual(button.id)
   })
 
-  it('should show content when open prop is set to true', () => {
+  it('should open with open attribute', () => {
     mount({ open: true })
     const button = document.querySelector(`[${UUID}]`)
     const container = document.querySelector(`[${UUID}] + *`)
-    expectOpened(button, container)
+    expect(container.hasAttribute('hidden')).toEqual(false)
+    expect(button.getAttribute('aria-expanded')).toEqual('true')
   })
 
-  it('should initialize as popup when popup prop is set to true', () => {
+  it('should initialize as popup', () => {
     mount({ popup: true })
     const button = document.querySelector(`[${UUID}]`)
     const container = document.querySelector(`[${UUID}] + *`)
-    expectPopupClosed(button, container)
+    expect(container.hasAttribute('hidden')).toEqual(true)
+    expect(button.getAttribute('aria-expanded')).toEqual('false')
   })
 
   it('should open as a popup when popup and open prop is set to true', () => {
     mount({ open: true, popup: true })
     const button = document.querySelector(`[${UUID}]`)
     const container = document.querySelector(`[${UUID}] + *`)
-    expectPopupOpened(button, container)
+    expect(button.hasAttribute('data-haspopup')).toEqual(true)
+    expect(container.hasAttribute('hidden')).toEqual(false)
   })
 })
