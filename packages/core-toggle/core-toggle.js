@@ -17,7 +17,7 @@ export default function toggle (toggles, open) {
     const content = getContentElement(toggle)
 
     toggle.setAttribute(UUID, popup) // aria-haspopup triggers forms mode in JAWS, therefore store in uuid
-    toggle[popup === 'false' ? 'removeAttribute' : 'setAttribute']('aria-label', `${toggle.textContent}, ${popup}`)
+    toggle.setAttribute('aria-label', `${toggle.textContent}, ${popup.replace(/^true|false$/, '')}`)
     toggle.setAttribute('aria-controls', content.id = content.id || getUUID())
     content.setAttribute(`${ARIA}-labelledby`, toggle.id = toggle.id || getUUID())
     setOpen(toggle, open)
