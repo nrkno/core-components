@@ -110,6 +110,34 @@ to create a component that behaves like a `<select>`:
 </script>
 ```
 
+```html
+<!--demo-->
+<div id="jsx-toggle-select"></div>
+<script type="text/jsx">
+  class MyToggleSelect extends React.Component {
+    constructor (props) {
+      super(props)
+      this.state = { value: 'Select number' }
+      this.onSelect = this.onSelect.bind(this)
+    }
+    onSelect (event) {
+      this.setState({ value: event.detail.value })
+    }
+    render () {
+      return <CoreToggle popup='Example picker' open={false} onToggleSelect={this.onSelect}>
+        <button>{this.state.value}</button>
+        <ul className='my-dropdown'>
+          <li><button>One</button></li>
+          <li><button>Two</button></li>
+          <li><button>Three</button></li>
+        </ul>
+      </CoreToggle>
+    }
+  }
+  ReactDOM.render(<MyToggleSelect/>, document.getElementById('jsx-toggle-select'))
+</script>
+```
+
 ## Usage
 
 ### HTML / JavaScript
