@@ -1,6 +1,7 @@
 /* global expect, describe, it */
-
+const { name, version } = require('./package.json')
 const coreToggle = require('./core-toggle.min')
+const UUID = `data-${name}-${version}`.replace(/\W+/g, '-')
 
 const standardHTML = `
 <button class="my-toggle">Toggle VanillaJS</button>
@@ -17,7 +18,7 @@ describe('toggle', () => {
     const button = document.querySelector('.my-toggle')
     const container = document.querySelector('.my-toggle + *')
     coreToggle(button)
-    expect(button.hasAttribute('data-haspopup')).toEqual(false)
+    expect(button.getAttribute(UUID)).toEqual('false')
     expect(button.getAttribute('aria-expanded')).toEqual('false')
     expect(button.getAttribute('aria-controls')).toEqual(container.id)
     expect(container.hasAttribute('hidden')).toEqual(true)
@@ -46,7 +47,7 @@ describe('toggle', () => {
     document.body.innerHTML = standardHTML
     const button = document.querySelector('.my-toggle')
     coreToggle(button, { popup: 'Test' })
-    expect(button.hasAttribute('data-haspopup')).toEqual(true)
+    expect(button.getAttribute(UUID)).toEqual('Test')
   })
 
   it('should open popup with open', () => {
@@ -54,7 +55,7 @@ describe('toggle', () => {
     const button = document.querySelector('.my-toggle')
     const container = document.querySelector('.my-toggle + *')
     coreToggle(button, { popup: 'Tekst', open: true })
-    expect(button.getAttribute('data-haspopup')).toEqual('Tekst')
+    expect(button.getAttribute(UUID)).toEqual('Tekst')
     expect(container.hasAttribute('hidden')).toEqual(false)
   })
 

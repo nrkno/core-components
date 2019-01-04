@@ -110,9 +110,37 @@ to create a component that behaves like a `<select>`:
 </script>
 ```
 
+```html
+<!--demo-->
+<div id="jsx-toggle-select"></div>
+<script type="text/jsx">
+  class MyToggleSelect extends React.Component {
+    constructor (props) {
+      super(props)
+      this.state = { value: 'Select number' }
+      this.onSelect = this.onSelect.bind(this)
+    }
+    onSelect (event) {
+      this.setState({ value: event.detail.value })
+    }
+    render () {
+      return <CoreToggle popup='Example picker' open={false} onToggleSelect={this.onSelect}>
+        <button>{this.state.value}</button>
+        <ul className='my-dropdown'>
+          <li><button>One</button></li>
+          <li><button>Two</button></li>
+          <li><button>Three</button></li>
+        </ul>
+      </CoreToggle>
+    }
+  }
+  ReactDOM.render(<MyToggleSelect/>, document.getElementById('jsx-toggle-select'))
+</script>
+```
+
 ## Usage
 
-### JavaScript
+### HTML / JavaScript
 
 ```html
 <button class="my-toggle">Toggle VanillaJS</button>
@@ -122,12 +150,18 @@ to create a component that behaves like a `<select>`:
 ```js
 import coreToggle from '@nrk/core-toggle'
 
-coreToggle(String|Element|Elements, { // Accepts a selector string, NodeList, Element or array of Elements
-  open: null,                         // Defaults to value of aria-expanded or false. Use true|false to force open state
-  popup: false|String                 // Defaults to false. Use string to enable popup (click-outside-to-close)
-  value: undefined|String             // Defaults to existing markup value. Pass string to change the button's innerHTML.
+coreToggle(
+  selector, // Accepts a selector string, NodeList, Element or array of Elements
+  options   // An object. See table below for possible properties
 })
 ```
+
+
+Property | Default | Type | Description
+:-- | :-- | :-- | :--
+open | `aria-expanded` or `false` | `null` or `String` | Use `true` or `false` to force open state.
+popup | `false` | `Boolean` or `String` | Enable or disable if clicking outside toggle should close it. Provide a string to control the `aria-label` text on the toggle.
+
 
 ### React / Preact
 

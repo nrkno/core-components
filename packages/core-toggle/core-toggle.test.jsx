@@ -45,7 +45,7 @@ describe('core-toggle/jsx', () => {
     const button = document.querySelector(`[${UUID}]`)
     const container = document.querySelector(`[${UUID}] + *`)
     expect(container.hasAttribute('hidden')).toEqual(true)
-    expect(button.getAttribute('data-haspopup')).toEqual('Tekst')
+    expect(button.getAttribute(UUID)).toEqual('Tekst')
     expect(button.getAttribute('aria-expanded')).toEqual('false')
   })
 
@@ -54,7 +54,7 @@ describe('core-toggle/jsx', () => {
     const button = document.querySelector(`[${UUID}]`)
     const container = document.querySelector(`[${UUID}] + *`)
     expect(container.hasAttribute('hidden')).toEqual(false)
-    expect(button.getAttribute('data-haspopup')).toEqual('Tekst')
+    expect(button.getAttribute(UUID)).toEqual('Tekst')
     expect(button.getAttribute('aria-expanded')).toEqual('true')
   })
 })

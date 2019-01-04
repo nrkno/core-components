@@ -4,7 +4,6 @@ import { IS_ANDROID, IS_IOS, addEvent, dispatchEvent, getUUID, queryAll } from '
 const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid attribute characters
 const ARIA = IS_ANDROID ? 'data' : 'aria' // Andriod has a bug and reads only label instead of content
 const OPEN = 'aria-expanded'
-const POPUP = 'data-haspopup' // aria-haspopup triggers forms mode in JAWS, therefore data-
 const KEYS = { ESC: 27 }
 
 export default function toggle (toggles, open) {
@@ -14,16 +13,15 @@ export default function toggle (toggles, open) {
   return queryAll(toggles).map((toggle) => {
     const isOpen = toggle.getAttribute(OPEN) === 'true'
     const open = typeof options.open === 'boolean' ? options.open : (options.open === 'toggle' ? !isOpen : isOpen)
-    const popup = typeof options.popup === 'string' ? options.popup : toggle.getAttribute(POPUP)
+    const popup = String((options.hasOwnProperty('popup') ? options.popup : toggle.getAttribute(UUID)) || false)
     const content = getContentElement(toggle)
 
-    toggle.setAttribute(UUID, '')
-    toggle[popup ? 'setAttribute' : 'removeAttribute'](POPUP, popup)
+    toggle.setAttribute(UUID, popup) // aria-haspopup triggers forms mode in JAWS, therefore store in uuid
+    toggle.setAttribute('aria-label', `${toggle.textContent}, ${popup.replace(/^true|false$/, '')}`)
     toggle.setAttribute('aria-controls', content.id = content.id || getUUID())
     content.setAttribute(`${ARIA}-labelledby`, toggle.id = toggle.id || getUUID())
     setOpen(toggle, open)
     if (options.value) toggle.innerHTML = options.value
-    if (popup) toggle.setAttribute('aria-label', `${toggle.textContent}, ${popup}`)
     return toggle
   })
 }
@@ -37,7 +35,7 @@ addEvent(UUID, 'keydown', (event) => {
   for (let el = event.target; el; el = el.parentElement) {
     const toggle = (el.id && document.querySelector(`[aria-controls="${el.id}"]`)) || el
 
-    if (toggle.hasAttribute(UUID) && toggle.hasAttribute(POPUP) && toggle.getAttribute(OPEN) === 'true') {
+    if (toggle.getAttribute(UUID) !== 'false' && toggle.getAttribute(OPEN) === 'true') {
       event.preventDefault() // Prevent leaving maximized window in Safari
       toggle.focus()
       return setOpen(toggle, false)
@@ -63,7 +61,7 @@ addEvent(UUID, 'click', ({ target, defaultPrevented }) => {
 
   queryAll(`[${UUID}]`).forEach((toggle) => {
     const open = toggle.getAttribute(OPEN) === 'true'
-    const popup = toggle.hasAttribute(POPUP)
+    const popup = toggle.getAttribute(UUID) !== 'false'
     const content = getContentElement(toggle)
 
     if (toggle.contains(target)) setOpen(toggle, !open) // Click on toggle
