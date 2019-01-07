@@ -3,7 +3,7 @@
 > `@nrk/core-components` is a kit of lightweight, unstyled and accessible [Javascript](https://stackoverflow.com/questions/20435653/what-is-vanillajs) and [React](https://reactjs.org/) / [Preact](https://github.com/developit/preact-compat) components.
 It provides effortless and flexible usage, while under the hood enhancing markup and functionality for best best user experience across all major browsers and screen readers.
 
-[Demo and documentation](https://static.nrk.no/core-components/latest/)
+For installation and usage read the [documentation](https://static.nrk.no/core-components/latest/).
 
 ## Local development
 First clone `@nrk/core-components` and install its dependencies:
