@@ -11,11 +11,20 @@
 ```bash
 npm install @nrk/core-toggle --save-exact
 ```
+
+### Using NPM
+
 ```js
 import coreToggle from '@nrk/core-toggle'     // Vanilla JS
 import CoreToggle from '@nrk/core-toggle/jsx' // ...or React/Preact compatible JSX
 ```
+### Using static
 
+<small>Recommended only for prototyping.</small>
+
+```html
+<script src="https://static.nrk.no/core-components/major/5/core-toggle/core-toggle.min.js"></script>
+```
 
 
 ## Motivation
