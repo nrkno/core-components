@@ -161,6 +161,7 @@ Property | Default | Type | Description
 :-- | :-- | :-- | :--
 open | `aria-expanded` or `false` | `null` or `String` | Use `true` or `false` to force open state.
 popup | `false` | `Boolean` or `String` | Enable or disable if clicking outside toggle should close it. Provide a string to control the `aria-label` text on the toggle.
+value | `button.innerHTML` | `String` | Set the `innerHTML` of `<button>` and safely updates `aria-label` for screen readers.
 
 
 ### React / Preact
