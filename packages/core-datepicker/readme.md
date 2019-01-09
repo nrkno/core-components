@@ -285,7 +285,29 @@ document.addEventListener('datepicker.click.day', (event) => {
 })
 ```
 
+## Methods
 
+### datepicker.parse
+
+A utility function for parsing time and dates. It's really just [`@nrk/simple-date-parse`](https://github.com/nrkno/simple-date-parse):
+
+```js
+coreDatepicker.parse('fri')
+```
+
+## Language
+
+`@nrk/core-datepicker` defaults to Norwegian Bookmål text without abbreviations (writing `September` instead of `Sept`). This can be configured by setting the `days` and `months` properties. Note that abbreviations should always be at least 3 characters long to ensure a better experience for screen reader users (for instance writing `Mon`, `Tue`... instead of `m`, `t`...).
+
+```js
+//JS
+coreDatepicker.days = ['man', 'tir', 'ons', 'tor', 'fre', 'lør', 'søn'] // Change name of days
+coreDatepicker.months = ['jan', 'feb', ...] // Change name of months
+
+//JSX
+CoreDatepicker.days = ['man', 'tir', 'ons', 'tor', 'fre', 'lør', 'søn'] // Change name of days
+CoreDatepicker.months = ['jan', 'feb', ...] // Change name of months
+```
 
 ## Styling
 
@@ -301,18 +323,3 @@ document.addEventListener('datepicker.click.day', (event) => {
 .my-datepicker button[data-core-datepicker-selected="true"]  /* Target the chosen date in month view */
 ```
 
-
-
-## Language
-
-`@nrk/core-datepicker` defaults to Norwegian Bookmål text without abbreviations (writing `September` instead of `Sept`). This can be configured by setting the `days` and `months` properties. Note that abbreviations should always be at least 3 characters long to ensure a better experience for screen reader users (for instance writing `Mon`, `Tue`... instead of `m`, `t`...).
-
-```js
-//JS
-coreDatepicker.days = ['man', 'tir', 'ons', 'tor', 'fre', 'lør', 'søn'] // Change name of days
-coreDatepicker.months = ['jan', 'feb', ...] // Change name of months
-
-//JSX
-CoreDatepicker.days = ['man', 'tir', 'ons', 'tor', 'fre', 'lør', 'søn'] // Change name of days
-CoreDatepicker.months = ['jan', 'feb', ...] // Change name of months
-```
