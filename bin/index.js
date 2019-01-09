@@ -1,3 +1,5 @@
+// using require instead of import to play nicely with travis ci
+
 const { execSync } = require('child_process')
 const path = require('path')
 const fs = require('fs')

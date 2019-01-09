@@ -1,3 +1,5 @@
+// using require instead of import to play nicely with travis ci
+
 const buble = require('rollup-plugin-buble')
 const commonjs = require('rollup-plugin-commonjs')
 const json = require('rollup-plugin-json')
@@ -5,6 +7,13 @@ const resolve = require('rollup-plugin-node-resolve')
 const serve = require('rollup-plugin-serve')
 const { uglify } = require('rollup-plugin-uglify')
 const { pkgs, getPackageName } = require('./bin/index.js') // Find all packages
+const { version } = require('./package.json')
+const path = require('path')
+const fs = require('fs')
+
+const readme = String(fs.readFileSync(path.join('packages', 'readme.md')))
+const versioned = readme.replace(/core-components\/major\/\d+/, `core-components/major/${version.match(/\d+/)}`)
+fs.writeFileSync(path.join(__dirname, 'packages', 'readme.md'), versioned)
 
 const server = !process.env.ROLLUP_WATCH || serve('packages')
 const globals = { 'react-dom': 'ReactDOM', react: 'React', 'prop-types': 'PropTypes' } // Exclude from output
