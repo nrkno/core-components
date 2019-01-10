@@ -6,7 +6,7 @@
 
 ## Installation
 
-<small>Components are individually installed for individual versioning:</small>
+Components are individually installed for individual versioning:
 
 ```bash
 npm install @nrk/core-toggle --save-exact
@@ -20,7 +20,7 @@ import CoreToggle from '@nrk/core-toggle/jsx' // ...or React/Preact compatible J
 ```
 ### Using static
 
-<small>Recommended only for prototyping.</small>
+Recommended only for prototyping.
 
 ```html
 <script src="https://static.nrk.no/core-components/major/5/core-toggle/core-toggle.min.js"></script>
