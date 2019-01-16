@@ -16,12 +16,12 @@ export default function toggle (toggles, open) {
     const popup = String((options.hasOwnProperty('popup') ? options.popup : toggle.getAttribute(UUID)) || false)
     const content = getContentElement(toggle)
 
+    if (options.value) toggle.innerHTML = options.value // Set innerHTML before updating aria-lael
     toggle.setAttribute(UUID, popup) // aria-haspopup triggers forms mode in JAWS, therefore store in uuid
     toggle.setAttribute('aria-label', `${toggle.textContent}, ${popup.replace(/^true|false$/, '')}`)
     toggle.setAttribute('aria-controls', content.id = content.id || getUUID())
     content.setAttribute(`${ARIA}-labelledby`, toggle.id = toggle.id || getUUID())
     setOpen(toggle, open)
-    if (options.value) toggle.innerHTML = options.value
     return toggle
   })
 }
