@@ -22,6 +22,11 @@ describe('core-progress', () => {
     coreProgress('.my-progress', '5')
     expect(document.querySelector('.my-progress').getAttribute('value')).toBe('5')
   })
+  it('should update progress value to numeric 0 when provided', () => {
+    coreProgress('.my-progress', '5')
+    coreProgress('.my-progress', 0)
+    expect(document.querySelector('.my-progress').getAttribute('value')).toBe('0')
+  })
   it('should update progress value when provided object with property value', () => {
     coreProgress('.my-progress', { value: 5, max: 100 })
     expect(document.querySelector('.my-progress').getAttribute('value')).toBe('5')
