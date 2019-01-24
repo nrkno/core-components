@@ -16,7 +16,7 @@ export default function progress (elements, value) {
 
   return queryAll(elements).map((progress) => {
     const oldValue = progress.getAttribute(UUID) || progress.getAttribute('value') || '0'
-    const newValue = String(options.value != null ? options.value : oldValue)
+    const newValue = String(options.hasOwnProperty('value') ? options.value : oldValue)
     const max = String(options.max || progress.getAttribute('max') || 1)
     const indeterminate = Number(newValue) !== parseFloat(newValue) // handle numeric string values
     const percentage = Math.round(newValue / max * 100) || 0
