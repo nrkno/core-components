@@ -65,6 +65,7 @@ Typing toggles the [hidden attribute](https://developer.mozilla.org/en/docs/Web/
 ### HTML / JavaScript
 
 <small><b>Important:</b> Always use `coreInput.escapeHTML(String)` to safely render data from API or user.</small>
+<small><b>Important:</b> Results will always be rendered in the element directly after the `<input>`</small>
 
 ```html
 <input type="text" class="my-input">                  <!-- Input element must be a <input> -->
@@ -89,6 +90,8 @@ coreInput('.my-input', '<li><button>' + coreInput.highlight(item.text, input.val
 ```
 
 ### React / Preact
+
+<small><b>Important:</b> First direct of `<CoreToggle>` must be a `<input>` and next direct child  will be used for results</small>
 
 ```js
 import CoreInput from '@nrk/core-input/jsx'
