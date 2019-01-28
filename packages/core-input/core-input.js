@@ -90,7 +90,7 @@ function onSelect (input, detail) {
 }
 
 function onFilter (input, detail) {
-  if (dispatchEvent(input, 'input.filter', detail) && !ajax(input)) {
+  if (dispatchEvent(input, 'input.filter', detail) && ajax(input) === false) {
     queryAll(ITEM, input.nextElementSibling).reduce((acc, item) => {
       const list = item.parentElement.nodeName === 'LI' && item.parentElement
       const show = item.textContent.toLowerCase().indexOf(input.value.toLowerCase()) !== -1
@@ -117,21 +117,21 @@ function setupItem (item, index, items) {
 
 function ajax (input) {
   const url = input.getAttribute(UUID)
-  const req = ajax.req = ajax.req || new window.XMLHttpRequest()
+  const xhr = ajax.xhr = ajax.xhr || new window.XMLHttpRequest()
   if (!url) return false
 
   clearTimeout(ajax.timer) // Clear previous search
-  req.abort() // Abort previous request
-  req.onload = () => {
-    try { req.responseJSON = JSON.parse(req.responseText) } catch (err) { req.responseJSON = false }
-    dispatchEvent(input, 'input.ajax', req)
+  xhr.abort() // Abort previous request
+  xhr.onload = () => {
+    try { xhr.responseJSON = JSON.parse(xhr.responseText) } catch (err) { xhr.responseJSON = false }
+    dispatchEvent(input, 'input.ajax', xhr)
   }
   ajax.timer = setTimeout(() => {
     if (!input.value) return // Abort if input is empty
-    if (dispatchEvent(input, 'input.ajax.beforeSend', req)) {
-      req.open('GET', url.replace('{{value}}', window.encodeURIComponent(input.value)), true)
-      req.setRequestHeader('X-Requested-With', 'XMLHttpRequest') // https://en.wikipedia.org/wiki/List_of_HTTP_header_fields#Requested-With
-      req.send()
+    if (dispatchEvent(input, 'input.ajax.beforeSend', xhr)) {
+      xhr.open('GET', url.replace('{{value}}', window.encodeURIComponent(input.value)), true)
+      xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest') // https://en.wikipedia.org/wiki/List_of_HTTP_header_fields#Requested-With
+      xhr.send()
     }
   }, AJAX_DEBOUNCE) // Debounce request
 }
