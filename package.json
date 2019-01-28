@@ -17,7 +17,7 @@
     "test": "npm run lint && npm run test:js"
   },
   "devDependencies": {
-    "jest": "23.6.0",
+    "jest": "24.0.0",
     "jest-buble": "2.0.0",
     "prop-types": "15.6.2",
     "react": "16.7.0",
