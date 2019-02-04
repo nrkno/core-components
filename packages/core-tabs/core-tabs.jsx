@@ -23,11 +23,13 @@ export default class Tabs extends React.Component {
     return React.createElement('div', attr,
       React.Children.map(this.props.children, (group, isPanelGroup) => {
         if (isPanelGroup < 2) {
-          return React.cloneElement(group, null, React.Children.map(group.props.children, (child, index) =>
-            React.cloneElement(child, isPanelGroup
-              ? { hidden: open !== index }
-              : { 'aria-selected': open === index })
-          ))
+          return React.cloneElement(group, null, React.Children.toArray(group.props.children)
+            .filter(Boolean)
+            .map((child, index) =>
+              React.cloneElement(child, isPanelGroup
+                ? { hidden: open !== index }
+                : { 'aria-selected': open === index })
+            ))
         }
         return group
       })
