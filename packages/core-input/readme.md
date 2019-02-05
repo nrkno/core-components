@@ -2,6 +2,7 @@
 
 > `@nrk/core-input` enhances `<input>` fields with keyboard accessible functionality for autocomplete suggestions, search results and smart select box abilities.
 
+<link rel="stylesheet" href="https://static.nrk.no/core-css/major/1/core-css.min.css">
 
 
 ## Installation
@@ -28,7 +29,7 @@ Typing toggles the [hidden attribute](https://developer.mozilla.org/en/docs/Web/
 
 ```html
 <!--demo-->
-<input type="text" class="my-input" placeholder="Type &quot;C&quot;...">
+<input type="text" class="my-input" placeholder="Type &quot;C&quot;..." value="Hei, hade, hest">
 <ul hidden>
   <li><button>Chrome</button></li>
   <li><button>Firefox</button></li>
@@ -37,7 +38,7 @@ Typing toggles the [hidden attribute](https://developer.mozilla.org/en/docs/Web/
   <li><button>Microsoft Edge</button></li>
 </ul>
 <script>
-  coreInput('.my-input')
+  coreInput('.my-input', { multiple: true })
 </script>
 ```
 

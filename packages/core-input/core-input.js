@@ -13,12 +13,15 @@ export default function input (elements, content) {
   return queryAll(elements).map((input) => {
     const list = input.nextElementSibling
     const ajax = typeof options.ajax === 'undefined' ? input.getAttribute(UUID) : options.ajax
+    const multiple =  typeof options.multiple === 'undefined' ? input.multiple : options.multiple
 
     input.setAttribute(UUID, ajax || '')
     input.setAttribute(IS_IOS ? 'data-role' : 'role', 'combobox') // iOS does not inform user area is editable if combobox
     input.setAttribute('aria-autocomplete', 'list')
     input.setAttribute('autocomplete', 'off')
+    input.multiple = multiple
 
+    if (multiple) onRenderMultiple(input)
     if (repaint) list.innerHTML = options.content
     queryAll('a,button', list).forEach(setupItem)
     setupExpand(input, options.open)
@@ -40,7 +43,7 @@ function onClickOrFocus (event) {
 
   queryAll(`[${UUID}]`).forEach((input) => {
     const list = input.nextElementSibling
-    const open = input === event.target || list.contains(event.target)
+    const open = input.contains(event.target) || list.contains(event.target)
     const item = event.type === 'click' && open && queryAll(ITEM, list).filter((item) => item.contains(event.target))[0]
 
     if (item) onSelect(input, { relatedTarget: list, currentTarget: item, value: item.value || item.textContent.trim() })
@@ -102,6 +105,26 @@ function onFilter (input, detail) {
   }
 }
 
+function onRenderMultiple (input) {
+  input.insertAdjacentHTML('beforebegin',
+    input.value.split(/\s*,\s*/).map((value) => `
+      <div class="nrk-button">
+        <button type="button" class="nrk-unset" title="Trykk for å redigere">${value}</button>
+        <button type="reset" class="nrk-unset" tabindex="-1" aria-label="Fjern hest">&times;</button>
+      </div>
+      <input type="hidden" name="${input.name}" value="${escapeHTML(value)}">
+    `).join(''))
+  input.value = ''
+}
+
+function addValue () {
+
+}
+
+function removeValue () {
+
+}
+
 function setupExpand (input, open = input.getAttribute('aria-expanded') === 'true') {
   requestAnimFrame(() => { // Fixes VoiceOver Safari focus jumping to parentElement
     input.nextElementSibling[open ? 'removeAttribute' : 'setAttribute']('hidden', '')
@@ -110,9 +133,9 @@ function setupExpand (input, open = input.getAttribute('aria-expanded') === 'tru
 }
 
 function setupItem (item, index, items) {
+  if (item.nodeName === 'BUTTON') item.type = 'button'
   item.setAttribute('aria-label', `${item.textContent.trim()}, ${index + 1} av ${items.length}`)
   item.setAttribute('tabindex', '-1')
-  item.setAttribute('type', 'button')
 }
 
 function ajax (input) {
