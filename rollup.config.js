@@ -11,11 +11,18 @@ const { version } = require('./package.json')
 const path = require('path')
 const fs = require('fs')
 
-const readme = String(fs.readFileSync(path.join('packages', 'readme.md')))
-const versioned = readme.replace(/core-components\/major\/\d+/, `core-components/major/${version.match(/\d+/)}`)
-fs.writeFileSync(path.join(__dirname, 'packages', 'readme.md'), versioned)
+const isBuild = !process.env.ROLLUP_WATCH
 
-const server = !process.env.ROLLUP_WATCH || serve('packages')
+if (isBuild) {
+  const readmes = ['readme.md', path.join('packages', 'readme.md')]
+  readmes.forEach((path) => {
+    const readme = String(fs.readFileSync(path))
+    const versioned = readme.replace(/core-components\/major\/\d+/, `core-components/major/${version.match(/\d+/)}`)
+    fs.writeFileSync(path, versioned)
+  })
+}
+
+const server = isBuild || serve('packages')
 const globals = { 'react-dom': 'ReactDOM', react: 'React', 'prop-types': 'PropTypes' } // Exclude from output
 const pluginsCJS = [json(), resolve(), commonjs(), buble(), server]
 const pluginsUMD = pluginsCJS.concat(uglify({ output: { comments: /^!/ } }))
