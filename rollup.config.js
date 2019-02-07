@@ -15,7 +15,8 @@ const isBuild = !process.env.ROLLUP_WATCH
 
 if (isBuild) {
   const readmes = ['readme.md', path.join('packages', 'readme.md')]
-  readmes.map((readme) => [readme, String(fs.readFileSync(readme))]).forEach(([path, readme]) => {
+  readmes.forEach((path) => {
+    const readme = String(fs.readFileSync(path))
     const versioned = readme.replace(/core-components\/major\/\d+/, `core-components/major/${version.match(/\d+/)}`)
     fs.writeFileSync(path, versioned)
   })
