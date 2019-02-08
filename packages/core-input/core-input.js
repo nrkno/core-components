@@ -54,7 +54,7 @@ addEvent(UUID, 'input', ({ target: input }) => {
 
 addEvent(UUID, 'keydown', (event) => {
   if (event.ctrlKey || event.altKey || event.metaKey) return
-  if (event.target.hasAttribute(UUID)) return onKey(event.target, event) // Quick check
+  if (event.target.hasAttribute && event.target.hasAttribute(UUID)) return onKey(event.target, event) // Quick check
   for (let el = event.target, prev; el; el = el.parentElement) { // Check if inside list
     if ((prev = el.previousElementSibling) && prev.hasAttribute(UUID)) return onKey(prev, event)
   }
