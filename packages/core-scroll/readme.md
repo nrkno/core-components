@@ -11,7 +11,7 @@ npm install @nrk/core-scroll --save-exact
 ```
 ```js
 import coreScroll from '@nrk/core-scroll'     // Vanilla JS
-import CoreScroll from '@nrk/core-scroll/jsx' // ...or React/Preact compatible JSX
+import CoreScroll from '@nrk/core-scroll/jsx' // React/Preact JSX
 ```
 
 

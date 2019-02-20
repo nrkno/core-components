@@ -1,11 +1,6 @@
 # Core Datepicker
 
-> `@nrk/core-datepicker` enhances all child `input`, `select` `table` and `button` elements with keyboard accessible functionality for selecting date and time. The interface and granularity of date refinement can easily be altered through markup.
-
-- Handles both date and time selection
-- Add or remove controls to fit your needs
-- Keyboard accessible
-
+> `@nrk/core-datepicker` enhances all child `input`, `select` `table` and `button` elements with keyboard accessible functionality for selecting both dates and times. The interface and granularity of date refinement can easily be altered through markup.
 
 
 ## Installation
@@ -15,10 +10,8 @@ npm install @nrk/core-datepicker --save-exact
 ```
 ```js
 import coreDatepicker from '@nrk/core-datepicker'     // Vanilla JS
-import CoreDatepicker from '@nrk/core-datepicker/jsx' // ...or React/Preact compatible JSX
+import CoreDatepicker from '@nrk/core-datepicker/jsx' // React/Preact JSX
 ```
-
-
 
 <!--demo
 <script src="core-toggle/core-toggle.min.js"></script>
@@ -166,6 +159,7 @@ demo-->
 
 
 ## Usage
+
 All date values - both HTML markup and JavaScript - accepts accepts dates as numbers, or as natural language in [the format of @nrk/simple-date-parse](https://github.com/nrkno/simple-date-parse).
 
 ### HTML / JavaScript
@@ -223,7 +217,7 @@ coreDatepicker(
   String|Element|Elements, // Accepts a selector string, NodeList, Element or array of Elements
   String|Date              // Specify the date which coreDatepicker should use.
   // e.g:
-  'now + 2 days'           // Will set the date to the day after tomorrow  
+  'now + 2 days'           // Will set the date to the day after tomorrow
 })
 ```
 
@@ -295,7 +289,7 @@ A utility function for parsing time and dates. It's really just [`@nrk/simple-da
 coreDatepicker.parse('fri')
 ```
 
-## Language
+## Properties
 
 `@nrk/core-datepicker` defaults to Norwegian Bookmål text without abbreviations (writing `September` instead of `Sept`). This can be configured by setting the `days` and `months` properties. Note that abbreviations should always be at least 3 characters long to ensure a better experience for screen reader users (for instance writing `Mon`, `Tue`... instead of `m`, `t`...).
 
@@ -322,4 +316,3 @@ CoreDatepicker.months = ['jan', 'feb', ...] // Change name of months
 .my-datepicker button[aria-disabled="true"] /* Target dates from next or previous month in the month view */
 .my-datepicker button[data-core-datepicker-selected="true"]  /* Target the chosen date in month view */
 ```
-

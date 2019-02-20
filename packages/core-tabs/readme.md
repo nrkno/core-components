@@ -11,7 +11,7 @@ npm install @nrk/core-tabs --save-exact
 ```
 ```js
 import coreTabs from '@nrk/core-tabs'     // Vanilla JS
-import CoreTabs from '@nrk/core-tabs/jsx' // ...or React/Preact compatible JSX
+import CoreTabs from '@nrk/core-tabs/jsx' // React/Preact JSX
 ```
 
 
@@ -87,14 +87,33 @@ demo-->
 
 ## Usage
 
-### JavaScript
+### HTML / JavaScript
+
+```html
+<div class="my-tabs"> <!-- Direct children must be <a> or <button>. Do not use <li> -->
+  <button id="tab-1">Tab 1</button>
+  <button id="tab-2">Tab 2</button>
+  <button id="tab-3">Tab 2</button>
+</div>
+<div> <!-- Next element children will become panels of correlating tab -->
+  <div>Tab 1 content </div>
+  <div hidden>Tab 2 content</div>
+  <div hidden>Tab 3 content</div>
+</div>
+```
+
 ```js
 import coreTabs from '@nrk/core-tabs'
 
 coreTabs(
   String|Element|Elements,    // Accepts a selector string, NodeList, Element or array of Elements
-  open                        // Optional. Can be String: id of tab, Element: tab or Number: index of tab
+  String|Element|Number       // Optional. Set tab selection with string id, element or tab index number
 )
+
+// Examples:
+coreTabs('.my-tabs')              // Initalize tabs on element
+coreTabs('.my-tabs', 3)           // Initalize tabs and select 3rd tab
+coreTabs('.my-tabs', '#tab-2')    // Initalize tabs and select 2nd tab
 ```
 
 ### React / Preact
