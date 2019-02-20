@@ -1,5 +1,5 @@
 import { name, version } from './package.json'
-import { IS_IOS, addEvent, escapeHTML, dispatchEvent, requestAnimFrame, queryAll } from '../utils'
+import { IS_IOS, IS_BROWSER, addEvent, escapeHTML, dispatchEvent, requestAnimFrame, queryAll } from '../utils'
 
 const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid attribute characters
 const KEYS = { ENTER: 13, ESC: 27, PAGEUP: 33, PAGEDOWN: 34, END: 35, HOME: 36, UP: 38, DOWN: 40 }
@@ -21,7 +21,11 @@ export default function input (elements, content) {
 
     if (repaint) list.innerHTML = options.content
     queryAll('a,button', list).forEach(setupItem)
-    setupExpand(input, options.open)
+    if (IS_BROWSER) {
+        setupExpand(input, options.open)   
+    } else {
+        setupExpand(input, input === document.activeElement || options.open)
+    }
     return input
   })
 }
