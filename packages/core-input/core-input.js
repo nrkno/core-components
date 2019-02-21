@@ -22,9 +22,9 @@ export default function input (elements, content) {
     if (repaint) list.innerHTML = options.content
     queryAll('a,button', list).forEach(setupItem)
     if (IS_BROWSER) {
-        setupExpand(input, options.open)   
-    } else {
         setupExpand(input, input === document.activeElement || options.open)
+    } else {
+        setupExpand(input, options.open)
     }
     return input
   })
