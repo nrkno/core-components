@@ -97,7 +97,7 @@ import CoreInput from '@nrk/core-input/jsx'
 // Props like className, style, etc. will be applied as actual attributes
 // <CoreInput> will handle state itself unless you call event.preventDefault() in onFilter, onSelect or onAjax
 
-<CoreInput open={false} onFilter={(event) => {}} onSelect={(event) => {}} onAjax={(event) => {}} ajax="https://search.com?q={{value}}">
+<CoreInput open={false} onFilter={(event) => {}} onSelect={(event) => {}} onAjax={(event) => {}} onAjaxBeforeSend={(event) => {}} ajax="https://search.com?q={{value}}">
   <input type="text" />   // First element must result in a input-tag. Accepts both elements and components
   <ul>                    // Next element will be used for items. Accepts both elements and components
     <li><button>Item 1</button></li>                  // Interactive items must be <button> or <a>

@@ -13,6 +13,7 @@ export default function input (elements, content) {
   return queryAll(elements).map((input) => {
     const list = input.nextElementSibling
     const ajax = typeof options.ajax === 'undefined' ? input.getAttribute(UUID) : options.ajax
+    const open = typeof options.open === 'undefined' ? input === document.activeElement : options.open
 
     input.setAttribute(UUID, ajax || '')
     input.setAttribute(IS_IOS ? 'data-role' : 'role', 'combobox') // iOS does not inform user area is editable if combobox
@@ -21,7 +22,8 @@ export default function input (elements, content) {
 
     if (repaint) list.innerHTML = options.content
     queryAll('a,button', list).forEach(setupItem)
-    setupExpand(input, options.open)
+    setupExpand(input, open)
+
     return input
   })
 }
