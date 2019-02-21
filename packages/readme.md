@@ -15,7 +15,7 @@ npm install @nrk/core-toggle --save-exact
 
 ```js
 import coreToggle from '@nrk/core-toggle'     // Vanilla JS
-import CoreToggle from '@nrk/core-toggle/jsx' // ...or React/Preact compatible JSX
+import CoreToggle from '@nrk/core-toggle/jsx' // React/Preact JSX
 ```
 ### Using static
 

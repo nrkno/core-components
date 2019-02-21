@@ -11,10 +11,8 @@ npm install @nrk/core-input --save-exact
 ```
 ```js
 import coreInput from '@nrk/core-input'     // Vanilla JS
-import CoreInput from '@nrk/core-input/jsx' // ...or React/Preact compatible JSX
+import CoreInput from '@nrk/core-input/jsx' // React/Preact JSX
 ```
-
-
 
 <!--demo
 <script src="core-input/core-input.min.js"></script>
@@ -23,8 +21,6 @@ import CoreInput from '@nrk/core-input/jsx' // ...or React/Preact compatible JSX
 demo-->
 
 ## Demo
-
-Typing toggles the [hidden attribute](https://developer.mozilla.org/en/docs/Web/HTML/Global_attributes/hidden) on items of type `<button>` and `<a>`, based on matching [textContent](https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent). The default filtering behavior can easily be altered through the `'input.select'` and `'input.filter'` [events](#events).
 
 ```html
 <!--demo-->
@@ -62,13 +58,16 @@ Typing toggles the [hidden attribute](https://developer.mozilla.org/en/docs/Web/
 
 ## Usage
 
+Typing toggles the [hidden attribute](https://developer.mozilla.org/en/docs/Web/HTML/Global_attributes/hidden) on items of type `<button>` and `<a>`, based on matching [textContent](https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent). Focusing the input unhides the following element. The default filtering behavior can easily be altered through the The default filtering behavior can easily be altered through the `'input.select'`, `'input.filter'`, `'input.ajax'` and  `'input.ajax.beforeSend'` [events](#events). 
+
+Results will be rendered in the element directly after the `<input>`.
+Always use `coreInput.escapeHTML(String)` to safely render data from API or user.
+
 ### HTML / JavaScript
 
-<small><b>Important:</b> Always use `coreInput.escapeHTML(String)` to safely render data from API or user.</small>
-<small><b>Important:</b> Results will always be rendered in the element directly after the `<input>`</small>
 
 ```html
-<input type="text" class="my-input">                  <!-- Input element must be a <input> -->
+<input type="text" class="my-input">                  <!-- Input element must be a textual <input> -->
 <ul hidden>                                           <!-- Can be any tag, but items should be inside <li> -->
   <li><button>Item 1</button></li>                    <!-- Items must be <button> or <a> -->
   <li><button value="Suprise!">Item 2</button></li>   <!-- Alternative value can be defined -->
@@ -79,31 +78,29 @@ Typing toggles the [hidden attribute](https://developer.mozilla.org/en/docs/Web/
 import coreInput from '@nrk/core-input'
 
 coreInput(String|Element|Elements, {    // Accepts a selector string, NodeList, Element or array of Elements
-  open: null,                           // Optional. Defaults to value of aria-expanded. Use true|false to force open state
-  content: null,                        // Optional. Set String of HTML content. HTML is used for full flexibility on markup
-  ajax: null                            // Optional. Fetch external data, example: "https://search.com?q={{value}}"
+  open: Boolean,                        // Optional. Defaults to value of aria-expanded. Use to force open state
+  content: String,                      // Optional. Set String of HTML content. HTML is used for full flexibility on markup
+  ajax: String                          // Optional. Fetch external data, example: "https://search.com?q={{value}}"
 })
 
-// Helpers:
+// Passing a string as second argument sets the 'content' option
 coreInput('.my-input', '<li><a href="?q=' + coreInput.escapeHTML(input.value) + '">More results</a></li>') // escape html
 coreInput('.my-input', '<li><button>' + coreInput.highlight(item.text, input.value) + '</button></li>') // highlight match
 ```
 
 ### React / Preact
 
-<small><b>Important:</b> First direct of `<CoreToggle>` must be a `<input>` and next direct child  will be used for results</small>
-
 ```js
 import CoreInput from '@nrk/core-input/jsx'
 
 // All props are optional, and defaults are shown below
 // Props like className, style, etc. will be applied as actual attributes
-// <Input> will handle state itself unless you call event.preventDefault() in onFilter or onSelect
+// <CoreInput> will handle state itself unless you call event.preventDefault() in onFilter, onSelect or onAjax
 
 <CoreInput open={false} onFilter={(event) => {}} onSelect={(event) => {}} onAjax={(event) => {}} onAjaxBeforeSend={(event) => {}} ajax="https://search.com?q={{value}}">
-  <input type="text" />   <!-- First element must result in a input-tag. Accepts both elements and components -->
+  <input type="text" />   // First element must result in a input-tag. Accepts both elements and components
   <ul>                    // Next element will be used for items. Accepts both elements and components
-    <li><button>Item 1</button></li>                  <!-- Interactive items must be <button> or <a> -->
+    <li><button>Item 1</button></li>                  // Interactive items must be <button> or <a>
     <li><button value="Suprise!">Item 2</button></li> // Alternative value can be defined
     <li><a href="https://www.nrk.no/">NRK.no</a></li> // Actual links are recommended when applicable
   </ul>
@@ -189,11 +186,11 @@ All styling in documentation is example only. Both the `<button>` and content el
 
 
 
-## Ajax
+## Notes
+
+### Ajax
 
 When using `@nrk/core-input` with the `ajax: https://search.com?q={{value}}` functionality, make sure to implement both a `Searching...` status (while fetching data from the server), and a `No hits` status (if server responds with no results). These status indicators are highly recommended, but not provided by default as the context of use will affect the optimal textual formulation. [See example implementation →](#demo-ajax)
-
-### Customise the request
 
 If you need to alter default headers, request method or post data, use the [`input.ajax.beforeSend` event  →](#input-ajax-beforesend)
 

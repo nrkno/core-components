@@ -3,6 +3,10 @@
 > `@nrk/core-toggle` simply makes a `<button>` toggle the visibility of next element sibling. Toggles can be nested and easily extended with custom animations or behavior through the [toggle event](#events). It has two modes:
 
 
+<!--demo
+<script src="core-toggle/core-toggle.min.js"></script>
+<script src="core-toggle/core-toggle.jsx.js"></script>
+demo-->
 
 ## Installation
 
@@ -11,42 +15,11 @@ npm install @nrk/core-toggle --save-exact
 ```
 ```js
 import coreToggle from '@nrk/core-toggle'     // Vanilla JS
-import CoreToggle from '@nrk/core-toggle/jsx' // ...or React/Preact compatible JSX
+import CoreToggle from '@nrk/core-toggle/jsx' // React/Preact JSX
 ```
 
 
-
-## Demo: Default
-
-<!--demo
-<script src="core-toggle/core-toggle.min.js"></script>
-<script src="core-toggle/core-toggle.jsx.js"></script>
-demo-->
-Content is only toggled when clicking `button`. Great for accordions and expand/collapse panels.
-
-```html
-<!--demo-->
-<button class="my-toggle">Toggle VanillaJS</button>  <!-- must be <button> -->
-<div hidden>Content</div>                                       <!-- hidden prevents flash of unstyled content -->
-<script>
-  coreToggle('.my-toggle') // Optionally pass {open: true|false} as second argument to open/close
-</script>
-```
-
-```html
-<!--demo-->
-<div id="jsx-toggle-default"></div>
-<script type="text/jsx">
-  ReactDOM.render(<CoreToggle popup={false} open={false} onToggle={function(){}}>
-    <button>Toggle JSX</button>
-    <div>Content</div>
-  </CoreToggle>, document.getElementById('jsx-toggle-default'))
-</script>
-```
-
-## Demo: Popup
-
-Content is toggled when clicking `button`, and closed when clicking outside content. Great for dropdowns and tooltips.
+## Demo
 
 ```html
 <!--demo-->
@@ -84,6 +57,129 @@ Content is toggled when clicking `button`, and closed when clicking outside cont
       </li>
     </ul>
   </CoreToggle>, document.getElementById('jsx-toggle-popup'))
+</script>
+```
+
+## Usage
+
+### HTML / JavaScript
+
+```html
+<button class="my-toggle">Toggle VanillaJS</button>  <!-- must be <button> -->
+<div hidden>Content</div>                            <!-- use hidden to prevent flash of unstyled content -->
+```
+
+```js
+import coreToggle from '@nrk/core-toggle'
+
+coreToggle(String|Element|Elements, {   // Accepts a selector string, NodeList, Element or array of Elements
+  open: Boolean                         // Optional. Defaults to aria-expanded or false. Set to force open state.
+  popup: Boolean|String                 // Optional. Defaults to false. Enable or disable if clicking outside toggle should close it. Provide a string to control the aria-label text on the toggle.
+  value: String                         // Optional. Defaults to button.innerHTML. Sets innerHTML of the button and safely updates aria-label for screen readers.
+})
+```
+
+### React / Preact
+
+```jsx
+import CoreToggle from '@nrk/core-toggle/jsx'
+
+// All props are optional, and defaults are shown below
+// Props like className, style, etc. will be applied as actual attributes
+// <CoreToggle> will handle state itself unless you call event.preventDefault() in onToggle
+
+<CoreToggle open={false} popup={false} onToggle={(event) => {}}>
+  <button>Use with JSX</button>  // First element must result in a <button>-tag. Accepts both elements and components
+  <div>Content</div>             // Next element will be toggled. Accepts both elements and components
+</CoreToggle>
+```
+
+## Markup
+
+### With aria-controls
+
+Putting the toggle button directly before the content is highly recommended, as this fulfills all accessibility requirements by default. There might be scenarios though, where styling makes this DOM structure impractical. In such cases, give the toggle button an `aria-controls` attribute, and the content an `id` with corresponding value. Make sure there is no text between the button and toggle content, as this will break the experience for screen reader users:
+
+```html
+<div>
+  <button class="my-toggle" aria-controls="content">Toggle VanillaJS</button>
+</div>
+<div id="content" hidden>Content</div>
+```
+
+### Autofocus
+
+If you have form elements inside a `@nrk/core-toggle`, you can optionally add a `autofocus` attribute to the most prominent form element. This helps the user navigate quickly when toggle is opened.
+
+
+
+
+## Events
+
+### toggle
+
+Before a `@nrk/core-toggle` changes open state, a [toggle event](https://www.w3schools.com/jsref/event_ontoggle.asp) is fired (both for VanillaJS and React/Preact components). The toggle event is cancelable, meaning you can use [`event.preventDefault()`](https://developer.mozilla.org/en-US/docs/Web/API/Event/preventDefault) to cancel toggling. The event also [bubbles](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Building_blocks/Events#Event_bubbling_and_capture), and can therefore be detected both from the button element itself, or any parent element (read [event delegation](https://stackoverflow.com/questions/1687296/what-is-dom-event-delegation)):
+
+
+```js
+document.addEventListener('toggle', (event) => {
+  event.target                              // The button element triggering toggle event
+  event.detail.relatedTarget                // The content element controlled by button
+  event.detail.isOpen                       // The current toggle state (before toggle event has run)
+  event.detail.willOpen                     // The wanted toggle state
+})
+```
+
+### toggle.select
+
+The `toggle.select` event is fired whenever an item is selected inside a toggle with the `popup` option enabled.
+Useful for setting the value of the toggle button with the selected value.
+
+
+```js
+document.addEventListener('toggle.select', (event) => {
+  event.target                              // The buttom element triggering the event
+  event.detail.relatedTarget                // The content element controlled by button
+  event.detail.currentTarget                // The item element selected
+  event.detail.value                        // The selected item's value
+})
+```
+
+
+## Styling
+
+All styling in documentation is example only. Both the `<button>` and content element receive attributes reflecting the current toggle state:
+
+```css
+.my-toggle {}                         /* Target button in any state */
+.my-toggle[aria-expanded="true"] {}   /* Target only open button */
+.my-toggle[aria-expanded="false"] {}  /* Target only closed button */
+
+.my-toggle-content {}                 /* Target content in any state */
+.my-toggle-content:not([hidden]) {}   /* Target only open content */
+.my-toggle-content[hidden] {}         /* Target only closed content */
+```
+
+## Demo: Expand
+
+Content is only toggled when clicking the button. Great for accordions and expand/collapse panels.
+
+```html
+<!--demo-->
+<button class="my-toggle">Toggle VanillaJS</button>  <!-- must be <button> -->
+<div hidden>Content</div>                                       <!-- hidden prevents flash of unstyled content -->
+<script>
+  coreToggle('.my-toggle') // Optionally pass {open: true|false} as second argument to open/close
+</script>
+```
+```html
+<!--demo-->
+<div id="jsx-toggle-default"></div>
+<script type="text/jsx">
+  ReactDOM.render(<CoreToggle popup={false} open={false} onToggle={function(){}}>
+    <button>Toggle JSX</button>
+    <div>Content</div>
+  </CoreToggle>, document.getElementById('jsx-toggle-default'))
 </script>
 ```
 
@@ -136,114 +232,6 @@ to create a component that behaves like a `<select>`:
   }
   ReactDOM.render(<MyToggleSelect/>, document.getElementById('jsx-toggle-select'))
 </script>
-```
-
-## Usage
-
-### HTML / JavaScript
-
-```html
-<button class="my-toggle">Toggle VanillaJS</button>
-<div hidden>Content</div>
-```
-
-```js
-import coreToggle from '@nrk/core-toggle'
-
-coreToggle(
-  selector, // Accepts a selector string, NodeList, Element or array of Elements
-  options   // An object. See table below for possible properties
-})
-```
-
-
-Property | Default | Type | Description
-:-- | :-- | :-- | :--
-open | `aria-expanded` or `false` | `null` or `String` | Use `true` or `false` to force open state.
-popup | `false` | `Boolean` or `String` | Enable or disable if clicking outside toggle should close it. Provide a string to control the `aria-label` text on the toggle.
-value | `button.innerHTML` | `String` | Set the `innerHTML` of `<button>` and safely updates `aria-label` for screen readers.
-
-
-### React / Preact
-
-```jsx
-import CoreToggle from '@nrk/core-toggle/jsx'
-
-// All props are optional, and defaults are shown below
-// Props like className, style, etc. will be applied as actual attributes
-// <Toggle> will handle state itself unless you call event.preventDefault() in onToggle
-
-<CoreToggle open={false} popup={false} onToggle={(event) => {}}>
-  <button>Use with JSX</button>  // First element must result in a <button>-tag. Accepts both elements and components
-  <div>Content</div>             // Next element will be toggled. Accepts both elements and components
-</CoreToggle>
-```
-
-
-
-## Markup
-
-### With aria-controls
-
-Putting the toggle button directly before the content is highly recommended, as this fulfills all accessibility requirements by default. There might be scenarios though, where styling makes this DOM structure impractical. In such cases, give the toggle button an `aria-controls` attribute, and the content an `id` with corresponding value. Make sure there is no text between the button and toggle content, as this will break the experience for screen reader users:
-
-```html
-<div>
-  <button class="my-toggle" aria-controls="content">Toggle VanillaJS</button>
-</div>
-<div id="content" hidden>Content</div>
-```
-
-### Autofocus
-
-If you have form elements inside a `@nrk/core-toggle`, you can optionally add a `autofocus` attribute to the most prominent form element. This helps the user navigate quickly when toggle is opened.
-
-
-
-## Events
-
-### toggle
-
-Before a `@nrk/core-toggle` changes open state, a [toggle event](https://www.w3schools.com/jsref/event_ontoggle.asp) is fired (both for VanillaJS and React/Preact components). The toggle event is cancelable, meaning you can use [`event.preventDefault()`](https://developer.mozilla.org/en-US/docs/Web/API/Event/preventDefault) to cancel toggling. The event also [bubbles](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Building_blocks/Events#Event_bubbling_and_capture), and can therefore be detected both from the button element itself, or any parent element (read [event delegation](https://stackoverflow.com/questions/1687296/what-is-dom-event-delegation)):
-
-
-```js
-document.addEventListener('toggle', (event) => {
-  event.target                              // The button element triggering toggle event
-  event.detail.relatedTarget                // The content element controlled by button
-  event.detail.isOpen                       // The current toggle state (before toggle event has run)
-  event.detail.willOpen                     // The wanted toggle state
-})
-```
-
-### toggle.select
-
-The `toggle.select` event is fired whenever an item is selected inside a toggle with the `popup` option enabled.
-Useful for setting the value of the toggle button with the selected value.
-
-
-```js
-document.addEventListener('toggle.select', (event) => {
-  event.target                              // The buttom element triggering the event
-  event.detail.relatedTarget                // The content element controlled by button
-  event.detail.currentTarget                // The item element selected
-  event.detail.value                        // The selected item's value
-})
-```
-
-
-## Styling
-
-All styling in documentation is example only. Both the `<button>` and content element receive attributes reflecting the current toggle state:
-
-```css
-.my-toggle {}                         /* Target button in any state */
-.my-toggle[aria-expanded="true"] {}   /* Target only open button */
-.my-toggle[aria-expanded="false"] {}  /* Target only closed button */
-
-.my-toggle-content {}                 /* Target content in any state */
-.my-toggle-content:not([hidden]) {}   /* Target only open content */
-.my-toggle-content[hidden] {}         /* Target only closed content */
 ```
 
 

@@ -11,7 +11,7 @@ npm install @nrk/core-progress --save-exact
 ```
 ```js
 import coreProgress from '@nrk/core-progress'     // Vanilla JS
-import coreProgress from '@nrk/core-progress/jsx' // ...or React/Preact compatible JSX
+import coreProgress from '@nrk/core-progress/jsx' // React/Preact JSX
 ```
 
 
@@ -81,19 +81,16 @@ demo-->
 
 ```js
 coreProgress(
-  selector, // Selector string or HTML Element
-  value // See table below
-);
+  String|Element|Elements,  // Accepts a selector string, NodeList, Element or array of Elements
+  Number|String|Object      // Optional. Set value, indeterminate status or options
+)
+
+// Examples:
+coreProgress('.my-progress')                         // Initalize and ensure accessibility correct attributes
+coreProgress('.my-progress', 1)                      // Set progress value directly with number
+coreProgress('.my-progress', 'Loading...')           // Set indeterminate status using non-numerical string. The same string will be read by screen readers.
+coreProgress('.my-progress', {value: 50, max: 100})  // Set progress value and/or maximum value
 ```
-
-### Possible `value`s
-
-Type | Example | Description
-:-- | :-- | :--
-Integer | `coreProgress(el, 50)` | An integer updates the progress value directly
-String | `coreProgress(el, 'Loading...')` | A non-numerical string will indicate that the progress is indeterminate. The same string will be read by screen readers.
-Object | `coreProgress(el, {value: 50, max: 100})` | An object can define a value and/or a max value
-undefined | `coreProgress(el)` | When no value is passed, the progress element will automatically get pick up values from markup attributes and enhance accessibility.
 
 ### React / Preact
 

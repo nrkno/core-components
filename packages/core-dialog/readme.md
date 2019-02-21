@@ -11,7 +11,7 @@ npm install @nrk/core-dialog --save-exact
 ```
 ```js
 import coreDialog from '@nrk/core-dialog'     // Vanilla JS
-import CoreDialog from '@nrk/core-dialog/jsx' // ...or React/Preact compatible JSX
+import CoreDialog from '@nrk/core-dialog/jsx' // React/Preact JSX
 ```
 
 
@@ -194,16 +194,18 @@ demo-->
 ```js
 import coreDialog from '@nrk/core-dialog'
 
-// Initialize a specific component or multiple components
+// Initialize one element or multiple elements
 coreDialog(String|Element|Elements, { // Accepts a selector string, NodeList, Element or array of Elements
-  open: null,                         // Defaults to true if open is set, otherwise false. Use true|false to force open state
-  strict: true|false,                 // Defaults to false. If set to true the dialog will not close on ESC-key nor on click on backdrop
-  label: ''                           // Defaults to aria-label if set or an empty string. Should be implemented in order for the dialog to have a label readable by screen readers
+  open: Boolean,                      // Optional. Defaults to true. Use to force open state
+  strict: Boolean,                    // Optional. Defaults to false. If true the dialog will not close on ESC-key nor on click on backdrop
+  label: String                       // Optional. Defaults to aria-label if set or ''. Should be implemented in order for the dialog to have a label readable by screen readers
+  opener: Element                     // Optional. Defaults to document.activeElement. Sets the element that should receive focus after closing
 })
 
-// Example:
-coreDialog('.my-dialog')
-coreDialog('.my-dialog', {open: true, label: 'A super dialog'})
+// Examples:
+coreDialog('.my-dialog')              // Initialize dialog
+coreDialog('.my-dialog', true)        // Initialize dialog with 'open' set to true
+coreDialog('.my-dialog', { open: true, label: 'A super dialog' }) // Initialize dialog with options
 ```
 
 ### React / Preact
