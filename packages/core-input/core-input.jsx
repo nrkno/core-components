@@ -10,7 +10,7 @@ export default class Input extends React.Component {
     this.onFilter = (event) => this.props.onFilter && this.props.onFilter(event)
     this.onSelect = (event) => this.props.onSelect && this.props.onSelect(event)
     this.onAjaxBeforeSend = (event) => this.props.onAjaxBeforeSend && this.props.onAjaxBeforeSend(event)
-    this.onAjax = (evnet) => this.props.onAjax && this.props.onAjax(event)
+    this.onAjax = (event) => this.props.onAjax && this.props.onAjax(event)
   }
   componentDidMount () { // Mount client side only to avoid rerender
     this.el.addEventListener('input.filter', this.onFilter)
