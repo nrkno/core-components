@@ -4,16 +4,18 @@ import coreInput from './core-input'
 import { exclude } from '../utils'
 
 export default class Input extends React.Component {
-  static get defaultProps () { return { open: null, ajax: null, onAjax: null, onFilter: null, onSelect: null } }
+  static get defaultProps () { return { open: null, ajax: null, onAjax: null, onAjaxBeforeSend: null, onFilter: null, onSelect: null } }
   constructor (props) {
     super(props)
-    this.onFilter = this.onFilter.bind(this)
-    this.onSelect = this.onSelect.bind(this)
-    this.onAjax = this.onAjax.bind(this)
+    this.onFilter = (event) => this.props.onFilter && this.props.onFilter(event)
+    this.onSelect = (event) => this.props.onSelect && this.props.onSelect(event)
+    this.onAjaxBeforeSend = (event) => this.props.onAjaxBeforeSend && this.props.onAjaxBeforeSend(event)
+    this.onAjax = (evnet) => this.props.onAjax && this.props.onAjax(event)
   }
   componentDidMount () { // Mount client side only to avoid rerender
     this.el.addEventListener('input.filter', this.onFilter)
     this.el.addEventListener('input.select', this.onSelect)
+    this.el.addEventListener('input.ajax.beforeSend', this.onAjaxBeforeSend)
     this.el.addEventListener('input.ajax', this.onAjax)
     coreInput(this.el.firstElementChild, this.props)
   }
@@ -21,11 +23,9 @@ export default class Input extends React.Component {
   componentWillUnmount () {
     this.el.removeEventListener('input.filter', this.onFilter)
     this.el.removeEventListener('input.select', this.onSelect)
+    this.el.removeEventListener('input.beforeSend', this.onAjaxBeforeSend)
     this.el.removeEventListener('input.ajax', this.onAjax)
   }
-  onFilter (event) { this.props.onFilter && this.props.onFilter(event) }
-  onSelect (event) { this.props.onSelect && this.props.onSelect(event) }
-  onAjax (event) { this.props.onAjax && this.props.onAjax(event) }
   render () {
     return React.createElement('div', exclude(this.props, Input.defaultProps, { ref: el => (this.el = el) }),
       React.Children.map(this.props.children, (child, adjacent) => {
