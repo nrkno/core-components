@@ -3,6 +3,10 @@
 > `@nrk/core-toggle` simply makes a `<button>` toggle the visibility of next element sibling. Toggles can be nested and easily extended with custom animations or behavior through the [toggle event](#events). It has two modes:
 
 
+<!--demo
+<script src="core-toggle/core-toggle.min.js"></script>
+<script src="core-toggle/core-toggle.jsx.js"></script>
+demo-->
 
 ## Installation
 
@@ -15,31 +19,44 @@ import CoreToggle from '@nrk/core-toggle/jsx' // React/Preact JSX
 ```
 
 
-
 ## Demo
-
-<!--demo
-<script src="core-toggle/core-toggle.min.js"></script>
-<script src="core-toggle/core-toggle.jsx.js"></script>
-demo-->
 
 ```html
 <!--demo-->
-<button class="my-toggle">Toggle VanillaJS</button>  <!-- must be <button> -->
-<div hidden>Content</div>                                       <!-- hidden prevents flash of unstyled content -->
+<button class="my-popup">Popup VanillaJS</button>
+<ul class="my-dropdown" hidden>
+  <li><a>Link</a></li>
+  <li>
+    <button class="my-popup">Can also be nested</button>
+    <ul class="my-dropdown" hidden>
+      <li><a>Sub-link</a></li>
+      <li><input type="text" autofocus aria-label="Skriv her"></li>
+    </ul>
+  </li>
+</ul>
 <script>
-  coreToggle('.my-toggle') // Optionally pass {open: true|false} as second argument to open/close
+  coreToggle('.my-popup', { popup: 'Example picker' })
 </script>
 ```
 
 ```html
 <!--demo-->
-<div id="jsx-toggle-default"></div>
+<div id="jsx-toggle-popup"></div>
 <script type="text/jsx">
-  ReactDOM.render(<CoreToggle popup={false} open={false} onToggle={function(){}}>
-    <button>Toggle JSX</button>
-    <div>Content</div>
-  </CoreToggle>, document.getElementById('jsx-toggle-default'))
+  ReactDOM.render(<CoreToggle popup='Example picker'>
+    <button>Popup JSX</button>
+    <ul className='my-dropdown'>
+      <li><a href='#'>Link</a></li>
+      <li>
+        <CoreToggle popup='Example picker'>
+          <button>Can also be nested</button>
+          <ul className='my-dropdown'>
+            <li><a href='#'>Sub-link</a></li>
+          </ul>
+        </CoreToggle>
+      </li>
+    </ul>
+  </CoreToggle>, document.getElementById('jsx-toggle-popup'))
 </script>
 ```
 
@@ -143,46 +160,26 @@ All styling in documentation is example only. Both the `<button>` and content el
 .my-toggle-content[hidden] {}         /* Target only closed content */
 ```
 
-## Demo: Popup
+## Demo: Expand
 
-Content is toggled when clicking `button`, and closed when clicking outside content. Great for dropdowns and tooltips.
+Content is only toggled when clicking the button. Great for accordions and expand/collapse panels.
 
 ```html
 <!--demo-->
-<button class="my-popup">Popup VanillaJS</button>
-<ul class="my-dropdown" hidden>
-  <li><a>Link</a></li>
-  <li>
-    <button class="my-popup">Can also be nested</button>
-    <ul class="my-dropdown" hidden>
-      <li><a>Sub-link</a></li>
-      <li><input type="text" autofocus aria-label="Skriv her"></li>
-    </ul>
-  </li>
-</ul>
+<button class="my-toggle">Toggle VanillaJS</button>  <!-- must be <button> -->
+<div hidden>Content</div>                                       <!-- hidden prevents flash of unstyled content -->
 <script>
-  coreToggle('.my-popup', { popup: 'Example picker' })
+  coreToggle('.my-toggle') // Optionally pass {open: true|false} as second argument to open/close
 </script>
 ```
-
 ```html
 <!--demo-->
-<div id="jsx-toggle-popup"></div>
+<div id="jsx-toggle-default"></div>
 <script type="text/jsx">
-  ReactDOM.render(<CoreToggle popup='Example picker'>
-    <button>Popup JSX</button>
-    <ul className='my-dropdown'>
-      <li><a href='#'>Link</a></li>
-      <li>
-        <CoreToggle popup='Example picker'>
-          <button>Can also be nested</button>
-          <ul className='my-dropdown'>
-            <li><a href='#'>Sub-link</a></li>
-          </ul>
-        </CoreToggle>
-      </li>
-    </ul>
-  </CoreToggle>, document.getElementById('jsx-toggle-popup'))
+  ReactDOM.render(<CoreToggle popup={false} open={false} onToggle={function(){}}>
+    <button>Toggle JSX</button>
+    <div>Content</div>
+  </CoreToggle>, document.getElementById('jsx-toggle-default'))
 </script>
 ```
 

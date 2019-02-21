@@ -114,6 +114,7 @@ coreTabs(
 coreTabs('.my-tabs')              // Initalize tabs on element
 coreTabs('.my-tabs', 3)           // Initalize tabs and select 3rd tab
 coreTabs('.my-tabs', '#tab-2')    // Initalize tabs and select 2nd tab
+coreTabs('.my-tabs', element)     // Initalize tabs and select tab from element
 ```
 
 ### React / Preact
