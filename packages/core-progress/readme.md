@@ -86,7 +86,7 @@ coreProgress(
 )
 
 // Examples:
-coreProgress('.my-progress')                         // Initalize tabs on element
+coreProgress('.my-progress')                         // Initalize and ensure accessibility correct attributes
 coreProgress('.my-progress', 1)                      // Set progress value directly with number
 coreProgress('.my-progress', 'Loading...')           // Set indeterminate status using non-numerical string. The same string will be read by screen readers.
 coreProgress('.my-progress', {value: 50, max: 100})  // Set progress value and/or maximum value

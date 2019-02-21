@@ -123,7 +123,7 @@ import CoreTabs from '@nrk/core-tabs/jsx'
 
 // All props are optional, and defaults are shown below
 // Props like className, style, etc. will be applied as actual attributes
-// <Tabs> will handle state itself unless you call event.preventDefault() in onToggle
+// <CoreTabs> will handle state itself unless you call event.preventDefault() in onToggle
 
 <CoreTabs open={0} onToggle={(event) => {}}>
   <div>                     // First element must contain tabs

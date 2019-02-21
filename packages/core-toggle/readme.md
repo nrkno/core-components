@@ -69,7 +69,7 @@ import CoreToggle from '@nrk/core-toggle/jsx'
 
 // All props are optional, and defaults are shown below
 // Props like className, style, etc. will be applied as actual attributes
-// <Toggle> will handle state itself unless you call event.preventDefault() in onToggle
+// <CoreToggle> will handle state itself unless you call event.preventDefault() in onToggle
 
 <CoreToggle open={false} popup={false} onToggle={(event) => {}}>
   <button>Use with JSX</button>  // First element must result in a <button>-tag. Accepts both elements and components

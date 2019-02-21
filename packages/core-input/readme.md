@@ -58,8 +58,7 @@ demo-->
 
 ## Usage
 
-Typing toggles the [hidden attribute](https://developer.mozilla.org/en/docs/Web/HTML/Global_attributes/hidden) on items of type `<button>` and `<a>`, based on matching [textContent](https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent). Focusing the input unhides the following element.
-The default filtering behavior can easily be altered through the `'input.select'` and `'input.filter'` [events](#events).
+Typing toggles the [hidden attribute](https://developer.mozilla.org/en/docs/Web/HTML/Global_attributes/hidden) on items of type `<button>` and `<a>`, based on matching [textContent](https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent). Focusing the input unhides the following element. The default filtering behavior can easily be altered through the The default filtering behavior can easily be altered through the `'input.select'`, `'input.filter'`, `'input.ajax'` and  `'input.ajax.beforeSend'` [events](#events). 
 
 Results will be rendered in the element directly after the `<input>`.
 Always use `coreInput.escapeHTML(String)` to safely render data from API or user.
@@ -96,7 +95,7 @@ import CoreInput from '@nrk/core-input/jsx'
 
 // All props are optional, and defaults are shown below
 // Props like className, style, etc. will be applied as actual attributes
-// <Input> will handle state itself unless you call event.preventDefault() in onToggle
+// <CoreInput> will handle state itself unless you call event.preventDefault() in onFilter, onSelect or onAjax
 
 <CoreInput open={false} onFilter={(event) => {}} onSelect={(event) => {}} onAjax={(event) => {}} ajax="https://search.com?q={{value}}">
   <input type="text" />   // First element must result in a input-tag. Accepts both elements and components
