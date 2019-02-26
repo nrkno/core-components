@@ -10,7 +10,7 @@
     "url": "git+https://github.com/nrkno/core-components.git"
   },
   "devDependencies": {
-    "@nrk/simple-date-parse": "1.0.2"
+    "@nrk/simple-date-parse": "1.0.3"
   },
   "dependencies": {
     "prop-types": "15.7.2"
