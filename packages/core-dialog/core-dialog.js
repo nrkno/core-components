@@ -98,6 +98,7 @@ function setOpen (dialog, open, opener = document.activeElement) {
     dialog[nextOpen ? 'show' : 'close']()
   } else {
     dialog[nextOpen ? 'setAttribute' : 'removeAttribute']('open', '') // Toggle open attribute
+    dialog.className = dialog.className // Trigger repaint to fix IE11 from not closing dialog
   }
   backdrop[nextOpen ? 'removeAttribute' : 'setAttribute']('hidden', '')
 
@@ -108,7 +109,7 @@ function setOpen (dialog, open, opener = document.activeElement) {
     if (nextOpen) {
       dialog.style.zIndex = topZIndex + 2
       dialog.nextElementSibling.style.zIndex = topZIndex + 1
-      opener.setAttribute(OPENER_ATTR, lastIndex + 1) // Remember opener element
+      if (opener && opener.setAttribute) opener.setAttribute(OPENER_ATTR, lastIndex + 1) // Remember opener element
       setFocus(dialog)
     } else if (lastFocus) {
       (OPENER = lastFocus).removeAttribute(OPENER_ATTR) // Focus opener after transition
