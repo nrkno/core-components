@@ -98,7 +98,8 @@ function setOpen (dialog, open, opener = document.activeElement) {
     dialog[nextOpen ? 'show' : 'close']()
   } else {
     dialog[nextOpen ? 'setAttribute' : 'removeAttribute']('open', '') // Toggle open attribute
-    dialog.className = dialog.className // Trigger repaint to fix IE11 from not closing dialog
+    // Trigger repaint to fix IE11 from not closing dialog
+    dialog.className = dialog.className // eslint-disable-line
   }
   backdrop[nextOpen ? 'removeAttribute' : 'setAttribute']('hidden', '')
 
