@@ -24,9 +24,9 @@ export default function datepicker (elements, date) { // date can be String, Tim
 
     element.setAttribute(UUID, unit.timestamp)
     queryAll('button').forEach((el) => button(el, next, disable, element))
-    queryAll('select', element).forEach((el) => select(el, next, disable))
-    queryAll('input', element).forEach((el) => input(el, next, disable, unit))
-    queryAll('table', element).forEach((el) => table(el, next, disable))
+    queryAll('select', element).concat(queryAll(`select[${ATTR}="${element.id}"]`)).forEach((el) => select(el, next, disable))
+    queryAll('input', element).concat(queryAll(`input[${ATTR}="${element.id}"]`)).forEach((el) => input(el, next, disable, unit))
+    queryAll('table', element).concat(queryAll(`table[${ATTR}="${element.id}"]`)).forEach((el) => table(el, next, disable))
 
     return element
   })
@@ -104,13 +104,15 @@ function table (table, date, disable) {
     const isToday = day.getDate() === today.getDate() && day.getMonth() === today.getMonth() && day.getFullYear() === today.getFullYear()
     const isSelected = day.getTime() === date.getTime()
     const dayInMonth = day.getDate()
+    const month = day.getMonth()
 
     button.textContent = dayInMonth // Set textContent instead of innerHTML avoids reflow
-    button.value = `${day.getFullYear()}-${day.getMonth() + 1}-${dayInMonth}`
+    button.value = `${day.getFullYear()}-${month + 1}-${dayInMonth}`
     button.disabled = disable(day)
     button.setAttribute('tabindex', isSelected - 1)
     button.setAttribute(`${ATTR}-selected`, isSelected)
-    button.setAttribute('aria-label', `${dayInMonth}. ${datepicker.months[day.getMonth()]}`)
+    button.setAttribute(`${ATTR}-adjacent`, date.getMonth() !== month)
+    button.setAttribute('aria-label', `${dayInMonth}. ${datepicker.months[month]}`)
     button[isToday ? 'setAttribute' : 'removeAttribute']('aria-current', 'date')
     button[isSelected ? 'setAttribute' : 'removeAttribute']('autofocus', '')
     day.setDate(dayInMonth + 1)

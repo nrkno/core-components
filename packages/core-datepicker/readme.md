@@ -19,10 +19,10 @@ import CoreDatepicker from '@nrk/core-datepicker/jsx' // React/Preact JSX
 <script src="core-datepicker/core-datepicker.min.js"></script>
 <script src="core-datepicker/core-datepicker.jsx.js"></script>
 <style>
-  .my-datepicker { position: absolute; padding: 1rem; background: #fff; box-shadow: 0 5px 9px rgba(0,0,0,.4) }
-  .my-datepicker button[aria-disabled="true"] { opacity: .3 }
-  .my-datepicker button[aria-current="date"] { border: 1px dashed }
-  .my-datepicker button[data-core-datepicker-selected="true"] { border: 2px solid }
+  .my-datepicker { position: absolute; z-index: 3; padding: 1rem; background: #fff; box-shadow: 0 5px 9px rgba(0,0,0,.4) }
+  button[aria-current="date"] { border: 1px dashed }
+  button[data-core-datepicker-adjacent="true"] { opacity: .3 }
+  button[data-core-datepicker-selected="true"] { border: 2px solid }
   :disabled { filter: brightness(.7) sepia(1) hue-rotate(-50deg) }
 </style>
 demo-->
@@ -90,6 +90,13 @@ demo-->
 </div>
 <button data-core-datepicker="my-datepicker" value="now">Nå</button>
 <button data-core-datepicker="my-datepicker" value="+1 week">Neste uke</button>
+<select data-core-datepicker="my-datepicker">
+  <option>Tid</option>
+  <option value="11:m">11</option>
+  <option value="12:m">12</option>
+  <option value="13:m">13</option>
+</select>
+<table data-core-datepicker="my-datepicker"></table>
 <input type="text" id="my-datepicker-output">
 <script>
   // Change labels of months
@@ -313,6 +320,6 @@ CoreDatepicker.months = ['jan', 'feb', ...] // Change name of months
 .my-datepicker input:disabled               /* Target disabled checkbox/radio dates */
 .my-datepicker button:disabled              /* Target disabled dates */
 .my-datepicker button[aria-current="date"]  /* Target current date (today) in month view */
-.my-datepicker button[aria-disabled="true"] /* Target dates from next or previous month in the month view */
-.my-datepicker button[data-core-datepicker-selected="true"]  /* Target the chosen date in month view */
+.my-datepicker button[data-core-datepicker-adjacent="true"] /* Target dates from next or previous month in the month view */
+.my-datepicker button[data-core-datepicker-selected="true"] /* Target the chosen date in month view */
 ```
