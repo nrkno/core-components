@@ -2,7 +2,7 @@
   "name": "@nrk/core-datepicker",
   "homepage": "https://static.nrk.no/core-components/latest/",
   "author": "NRK <opensource@nrk.no> (https://www.nrk.no/)",
-  "version": "2.0.3",
+  "version": "2.1.0",
   "license": "MIT",
   "main": "core-datepicker.cjs.js",
   "repository": {
