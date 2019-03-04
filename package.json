@@ -2,7 +2,7 @@
   "name": "@nrk/core-components",
   "homepage": "https://static.nrk.no/core-components/latest/",
   "author": "NRK <opensource@nrk.no> (https://www.nrk.no/)",
-  "version": "5.2.3",
+  "version": "5.3.0",
   "license": "MIT",
   "scripts": {
     "build": "rollup --config",
