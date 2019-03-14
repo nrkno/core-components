@@ -81,9 +81,9 @@ demo-->
 </dialog>
 <div id="docs-react-dialog"></div>
 <script>
-  coreDialog('#my-dialog', {open: false});
-  coreDialog('#my-dialog-nested', {open: false});
-  coreDialog('#strict-dialog', {open: false, strict: true});
+  coreDialog('#my-dialog');
+  coreDialog('#my-dialog-nested');
+  coreDialog('#strict-dialog', { strict: true });
 </script>
 ```
 
@@ -198,7 +198,8 @@ import coreDialog from '@nrk/core-dialog'
 coreDialog(String|Element|Elements, { // Accepts a selector string, NodeList, Element or array of Elements
   open: Boolean,                      // Optional. Defaults to true. Use to force open state
   strict: Boolean,                    // Optional. Defaults to false. If true the dialog will not close on ESC-key nor on click on backdrop
-  label: String                       // Optional. Defaults to aria-label if set or ''. Should be implemented in order for the dialog to have a label readable by screen readers
+  label: String,                      // Optional. Defaults to aria-label if set or ''. Should be implemented in order for the dialog to have a label readable by screen readers
+  modal: Boolean,                     // Optional. Defaults to true or aria-modal. Setting false hides backdrop
   opener: Element                     // Optional. Defaults to document.activeElement. Sets the element that should receive focus after closing
 })
 
@@ -213,7 +214,7 @@ coreDialog('.my-dialog', { open: true, label: 'A super dialog' }) // Initialize 
 ```jsx
 import CoreDialog from '@nrk/core-dialog/jsx'
 
-<CoreDialog open={true|false} strict={true|false} onToggle={function(){}} aria-label="Title of dialog">
+<CoreDialog open={true|false} strict={true|false} modal={true|false} onToggle={function(){}} aria-label="Title of dialog">
   <h1>My React/Preact dialog</h1>
   <p>Some content</p>
   <button onClick={closeDialog}></button>

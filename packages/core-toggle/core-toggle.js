@@ -3,7 +3,6 @@ import { IS_ANDROID, IS_IOS, addEvent, dispatchEvent, getUUID, queryAll } from '
 
 const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid attribute characters
 const ARIA = IS_ANDROID ? 'data' : 'aria' // Andriod has a bug and reads only label instead of content
-const OPEN = 'aria-expanded'
 const KEYS = { ESC: 27 }
 
 export default function toggle (toggles, open) {
@@ -11,17 +10,17 @@ export default function toggle (toggles, open) {
   if (IS_IOS) document.documentElement.style.cursor = 'pointer' // Fix iOS events for closing popups (https://stackoverflow.com/a/16006333/8819615)
 
   return queryAll(toggles).map((toggle) => {
-    const isOpen = toggle.getAttribute(OPEN) === 'true'
+    const content = getContentElement(toggle)
+    const isOpen = toggle.hasAttribute('aria-expanded') ? toggle.getAttribute('aria-expanded') === 'true' : !content.hasAttribute('hidden')
     const open = typeof options.open === 'boolean' ? options.open : (options.open === 'toggle' ? !isOpen : isOpen)
     const popup = String((options.hasOwnProperty('popup') ? options.popup : toggle.getAttribute(UUID)) || false)
-    const popupAttr = popup.replace(/^true|false$/, '') ? 'setAttribute' : 'removeAttribute'
-    const content = getContentElement(toggle)
 
     if (options.value) toggle.innerHTML = options.value // Set innerHTML before updating aria-label
+    if (popup !== 'false' && popup !== 'true') toggle.setAttribute('aria-label', `${toggle.textContent}, ${popup}`) // Only update aria-label if popup-mode
+
     toggle.setAttribute(UUID, popup) // aria-haspopup triggers forms mode in JAWS, therefore store in uuid
     toggle.setAttribute('aria-controls', content.id = content.id || getUUID())
     content.setAttribute(`${ARIA}-labelledby`, toggle.id = toggle.id || getUUID())
-    toggle[popupAttr]('aria-label', `${toggle.textContent}, ${popup}`)
     setOpen(toggle, open)
     return toggle
   })
@@ -36,7 +35,7 @@ addEvent(UUID, 'keydown', (event) => {
   for (let el = event.target; el; el = el.parentElement) {
     const toggle = (el.id && document.querySelector(`[aria-controls="${el.id}"]`)) || el
 
-    if (toggle.getAttribute(UUID) !== 'false' && toggle.getAttribute(OPEN) === 'true') {
+    if (toggle.getAttribute(UUID) !== 'false' && toggle.getAttribute('aria-expanded') === 'true') {
       event.preventDefault() // Prevent leaving maximized window in Safari
       toggle.focus()
       return setOpen(toggle, false)
@@ -61,7 +60,7 @@ addEvent(UUID, 'click', ({ target, defaultPrevented }) => {
   }
 
   queryAll(`[${UUID}]`).forEach((toggle) => {
-    const open = toggle.getAttribute(OPEN) === 'true'
+    const open = toggle.getAttribute('aria-expanded') === 'true'
     const popup = toggle.getAttribute(UUID) !== 'false'
     const content = getContentElement(toggle)
 
@@ -72,14 +71,14 @@ addEvent(UUID, 'click', ({ target, defaultPrevented }) => {
 
 function setOpen (toggle, open) {
   const content = getContentElement(toggle)
-  const isOpen = toggle.getAttribute(OPEN) === 'true'
+  const isOpen = toggle.getAttribute('aria-expanded') === 'true'
   const willOpen = typeof open === 'boolean' ? open : (open === 'toggle' ? !isOpen : isOpen)
   const isUpdate = isOpen === willOpen || dispatchEvent(toggle, 'toggle', { relatedTarget: content, isOpen, willOpen })
-  const nextOpen = isUpdate ? willOpen : toggle.getAttribute(OPEN) === 'true' // dispatchEvent can change attributes
+  const nextOpen = isUpdate ? willOpen : toggle.getAttribute('aria-expanded') === 'true' // dispatchEvent can change attributes
   const focus = !isOpen && nextOpen && content.querySelector('[autofocus]')
 
   if (focus) setTimeout(() => focus && focus.focus()) // Move focus on next render (if element stil exists)
 
-  toggle.setAttribute(OPEN, nextOpen)
+  toggle.setAttribute('aria-expanded', nextOpen)
   content[nextOpen ? 'removeAttribute' : 'setAttribute']('hidden', '')
 }

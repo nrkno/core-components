@@ -8,7 +8,7 @@ describe('core-dialog', () => {
 
 const standardHTML = `
 <button data-core-dialog="dialog-0">Open dialog 1</button>
-<dialog id="dialog-0">
+<dialog id="dialog-0" aria-label="Dialog label 1">
   <button data-core-dialog="close"></button>
   <button data-core-dialog="dialog-1">Open nested dialog 2</button>
   <dialog id="dialog-1">
@@ -16,7 +16,7 @@ const standardHTML = `
     <button data-core-dialog="dialog-2">Open after dialog 3</button>
   </dialog>
 </dialog>
-<dialog id="dialog-2">
+<dialog id="dialog-2" aria-label="Dialog label 2">
   <button data-core-dialog="dialog-0">Open dialog 1</button>
   <button data-core-dialog="close"></button>
 </dialog>`

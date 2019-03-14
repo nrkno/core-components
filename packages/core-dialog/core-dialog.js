@@ -20,14 +20,16 @@ export default function dialog (dialogs, open) {
   return queryAll(dialogs).map((dialog) => {
     const hasFocusable = queryAll(FOCUSABLE_ELEMENTS, dialog).length
     const hasBackdrop = (dialog.nextElementSibling || {}).nodeName === 'BACKDROP'
-    const isStrict = typeof options.strict === 'boolean' ? options.strict : dialog.getAttribute(UUID) === 'true'
+    const strict = typeof options.strict === 'boolean' ? options.strict : dialog.getAttribute(UUID) === 'true'
+    const modal = typeof options.modal === 'boolean' ? options.modal : dialog.getAttribute('aria-modal') !== 'false'
+    const label = options.label || dialog.getAttribute('aria-label')
 
-    dialog.setAttribute(UUID, isStrict)
+    dialog.setAttribute(UUID, strict)
     dialog.setAttribute('role', 'dialog')
-    dialog.setAttribute('aria-modal', true)
-    dialog.setAttribute('aria-label', options.label || dialog.getAttribute('aria-label'))
+    dialog.setAttribute('aria-modal', modal)
+    if (label) dialog.setAttribute('aria-label', label)
     if (!hasBackdrop) dialog.insertAdjacentElement('afterend', document.createElement('backdrop'))
-    if (!hasFocusable) console.warn('@nrk/core-dialog initialized without focusable elements. Please add [tabindex="-1"] the main element of', dialog)
+    if (!hasFocusable) console.warn(dialog, 'is initialized without focusable elements. Please add [tabindex="-1"] the main element (for instance a <h1>)')
 
     setOpen(dialog, options.open, options.opener)
     return dialog
@@ -90,6 +92,7 @@ function setOpen (dialog, open, opener = document.activeElement) {
   const isNative = typeof window.HTMLDialogElement !== 'undefined' && typeof dialog.show === 'function'
   const isUpdate = isOpen === willOpen || dispatchEvent(dialog, 'dialog.toggle', { isOpen, willOpen })
   const nextOpen = isUpdate ? willOpen : dialog.hasAttribute('open') // dispatchEvent can change attributes, so check open again
+  const nextBack = nextOpen && dialog.getAttribute('aria-modal') !== 'false'
   const backdrop = dialog.nextElementSibling
   const lastFocus = isUpdate && getLastFocusedElement() // Store before open, as native dialog moves focus to [autofocus]
 
@@ -101,7 +104,7 @@ function setOpen (dialog, open, opener = document.activeElement) {
     // Trigger repaint to fix IE11 from not closing dialog
     dialog.className = dialog.className // eslint-disable-line
   }
-  backdrop[nextOpen ? 'removeAttribute' : 'setAttribute']('hidden', '')
+  backdrop[nextBack ? 'removeAttribute' : 'setAttribute']('hidden', '')
 
   if (isUpdate) {
     const lastIndex = Number(lastFocus && lastFocus.getAttribute(OPENER_ATTR)) || 0
