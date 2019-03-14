@@ -27,10 +27,9 @@ export default function dialog (dialogs, open) {
     dialog.setAttribute(UUID, strict)
     dialog.setAttribute('role', 'dialog')
     dialog.setAttribute('aria-modal', modal)
+    if (label) dialog.setAttribute('aria-label', label)
     if (!hasBackdrop) dialog.insertAdjacentElement('afterend', document.createElement('backdrop'))
     if (!hasFocusable) console.warn(dialog, 'is initialized without focusable elements. Please add [tabindex="-1"] the main element (for instance a <h1>)')
-    if (!label) console.warn(dialog, 'is missing the aria-label attribute')
-    else dialog.setAttribute('aria-label', label)
 
     setOpen(dialog, options.open, options.opener)
     return dialog
