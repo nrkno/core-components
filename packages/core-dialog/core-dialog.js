@@ -97,7 +97,6 @@ function setOpen (dialog, open, opener = document.activeElement) {
   const backdrop = dialog.nextElementSibling
   const lastFocus = isUpdate && getLastFocusedElement() // Store before open, as native dialog moves focus to [autofocus]
 
-
   if (isNative) {
     dialog.open = !nextOpen // Update to opposite value to ensure show/close can run without error
     dialog[nextOpen ? 'show' : 'close']()

@@ -17,8 +17,8 @@
     "test": "npm run lint && npm run test:js"
   },
   "devDependencies": {
+    "buble-jest": "1.0.1",
     "jest": "24.5.0",
-    "jest-buble": "2.0.0",
     "prop-types": "15.7.2",
     "react": "16.8.4",
     "react-dom": "16.8.4",
@@ -54,7 +54,7 @@
   "jest": {
     "testURL": "http://localhost/",
     "transform": {
-      "^.+\\.jsx?$": "jest-buble"
+      "^.+\\.jsx?$": "buble-jest"
     }
   }
 }
