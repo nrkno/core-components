@@ -11,7 +11,7 @@ export default function toggle (toggles, open) {
 
   return queryAll(toggles).map((toggle) => {
     const content = getContentElement(toggle)
-    const isOpen = toggle.hasAttribute('aria-expanded') ? toggle.getAttribute('aria-expanded') === 'true' : !content.hasAttribute('hidden')
+    const isOpen = toggle.getAttribute('aria-expanded') === 'true'
     const open = typeof options.open === 'boolean' ? options.open : (options.open === 'toggle' ? !isOpen : isOpen)
     const popup = String((options.hasOwnProperty('popup') ? options.popup : toggle.getAttribute(UUID)) || false)
 
