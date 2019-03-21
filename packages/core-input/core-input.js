@@ -87,7 +87,7 @@ function onSelect (input, detail) {
   if (dispatchEvent(input, 'input.select', detail)) {
     input.value = detail.value
     input.focus()
-    setupExpand(input, false)
+    requestAnimFrame(() => setupExpand(input, false)) // Let IE11 finish focus event bubbling
   }
 }
 
