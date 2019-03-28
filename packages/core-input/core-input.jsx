@@ -47,6 +47,7 @@ Input.propTypes = {
   onSelect: PropTypes.func,
   onAjax: PropTypes.func,
   open: PropTypes.bool,
+  limit: PropTypes.number,
   ajax: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.object

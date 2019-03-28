@@ -7,14 +7,13 @@
   "scripts": {
     "build": "rollup --config",
     "install": "node bin/index.js --install",
-    "lint": "standard",
     "publish:patch": "npm run build && node bin/index.js --publish=patch",
     "publish:minor": "npm run build && node bin/index.js --publish=minor",
     "publish:major": "npm run build && node bin/index.js --publish=major",
     "start": "rollup --config --watch",
     "static-publish": "npm run build && static-publish --directory=packages --account=nrk-core --latest --major",
-    "test:js": "npm run build && jest",
-    "test": "npm run lint && npm run test:js"
+    "test": "npm run build && jest && standard -v",
+    "test:watch": "jest --watch"
   },
   "devDependencies": {
     "jest": "24.5.0",

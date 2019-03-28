@@ -6,8 +6,8 @@ const KEYS = { ENTER: 13, ESC: 27, PAGEUP: 33, PAGEDOWN: 34, END: 35, HOME: 36, 
 const ITEM = '[tabindex="-1"]'
 const AJAX_DEBOUNCE = 500
 
-export default function input (elements, content) {
-  const options = typeof content === 'object' ? content : { content }
+export default function input (elements, options = {}) {
+  options = typeof options === 'string' ? { content: options } : options
   const repaint = typeof options.content === 'string'
 
   return queryAll(elements).map((input) => {
@@ -16,6 +16,7 @@ export default function input (elements, content) {
     const open = typeof options.open === 'undefined' ? input === document.activeElement : options.open
 
     input.setAttribute(UUID, ajax || '')
+    input.setAttribute(`${UUID}-limit`, options.limit)
     input.setAttribute(IS_IOS ? 'data-role' : 'role', 'combobox') // iOS does not inform user area is editable if combobox
     input.setAttribute('aria-autocomplete', 'list')
     input.setAttribute('autocomplete', 'off')
@@ -93,9 +94,10 @@ function onSelect (input, detail) {
 
 function onFilter (input, detail) {
   if (dispatchEvent(input, 'input.filter', detail) && ajax(input) === false) {
-    queryAll(ITEM, input.nextElementSibling).reduce((acc, item) => {
+    const limit = Number(input.getAttribute(`${UUID}-limit`)) || Infinity
+    queryAll(ITEM, input.nextElementSibling).reduce((acc, item, index) => {
       const list = item.parentElement.nodeName === 'LI' && item.parentElement
-      const show = item.textContent.toLowerCase().indexOf(input.value.toLowerCase()) !== -1
+      const show = item.textContent.toLowerCase().indexOf(input.value.toLowerCase()) !== -1 && index < limit
       const attr = show ? 'removeAttribute' : 'setAttribute'
       if (list) list[attr]('hidden', '') // JAWS requires hiding of <li> too (if they exist)
       item[attr]('hidden', '')
@@ -108,6 +110,7 @@ function setupExpand (input, open = input.getAttribute('aria-expanded') === 'tru
   requestAnimFrame(() => { // Fixes VoiceOver Safari focus jumping to parentElement
     input.nextElementSibling[open ? 'removeAttribute' : 'setAttribute']('hidden', '')
     input.setAttribute('aria-expanded', open)
+    if (open) onFilter(input, { relatedTarget: input.nextElementSibling })
   })
 }
 

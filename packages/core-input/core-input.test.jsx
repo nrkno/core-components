@@ -1,7 +1,6 @@
 const React = require('react')
 const ReactDOM = require('react-dom')
 const CoreInput = require('./jsx')
-const { expectOpenedState, expectClosedState } = require('./core-input.test.js')
 
 const mount = (props = {}, keepInstance) => {
   if (!keepInstance) {
@@ -53,7 +52,11 @@ describe('core-input/jsx', () => {
     const suggestions = document.querySelector('.my-input + ul')
 
     input.click()
-    expectOpenedState(input, suggestions)
+    expect(input.getAttribute('role')).toEqual('combobox')
+    expect(input.getAttribute('aria-autocomplete')).toEqual('list')
+    expect(input.getAttribute('autocomplete')).toEqual('off')
+    expect(input.getAttribute('aria-expanded')).toEqual('true')
+    expect(suggestions.hasAttribute('hidden')).toBeFalsy()
   })
 
   it('should set input value to that of clicked suggestion', () => {
@@ -69,7 +72,11 @@ describe('core-input/jsx', () => {
 
     expect(callback).toHaveBeenCalled()
     expect(input.value).toEqual('Firefox')
-    expectClosedState(input, suggestions)
+    expect(input.getAttribute('role')).toEqual('combobox')
+    expect(input.getAttribute('aria-autocomplete')).toEqual('list')
+    expect(input.getAttribute('autocomplete')).toEqual('off')
+    expect(input.getAttribute('aria-expanded')).toEqual('false')
+    expect(suggestions.hasAttribute('hidden')).toBeTruthy()
   })
 
   it('should close suggestions if focus is placed outside on elements outside list/input', () => {
@@ -81,7 +88,11 @@ describe('core-input/jsx', () => {
     input.click()
     document.body.click()
 
-    expectClosedState(input, suggestions)
+    expect(input.getAttribute('role')).toEqual('combobox')
+    expect(input.getAttribute('aria-autocomplete')).toEqual('list')
+    expect(input.getAttribute('autocomplete')).toEqual('off')
+    expect(input.getAttribute('aria-expanded')).toEqual('false')
+    expect(suggestions.hasAttribute('hidden')).toBeTruthy()
   })
 
   it('should filter suggestion list according to value in input', () => {
