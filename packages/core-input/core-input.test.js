@@ -1,31 +1,15 @@
 const coreInput = require('./core-input.min')
 
-function expectOpenedState (input, suggestions) {
-  expect(input.getAttribute('role')).toEqual('combobox')
-  expect(input.getAttribute('aria-autocomplete')).toEqual('list')
-  expect(input.getAttribute('autocomplete')).toEqual('off')
-  expect(input.getAttribute('aria-expanded')).toEqual('true')
-  expect(suggestions.hasAttribute('hidden')).toBeFalsy()
-}
-
-function expectClosedState (input, suggestions) {
-  expect(input.getAttribute('role')).toEqual('combobox')
-  expect(input.getAttribute('aria-autocomplete')).toEqual('list')
-  expect(input.getAttribute('autocomplete')).toEqual('off')
-  expect(input.getAttribute('aria-expanded')).toEqual('false')
-  expect(suggestions.hasAttribute('hidden')).toBeTruthy()
-}
-
 const standardHTML = `
-<input type="text" class="my-input" placeholder="Type something...">
-<ul hidden>
-  <li><button>Chrome</button></li>
-  <li><button>Firefox</button></li>
-  <li><button>Opera</button></li>
-  <li><button>Safari</button></li>
-  <li><button>Microsoft Edge</button></li>
-</ul>
-<button id="something-else" type="button"></button>
+  <input type="text" class="my-input" placeholder="Type something...">
+  <ul hidden>
+    <li><button>Chrome</button></li>
+    <li><button>Firefox</button></li>
+    <li><button>Opera</button></li>
+    <li><button>Safari</button></li>
+    <li><button>Microsoft Edge</button></li>
+  </ul>
+  <button id="something-else" type="button"></button>
 `
 
 describe('core-input', () => {
@@ -41,11 +25,9 @@ describe('core-input', () => {
     expect(coreInput).toBeInstanceOf(Function)
   })
 
-  it('should initialize input with props when core-input is called', () => {
+  it('should initialize input with props', () => {
     document.body.innerHTML = standardHTML
-
     const input = document.querySelector('.my-input')
-
     coreInput(input)
     expect(input.getAttribute('role')).toEqual('combobox')
     expect(input.getAttribute('aria-autocomplete')).toEqual('list')
@@ -53,77 +35,80 @@ describe('core-input', () => {
     expect(input.getAttribute('aria-expanded')).toEqual('false')
   })
 
-  it('should expand suggestions when input field is clicked', () => {
+  it('should expand suggestions when input is clicked', () => {
     document.body.innerHTML = standardHTML
-
     const input = document.querySelector('.my-input')
     const suggestions = document.querySelector('.my-input + ul')
-
     coreInput(input)
-
     input.click()
-    expectOpenedState(input, suggestions)
+    expect(input.getAttribute('role')).toEqual('combobox')
+    expect(input.getAttribute('aria-autocomplete')).toEqual('list')
+    expect(input.getAttribute('autocomplete')).toEqual('off')
+    expect(input.getAttribute('aria-expanded')).toEqual('true')
+    expect(suggestions.hasAttribute('hidden')).toBeFalsy()
   })
 
-  it('should set input value to that of clicked suggestion', () => {
+  it('should set input value to clicked suggestion', () => {
     document.body.innerHTML = standardHTML
-
     const input = document.querySelector('.my-input')
     const suggestions = document.querySelector('.my-input + ul')
     const firefoxBtn = suggestions.querySelector('li:nth-child(2) button')
     const callback = jest.fn()
-
     coreInput(input)
-
     input.addEventListener('input.select', callback)
     input.click()
     firefoxBtn.click()
-
     expect(callback).toHaveBeenCalled()
     expect(input.value).toEqual('Firefox')
-    expectClosedState(input, suggestions)
+    expect(input.getAttribute('role')).toEqual('combobox')
+    expect(input.getAttribute('aria-autocomplete')).toEqual('list')
+    expect(input.getAttribute('autocomplete')).toEqual('off')
+    expect(input.getAttribute('aria-expanded')).toEqual('false')
+    expect(suggestions.hasAttribute('hidden')).toBeTruthy()
   })
 
-  it('should close suggestions if focus is placed outside on elements outside list/input', () => {
+  it('should close suggestions on focusing outside', () => {
     document.body.innerHTML = standardHTML
-
     const input = document.querySelector('.my-input')
     const suggestions = document.querySelector('.my-input + ul')
     const someOtherBtn = document.querySelector('#something-else')
-
     coreInput(input)
-
     input.click()
     someOtherBtn.click()
-
-    expectClosedState(input, suggestions)
+    expect(input.getAttribute('role')).toEqual('combobox')
+    expect(input.getAttribute('aria-autocomplete')).toEqual('list')
+    expect(input.getAttribute('autocomplete')).toEqual('off')
+    expect(input.getAttribute('aria-expanded')).toEqual('false')
+    expect(suggestions.hasAttribute('hidden')).toBeTruthy()
   })
 
-  it('should filter suggestion list according to value in input', () => {
+  it('should filter suggestion from input value', () => {
     document.body.innerHTML = standardHTML
-
     const input = document.querySelector('.my-input')
     const event = new window.CustomEvent('input', { bubbles: true })
-
     coreInput(input)
-
     input.value = 'Chrome'
     input.dispatchEvent(event)
-
     expect(document.querySelectorAll('button[hidden]').length).toEqual(4)
   })
 
   it('should set type="button" on all buttons in list', () => {
     document.body.innerHTML = standardHTML
-
     coreInput(document.querySelector('.my-input'))
     document.querySelectorAll('ul button').forEach((button) => {
       expect(button.type).toEqual('button')
     })
   })
-})
 
-module.exports = {
-  expectOpenedState,
-  expectClosedState
-}
+  it('should limit length of suggestions from option', () => {
+    document.body.innerHTML = standardHTML
+    const input = document.querySelector('.my-input')
+    const suggestions = document.querySelector('.my-input + ul')
+    coreInput(input, { limit: 2 })
+    expect(suggestions.children[0].hasAttribute('hidden')).toBe(false)
+    expect(suggestions.children[1].hasAttribute('hidden')).toBe(false)
+    expect(suggestions.children[2].hasAttribute('hidden')).toBe(true)
+    expect(suggestions.children[3].hasAttribute('hidden')).toBe(true)
+    expect(suggestions.children[4].hasAttribute('hidden')).toBe(true)
+  })
+})

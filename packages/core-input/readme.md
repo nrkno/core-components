@@ -58,7 +58,7 @@ demo-->
 
 ## Usage
 
-Typing toggles the [hidden attribute](https://developer.mozilla.org/en/docs/Web/HTML/Global_attributes/hidden) on items of type `<button>` and `<a>`, based on matching [textContent](https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent). Focusing the input unhides the following element. The default filtering behavior can easily be altered through the The default filtering behavior can easily be altered through the `'input.select'`, `'input.filter'`, `'input.ajax'` and  `'input.ajax.beforeSend'` [events](#events). 
+Typing toggles the [hidden attribute](https://developer.mozilla.org/en/docs/Web/HTML/Global_attributes/hidden) on items of type `<button>` and `<a>`, based on matching [textContent](https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent). Focusing the input unhides the following element. The default filtering behavior can easily be altered through the The default filtering behavior can easily be altered through the `'input.select'`, `'input.filter'`, `'input.ajax'` and  `'input.ajax.beforeSend'` [events](#events).
 
 Results will be rendered in the element directly after the `<input>`.
 Always use `coreInput.escapeHTML(String)` to safely render data from API or user.
@@ -77,15 +77,22 @@ Always use `coreInput.escapeHTML(String)` to safely render data from API or user
 ```js
 import coreInput from '@nrk/core-input'
 
-coreInput(String|Element|Elements, {    // Accepts a selector string, NodeList, Element or array of Elements
-  open: Boolean,                        // Optional. Defaults to value of aria-expanded. Use to force open state
-  content: String,                      // Optional. Set String of HTML content. HTML is used for full flexibility on markup
-  ajax: String                          // Optional. Fetch external data, example: "https://search.com?q={{value}}"
+coreInput(                              // Initializes input element
+  String|Element|Elements,              // Accepts a selector string, NodeList, Element or array of Elements
+  String|Object {                       // Optional. String sets content HTML, object sets options
+    open: Boolean,                      // Use to force open state. Defaults to value of aria-expanded.
+    content: String,                    // Sets content HTML. HTML is used for full flexibility on markup
+    limit: Number,                      // Sets the maximum number of visible items in list. Doesn't affect actual number of items
+    ajax: String                        // Fetches external data. See event 'input.ajax'. Example: 'https://search.com?q={{value}}'
+  }
 })
 
-// Passing a string as second argument sets the 'content' option
-coreInput('.my-input', '<li><a href="?q=' + coreInput.escapeHTML(input.value) + '">More results</a></li>') // escape html
-coreInput('.my-input', '<li><button>' + coreInput.highlight(item.text, input.value) + '</button></li>') // highlight match
+// Example initialize and limit items to 5
+coreInput('.my-input', { limit: 5 })
+// Example setting HTML content and escaping items
+coreInput('.my-input', '<li><a href="?q=' + coreInput.escapeHTML(input.value) + '">More results</a></li>')
+// Example setting HTML content and highlighting matched items
+coreInput('.my-input', '<li><button>' + coreInput.highlight(item.text, input.value) + '</button></li>')
 ```
 
 ### React / Preact
@@ -97,7 +104,13 @@ import CoreInput from '@nrk/core-input/jsx'
 // Props like className, style, etc. will be applied as actual attributes
 // <CoreInput> will handle state itself unless you call event.preventDefault() in onFilter, onSelect or onAjax
 
-<CoreInput open={false} onFilter={(event) => {}} onSelect={(event) => {}} onAjax={(event) => {}} onAjaxBeforeSend={(event) => {}} ajax="https://search.com?q={{value}}">
+<CoreInput open={Boolean}                // Use to force open state. Defaults to value of aria-expanded.
+           limit={Number}                // Limit the maximum number of results in list.
+           ajax={String|Object}          // Fetches external data. See event 'input.ajax'. Example: 'https://search.com?q={{value}}'
+           onFilter={Function}           // See 'input.filter' event
+           onSelect={Function}           // See 'input.select' event
+           onAjax={Function}             // See 'input.ajax' event
+           onAjaxBeforeSend={Function}>  // See 'input.ajax.beforeSend' event
   <input type="text" />   // First element must result in a input-tag. Accepts both elements and components
   <ul>                    // Next element will be used for items. Accepts both elements and components
     <li><button>Item 1</button></li>                  // Interactive items must be <button> or <a>
