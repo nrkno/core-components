@@ -117,7 +117,7 @@ function setupItem (limit, item, index, items) {
   item.setAttribute('aria-label', `${item.textContent.trim()}, ${index + 1} av ${items.length}`)
   item.setAttribute('tabindex', '-1')
   item.setAttribute('type', 'button')
-  if (index >= limit) item.parentElement.setAttribute('hidden', '')
+  if (limit && (index >= limit)) item.parentElement.setAttribute('hidden', '')
 }
 
 function ajax (input) {
