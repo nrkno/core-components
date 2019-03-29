@@ -1,5 +1,7 @@
+const { name, version } = require('./package.json')
 const coreInput = require('./core-input.min')
 
+const UUID = `data-${name}-${version}`.replace(/\W+/g, '-')
 const standardHTML = `
   <input type="text" class="my-input" placeholder="Type something...">
   <ul hidden>
@@ -100,7 +102,17 @@ describe('core-input', () => {
     })
   })
 
-  it('should limit length of suggestions from option', () => {
+  it('should remember and ovewrite options', () => {
+    document.body.innerHTML = standardHTML
+    const input = document.querySelector('.my-input')
+    coreInput(input, { limit: 11, ajax: 'https://example.com/{{value}}' })
+    expect(input.getAttribute(`${UUID}-limit`)).toEqual('11')
+    coreInput(input, { limit: 12 })
+    expect(input.getAttribute(`${UUID}-limit`)).toEqual('12')
+    expect(input.getAttribute(UUID)).toEqual('https://example.com/{{value}}')
+  })
+
+  it('should limit length of suggestions from limit option', () => {
     document.body.innerHTML = standardHTML
     const input = document.querySelector('.my-input')
     const suggestions = document.querySelector('.my-input + ul')
