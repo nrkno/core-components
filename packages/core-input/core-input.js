@@ -5,10 +5,10 @@ const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid att
 const KEYS = { ENTER: 13, ESC: 27, PAGEUP: 33, PAGEDOWN: 34, END: 35, HOME: 36, UP: 38, DOWN: 40 }
 const AJAX_DEBOUNCE = 500
 
-export default function input (elements, options = {}) {
-  options = typeof options === 'string' ? { content: options } : options
-  options.limit = Math.max(options.limit, 0)
+export default function input (elements, content) {
+  const options = typeof content === 'object' ? content : { content }
   const repaint = typeof options.content === 'string'
+  const limit = Math.max(options.limit, 0) || 0
 
   return queryAll(elements).map((input) => {
     const list = input.nextElementSibling
@@ -16,13 +16,13 @@ export default function input (elements, options = {}) {
     const open = typeof options.open === 'undefined' ? input === document.activeElement : options.open
 
     input.setAttribute(UUID, ajax || '')
-    input.setAttribute(`${UUID}-limit`, options.limit)
+    input.setAttribute(`${UUID}-limit`, limit)
     input.setAttribute(IS_IOS ? 'data-role' : 'role', 'combobox') // iOS does not inform user area is editable if combobox
     input.setAttribute('aria-autocomplete', 'list')
     input.setAttribute('autocomplete', 'off')
 
     if (repaint) list.innerHTML = options.content
-    queryAll('a,button', list).forEach((...args) => setupItem(options.limit || Infinity, ...args))
+    queryAll('a,button', list).forEach((...args) => setupItem(limit, ...args))
     setupExpand(input, open)
 
     return input
