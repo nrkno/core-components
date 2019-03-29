@@ -4,7 +4,7 @@ import coreInput from './core-input'
 import { exclude } from '../utils'
 
 export default class Input extends React.Component {
-  static get defaultProps () { return { open: null, ajax: null, onAjax: null, onAjaxBeforeSend: null, onFilter: null, onSelect: null } }
+  static get defaultProps () { return { open: null, limit: null, ajax: null, onAjax: null, onAjaxBeforeSend: null, onFilter: null, onSelect: null } }
   constructor (props) {
     super(props)
     this.onFilter = (event) => this.props.onFilter && this.props.onFilter(event)

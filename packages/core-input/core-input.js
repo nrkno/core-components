@@ -3,11 +3,11 @@ import { IS_IOS, addEvent, escapeHTML, dispatchEvent, requestAnimFrame, queryAll
 
 const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid attribute characters
 const KEYS = { ENTER: 13, ESC: 27, PAGEUP: 33, PAGEDOWN: 34, END: 35, HOME: 36, UP: 38, DOWN: 40 }
-const ITEM = '[tabindex="-1"]'
 const AJAX_DEBOUNCE = 500
 
 export default function input (elements, options = {}) {
   options = typeof options === 'string' ? { content: options } : options
+  options.limit = Math.max(options.limit, 0)
   const repaint = typeof options.content === 'string'
 
   return queryAll(elements).map((input) => {
@@ -22,7 +22,7 @@ export default function input (elements, options = {}) {
     input.setAttribute('autocomplete', 'off')
 
     if (repaint) list.innerHTML = options.content
-    queryAll('a,button', list).forEach(setupItem)
+    queryAll('a,button', list).forEach((...args) => setupItem(options.limit || Infinity, ...args))
     setupExpand(input, open)
 
     return input
@@ -44,7 +44,7 @@ function onClickOrFocus (event) {
   queryAll(`[${UUID}]`).forEach((input) => {
     const list = input.nextElementSibling
     const open = input === event.target || list.contains(event.target)
-    const item = event.type === 'click' && open && queryAll(ITEM, list).filter((item) => item.contains(event.target))[0]
+    const item = event.type === 'click' && open && queryAll('[tabindex="-1"]', list).filter((item) => item.contains(event.target))[0]
 
     if (item) onSelect(input, { relatedTarget: list, currentTarget: item, value: item.value || item.textContent.trim() })
     else setupExpand(input, open)
@@ -65,7 +65,7 @@ addEvent(UUID, 'keydown', (event) => {
 
 function onKey (input, event) {
   const list = input.nextElementSibling
-  const focusable = [input].concat(queryAll(`${ITEM}:not([hidden])`, list))
+  const focusable = [input].concat(queryAll(`[tabindex="-1"]:not([hidden])`, list))
   const isClosing = event.keyCode === KEYS.ESC && input.getAttribute('aria-expanded') === 'true'
   const index = focusable.indexOf(document.activeElement)
   let item = false
@@ -93,16 +93,16 @@ function onSelect (input, detail) {
 }
 
 function onFilter (input, detail) {
+  const limit = Number(input.getAttribute(`${UUID}-limit`)) || Infinity
   if (dispatchEvent(input, 'input.filter', detail) && ajax(input) === false) {
-    const limit = Number(input.getAttribute(`${UUID}-limit`)) || Infinity
-    queryAll(ITEM, input.nextElementSibling).reduce((acc, item, index) => {
+    queryAll('[tabindex="-1"]', input.nextElementSibling).reduce((acc, item, index) => {
       const list = item.parentElement.nodeName === 'LI' && item.parentElement
-      const show = item.textContent.toLowerCase().indexOf(input.value.toLowerCase()) !== -1 && index < limit
+      const show = item.textContent.toLowerCase().indexOf(input.value.toLowerCase()) !== -1
       const attr = show ? 'removeAttribute' : 'setAttribute'
       if (list) list[attr]('hidden', '') // JAWS requires hiding of <li> too (if they exist)
       item[attr]('hidden', '')
       return show ? acc.concat(item) : acc
-    }, []).forEach(setupItem)
+    }, []).forEach((...args) => setupItem(limit, ...args))
   }
 }
 
@@ -110,14 +110,14 @@ function setupExpand (input, open = input.getAttribute('aria-expanded') === 'tru
   requestAnimFrame(() => { // Fixes VoiceOver Safari focus jumping to parentElement
     input.nextElementSibling[open ? 'removeAttribute' : 'setAttribute']('hidden', '')
     input.setAttribute('aria-expanded', open)
-    if (open) onFilter(input, { relatedTarget: input.nextElementSibling })
   })
 }
 
-function setupItem (item, index, items) {
+function setupItem (limit, item, index, items) {
   item.setAttribute('aria-label', `${item.textContent.trim()}, ${index + 1} av ${items.length}`)
   item.setAttribute('tabindex', '-1')
   item.setAttribute('type', 'button')
+  if (index >= limit) item.parentElement.setAttribute('hidden', '')
 }
 
 function ajax (input) {

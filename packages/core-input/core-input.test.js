@@ -105,7 +105,6 @@ describe('core-input', () => {
     const input = document.querySelector('.my-input')
     const suggestions = document.querySelector('.my-input + ul')
     coreInput(input, { limit: 2 })
-    input.focus()
     expect(suggestions.children[0].hasAttribute('hidden')).toBe(false)
     expect(suggestions.children[1].hasAttribute('hidden')).toBe(false)
     expect(suggestions.children[2].hasAttribute('hidden')).toBe(true)

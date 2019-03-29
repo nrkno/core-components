@@ -82,7 +82,7 @@ coreInput(                              // Initializes input element
   String|Object {                       // Optional. String sets content HTML, object sets options
     open: Boolean,                      // Use to force open state. Defaults to value of aria-expanded.
     content: String,                    // Sets content HTML. HTML is used for full flexibility on markup
-    limit: Number                       // Limit the maximum number of results in list.
+    limit: Number,                      // Sets the maximum number of visible items in list. Doesn't affect actual number of items
     ajax: String                        // Fetches external data. See event 'input.ajax'. Example: 'https://search.com?q={{value}}'
   }
 })
