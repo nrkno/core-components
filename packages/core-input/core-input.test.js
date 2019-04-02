@@ -2,8 +2,8 @@ const { name, version } = require('./package.json')
 const coreInput = require('./core-input.min')
 
 const UUID = `data-${name}-${version}`.replace(/\W+/g, '-')
-const standardHTML = `
-  <input type="text" class="my-input" placeholder="Type something...">
+const HTML = `
+  <input type="text" placeholder="Type something...">
   <ul hidden>
     <li><button>Chrome</button></li>
     <li><button>Firefox</button></li>
@@ -11,7 +11,7 @@ const standardHTML = `
     <li><button>Safari</button></li>
     <li><button>Microsoft Edge</button></li>
   </ul>
-  <button id="something-else" type="button"></button>
+  <button></button>
 `
 
 describe('core-input', () => {
@@ -28,8 +28,8 @@ describe('core-input', () => {
   })
 
   it('should initialize input with props', () => {
-    document.body.innerHTML = standardHTML
-    const input = document.querySelector('.my-input')
+    document.body.innerHTML = HTML
+    const input = document.querySelector('input')
     coreInput(input)
     expect(input.getAttribute('role')).toEqual('combobox')
     expect(input.getAttribute('aria-autocomplete')).toEqual('list')
@@ -38,9 +38,9 @@ describe('core-input', () => {
   })
 
   it('should expand suggestions when input is clicked', () => {
-    document.body.innerHTML = standardHTML
-    const input = document.querySelector('.my-input')
-    const suggestions = document.querySelector('.my-input + ul')
+    document.body.innerHTML = HTML
+    const input = document.querySelector('input')
+    const suggestions = document.querySelector('input + ul')
     coreInput(input)
     input.click()
     expect(input.getAttribute('role')).toEqual('combobox')
@@ -51,9 +51,9 @@ describe('core-input', () => {
   })
 
   it('should set input value to clicked suggestion', () => {
-    document.body.innerHTML = standardHTML
-    const input = document.querySelector('.my-input')
-    const suggestions = document.querySelector('.my-input + ul')
+    document.body.innerHTML = HTML
+    const input = document.querySelector('input')
+    const suggestions = document.querySelector('input + ul')
     const firefoxBtn = suggestions.querySelector('li:nth-child(2) button')
     const callback = jest.fn()
     coreInput(input)
@@ -70,13 +70,13 @@ describe('core-input', () => {
   })
 
   it('should close suggestions on focusing outside', () => {
-    document.body.innerHTML = standardHTML
-    const input = document.querySelector('.my-input')
-    const suggestions = document.querySelector('.my-input + ul')
-    const someOtherBtn = document.querySelector('#something-else')
+    document.body.innerHTML = HTML
+    const input = document.querySelector('input')
+    const suggestions = document.querySelector('input + ul')
+    const button = document.querySelector('button')
     coreInput(input)
     input.click()
-    someOtherBtn.click()
+    button.click()
     expect(input.getAttribute('role')).toEqual('combobox')
     expect(input.getAttribute('aria-autocomplete')).toEqual('list')
     expect(input.getAttribute('autocomplete')).toEqual('off')
@@ -85,8 +85,8 @@ describe('core-input', () => {
   })
 
   it('should filter suggestion from input value', () => {
-    document.body.innerHTML = standardHTML
-    const input = document.querySelector('.my-input')
+    document.body.innerHTML = HTML
+    const input = document.querySelector('input')
     const event = new window.CustomEvent('input', { bubbles: true })
     coreInput(input)
     input.value = 'Chrome'
@@ -95,30 +95,69 @@ describe('core-input', () => {
   })
 
   it('should set type="button" on all buttons in list', () => {
-    document.body.innerHTML = standardHTML
-    coreInput(document.querySelector('.my-input'))
+    document.body.innerHTML = HTML
+    coreInput(document.querySelector('input'))
     document.querySelectorAll('ul button').forEach((button) => {
       expect(button.type).toEqual('button')
     })
   })
 
   it('should remember and ovewrite options', () => {
-    document.body.innerHTML = standardHTML
-    const input = document.querySelector('.my-input')
+    document.body.innerHTML = HTML
+    const input = document.querySelector('input')
     coreInput(input, { limit: 11, ajax: 'https://example.com/{{value}}' })
     expect(input.getAttribute(`${UUID}-limit`)).toEqual('11')
     coreInput(input, { limit: 12 })
+    coreInput(input)
     expect(input.getAttribute(`${UUID}-limit`)).toEqual('12')
     expect(input.getAttribute(UUID)).toEqual('https://example.com/{{value}}')
   })
 
-  it('should limit length of suggestions from limit option', () => {
-    document.body.innerHTML = standardHTML
-    const input = document.querySelector('.my-input')
-    const suggestions = document.querySelector('.my-input + ul')
+  it('should correctly parse limit option', () => {
+    document.body.innerHTML = HTML
+    const input = document.querySelector('input')
+    coreInput(input)
+    expect(input.getAttribute(`${UUID}-limit`)).toBe('0')
     coreInput(input, { limit: 2 })
+    expect(input.getAttribute(`${UUID}-limit`)).toBe('2')
+    coreInput(input, { limit: 0 })
+    expect(input.getAttribute(`${UUID}-limit`)).toBe('0')
+    coreInput(input, { limit: -2 })
+    expect(input.getAttribute(`${UUID}-limit`)).toBe('0')
+    coreInput(input, { limit: null })
+    expect(input.getAttribute(`${UUID}-limit`)).toBe('0')
+    coreInput(input, { limit: undefined })
+    expect(input.getAttribute(`${UUID}-limit`)).toBe('0')
+    coreInput(input, { limit: 2 })
+    coreInput(input, { limit: undefined })
+    expect(input.getAttribute(`${UUID}-limit`)).toBe('2')
+  })
+
+  it('should limit length of suggestions from limit option', () => {
+    document.body.innerHTML = HTML
+    const input = document.querySelector('input')
+    const suggestions = document.querySelector('input + ul')
+    coreInput(input)
     expect(suggestions.children[0].hasAttribute('hidden')).toBe(false)
     expect(suggestions.children[1].hasAttribute('hidden')).toBe(false)
+    expect(suggestions.children[2].hasAttribute('hidden')).toBe(false)
+    expect(suggestions.children[3].hasAttribute('hidden')).toBe(false)
+    expect(suggestions.children[4].hasAttribute('hidden')).toBe(false)
+    coreInput(input, { limit: 3 })
+    expect(suggestions.children[0].hasAttribute('hidden')).toBe(false)
+    expect(suggestions.children[1].hasAttribute('hidden')).toBe(false)
+    expect(suggestions.children[2].hasAttribute('hidden')).toBe(false)
+    expect(suggestions.children[3].hasAttribute('hidden')).toBe(true)
+    expect(suggestions.children[4].hasAttribute('hidden')).toBe(true)
+    coreInput(input, { limit: undefined })
+    expect(suggestions.children[0].hasAttribute('hidden')).toBe(false)
+    expect(suggestions.children[1].hasAttribute('hidden')).toBe(false)
+    expect(suggestions.children[2].hasAttribute('hidden')).toBe(false)
+    expect(suggestions.children[3].hasAttribute('hidden')).toBe(true)
+    expect(suggestions.children[4].hasAttribute('hidden')).toBe(true)
+    coreInput(input, { limit: 1 })
+    expect(suggestions.children[0].hasAttribute('hidden')).toBe(false)
+    expect(suggestions.children[1].hasAttribute('hidden')).toBe(true)
     expect(suggestions.children[2].hasAttribute('hidden')).toBe(true)
     expect(suggestions.children[3].hasAttribute('hidden')).toBe(true)
     expect(suggestions.children[4].hasAttribute('hidden')).toBe(true)

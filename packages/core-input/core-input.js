@@ -15,8 +15,10 @@ export default function input (elements, content) {
     const limit = typeof options.limit === 'undefined' ? input.getAttribute(`${UUID}-limit`) : Math.max(options.limit || 0, 0)
     const open = typeof options.open === 'undefined' ? input === document.activeElement : options.open
 
+    console.log('limit:', limit);
+
     input.setAttribute(UUID, ajax || '')
-    input.setAttribute(`${UUID}-limit`, limit)
+    input.setAttribute(`${UUID}-limit`, limit || 0)
     input.setAttribute(IS_IOS ? 'data-role' : 'role', 'combobox') // iOS does not inform user area is editable if combobox
     input.setAttribute('aria-autocomplete', 'list')
     input.setAttribute('autocomplete', 'off')
@@ -93,7 +95,6 @@ function onSelect (input, detail) {
 }
 
 function onFilter (input, detail) {
-  const limit = Number(input.getAttribute(`${UUID}-limit`)) || Infinity
   if (dispatchEvent(input, 'input.filter', detail) && ajax(input) === false) {
     queryAll('[tabindex="-1"]', input.nextElementSibling).reduce((acc, item, index) => {
       const list = item.parentElement.nodeName === 'LI' && item.parentElement
@@ -102,7 +103,7 @@ function onFilter (input, detail) {
       if (list) list[attr]('hidden', '') // JAWS requires hiding of <li> too (if they exist)
       item[attr]('hidden', '')
       return show ? acc.concat(item) : acc
-    }, []).forEach((...args) => setupItem(limit, ...args))
+    }, []).forEach((...args) => setupItem(input.getAttribute(`${UUID}-limit`), ...args))
   }
 }
 
@@ -117,6 +118,7 @@ function setupItem (limit, item, index, items) {
   item.setAttribute('aria-label', `${item.textContent.trim()}, ${index + 1} av ${items.length}`)
   item.setAttribute('tabindex', '-1')
   item.setAttribute('type', 'button')
+  limit = Number(limit) || Infinity
   if (limit && (index >= limit)) item.parentElement.setAttribute('hidden', '')
 }
 
