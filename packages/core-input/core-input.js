@@ -15,8 +15,6 @@ export default function input (elements, content) {
     const limit = typeof options.limit === 'undefined' ? input.getAttribute(`${UUID}-limit`) : Math.max(options.limit || 0, 0)
     const open = typeof options.open === 'undefined' ? input === document.activeElement : options.open
 
-    console.log('limit:', limit);
-
     input.setAttribute(UUID, ajax || '')
     input.setAttribute(`${UUID}-limit`, limit || 0)
     input.setAttribute(IS_IOS ? 'data-role' : 'role', 'combobox') // iOS does not inform user area is editable if combobox
