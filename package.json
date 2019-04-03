@@ -7,9 +7,9 @@
   "scripts": {
     "build": "rollup --config",
     "install": "node bin/index.js --install",
-    "publish:patch": "npm run build && node bin/index.js --publish=patch",
-    "publish:minor": "npm run build && node bin/index.js --publish=minor",
-    "publish:major": "npm run build && node bin/index.js --publish=major",
+    "publish:patch": "node bin/index.js --publish=patch",
+    "publish:minor": "node bin/index.js --publish=minor",
+    "publish:major": "node bin/index.js --publish=major",
     "start": "rollup --config --watch",
     "static-publish": "npm run build && static-publish --directory=packages --account=nrk-core --latest --major",
     "test": "npm run build && jest && standard -v",

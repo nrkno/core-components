@@ -1,5 +1,3 @@
-// using require instead of import to play nicely with travis ci
-
 const { execSync } = require('child_process')
 const path = require('path')
 const fs = require('fs')
@@ -34,7 +32,7 @@ if (args.install) {
   pkgs.forEach((path) => {
     console.log(`Installing ${getPackageName(path)}`)
     execSync('npm install', { cwd: path, stdio: 'inherit' })
-    console.log('') // Insert new line
+    console.log('')
   })
 }
 
@@ -44,18 +42,26 @@ if (args.publish) {
   const action = args.publish.replace(/./, (m) => m.toUpperCase()) // Title case action
   const names = update.map(getPackageName).join(', ')
 
-  // Update packages
+  // Bump version in packages
   update.forEach((path) => {
     console.log(`Publishing ${getPackageName(path)}`)
     execSync(`npm version ${args.publish} -m 'Release ${args.publish} %s'`, { cwd: path, stdio: 'inherit' })
+    console.log('')
+  })
+
+  // Build all packages
+  execSync(`npm run build`, { cwd: process.cwd(), stdio: 'inherit' })
+
+  // Publish all packages
+  update.forEach((path) => {
     execSync(`git push && git push --tags && npm publish --access public`, { cwd: path, stdio: 'inherit' })
-    console.log('') // Insert new line
+    console.log('')
   })
 
   // Update main package
   console.log(`Updating version for core-components`)
   execSync(`git commit -am "${action} ${names}" && git push`, { cwd: process.cwd(), stdio: 'inherit' })
-  execSync(`npm version ${args.publish}`, { cwd: process.cwd(), stdio: 'inherit' })
+  execSync(`npm version ${args.publish} -m '${action} ${names}'`, { cwd: process.cwd(), stdio: 'inherit' })
   execSync(`git push && git push --tags`, { cwd: process.cwd(), stdio: 'inherit' })
-  console.log('') // Insert new line
+  console.log('')
 }
