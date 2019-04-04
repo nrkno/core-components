@@ -4,7 +4,7 @@ import dialog from './core-dialog'
 import { exclude } from '../utils'
 
 export default class Dialog extends React.Component {
-  static get defaultProps () { return { strict: null, onToggle: null } }
+  static get defaultProps () { return { strict: null, onToggle: null, modal: null } }
   constructor (props) {
     super(props)
     this.onToggle = this.onToggle.bind(this)
@@ -25,5 +25,6 @@ export default class Dialog extends React.Component {
 Dialog.propTypes = {
   onToggle: PropTypes.func,
   strict: PropTypes.bool,
+  modal: PropTypes.bool,
   open: PropTypes.bool
 }
