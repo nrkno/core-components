@@ -6,13 +6,7 @@ const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid att
 const ATTR = 'data-core-dialog'
 const KEYS = { ESC: 27, TAB: 9 }
 const OPENER_ATTR = `${UUID}-opener`
-const FOCUSABLE_ELEMENTS = `
-  [tabindex]:not([disabled]),
-  a:not([disabled]),
-  button:not([disabled]),
-  input:not([disabled]),
-  select:not([disabled]),
-  textarea:not([disabled])`
+const FOCUSABLE_ELEMENTS = '[tabindex],a,button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled])'
 
 export default function dialog (dialogs, open) {
   const options = typeof open === 'object' ? open : { open }
