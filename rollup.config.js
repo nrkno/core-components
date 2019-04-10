@@ -1,78 +1,51 @@
 // using require instead of import to play nicely with travis ci
-
-const buble = require('rollup-plugin-buble')
+const babel = require('rollup-plugin-babel')
 const commonjs = require('rollup-plugin-commonjs')
-const json = require('rollup-plugin-json')
 const resolve = require('rollup-plugin-node-resolve')
 const serve = require('rollup-plugin-serve')
+const json = require('rollup-plugin-json')
 const { uglify } = require('rollup-plugin-uglify')
 const { pkgs, getPackageName } = require('./bin/index.js') // Find all packages
 const { version } = require('./package.json')
-const path = require('path')
 const fs = require('fs')
 
-const isBuild = !process.env.ROLLUP_WATCH
+;['readme.md', 'packages/readme.md'].forEach((path) => {
+  const readme = String(fs.readFileSync(path))
+  const versioned = readme.replace(/core-components\/major\/\d+/, `core-components/major/${version.match(/\d+/)}`)
+  fs.writeFileSync(path, versioned)
+})
 
-if (isBuild) {
-  const readmes = ['readme.md', path.join('packages', 'readme.md')]
-  readmes.forEach((path) => {
-    const readme = String(fs.readFileSync(path))
-    const versioned = readme.replace(/core-components\/major\/\d+/, `core-components/major/${version.match(/\d+/)}`)
-    fs.writeFileSync(path, versioned)
-  })
-}
-
-const server = isBuild || serve('packages')
-const globals = { 'react-dom': 'ReactDOM', react: 'React', 'prop-types': 'PropTypes' } // Exclude from output
-const pluginsCJS = [json(), resolve(), commonjs(), buble(), server]
-const pluginsUMD = pluginsCJS.concat(uglify({ output: { comments: /^!/ } }))
+const minify = uglify({ output: { comments: /^!/ } })
+const plugins = [
+  json(),
+  resolve(),
+  commonjs(),
+  babel({ presets: [['@babel/preset-env', { modules: false }]] }),
+  !process.env.ROLLUP_WATCH || serve('packages')
+]
 
 export default pkgs.reduce((all, path) => {
-  const pkg = require(`${path}/package.json`)
+  const { version } = require(`${path}/package.json`)
   const file = getPackageName(path)
-  const banner = `/*! @nrk/${file} v${pkg.version} - Copyright (c) 2017-${new Date().getFullYear()} NRK */`
-  const nameCamelCase = file.replace(/-./g, (m) => m.slice(-1).toUpperCase())
-  const nameTitleCase = nameCamelCase.replace(/./, (m) => m.toUpperCase())
+  const name = file.replace(/-./g, (m) => m.slice(-1).toUpperCase())
 
   return all.concat({
     input: `${path}/${file}.js`, // JS CJS
-    plugins: pluginsCJS,
     output: {
       format: 'cjs',
-      file: `${path}/${file}.cjs.js`,
-      name: nameCamelCase
-    }
+      file: `${path}/${file}.cjs.js`
+    },
+    plugins
   }, {
     input: `${path}/${file}.js`, // JS UMD
-    plugins: pluginsUMD,
     output: {
       format: 'umd',
       file: `${path}/${file}.min.js`,
-      name: nameCamelCase,
+      banner: `/*! @nrk/${file} v${version} - Copyright (c) 2017-${new Date().getFullYear()} NRK */`,
+      footer: `window.customElements.define('${file}', ${name})`,
       sourcemap: true,
-      banner
-    }
-  }, {
-    input: `${path}/${file}.jsx`, // JSX CJS
-    external: Object.keys(globals),
-    plugins: pluginsCJS,
-    output: {
-      format: 'cjs',
-      file: `${path}/jsx.js`,
-      name: nameTitleCase,
-      globals
-    }
-  }, {
-    input: `${path}/${file}.jsx`, // JSX UMD
-    external: Object.keys(globals),
-    plugins: pluginsUMD,
-    output: {
-      format: 'umd',
-      file: `${path}/${file}.jsx.js`,
-      name: nameTitleCase,
-      sourcemap: true,
-      globals,
-      banner
-    }
+      name
+    },
+    plugins: plugins.concat(minify)
   })
 }, [])

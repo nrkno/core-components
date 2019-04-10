@@ -1,5 +1,10 @@
 import { name, version } from './package.json'
-import { IS_BROWSER, addEvent, dispatchEvent, requestAnimFrame, throttle, queryAll } from '../utils'
+import { IS_BROWSER, addEvent, dispatchEvent, throttle, queryAll } from '../utils'
+
+const HAS_EVENT_OPTIONS = ((has = false) => {
+  try { window.addEventListener('test', null, { get passive () { has = true } }) } catch (e) {}
+  return has
+})()
 
 const DRAG = {}
 const ATTR = 'data-core-scroll'
@@ -12,6 +17,7 @@ const NEEDS_MOUSEDOWN = /INPUT|TEXTAREA|SELECT/
 
 // https://css-tricks.com/introduction-reduced-motion-media-query/
 const requestJump = IS_BROWSER && window.matchMedia && window.matchMedia('(prefers-reduced-motion)').matches
+const requestFrame = (fn) => (window.requestAnimationFrame || window.setTimeout)(fn)
 
 export default function scroll (elements, move = '') {
   const options = typeof move === 'object' ? move : { move }
@@ -30,8 +36,8 @@ export default function scroll (elements, move = '') {
 
 addEvent(UUID, 'mousedown', onMousedown)
 addEvent(UUID, 'resize', throttle(onChange, 500)) // Update button states on resize
-addEvent(UUID, 'scroll', throttle(onChange, 500), { passive: true, capture: true }) // capture catches events without bubbling
-addEvent(UUID, 'wheel', () => (DRAG.animate = false), { passive: true }) // Stop animation on wheel scroll
+addEvent(UUID, 'scroll', throttle(onChange, 500), HAS_EVENT_OPTIONS ? { passive: true, capture: true } : true) // capture catches events without bubbling
+addEvent(UUID, 'wheel', () => (DRAG.animate = false), HAS_EVENT_OPTIONS ? { passive: true } : true) // Stop animation on wheel scroll
 addEvent(UUID, 'load', onChange) // Update state when we are sure all CSS is loaded
 addEvent(UUID, 'click', onClick)
 
@@ -167,7 +173,7 @@ function scrollTo (target, { x, y }) {
     if (DRAG.animate === uuid && (Math.round(moveX) || Math.round(moveY))) {
       target.scrollLeft = endX - Math.round(moveX *= friction)
       target.scrollTop = endY - Math.round(moveY *= friction)
-      requestAnimFrame(move)
+      requestFrame(move)
     }
   }
   move()

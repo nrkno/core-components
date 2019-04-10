@@ -1,5 +1,5 @@
 import { name, version } from './package.json'
-import { IS_IOS, addEvent, escapeHTML, dispatchEvent, requestAnimFrame, queryAll } from '../utils'
+import { IS_IOS, addEvent, escapeHTML, dispatchEvent, queryAll } from '../utils'
 
 const UUID = `data-${name}-${version}`.replace(/\W+/g, '-')
 const KEYS = { ENTER: 13, ESC: 27, PAGEUP: 33, PAGEDOWN: 34, END: 35, HOME: 36, UP: 38, DOWN: 40 }
@@ -88,7 +88,7 @@ function onSelect (input, detail) {
   if (dispatchEvent(input, 'input.select', detail)) {
     input.value = detail.value
     input.focus()
-    requestAnimFrame(() => setupExpand(input, false)) // Let IE11 finish focus event bubbling
+    setTimeout(() => setupExpand(input, false)) // Let IE11 finish focus event bubbling
   }
 }
 
@@ -106,7 +106,7 @@ function onFilter (input, detail) {
 }
 
 function setupExpand (input, open = input.getAttribute('aria-expanded') === 'true') {
-  requestAnimFrame(() => { // Fixes VoiceOver Safari focus jumping to parentElement
+  setTimeout(() => { // Fixes VoiceOver Safari focus jumping to parentElement
     input.nextElementSibling[open ? 'removeAttribute' : 'setAttribute']('hidden', '')
     input.setAttribute('aria-expanded', open)
   })

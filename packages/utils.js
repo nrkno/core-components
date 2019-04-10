@@ -1,10 +1,6 @@
 export const IS_BROWSER = typeof window !== 'undefined'
 export const IS_ANDROID = IS_BROWSER && /(android)/i.test(navigator.userAgent) // Bad, but needed
 export const IS_IOS = IS_BROWSER && /iPad|iPhone|iPod/.test(String(navigator.platform))
-export const HAS_EVENT_OPTIONS = ((has = false) => {
-  try { window.addEventListener('test', null, { get passive () { has = true } }) } catch (e) {}
-  return has
-})()
 
 /**
 * addEvent
@@ -13,11 +9,10 @@ export const HAS_EVENT_OPTIONS = ((has = false) => {
 * @param {Function} handler The function to call on event
 * @param {Boolean|Object} options useCapture or options object for addEventListener. Defaults to false
 */
-export function addEvent (uuid, type, handler, options = false) {
-  if (typeof window === 'undefined' || window[uuid = `${uuid}-${type}`]) return // Ensure single instance
-  if (!HAS_EVENT_OPTIONS && typeof options === 'object') options = Boolean(options.capture) // Fix unsupported options
+export function addEvent (scope, type, handler, options = false, key) {
+  if (!IS_BROWSER || window[key = `event-${scope}-${type}`]) return // Ensure single instance
   const node = (type === 'resize' || type === 'load') ? window : document
-  node.addEventListener(window[uuid] = type, handler, options)
+  node.addEventListener(window[key] = type, (event) => (event.scope = scope) && handler(event), options)
 }
 
 /**
@@ -31,28 +26,14 @@ export function escapeHTML (str) {
 }
 
 /**
-* exclude
-* @param {Object} target The target object
-* @param {Object} exclude The source to exclude keys from
-* @return {Object} The target object without keys found in source
-*/
-export function exclude (target, exclude, include = {}) {
-  return Object.keys(target).reduce((acc, key) => {
-    if (!exclude.hasOwnProperty(key)) acc[key] = target[key]
-    return acc
-  }, include)
-}
-
-/**
 * dispatchEvent - with infinite loop prevention
 * @param {Element} elem The target object
 * @param {String} name The source object(s)
 * @param {Object} detail Detail object (bubbles and cancelable is set to true)
 * @return {Boolean} Whether the event was canceled
 */
-const IGNORE = 'prevent_recursive_dispatch_maximum_callstack'
 export function dispatchEvent (element, name, detail = {}) {
-  const ignore = `${IGNORE}${name}`
+  const ignore = `prevent_recursive_dispatch_maximum_callstack${name}`
   let event
 
   if (element[ignore]) return true // We are already processing this event, so skip sending a new one
@@ -78,13 +59,6 @@ export function dispatchEvent (element, name, detail = {}) {
 */
 export function getUUID (el) {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 5)
-}
-
-/**
-* requestAnimFrame (super simple polyfill)
-*/
-export function requestAnimFrame (fn) {
-  (window.requestAnimationFrame || window.setTimeout)(fn)
 }
 
 /**
