@@ -1,6 +1,12 @@
+import React from 'react'
+
 export const IS_BROWSER = typeof window !== 'undefined'
 export const IS_ANDROID = IS_BROWSER && /(android)/i.test(navigator.userAgent) // Bad, but needed
 export const IS_IOS = IS_BROWSER && /iPad|iPhone|iPod/.test(String(navigator.platform))
+
+// TODO Remove
+export function exclude () {}
+export function requestAnimFrame () {}
 
 /**
 * addEvent
@@ -9,10 +15,10 @@ export const IS_IOS = IS_BROWSER && /iPad|iPhone|iPod/.test(String(navigator.pla
 * @param {Function} handler The function to call on event
 * @param {Boolean|Object} options useCapture or options object for addEventListener. Defaults to false
 */
-export function addEvent (scope, type, handler, options = false, key) {
-  if (!IS_BROWSER || window[key = `event-${scope}-${type}`]) return // Ensure single instance
+export function addEvent (nodeName, type, handler, options = false, key) {
+  if (!IS_BROWSER || window[key = `event-${nodeName}-${type}`]) return // Ensure single instance
   const node = (type === 'resize' || type === 'load') ? window : document
-  node.addEventListener(window[key] = type, (event) => (event.scope = scope) && handler(event), options)
+  node.addEventListener(window[key] = type, (event) => (event.nodeName = nodeName) && handler(event), options)
 }
 
 /**
@@ -24,6 +30,21 @@ const ESCAPE_MAP = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', '/':
 export function escapeHTML (str) {
   return String(str || '').replace(/[&<>"'/]/g, (char) => ESCAPE_MAP[char])
 }
+
+/**
+* closest
+* @param {Element} element Element to traverse up from
+* @param {String} selector A selector to search for matching parents or element itself
+* @return {Element|null}  Element which is the closest ancestor matching selector
+*/
+export const closest = (() => {
+  const proto = typeof window === 'undefined' ? {} : window.Element.prototype
+  const match = proto.matches || proto.msMatchesSelector || proto.webkitMatchesSelector
+  return proto.closest ? (el, css) => el.closest(css) : (el, css) => {
+    for (;el; el = el.parentElement) if (match.call(el, css)) return el
+    return null
+  }
+})()
 
 /**
 * dispatchEvent - with infinite loop prevention
@@ -51,6 +72,25 @@ export function dispatchEvent (element, name, detail = {}) {
   element[ignore] = null // Remove name from dispatching ignore
 
   return result // Follow W3C standard for return value
+}
+
+export function elementToReact (elementClass, ...events) {
+  const tag = `${elementClass.name.replace(/\W+/, '-')}-${getUUID()}`.toLowerCase()
+  if (IS_BROWSER && !window.customElements.get(tag)) window.customElements.define(tag, elementClass)
+
+  return class extends React.Component {
+    constructor (props) {
+      super(props)
+      this.ref = (el) => (this.el = el)
+      events.forEach((on) => {
+        const onType = `on${on.replace(/(^|\.)./g, (m) => m.slice(-1).toUpperCase())}`
+        this[on] = (event) => this.props[onType] && this.props[onType](event)
+      })
+    }
+    componentDidMount () { events.forEach((on) => this.el.addEventListener(on, this[on])) }
+    componentWillUnmount () { events.forEach((on) => this.el.removeEventListener(on, this[on])) }
+    render () { return React.createElement(tag, { ref: this.ref, ...this.props }) }
+  }
 }
 
 /**
