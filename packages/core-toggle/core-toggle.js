@@ -8,7 +8,7 @@ export default class CoreToggle extends HTMLElement {
     if (!IS_ANDROID) this.setAttribute('aria-labelledby', this.button.id = this.button.id || getUUID()) // Andriod reads only label instead of content
 
     this.value = this.button.textContent // Set up aria-label
-    this.button.setAttribute('aria-expanded', this.open = !this.hidden)
+    this.button.setAttribute('aria-expanded', this._open = !this.hidden)
     this.button.setAttribute('aria-controls', this.id = this.id || getUUID())
     document.addEventListener('keydown', this, true) // Use capture to enable checking defaultPrevented (from ESC key) in parents
     document.addEventListener('click', this)
@@ -17,9 +17,9 @@ export default class CoreToggle extends HTMLElement {
     document.removeEventListener('keydown', this, true)
     document.removeEventListener('click', this)
   }
-  attributeChangedCallback (name) {
-    if (this.open === this.hidden) { // this.open comparison ensures actual change
-      this.button.setAttribute('aria-expanded', this.open = !this.hidden)
+  attributeChangedCallback () {
+    if (this._open === this.hidden) { // this._open comparison ensures actual change
+      this.button.setAttribute('aria-expanded', this._open = !this.hidden)
       try { this.querySelector('[autofocus]').focus() } catch (err) {}
       dispatchEvent(this, 'toggle')
     }
@@ -44,6 +44,9 @@ export default class CoreToggle extends HTMLElement {
   get popup () { return this.getAttribute('popup') === 'true' || this.getAttribute('popup') || this.hasAttribute('popup') }
   set popup (val) { this[val ? 'setAttribute' : 'removeAttribute']('popup', val) }
 
+  // Sets this.button aria-label, so visible button text can be augmentet with intension of button
+  // Example: Button text: "01.02.2019", aria-label: "01.02.2019, Choose date"
+  // Does not updates aria-label if not allready set to something else than this.popup
   get value () { return this.button.value || this.button.textContent }
   set value (data = false) {
     if (!this.button || !this.popup.length) return

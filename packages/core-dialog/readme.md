@@ -1,13 +1,13 @@
 # Core Dialog
 
-> `<dialog>` is an element with which the user interacts with to perform some task or decision. `@nrk/core-dialog` simply adds `dialog` functionality to a `<dialog>` if it is not supported (or extends functionality if is supported). `@nrk/core-dialog` supports nestability, keyboard navigation containment and restoring focus when dialog is closed.
+> `<core-dialog>` is an element with which the user interacts with to perform some task or decision. `@nrk/core-dialog` supports nestability, keyboard navigation containment and restoring focus when dialog is closed.
 
 
 
 ## Installation
 
 ```bash
-npm install @nrk/core-dialog --save-exact
+npm install @nrk/core-dialog
 ```
 ```js
 import coreDialog from '@nrk/core-dialog'     // Vanilla JS
@@ -42,9 +42,9 @@ import CoreDialog from '@nrk/core-dialog/jsx' // React/Preact JSX
     left: 0;
     right: 0;
     bottom: 0;
-    transition: .2s;
+    transition: opacity .2s;
   }
-  .my-dialog:not([open]),
+  .my-dialog[hidden],
   .my-dialog + backdrop[hidden] {
     pointer-events: none;
     visibility: hidden;
@@ -59,32 +59,27 @@ demo-->
 ```html
 <!--demo-->
 <button data-core-dialog="my-dialog">Open dialog</button>
-<dialog id="my-dialog" class="my-dialog" aria-label="første dialog tittel">
+<core-dialog id="my-dialog" class="my-dialog" aria-label="første dialog tittel" hidden>
   <h1>This is a title</h1>
   <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
   <button data-core-dialog="my-dialog-nested">Open an additional dialog</button>
   <button type="button" autofocus style="visibility: hidden">Should not be focusable</button>
   <button type="button" autofocus>Autofocus</button>
   <button data-core-dialog="close">Close</button>
-</dialog>
-<dialog id="my-dialog-nested" class="my-dialog" aria-label="andre dialog tittel">
+</core-dialog>
+<core-dialog id="my-dialog-nested" class="my-dialog" aria-label="andre dialog tittel" hidden>
   <h1>Another dialog, triggered inside the first dialog</h1>
   <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero.</p>
   <button data-core-dialog="close">Close</button>
-</dialog>
+</core-dialog>
 <button data-core-dialog="strict-dialog">Open strict dialog</button>
-<dialog id="strict-dialog" class="my-dialog" aria-label="første dialog tittel">
+<core-dialog id="strict-dialog" class="my-dialog" aria-label="første dialog tittel" hidden strict>
   <h1>This is a title</h1>
   <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
   <button type="button">This button does nothing</button>
   <button data-core-dialog="close">Close</button>
-</dialog>
+</core-dialog>
 <div id="docs-react-dialog"></div>
-<script>
-  coreDialog('#my-dialog');
-  coreDialog('#my-dialog-nested');
-  coreDialog('#strict-dialog', { strict: true });
-</script>
 ```
 
 ```html
@@ -118,7 +113,7 @@ demo-->
           <button onClick={this.toggleDialog}>Open dialog jsx</button>
           <CoreDialog
             className="my-dialog"
-            open={this.state.open}
+            hidden={!this.state.open}
             onToggle={this.handleToggle}
             aria-label="React dialog"
           >
@@ -150,6 +145,7 @@ demo-->
         <div>
           <button data-core-dialog="dialog-jsx">Open strict dialog jsx</button>
           <CoreDialog
+            hidden
             id="dialog-jsx"
             className="my-dialog"
             onToggle={this.handleStrictToggle}
@@ -182,14 +178,14 @@ demo-->
 <!-- Note: you need to initialize core-dialog -->
 <button data-core-dialog="my-dialog">Open dialog</button>
 <!-- Closing a dialog -->
-<dialog id="my-dialog">
+<core-dialog id="my-dialog" hidden>
   <h1>Title of dialog</h1>
   <p>Some content</p>
   <!-- By setting the data-core-dialog attribute to "close" we automatically -->
   <!-- set up a click handler that will close the dialog -->
   <!-- Note: you need to initialize core-dialog -->
   <button data-core-dialog="close">Close dialog</button>
-</dialog>
+</core-dialog>
 ```
 ```js
 import coreDialog from '@nrk/core-dialog'
@@ -214,7 +210,7 @@ coreDialog('.my-dialog', { open: true, label: 'A super dialog' }) // Initialize 
 ```jsx
 import CoreDialog from '@nrk/core-dialog/jsx'
 
-<CoreDialog open={true|false} strict={true|false} modal={true|false} onToggle={function(){}} aria-label="Title of dialog">
+<CoreDialog hidden={true|false} strict={true|false} modal={true|false} onToggle={function(){}} aria-label="Title of dialog">
   <h1>My React/Preact dialog</h1>
   <p>Some content</p>
   <button onClick={closeDialog}></button>
@@ -237,17 +233,9 @@ As a best practice; if your dialog contains a form element, use `autofocus`.
 If you dialog is without form elements, start your dialog
 content with `<h1 tabindex="-1">Dialog title</h1>`.
 
-
-### Supporting IE9
-If you need `@nrk/core-dialog` to support IE9, add the following code in your `<head>` tag:
-```
-<!--[if IE 9]><script>document.createElement('dialog')</script><![endif]-->
-```
-
 ### Elements order
 
-Though not strictly required, the `<button>` opening a `@nrk/core-dialog` should be placed directly before the `<dialog>` itself. This eases the mental model for screen reader users.
-
+Though not strictly required, the `<button>` opening a `@nrk/core-dialog` should be placed directly before the `<core-dialog>` itself. This eases the mental model for screen reader users.
 
 
 ## Events
@@ -259,8 +247,6 @@ document.addEventListener('dialog.toggle', (event) => {
   event.detail.willOpen       // The open state that the dialog will get (unless event.preventDefault() is called)
 })
 ```
-
-
 
 ## Styling
 
@@ -276,5 +262,5 @@ document.addEventListener('dialog.toggle', (event) => {
 
 
 ## FAQ
-### Why use `<dialog>` when it is not supported by all browsers?
-There is currently [minimal support](https://caniuse.com/#feat=dialog) for the `<dialog>` element. However, to ensure best accessibility, `@nrk/core-dialog` uses native functionality whenever possible, and augments with `role="dialog"` as a fallback. For more information about the dialog element visit the [W3C HTML 5.2 specification](https://www.w3.org/TR/html52/interactive-elements.html#the-dialog-element). For more information about WAI-ARIA practices for the dialog element visit the [W3C WAI-ARIA Authoring Practices 1.1](https://www.w3.org/TR/wai-aria-practices-1.1/#dialog_modal)
+### Why use `<core-dialog>` when it is not supported by all browsers?
+There is currently [minimal support](https://caniuse.com/#feat=dialog) for the `<core-dialog>` element. However, to ensure best accessibility, `@nrk/core-dialog` uses native functionality whenever possible, and augments with `role="dialog"` as a fallback. For more information about the dialog element visit the [W3C HTML 5.2 specification](https://www.w3.org/TR/html52/interactive-elements.html#the-dialog-element). For more information about WAI-ARIA practices for the dialog element visit the [W3C WAI-ARIA Authoring Practices 1.1](https://www.w3.org/TR/wai-aria-practices-1.1/#dialog_modal)

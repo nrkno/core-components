@@ -23,7 +23,7 @@ demo-->
 ## Installation
 
 ```bash
-npm install @nrk/core-toggle --save-exact
+npm install @nrk/core-toggle
 ```
 ```js
 import CoreToggle from '@nrk/core-toggle'
