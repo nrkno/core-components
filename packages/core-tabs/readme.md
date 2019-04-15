@@ -33,28 +33,22 @@ demo-->
 
 ```html
 <!--demo-->
-<div class="my-tabs"> <!-- Direct children must be <a> or <button>. Do not use <li> -->
+<core-tabs> <!-- Direct children must be <a> or <button>. Do not use <li> -->
   <button>Button tab</button>
   <button>Nested tabs</button>
   <a href="#link">Link tab</a>
+</core-tabs>
+<div>Text of tabpanel 1</div>
+<div hidden> <!-- hidden prevents flash of unstyled content -->
+  <core-tabs>
+    <button>Subtab 1</button>
+    <button>Subtab 2</button>
+    <button>Subtab 3</button>
+  </core-tabs>
+  <div>Text of subpanel tabpanel 1</div>
+  <div>Text of subpanel tabpanel 2</div>
 </div>
-<div> <!-- Next element children will become panels of correlating tab -->
-  <div>Text of tabpanel 1</div>
-  <div hidden> <!-- hidden prevents flash of unstyled content -->
-    <div class="my-tabs">
-      <button>Subtab 1</button>
-      <button>Subtab 2</button>
-    </div>
-    <div>
-      <div>Text of subpanel tabpanel 1</div>
-      <div>Text of subpanel tabpanel 2</div>
-    </div>
-  </div>
-  <div hidden>Text of tabpanel 3</div>
-</div>
-<script>
-  coreTabs('.my-tabs')
-</script>
+<div hidden>Text of tabpanel 3</div>
 ```
 
 ```html
