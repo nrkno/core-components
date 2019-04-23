@@ -18,9 +18,10 @@ const fs = require('fs')
 const minify = uglify({ output: { comments: /^!/ } })
 const globals = { 'react-dom': 'ReactDOM', react: 'React' } // Exclude from output
 const external = Object.keys(globals)
+const treeshake = { pureExternalModules: true } // Strip React require
 const plugins = [
   json(),
-  resolve(),
+  resolve({ dedupe: external }),
   commonjs(),
   babel({ presets: [['@babel/preset-env', { modules: false }]] }),
   !process.env.ROLLUP_WATCH || serve('packages')
@@ -36,8 +37,10 @@ export default pkgs.reduce((all, path) => {
     input: `${path}/${file}.js`, // JS CJS
     output: {
       format: 'cjs',
-      file: `${path}/${file}.cjs.js`
+      file: `${path}/${file}.cjs.js`,
+      globals
     },
+    treeshake,
     external,
     plugins
   }, {
@@ -51,6 +54,7 @@ export default pkgs.reduce((all, path) => {
       globals,
       name
     },
+    treeshake,
     external,
     plugins: plugins.concat(minify)
   }, {
@@ -60,6 +64,7 @@ export default pkgs.reduce((all, path) => {
       file: `${path}/jsx.js`,
       globals
     },
+    treeshake,
     external,
     plugins
   }, {
@@ -71,6 +76,7 @@ export default pkgs.reduce((all, path) => {
       sourcemap: true,
       globals
     },
+    treeshake,
     external,
     plugins
   })

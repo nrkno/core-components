@@ -78,7 +78,7 @@ export function elementToReact (elementClass, ...events) {
   const tag = `${elementClass.name.replace(/\W+/, '-')}-${getUUID()}`.toLowerCase()
   if (IS_BROWSER && !window.customElements.get(tag)) window.customElements.define(tag, elementClass)
 
-  return class extends React.Component {
+  return class ReactElement extends React.Component {
     constructor (props) {
       super(props)
       this.ref = (el) => (this.el = el)
