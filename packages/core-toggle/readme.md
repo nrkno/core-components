@@ -10,11 +10,7 @@
   window.ReactDOM = preactCompat
 </script> -->
 <!--demo
-<script>
-  document.addEventListener('toggle', (event) => {
-    // console.log(event)
-  })
-</script>
+<script src="https://unpkg.com/@webcomponents/custom-elements"></script>
 <script src="core-toggle/core-toggle.min.js"></script>
 <script src="core-toggle/core-toggle.jsx.js"></script>
 <style>core-toggle:not([hidden]){display:block}</style>
@@ -81,6 +77,8 @@ window.customElements.define('core-toggle', CoreToggle)
 
 ### HTML / JavaScript
 
+<small>Note: `core-toggle` should be replaced with a project specific name to avoid version conflicts.</small>
+
 ```html
 <button>Toggle VanillaJS</button> <!-- must be <button> placed directly before core-toggle, or with id -->
 <core-toggle popup={false|true|String} hidden>Content</core-toggle> <!-- use hidden to prevent flash of unstyled content -->
@@ -90,6 +88,21 @@ window.customElements.define('core-toggle', CoreToggle)
 import CoreToggle from '@nrk/core-toggle'
 
 window.customElements.define('core-toggle', CoreToggle)
+```
+
+### React / Preact
+
+```jsx
+import CoreToggle from '@nrk/core-toggle/jsx'
+
+// All props are optional, and defaults are shown below
+// Props like className, style, etc. will be applied as actual attributes
+// <CoreToggle> will handle state itself
+
+<CoreToggle hidden {popup} onToggle={(event) => {}}>
+  <button>Use with JSX</button>  // First element must result in a <button>-tag. Accepts both elements and components
+  <div>Content</div>             // Next element will be toggled. Accepts both elements and components
+</CoreToggle>
 ```
 
 ## Markup
@@ -197,11 +210,6 @@ to create a component that behaves like a `<select>`:
     event.target.value = event.detail
     event.target.hidden = true
     event.target.button.focus()
-    // event.target.button.setAttribute('aria-label', `${event.detail.textContent}, Select number`)
-    // event.target.button.textContent = event.detail.textContent
-    // event.target.hidden = true
-    // event.target.button.focus()
-    // coreToggle(event.target, { value: event.detail.value, open: false })
   })
 </script>
 ```

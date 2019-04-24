@@ -44,6 +44,10 @@ export default class CoreToggle extends HTMLElement {
   get popup () { return this.getAttribute('popup') === 'true' || this.getAttribute('popup') || this.hasAttribute('popup') }
   set popup (val) { this[val ? 'setAttribute' : 'removeAttribute']('popup', val) }
 
+  // Must set attribute for IE11
+  get hidden () { return this.hasAttribute('hidden') }
+  set hidden (val) { this[val ? 'setAttribute' : 'removeAttribute']('hidden', '') }
+
   // Sets this.button aria-label, so visible button text can be augmentet with intension of button
   // Example: Button text: "01.02.2019", aria-label: "01.02.2019, Choose date"
   // Does not updates aria-label if not allready set to something else than this.popup
