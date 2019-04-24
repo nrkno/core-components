@@ -3,7 +3,6 @@
 > `@nrk/core-toggle` simply makes a `<button>` toggle the visibility of next element sibling. Toggles can be nested and easily extended with custom animations or behavior through the [toggle event](#events). It has two modes:
 
 <!-- <script src="https://unpkg.com/preact"></script>
-<script src="https://unpkg.com/prop-types/prop-types.min.js"></script>
 <script src="https://unpkg.com/preact-compat"></script>
 <script>
   window.React = preactCompat

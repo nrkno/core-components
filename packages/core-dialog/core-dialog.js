@@ -57,7 +57,7 @@ export default class CoreDialog extends HTMLElement {
       if (event.keyCode === 9) keepFocus(this, event) // TAB
       if (event.keyCode === 27 && !this.strict) { // ESC
         event.preventDefault() // Prevent leaving maximized window in Safari
-        this.hidden = true
+        this.close()
       }
     }
   }

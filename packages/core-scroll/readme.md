@@ -2,21 +2,24 @@
 
 > `@nrk/core-scroll` enhances any tag with content to be scrollable with mouse interaction on non-touch-devices. `core-scroll` also hides the scrollbars and automatically disables animation for users who prefers [reduced motion](https://css-tricks.com/introduction-reduced-motion-media-query/).
 
-
-
 ## Installation
 
 ```bash
-npm install @nrk/core-scroll --save-exact
+npm install @nrk/core-scroll
 ```
 ```js
-import coreScroll from '@nrk/core-scroll'     // Vanilla JS
+import CoreScroll from '@nrk/core-scroll'     // Vanilla JS
 import CoreScroll from '@nrk/core-scroll/jsx' // React/Preact JSX
 ```
 
-
-
+<!-- <script src="https://unpkg.com/preact"></script>
+<script src="https://unpkg.com/preact-compat"></script>
+<script>
+  window.React = preactCompat
+  window.ReactDOM = preactCompat
+</script> -->
 <!--demo
+<script src="https://unpkg.com/@webcomponents/custom-elements"></script>
 <script src="core-scroll/core-scroll.min.js"></script>
 <script src="core-scroll/core-scroll.jsx.js"></script>
 <style>
@@ -36,13 +39,13 @@ demo-->
 <button data-core-scroll="my-scroll-js" value="left" aria-label="Rull til venstre">&larr;</button>
 <button data-core-scroll="my-scroll-js" value="right" aria-label="Rull til høyre">&rarr;</button>
 <div class="my-wrap my-wrap-js">
-  <div class="my-scroll" id="my-scroll-js">
+  <core-scroll id="my-scroll-js" class="my-scroll">
     <div>1</div><div>2</div><div>3</div><div>4</div><a href="#">5</a>
     <div>6</div><div>7</div><div>8</div><div>9</div><div>10</div>
     <div>11</div><div>12</div><div>13</div><div>14</div><div>15</div>
     <br>
     <div>1</div><div><div class="my-wrap">
-      <div class="my-scroll">
+      <core-scroll class="my-scroll">
         <div>1</div><div>2</div><div>3</div><div>4</div><a href="#">5</a>
         <div>6</div><div>7</div><div>8</div><div>9</div><div>10</div>
         <div>11</div><div>12</div><div>13</div><div>14</div><div>15</div>
@@ -54,7 +57,7 @@ demo-->
         <div>1</div><div>2</div><div>3</div><div>4</div><a href="#">5</a>
         <div>6</div><div>7</div><div>8</div><div>9</div><div>10</div>
         <div>11</div><div>12</div><div>13</div><div>14</div><div>15</div>
-      </div>
+      </core-scroll>
     </div></div><div>3</div><div>4</div><a href="#">5</a>
     <div>6</div><div>7</div><div>8</div><div>9</div><div>10</div>
     <div>11</div><div>12</div><div>13</div><div>14</div><div>15</div>
@@ -66,11 +69,8 @@ demo-->
     <div>1</div><div>2</div><div>3</div><div>4</div><a href="#">5</a>
     <div>6</div><div>7</div><div>8</div><div>9</div><div>10</div>
     <div>11</div><div>12</div><div>13</div><div>14</div><div>15</div>
-  </div>
+  </core-scroll>
 </div>
-<script>
-  coreScroll('.my-scroll');
-</script>
 ```
 
 ```html
@@ -81,13 +81,20 @@ demo-->
     constructor (props) {
       super(props)
       this.state = {}
+      this.onScroll = this.onScroll.bind(this)
+    }
+    onScroll ({detail, target}) {
+      this.setState({
+        left: detail.left && (() => target.scroll('left')),
+        right: detail.right && (() => target.scroll('right'))
+      })
     }
     render () {
       return <div>
-        <button disabled={!this.state.scrollLeft} onClick={this.state.scrollLeft}>Left JSX</button>
-        <button disabled={!this.state.scrollRight} onClick={this.state.scrollRight}>Right JSX</button>
+        <button disabled={!this.state.left} onClick={this.state.left}>Left JSX</button>
+        <button disabled={!this.state.right} onClick={this.state.right}>Right JSX</button>
         <div className="my-wrap">
-          <CoreScroll className="my-scroll" onChange={(state) => this.setState(state)}>
+          <CoreScroll className="my-scroll" onScrollChange={this.onScroll}>
             <div>1</div><div>2</div><div>3</div><div>4</div><a href="#">5</a>
             <div>6</div><div>7</div><div>8</div><div>9</div><div>10</div>
             <div>11</div><div>12</div><div>13</div><div>14</div><div>15</div>
@@ -109,12 +116,12 @@ Scroll speed is controlled by `friction` rather than `duration` (a short scroll 
 ### HTML / JavaScript
 ```html
 <button data-core-scroll="my-scroll-js" value="up" aria-label="Rull opp">&uarr;</button>
-<div id="my-scroll-js">
+<core-scroll id="my-scroll-js">
   <!-- Direct children is used to calculate natural stop points for scroll -->
   <div>1</div>
   <div>2</div>
   <div>3</div>
-</div>
+</core-scroll>
 ```
 ```js
 import coreScroll from '@nrk/core-scroll'

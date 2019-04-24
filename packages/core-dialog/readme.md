@@ -15,7 +15,6 @@ import CoreDialog from '@nrk/core-dialog/jsx' // React/Preact JSX
 ```
 
 <!-- <script src="https://unpkg.com/preact"></script>
-<script src="https://unpkg.com/prop-types/prop-types.min.js"></script>
 <script src="https://unpkg.com/preact-compat"></script>
 <script>
   window.React = preactCompat
