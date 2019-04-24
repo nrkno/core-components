@@ -11,7 +11,7 @@ const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid att
 const ARIA = IS_ANDROID ? 'data' : 'aria' // Andriod has a bug and reads only label instead of content
 const KEYS = { SPACE: 32, END: 35, HOME: 36, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40 }
 
-export default class CoreToggle extends HTMLElement {
+export default class CoreTabs extends HTMLElement {
 
   connectedCallback () {
     this.setAttribute('role', 'tablist')
