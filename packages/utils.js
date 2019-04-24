@@ -75,21 +75,30 @@ export function dispatchEvent (element, name, detail = {}) {
 }
 
 export function elementToReact (elementClass, ...events) {
-  const tag = `${elementClass.name.replace(/\W+/, '-')}-${getUUID()}`.toLowerCase()
+  const name = elementClass.name || String(elementClass).match(/function ([^(]+)/)[1] // String match for IE11
+  const tag = `${name.replace(/\W+/, '-')}-${getUUID()}`.toLowerCase()
   if (IS_BROWSER && !window.customElements.get(tag)) window.customElements.define(tag, elementClass)
 
-  return class ReactElement extends React.Component {
+  return class extends React.Component {
     constructor (props) {
       super(props)
       this.ref = (el) => (this.el = el)
       events.forEach((on) => {
-        const onType = `on${on.replace(/(^|\.)./g, (m) => m.slice(-1).toUpperCase())}`
-        this[on] = (event) => this.props[onType] && this.props[onType](event)
+        const key = `on${on.replace(/(^|\.)./g, (m) => m.slice(-1).toUpperCase())}` // input.filter => onInputFilter
+        this[on] = (event) => this.props[key] && this.props[key](event)
       })
     }
     componentDidMount () { events.forEach((on) => this.el.addEventListener(on, this[on])) }
     componentWillUnmount () { events.forEach((on) => this.el.removeEventListener(on, this[on])) }
-    render () { return React.createElement(tag, { ref: this.ref, ...this.props }) }
+    render () {
+      // Convert React props to CustomElement props https://github.com/facebook/react/issues/12810
+      return React.createElement(tag, Object.keys(this.props).reduce((props, key) => {
+        if (key === 'className') props.class = this.props[key] // Fixes className for custom elements
+        else if (this.props[key] === true) props[key] = '' // Fixes boolean attributes
+        else if (this.props[key] !== false) props[key] = this.props[key]
+        return props
+      }, { ref: this.ref }))
+    }
   }
 }
 
