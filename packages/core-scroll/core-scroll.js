@@ -65,7 +65,7 @@ export default class CoreScoll extends HTMLElement {
       const cursor = (scroll.left || scroll.right || scroll.up || scroll.down) ? 'grab' : ''
 
       queryAll(this.id && `[${this.external}="${this.id}"]`).forEach((el) => (el.disabled = !scroll[el.value]))
-      dispatchEvent(this, 'scroll.change', scroll)
+      dispatchEvent(this, 'scroll.change')
 
       if (!event.type) { // Do not change cursor while dragging
         this.style.cursor = `-webkit-${cursor}`

@@ -83,10 +83,10 @@ demo-->
       this.state = {}
       this.onScroll = this.onScroll.bind(this)
     }
-    onScroll ({detail, target}) {
+    onScroll ({target}) {
       this.setState({
-        left: detail.left && (() => target.scroll('left')),
-        right: detail.right && (() => target.scroll('right'))
+        left: target.scrollLeft && (() => target.scroll('left')),
+        right: target.scrollRight && (() => target.scroll('right'))
       })
     }
     render () {
@@ -113,50 +113,44 @@ demo-->
 
 Scroll speed is controlled by `friction` rather than `duration` (a short scroll distance will have a shorter duration and vice versa) for a more natural feeling of motion. Buttons can control a `core-scroll` by targeting its ID and specifying a direction; `left|right|up|down`. The `disabled` is automatically added/removed to controller buttons when there is no more pixels to scroll in specified direction. Important: `@nrk/core-scroll` manipulates styling to hide scrollbars, [see how to work with margin and height &rarr;](#styling)
 
-### HTML / JavaScript
+<small>Note: `core-scroll` should be replaced with a project specific name to avoid version conflicts.</small>
+
 ```html
 <button data-core-scroll="my-scroll-js" value="up" aria-label="Rull opp">&uarr;</button>
-<core-scroll id="my-scroll-js">
+<core-scroll id="my-scroll-js" friction=".8"> <!-- Friction is optional. Defaults to .8 -->
   <!-- Direct children is used to calculate natural stop points for scroll -->
   <div>1</div>
   <div>2</div>
   <div>3</div>
 </core-scroll>
 ```
-```js
-import coreScroll from '@nrk/core-scroll'
 
-coreScroll(String|Element|Elements)  // Accepts a selector string, NodeList, Element or array of Elements,
-coreScroll(String|Element|Elements, 'right'|'left'|'up'|'down') // Optionally pass a second argument to cause scroll
-coreScroll(String|Element|Elements, {                           // Or pass a object
-  move: 'right'|'left'|'up'|'down',    // Optional. Scroll a direction
-  x: Number,                           // Optional. The scrollLeft
-  y: Number,                           // Optional. The scrollTop
-  friction: 0.8,                       // Optional. Changes scroll speed. Defaults to 0.8
-})
-coreScroll(String|Element|Elements, '') // Optionally send in a third argument to customize the debounce rate of the resize event and the throttle rate of the scroll event
+```js
+import CoreScroll from '@nrk/core-scroll'
+
+window.customElements.define('core-scroll', CoreScroll)
+
+// Controlling using .scroll method:
+document.getElementById('my-scroll').scroll('left') // up|down|left|right
+document.getElementById('my-scroll').scroll({x: 0, y: 10}) // exact scroll position
+document.getElementById('my-scroll').scroll({x: 0, move: 'down'}) // combination
+
+// Reading state
+document.getElementById('my-scroll').scrollLeft
+document.getElementById('my-scroll').scrollRight
+document.getElementById('my-scroll').scrollTop
+document.getElementById('my-scroll').scrollBottom
 ```
 
 ### React / Preact
 ```jsx
 import CoreScroll from '@nrk/core-scroll/jsx'
 
-<CoreScroll onChange={(state) => {}}>
+<CoreScroll onScrollChange={(event) => {}}>
   {/* elements */}
 </CoreScroll>
 
-
-// state parameter in the onChange event has the following structure:
-state = {
-  scrollUp: Function|null,
-  scrollDown: Function|null,
-  scrollLeft: Function|null,
-  scrollRight: Function|null
-}
-// These properties are functions that the user can access in order to provide
-// buttons that scroll up/down/left/right. When the prop is set to null, it indicates
-// that it is not possible to scroll further in that given direction.
-
+// See example implementation on using onScrollChange with buttons
 ```
 
 
@@ -169,11 +163,11 @@ state = {
 
 ```js
 document.addEventListener('scroll.change', (event) => {
-  event.target        // The core-scroll element triggering scroll.change event
-  event.detail.left   // Amount of pixels remaining in scroll direction left
-  event.detail.right  // Amount of pixels remaining in scroll direction right
-  event.detail.up     // Amount of pixels remaining in scroll direction up
-  event.detail.down   // Amount of pixels remaining in scroll direction down
+  event.target              // The core-scroll element triggering scroll.change event
+  event.target.scrollLeft   // Amount of pixels remaining in scroll direction left
+  event.target.scrollRight  // Amount of pixels remaining in scroll direction right
+  event.target.scrollTop    // Amount of pixels remaining in scroll direction up
+  event.target.scrollBottom // Amount of pixels remaining in scroll direction down
 })
 ```
 
