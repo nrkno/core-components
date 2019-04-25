@@ -1,7 +1,7 @@
 import { closest, escapeHTML, dispatchEvent, queryAll } from '../utils'
 import parse from '@nrk/simple-date-parse'
 
-const MASK = { year: '*-m-d', month: 'y-*-d', day: 'y-m-*', hour: '*:m', minute: 'h:*', second: 'h:m:*', timestamp: '*' }
+const MASK = { year: '*-m-d', month: 'y-*-d', day: 'y-m-*', hour: '*:m', minute: 'h:*', second: 'h:m:*', timestamp: '*', null: '*' }
 const KEYS = { 33: '-1month', 34: '+1month', 35: 'y-m-99', 36: 'y-m-1', 37: '-1day', 38: '-1week', 39: '+1day', 40: '+1week' }
 
 export default class CoreDatepicker extends HTMLElement {
@@ -33,16 +33,15 @@ export default class CoreDatepicker extends HTMLElement {
   handleEvent (event) {
     if (event.defaultPrevented || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || (event.type === 'keydown' && !KEYS[event.keyCode])) return
     if (!this.contains(event.target) && !closest(event.target, `[${this.external}="${this.id}"]`)) return
-
-    const table = closest(event.target, 'table')
-    const elem = event.type === 'click' ? closest(event.target, 'button[value]') : event.target
-    const mask = MASK[event.target.getAttribute('data-type')] || '*'
-
-    if (event.type === 'keydown' ? table : elem) this.date = mask.replace('*', KEYS[event.keyCode] || elem.value)
-    if (event.type === 'click' && table && elem) dispatchEvent(this, 'datepicker.click.day')
-    if (event.type === 'keydown' && table) {
+    if (event.type === 'change') this.date = MASK[event.target.getAttribute('data-type')].replace('*', event.target.value)
+    else if (event.type === 'click') {
+      const button = closest(event.target, 'button[value]')
+      if (button) this.date = button.value
+      if (button && closest(button, 'table')) dispatchEvent(this, 'datepicker.click.day')
+    } else if (event.type === 'keydown' && closest(event.target, 'table')) {
+      this.date = KEYS[event.keyCode]
+      this.querySelector('[autofocus]').focus()
       event.preventDefault() // Prevent scrolling
-      table.querySelector('[autofocus]').focus()
     }
   }
   diff (val) { return this.parse(val).getTime() - this.timestamp }
