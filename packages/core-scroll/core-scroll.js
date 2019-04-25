@@ -43,7 +43,7 @@ export default class CoreScoll extends HTMLElement {
     window.addEventListener('resize', this._throttledEvent, EVENT_PASSIVE)
     window.addEventListener('load', this) // Update state when we are sure all CSS is loaded
     document.addEventListener('click', this)
-    setTimeout(() => this.handleEvent()) // Initialize buttons after render
+    setTimeout(() => this.handleEvent()) // Initialize buttons after children is parsed
   }
   disconnectedCallback () {
     this.removeEventListener('mousedown', this)

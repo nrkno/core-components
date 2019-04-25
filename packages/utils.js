@@ -6,7 +6,6 @@ export const IS_IOS = IS_BROWSER && /iPad|iPhone|iPod/.test(String(navigator.pla
 
 // TODO Remove
 export function exclude () {}
-export function requestAnimFrame () {}
 
 /**
 * addEvent

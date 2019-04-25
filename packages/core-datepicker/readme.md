@@ -6,10 +6,10 @@
 ## Installation
 
 ```bash
-npm install @nrk/core-datepicker --save-exact
+npm install @nrk/core-datepicker
 ```
 ```js
-import coreDatepicker from '@nrk/core-datepicker'     // Vanilla JS
+import CoreDatepicker from '@nrk/core-datepicker'     // Vanilla JS
 import CoreDatepicker from '@nrk/core-datepicker/jsx' // React/Preact JSX
 ```
 
@@ -19,10 +19,10 @@ import CoreDatepicker from '@nrk/core-datepicker/jsx' // React/Preact JSX
 <script src="core-datepicker/core-datepicker.min.js"></script>
 <script src="core-datepicker/core-datepicker.jsx.js"></script>
 <style>
-  .my-datepicker { position: absolute; z-index: 3; padding: 1rem; background: #fff; box-shadow: 0 5px 9px rgba(0,0,0,.4) }
+  .my-datepicker { display: block; position: absolute; z-index: 3; padding: 1rem; background: #fff; box-shadow: 0 5px 9px rgba(0,0,0,.4) }
   button[aria-current="date"] { border: 1px dashed }
   button[data-core-datepicker-adjacent="true"] { opacity: .3 }
-  button[data-core-datepicker-selected="true"] { border: 2px solid }
+  button[autofocus] { border: 2px solid }
   :disabled { filter: brightness(.7) sepia(1) hue-rotate(-50deg) }
 </style>
 demo-->
@@ -31,63 +31,72 @@ demo-->
 
 ```html
 <!-- demo -->
+<script>
+  // Change labels of months
+  coreDatepicker.months = ['January', 'Febuary', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+
+  // Change labels of days
+  coreDatepicker.days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+</script>
 <button class="my-toggle">Velg dato</button>
-<div class="my-datepicker" id="my-datepicker" hidden>
-  <input type="timestamp">
-  <fieldset>
-    <legend>Navigasjon</legend>
-    <button value="now">I dag</button>
-    <button value="now - 1 day">I går</button>
-    <button value="now + 1 day">I morgen</button>
-    <button value="- 1 week">Tilbake en uke</button>
-    <button value="+ 1 week">Fremover en uke</button>
-    <button value="now tuesday - 1 week">Tirsdag sist uke</button>
-    <button value="now + 10 years">Om ti år</button>
-    <button value="yy00-01-01 - 100 years">Forrige århundre</button>
-  </fieldset>
-  <label>
-    År
-    <select>
-      <option value="2016-m-d">2016</option>
-      <option value="2017-m-d">2017</option>
-      <option value="2018-m-d">2018</option>
-      <option value="2019-m-d">2019</option>
-    </select>
-  </label>
-  <label>Måned<select></select></label>
-  <fieldset>
-    <legend>Måned</legend>
-    <label><input type="radio" name="my-months" value="y-1-d">Jan</label>
-    <label><input type="radio" name="my-months" value="y-2-d">Feb</label>
-    <label><input type="radio" name="my-months" value="y-3-d">Mars</label>
-    <label><input type="radio" name="my-months" value="y-4-d">April</label>
-    <label><input type="radio" name="my-months" value="y-5-d">Mai</label>
-    <label><input type="radio" name="my-months" value="y-6-d">Juni</label>
-    <label><input type="radio" name="my-months" value="y-7-d">Juli</label>
-    <label><input type="radio" name="my-months" value="y-8-d">Aug</label>
-    <label><input type="radio" name="my-months" value="y-9-d">Sep</label>
-    <label><input type="radio" name="my-months" value="y-10-d">Okt</label>
-    <label><input type="radio" name="my-months" value="y-11-d">Nov</label>
-    <label><input type="radio" name="my-months" value="y-12-d">Des</label>
-  </fieldset>
-  <label><span>År</span><input type="year"></label>
-  <label><span>Måned</span><input type="month"></label>
-  <fieldset>
-    <legend>Klokke</legend>
-    <label>Time<input type="hour"></label>
-    <label>Minutt<input type="minute"></label>
+<core-toggle hidden popup>
+  <core-datepicker class="my-datepicker" id="my-datepicker">
+    <input type="timestamp">
+    <fieldset>
+      <legend>Navigasjon</legend>
+      <button value="now">I dag</button>
+      <button value="now - 1 day">I går</button>
+      <button value="now + 1 day">I morgen</button>
+      <button value="- 1 week">Tilbake en uke</button>
+      <button value="+ 1 week">Fremover en uke</button>
+      <button value="now tuesday - 1 week">Tirsdag sist uke</button>
+      <button value="now + 10 years">Om ti år</button>
+      <button value="yy00-01-01 - 100 years">Forrige århundre</button>
+    </fieldset>
     <label>
-      <span>Time</span>
+      År
       <select>
-        <option>--</option>
-        <option value="11:m">11</option>
-        <option value="12:m">12</option>
-        <option value="13:m">13</option>
+        <option value="2016-m-d">2016</option>
+        <option value="2017-m-d">2017</option>
+        <option value="2018-m-d">2018</option>
+        <option value="2019-m-d">2019</option>
       </select>
     </label>
-  </fieldset>
-  <table></table>
-</div>
+    <label>Måned<select></select></label>
+    <fieldset>
+      <legend>Måned</legend>
+      <label><input type="radio" name="my-months" value="y-1-d">Jan</label>
+      <label><input type="radio" name="my-months" value="y-2-d">Feb</label>
+      <label><input type="radio" name="my-months" value="y-3-d">Mars</label>
+      <label><input type="radio" name="my-months" value="y-4-d">April</label>
+      <label><input type="radio" name="my-months" value="y-5-d">Mai</label>
+      <label><input type="radio" name="my-months" value="y-6-d">Juni</label>
+      <label><input type="radio" name="my-months" value="y-7-d">Juli</label>
+      <label><input type="radio" name="my-months" value="y-8-d">Aug</label>
+      <label><input type="radio" name="my-months" value="y-9-d">Sep</label>
+      <label><input type="radio" name="my-months" value="y-10-d">Okt</label>
+      <label><input type="radio" name="my-months" value="y-11-d">Nov</label>
+      <label><input type="radio" name="my-months" value="y-12-d">Des</label>
+    </fieldset>
+    <label><span>År</span><input type="year"></label>
+    <label><span>Måned</span><input type="month"></label>
+    <fieldset>
+      <legend>Klokke</legend>
+      <label>Time<input type="hour"></label>
+      <label>Minutt<input type="minute"></label>
+      <label>
+        <span>Time</span>
+        <select>
+          <option>--</option>
+          <option value="11:m">11</option>
+          <option value="12:m">12</option>
+          <option value="13:m">13</option>
+        </select>
+      </label>
+    </fieldset>
+    <table></table>
+  </core-datepicker>
+</core-toggle>
 <button data-core-datepicker="my-datepicker" value="now">Nå</button>
 <button data-core-datepicker="my-datepicker" value="+1 week">Neste uke</button>
 <select data-core-datepicker="my-datepicker">
@@ -99,27 +108,19 @@ demo-->
 <table data-core-datepicker="my-datepicker"></table>
 <input type="text" id="my-datepicker-output">
 <script>
-  // Change labels of months
-  coreDatepicker.months = ['January', 'Febuary', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-
-  // Change labels of days
-  //coreDatepicker.days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-
   // Update GUI
-  document.addEventListener('datepicker.render', function (event) {
-    if (event.target.id !== 'my-datepicker') return
-    event.detail.disable(function (date) { return date > Date.now() })
+  document.getElementById('my-datepicker').disabled = (date) => date > Date.now()
+
+  document.addEventListener('datepicker.click.day', function (event) {
+    console.log(event)
   })
 
   // Update output
   document.addEventListener('datepicker.change', function (event) {
     if (event.target.id !== 'my-datepicker') return
-    document.getElementById('my-datepicker-output').value = event.detail.nextDate.toLocaleString()
+    console.log(event)
+    document.getElementById('my-datepicker-output').value = event.target.date.toLocaleString()
   })
-
-  // Initialize
-  coreDatepicker('#my-datepicker')
-  coreToggle('.my-toggle', {popup: true}) // Make popup
 </script>
 ```
 
@@ -142,20 +143,22 @@ demo-->
     onNow () { this.setState({date: CoreDatepicker.parse('now')}) }
     onChange (event) { this.setState({date: event.detail.nextDate}) }
     render () {
-      return <CoreToggle popup={true}>
+      return <div>
         <button>Velg dato JSX</button>
-        <CoreDatepicker
-          date={this.state.date}
-          disable={(date) => date < this.today}
-          onChange={this.onChange}
-          className="my-datepicker">
-            <label>År<input type="year" /></label>
-            <label>Måned<select></select></label>
-            <table></table>
-        </CoreDatepicker>
-        <button onClick={this.onNow}>I dag JSX</button>
-        <input type="text" readOnly value={this.state.date.toLocaleDateString()} />
-      </CoreToggle>
+        <CoreToggle hidden popup>
+          <CoreDatepicker
+            date={this.state.date}
+            disable={(date) => date < this.today}
+            onChange={this.onChange}
+            className="my-datepicker">
+              <label>År<input type="year" /></label>
+              <label>Måned<select></select></label>
+              <table></table>
+          </CoreDatepicker>
+          <button onClick={this.onNow}>I dag JSX</button>
+          <input type="text" readOnly value={this.state.date.toLocaleDateString()} />
+        </CoreToggle>
+      </div>
     }
   }
 
