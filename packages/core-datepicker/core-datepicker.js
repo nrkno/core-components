@@ -35,11 +35,11 @@ export default class CoreDatepicker extends HTMLElement {
     if (!this.contains(event.target) && !closest(event.target, `[${this.external}="${this.id}"]`)) return
 
     const table = closest(event.target, 'table')
-    const value = KEYS[event.keyCode] || (closest(event.target, 'button') || event.target).value
+    const elem = event.type === 'click' ? closest(event.target, 'button[value]') : event.target
     const mask = MASK[event.target.getAttribute('data-type')] || '*'
 
-    if (event.type === 'keydown' ? table : value) this.date = mask.replace('*', value) // Keydown only in table
-    if (event.type === 'click' && table && value) dispatchEvent(this, 'datepicker.click.day')
+    if (event.type === 'keydown' ? table : elem) this.date = mask.replace('*', KEYS[event.keyCode] || elem.value)
+    if (event.type === 'click' && table && elem) dispatchEvent(this, 'datepicker.click.day')
     if (event.type === 'keydown' && table) {
       event.preventDefault() // Prevent scrolling
       table.querySelector('[autofocus]').focus()
