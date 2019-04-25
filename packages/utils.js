@@ -73,7 +73,7 @@ export function dispatchEvent (element, name, detail = {}) {
   return result // Follow W3C standard for return value
 }
 
-export function elementToReact (elementClass, ...events) {
+export function elementToReact (elementClass, ...attr) {
   const name = elementClass.name || String(elementClass).match(/function ([^(]+)/)[1] // String match for IE11
   const tag = `${name.replace(/\W+/, '-')}-${getUUID()}`.toLowerCase()
   if (IS_BROWSER && !window.customElements.get(tag)) window.customElements.define(tag, elementClass)
@@ -82,19 +82,20 @@ export function elementToReact (elementClass, ...events) {
     constructor (props) {
       super(props)
       this.ref = (el) => (this.el = el)
-      events.forEach((on) => {
-        const key = `on${on.replace(/(^|\.)./g, (m) => m.slice(-1).toUpperCase())}` // input.filter => onInputFilter
-        this[on] = (event) => this.props[key] && this.props[key](event)
+      attr.forEach((k) => {
+        const on = `on${k.replace(/(^|\.)./g, (m) => m.slice(-1).toUpperCase())}` // input.filter => onInputFilter
+        this[k] = (event) => this.props[on] && this.props[on](event)
       })
     }
-    componentDidMount () { events.forEach((on) => this.el.addEventListener(on, this[on])) }
-    componentWillUnmount () { events.forEach((on) => this.el.removeEventListener(on, this[on])) }
+    componentDidMount () { attr.forEach((k) => this.props[k] ? (this.el[k] = this.props[k]) : this.el.addEventListener(k, this[k])) }
+    componentDidUpdate (prev) { attr.forEach((k) => prev[k] !== this.props[k] && (this.el[k] = this.props[k])) }
+    componentWillUnmount () { attr.forEach((k) => this.el.removeEventListener(k, this[k])) }
     render () {
       // Convert React props to CustomElement props https://github.com/facebook/react/issues/12810
-      return React.createElement(tag, Object.keys(this.props).reduce((props, key) => {
-        if (key === 'className') props.class = this.props[key] // Fixes className for custom elements
-        else if (this.props[key] === true) props[key] = '' // Fixes boolean attributes
-        else if (this.props[key] !== false) props[key] = this.props[key]
+      return React.createElement(tag, Object.keys(this.props).reduce((props, k) => {
+        if (k === 'className') props.class = this.props[k] // Fixes className for custom elements
+        else if (this.props[k] === true) props[k] = '' // Fixes boolean attributes
+        else if (this.props[k] !== false) props[k] = this.props[k]
         return props
       }, { ref: this.ref }))
     }

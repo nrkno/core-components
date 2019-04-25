@@ -129,35 +129,37 @@ demo-->
 <div id="jsx-datepicker"></div>
 <script type="text/jsx">
   // Change labels
-  CoreDatepicker.months = ['January', 'Febuary', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-  CoreDatepicker.days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+  // console.log(CoreDatepicker.days)
+  // CoreDatepicker.months = ['January', 'Febuary', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+  // CoreDatepicker.days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+  // console.log(CoreDatepicker.days)
 
   class MyDate extends React.Component {
     constructor (props) {
       super(props)
-      this.today = CoreDatepicker.parse('00:00')
-      this.state = {date: new Date()}
+      this.today = Date.now() - Date.now() % 864e3
+      this.state = { date: new Date() }
       this.onNow = this.onNow.bind(this)
       this.onChange = this.onChange.bind(this)
     }
-    onNow () { this.setState({date: CoreDatepicker.parse('now')}) }
-    onChange (event) { this.setState({date: event.detail.nextDate}) }
+    onNow () { this.setState({ date: new Date() }) }
+    onChange (event) { this.setState({ date: event.target.date }) }
     render () {
       return <div>
         <button>Velg dato JSX</button>
         <CoreToggle hidden popup>
           <CoreDatepicker
-            date={this.state.date}
-            disable={(date) => date < this.today}
-            onChange={this.onChange}
+            timestamp={this.state.date.getTime()}
+            disabled={(date) => date <= this.today}
+            onDatepickerChange={this.onChange}
             className="my-datepicker">
               <label>År<input type="year" /></label>
               <label>Måned<select></select></label>
               <table></table>
           </CoreDatepicker>
-          <button onClick={this.onNow}>I dag JSX</button>
-          <input type="text" readOnly value={this.state.date.toLocaleDateString()} />
         </CoreToggle>
+        <button onClick={this.onNow}>I dag JSX</button>
+        <input type="text" readOnly value={this.state.date.toLocaleDateString()} />
       </div>
     }
   }

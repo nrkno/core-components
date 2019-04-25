@@ -5,7 +5,7 @@ const MASK = { year: '*-m-d', month: 'y-*-d', day: 'y-m-*', hour: '*:m', minute:
 const KEYS = { 33: '-1month', 34: '+1month', 35: 'y-m-99', 36: 'y-m-1', 37: '-1day', 38: '-1week', 39: '+1day', 40: '+1week' }
 
 export default class CoreDatepicker extends HTMLElement {
-  static get observedAttributes () { return ['date'] }
+  static get observedAttributes () { return ['timestamp'] }
 
   connectedCallback () {
     this._date = this.date // Store for later comparison and speeding up things
@@ -46,12 +46,12 @@ export default class CoreDatepicker extends HTMLElement {
     }
   }
   diff (val) { return this.parse(val).getTime() - this.timestamp }
-  parse (val) { return parse(val, this._date) }
+  parse (val, from) { return parse(val, from || this._date) }
 
   get external () { return 'data-core-datepicker' }
   get disabled () { return this._disabled || Function.prototype }
   set disabled (fn) {
-    this._disabled = typeof fn === 'function' ? (val) => fn(this.parse(val)) : () => fn // Auto parse dates
+    this._disabled = typeof fn === 'function' ? (val) => fn(this.parse(val), this) : () => fn // Auto parse dates
     this.attributeChangedCallback() // Re-render
   }
 
@@ -62,8 +62,8 @@ export default class CoreDatepicker extends HTMLElement {
   get hour () { return pad(this._date.getHours()) }
   get minute () { return pad(this._date.getMinutes()) }
   get second () { return pad(this._date.getSeconds()) }
-  get date () { return parse(this.getAttribute('date') || this._date || Date.now()) }
-  set date (val) { return this.setAttribute('date', this.parse(val).getTime()) }
+  get date () { return parse(this.getAttribute('timestamp') || this._date || Date.now()) }
+  set date (val) { return this.setAttribute('timestamp', this.parse(val).getTime()) }
 }
 
 // Expose API
