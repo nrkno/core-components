@@ -24,7 +24,7 @@ const plugins = [
   resolve({ dedupe: external }),
   commonjs(),
   babel({ presets: [['@babel/preset-env', { modules: false }]] }),
-  !process.env.ROLLUP_WATCH || serve({ contentBase: 'packages', host: '160.67.0.33', port: 80 })
+  !process.env.ROLLUP_WATCH || serve('packages')
 ]
 
 export default pkgs.reduce((all, path) => {
