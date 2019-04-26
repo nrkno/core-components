@@ -33,7 +33,7 @@ export default class CoreDatepicker extends HTMLElement {
   }
   handleEvent (event) {
     if (event.defaultPrevented || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || (event.type === 'keydown' && !KEYS[event.keyCode])) return
-    if (!this.contains(event.target) && !closest(event.target, `[${this.external}="${this.id}"]`)) return
+    if (!this.contains(event.target) && !closest(event.target, `[for="${this.id}"]`)) return
     if (event.type === 'change') this.date = MASK[event.target.getAttribute('data-type')].replace('*', event.target.value)
     else if (event.type === 'click') {
       const button = closest(event.target, 'button[value]')
@@ -48,7 +48,6 @@ export default class CoreDatepicker extends HTMLElement {
   diff (val) { return this.parse(val).getTime() - this.timestamp }
   parse (val, from) { return parse(val, from || this._date) }
 
-  get external () { return 'data-core-datepicker' }
   get disabled () { return this._disabled || Function.prototype }
   set disabled (fn) {
     this._disabled = typeof fn === 'function' ? (val) => fn(this.parse(val), this) : () => fn // Auto parse dates
@@ -113,7 +112,7 @@ function table (self, table) {
     button.value = `${day.getFullYear()}-${dayMonth + 1}-${dayInMonth}`
     button.disabled = self.disabled(day)
     button.tabIndex = isSelected - 1
-    button.setAttribute(`${self.external}-adjacent`, month !== dayMonth)
+    button.setAttribute(`data-adjacent`, month !== dayMonth)
     button.setAttribute('aria-label', `${dayInMonth}. ${CoreDatepicker.months[dayMonth]}`)
     button.setAttribute('aria-current', day.getDate() === today.getDate() && day.getMonth() === today.getMonth() && day.getFullYear() === today.getFullYear() && 'date')
     button[isSelected ? 'setAttribute' : 'removeAttribute']('autofocus', '')

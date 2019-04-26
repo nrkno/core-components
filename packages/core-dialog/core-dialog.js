@@ -21,8 +21,8 @@ export default class CoreDialog extends HTMLElement {
   }
   attributeChangedCallback (name) {
     if (this._open === this.hidden) { // this._open comparison ensures actual change
-      const active = document.activeElement || document.body
       const opener = document.querySelector(`[${this._opener}]`)
+      const active = opener || document.activeElement || document.body
       const zIndex = Math.min(Math.max(...queryAll('body *').map(getZIndex)), 2000000000) // Avoid overflowing z-index. See techjunkie.com/maximum-z-index-value
 
       // Trigger repaint to fix IE11 from not closing dialog
@@ -36,8 +36,9 @@ export default class CoreDialog extends HTMLElement {
         active.setAttribute(this._opener, '') // Remember opener element
         setFocus(this)
       } else if (opener) {
+        opener.focus()
         opener.removeAttribute(this._opener)
-        setTimeout(() => opener.focus()) // Move focus after paint
+        setTimeout(() => opener.focus()) // Move focus after paint (helps iOS)
       }
 
       dispatchEvent(this, 'dialog.toggle')
@@ -48,11 +49,12 @@ export default class CoreDialog extends HTMLElement {
     if (event.type === 'transitionend' && event.target === this && !this.hidden) setFocus(this)
     else if (event.type === 'click') {
       if (event.target === this.backdrop && !this.strict) return this.close()
-      const button = closest(event.target, `[${this.external}]`)
-      const action = button && button.getAttribute(this.external)
-      const target = action === 'close' ? closest(event.target, this.nodeName) : document.getElementById(action)
+      const button = closest(event.target, `button[for]`)
+      const action = button && button.getAttribute('for')
+      const toggle = action === 'close' ? closest(event.target, this.nodeName) === this : action === this.id
 
-      if (target === this) this.hidden = action === 'close'
+      if (action === this.id) button.setAttribute(this._opener, '') // iOS remember button
+      if (toggle) this.hidden = action === 'close'
     } else if (event.type === 'keydown' && (event.keyCode === 9 || event.keyCode === 27) && !this.hidden && closest(event.target, this.nodeName) === this) {
       if (event.keyCode === 9) keepFocus(this, event) // TAB
       if (event.keyCode === 27 && !this.strict) { // ESC
@@ -80,7 +82,6 @@ export default class CoreDialog extends HTMLElement {
   get hidden () { return this.hasAttribute('hidden') }
   set hidden (val) { this[val ? 'setAttribute' : 'removeAttribute']('hidden', '') }
 
-  get external () { return 'data-core-dialog' }
   get backdrop () {
     const next = this.nextElementSibling
     if (next && next.nodeName === 'BACKDROP') return next

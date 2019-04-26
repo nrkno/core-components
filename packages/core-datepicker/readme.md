@@ -22,7 +22,7 @@ import CoreDatepicker from '@nrk/core-datepicker/jsx' // React/Preact JSX
 <style>
   .my-popup:not([hidden]) { display: block; position: absolute; z-index: 3; padding: 1rem; background: #fff; box-shadow: 0 5px 9px rgba(0,0,0,.4) }
   button[aria-current="date"] { border: 1px dashed }
-  button[data-core-datepicker-adjacent="true"] { opacity: .3 }
+  button[data-adjacent="true"] { opacity: .3 }
   button[autofocus] { border: 2px solid }
   :disabled { filter: brightness(.7) sepia(1) hue-rotate(-50deg) }
 </style>
@@ -324,7 +324,7 @@ CoreDatepicker.months = ['jan', 'feb', ...] // Change name of months
 .my-datepicker input:checked                /* Target selected checkbox/radio dates */
 .my-datepicker input:disabled               /* Target disabled checkbox/radio dates */
 .my-datepicker button:disabled              /* Target disabled dates */
+.my-datepicker button[autofocus]            /* Target the chosen date in month view */
 .my-datepicker button[aria-current="date"]  /* Target current date (today) in month view */
-.my-datepicker button[data-core-datepicker-adjacent="true"] /* Target dates from next or previous month in the month view */
-.my-datepicker button[data-core-datepicker-selected="true"] /* Target the chosen date in month view */
+.my-datepicker button[data-adjacent="true"] /* Target dates from next or previous month in the month view */
 ```

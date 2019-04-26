@@ -58,13 +58,13 @@ export default class CoreScoll extends HTMLElement {
     if (event.type === 'wheel') DRAG.animate = false // Stop momentum animation onWheel
     else if (event.type === 'mousedown') onMousedown.call(this, event)
     else if (event.type === 'click') {
-      const btn = this.id && closest(event.target, `[${this.external}="${this.id}"]`)
+      const btn = this.id && closest(event.target, `[for="${this.id}"]`)
       if (btn && dispatchEvent(this, 'scroll.click', { move: btn.value })) this.scroll(btn.value)
     } else {
       const scroll = { left: this.scrollLeft, up: this.scrollTop, right: this.scrollRight, down: this.scrollBottom }
       const cursor = (scroll.left || scroll.right || scroll.up || scroll.down) ? 'grab' : ''
 
-      queryAll(this.id && `[${this.external}="${this.id}"]`).forEach((el) => (el.disabled = !scroll[el.value]))
+      queryAll(this.id && `[for="${this.id}"]`).forEach((el) => (el.disabled = !scroll[el.value]))
       dispatchEvent(this, 'scroll.change')
 
       if (!event.type) { // Do not change cursor while dragging
@@ -92,7 +92,6 @@ export default class CoreScoll extends HTMLElement {
 
   get scrollRight () { return this.scrollWidth - this.clientWidth - this.scrollLeft }
   get scrollBottom () { return this.scrollHeight - this.clientHeight - this.scrollTop }
-  get external () { return 'data-core-scroll' }
   get friction () { return Math.min(0.99, this.getAttribute('friction')) || 0.8 } // Avoid friction 1 (infinite)
   set friction (val) { this.setAttribute('friction', val) }
 }

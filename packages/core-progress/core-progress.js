@@ -13,11 +13,9 @@ export default class CoreProgress extends HTMLElement {
     if (!this._value) return // Only render after connectedCallback
     const oldValue = this._value
     const newValue = this.value
-    const max = this.max
     const indeterminate = this.indeterminate
-    const percentage = Math.round(newValue / max * 100) || 0
 
-    const noChanges = newValue === oldValue && max === this.getAttribute('max') && indeterminate !== this.hasAttribute('value')
+    const noChanges = newValue === oldValue && this._max === this.max && indeterminate !== this.hasAttribute('value')
     const canUpdate = noChanges || dispatchEvent(this, 'progress.change')
     const value = canUpdate ? newValue : oldValue
 
@@ -25,8 +23,8 @@ export default class CoreProgress extends HTMLElement {
       this.removeAttribute('value')
       this.setAttribute('aria-label', value)
     } else {
-      this.setAttribute('max', max) // Set max before value to make IE happy
-      this.setAttribute('value', value)
+      // this.setAttribute('max', max) // Set max before value to make IE happy
+      // this.setAttribute('value', value)
       this.setAttribute('aria-label', `${this.percentage}%`)
     }
   }
