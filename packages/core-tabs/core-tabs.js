@@ -1,104 +1,89 @@
 import { name, version } from './package.json'
-import { IS_ANDROID, addEvent, dispatchEvent, getUUID, queryAll } from '../utils'
+import {
+  IS_ANDROID,
+  dispatchEvent,
+  getUUID,
+  queryAll,
+  closest
+} from '../utils'
 
-const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid attribute characters
-const ARIA = IS_ANDROID ? 'data' : 'aria' // Andriod has a bug and reads only label instead of content
+const UUID = `data-${name}-${version}`.replace(/\W+/g, '-')
+const ARIA = IS_ANDROID ? 'data-labelledby' : 'aria-labelledby' // Android has a bug and reads only label instead of content
 const KEYS = { SPACE: 32, END: 35, HOME: 36, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40 }
 
-/**
- * Initialize core-tabs
- *
- * @param {String|NodeList|Element[]|Element} tablists A CSS selector string, nodeList, element array, or single element
- * @param {Number|String|Element} open index, id or tab-element of the open tab
- */
-export default function tabs (tablists, open) { // open can be Number, String or Element
-  return queryAll(tablists).map((tablist) => {
-    tablist.setAttribute(UUID, '')
-    tablist.setAttribute('role', 'tablist')
-    setOpen(tablist, open)
-    return tablist
-  })
-}
+export default class CoreTabs extends HTMLElement {
 
-addEvent(UUID, 'click', (event) => {
-  if (event.ctrlKey || event.altKey || event.metaKey) return
-  for (let el = event.target; el; el = el.parentElement) {
-    const tablist = el.parentElement
-    if (el.getAttribute('role') === 'tab' && tablist.hasAttribute(UUID)) {
-      return setOpen(tablist, el) || event.preventDefault() // Also prevent links
+  connectedCallback () {
+    this.setAttribute('role', 'tablist')
+    this.addEventListener('click', this)
+    this.addEventListener('keydown', this)
+
+    setTimeout(() => {
+      let next = this
+      this.tabs.forEach((tab, index) => {
+        const panel = document.getElementById(tab.getAttribute('aria-controls')) || (next = next.nextElementSibling || next)
+
+        tab.setAttribute('role', 'tab')
+        tab.setAttribute('aria-controls', panel.id = panel.id || getUUID())
+        panel.setAttribute(ARIA, tab.id = tab.id || getUUID())
+        panel.setAttribute('role', 'tabpanel')
+        panel.setAttribute('tabindex', '0')
+      })
+      this.tab = this.tab // Setup open
+    })
+  }
+
+  disconnectedCallback() {
+    this.removeEventListener('click', this)
+    this.removeEventListener('keydown', this)
+  }
+
+  handleEvent (event) {
+    if (event.defaultPrevented || event.ctrlKey || event.altKey || event.metaKey) return
+    if (event.type === 'click') this.tab = closest(event.target, '[role="tab"]')
+    if (event.type === 'keydown') {
+      let tab = event.target
+      const key = event.keyCode
+      const tabs = this.tabs
+      const open = tabs.indexOf(tab)
+
+      if (key === KEYS.SPACE) tab.click() // Forward action to click event
+      else if (key === KEYS.DOWN || key === KEYS.RIGHT) tab = tabs[open + 1] || tabs[0]
+      else if (key === KEYS.UP || key === KEYS.LEFT) tab = tabs[open - 1] || tabs.pop()
+      else if (key === KEYS.END) tab = tabs.pop()
+      else if (key === KEYS.HOME) tab = tabs[0]
+      else return // Do not hijack other keys
+
+      event.preventDefault()
+      tab.focus()
     }
   }
-})
 
-addEvent(UUID, 'keydown', (event) => {
-  let tab = event.target
-  const tablist = tab.parentElement
-
-  if (event.ctrlKey || event.altKey || event.metaKey) return
-  if (tablist.hasAttribute(UUID)) {
-    const tabs = queryAll(tablist.children)
-    const open = tabs.indexOf(tab)
-    const key = event.keyCode
-
-    if (key === KEYS.SPACE) tab.click() // Forward action to click event
-    else if (key === KEYS.DOWN || key === KEYS.RIGHT) tab = tabs[open + 1] || tabs[0]
-    else if (key === KEYS.UP || key === KEYS.LEFT) tab = tabs[open - 1] || tabs.pop()
-    else if (key === KEYS.END) tab = tabs.pop()
-    else if (key === KEYS.HOME) tab = tabs[0]
-    else return // Do not hijack other keys
-
-    event.preventDefault()
-    tab.focus()
+  get tab () {
+    return document.getElementById(this.panel.getAttribute(ARIA))
   }
-})
+  set tab (value) {
+    if (!value) return
+    const panels = this.panels
+    const prevIndex = this.tabs.indexOf(this.tab)
+    const nextIndex = this.tabs.reduce((acc, tab, i) => {
+      return (i === value || tab === value || tab.id === value) ? i : acc
+    }, this.tab)
 
-// Use capture to support older versions of firefox
-addEvent(UUID, 'focus', ({ target }) => {
-  queryAll('[role="tab"]').forEach((el) => {
-    const tablist = el.parentElement
-    const selected = el.getAttribute('aria-selected') === 'true'
+    this.tabs.forEach((tab, index) => {
+      const panel = panels[index]
+      const openTab = index === nextIndex
+      const openPanel = panel === panels[nextIndex]
 
-    if (tablist.hasAttribute(UUID)) {
-      el.tabIndex = (selected && !tablist.contains(target)) ? 0 : -1
-    }
-  })
-}, true)
+      tab.setAttribute('aria-selected', openTab)
+      tab.setAttribute('tabindex', Number(openTab) - 1)
+      panel[openPanel ? 'removeAttribute' : 'setAttribute']('hidden', '')
+    })
 
-function getOpenTabIndex (tabs) {
-  const open = tabs.filter((tab) => tab.getAttribute('aria-selected') === 'true')[0]
-  return Math.max(0, tabs.indexOf(open))
-}
+    if (prevIndex !== nextIndex) dispatchEvent(this, 'core-tabs.toggle')
+  }
 
-/**
- * @param {Element} tablist
- * @param {Number|String|Element} open
- */
-function setOpen (tablist, open) { // open can be Number, String or Element
-  const next = tablist.nextElementSibling ? tablist.nextElementSibling.children : []
-  const tabs = queryAll(tablist.children).filter((tab) => tab.nodeName === 'A' || tab.nodeName === 'BUTTON')
-  const panels = tabs.map((tab, i) => document.getElementById(tab.getAttribute('aria-controls')) || next[i] || next[0])
-  const isOpen = getOpenTabIndex(tabs)
-  const willOpen = tabs.reduce((acc, tab, i) => (i === open || tab === open || tab.id === open) ? i : acc, isOpen)
-  const isUpdate = isOpen === willOpen || dispatchEvent(tablist, 'tabs.toggle', { isOpen, willOpen, tabs, panels })
-  const nextOpen = isUpdate ? willOpen : getOpenTabIndex(tabs) // dispatchEvent can change attributes, so check getOpenPanel again
-
-  tabs.forEach((tab, index) => {
-    const panel = panels[index]
-    const selectedTab = index === nextOpen
-    const selectedPanel = panel === panels[nextOpen]
-
-    tab.setAttribute('role', 'tab')
-    tab.setAttribute('tabindex', selectedTab - 1)
-    tab.setAttribute('aria-selected', selectedTab)
-    tab.setAttribute('aria-controls', panel.id = panel.id || getUUID())
-    panel.setAttribute(`${ARIA}-labelledby`, tab.id = tab.id || getUUID())
-    panel.setAttribute('role', 'tabpanel')
-    panel.setAttribute('tabindex', '0')
-    panel[selectedPanel ? 'removeAttribute' : 'setAttribute']('hidden', '')
-  })
-
-  // Setup after loop as we now know all tabs have IDs
-  panels[nextOpen].setAttribute(`${ARIA}-labelledby`, tabs[nextOpen].id)
-
-  return isUpdate
+  get tabs () { return queryAll(this.children) }
+  get panel () { return this.panels.filter((panel) => !panel.hasAttribute('hidden'))[0] }
+  get panels () { return this.tabs.map((tab) => document.getElementById(tab.getAttribute('aria-controls'))) }
 }
