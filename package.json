@@ -12,13 +12,15 @@
     "publish:major": "node bin/index.js --publish=major",
     "start": "rollup --config --watch",
     "static-publish": "npm run build && static-publish --directory=packages --account=nrk-core --latest --major",
-    "test": "npm run build && jest && standard -v",
+    "test": "jest packages/core-tabs",
     "test:watch": "jest --watch"
   },
   "devDependencies": {
     "@babel/preset-env": "7.4.3",
     "jest": "24.7.1",
     "jest-buble": "2.0.0",
+    "jest-puppeteer": "^4.1.1",
+    "puppeteer": "^1.14.0",
     "rollup": "1.9.0",
     "rollup-plugin-babel": "4.3.2",
     "rollup-plugin-commonjs": "9.3.4",
@@ -50,9 +52,10 @@
     ]
   },
   "jest": {
+    "preset": "jest-puppeteer",
     "testURL": "http://localhost/",
     "transform": {
-      "^.+\\.jsx?$": "jest-buble"
+      "^.+\\.jsx$": "jest-buble"
     }
   }
 }
