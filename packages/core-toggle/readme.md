@@ -54,20 +54,20 @@ window.customElements.define('core-toggle', CoreToggle)
 <script type="text/jsx">
   ReactDOM.render(<>
     <button>Popup JSX</button>
-    <core-toggle className='my-dropdown' hidden popup onToggleSelect={console.warn}>
+    <CoreToggle className='my-dropdown' hidden popup onToggleSelect={console.warn}>
       <ul>
         <li><button>Select</button></li>
         <li><a href='#'>Link</a></li>
         <li>
           <button>Can also be nested</button>
-          <core-toggle className='my-dropdown' hidden popup>
+          <CoreToggle className='my-dropdown' hidden popup>
             <ul>
               <li><a href='#'>Sub-link</a></li>
             </ul>
-          </core-toggle>
+          </CoreToggle>
         </li>
       </ul>
-    </core-toggle>
+    </CoreToggle>
   </>, document.getElementById('jsx-toggle-popup'))
 </script>
 ```
@@ -155,7 +155,7 @@ document.addEventListener('toggle.select', (event) => {
 
 ## Styling
 
-All styling in documentation is example only. Both the `<button>` and content element receive attributes reflecting the current toggle state:
+**Note:** `core-toggle` is `display: inline` by default. Change this by for instance setting `core-tabs:not([hidden]) { display: block | flex | grid }` or similar in your app. Not needed when `position` or `float` is used. All styling in documentation is example only. Both the `<button>` and `core-toggle` element receive attributes reflecting the current toggle state:
 
 ```css
 .my-button {}                         /* Target button in any state */
@@ -182,7 +182,7 @@ Content is only toggled when clicking the button. Great for accordions and expan
 <script type="text/jsx">
   ReactDOM.render(<>
     <button>Toggle JSX</button>
-    <core-toggle hidden onToggle={console.log}>Content</core-toggle>
+    <CoreToggle hidden onToggle={console.log}>Content</CoreToggle>
   </>, document.getElementById('jsx-toggle-default'))
 </script>
 ```

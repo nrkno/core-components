@@ -14,12 +14,13 @@ import CoreDatepicker from '@nrk/core-datepicker/jsx' // React/Preact JSX
 ```
 
 <!--demo
+<script src="https://unpkg.com/@webcomponents/custom-elements"></script>
 <script src="core-toggle/core-toggle.min.js"></script>
 <script src="core-toggle/core-toggle.jsx.js"></script>
 <script src="core-datepicker/core-datepicker.min.js"></script>
 <script src="core-datepicker/core-datepicker.jsx.js"></script>
 <style>
-  .my-datepicker { display: block; position: absolute; z-index: 3; padding: 1rem; background: #fff; box-shadow: 0 5px 9px rgba(0,0,0,.4) }
+  .my-popup:not([hidden]) { display: block; position: absolute; z-index: 3; padding: 1rem; background: #fff; box-shadow: 0 5px 9px rgba(0,0,0,.4) }
   button[aria-current="date"] { border: 1px dashed }
   button[data-core-datepicker-adjacent="true"] { opacity: .3 }
   button[autofocus] { border: 2px solid }
@@ -39,8 +40,8 @@ demo-->
   coreDatepicker.days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 </script>
 <button class="my-toggle">Velg dato</button>
-<core-toggle hidden popup>
-  <core-datepicker class="my-datepicker" id="my-datepicker">
+<core-toggle popup hidden class="my-popup">
+  <core-datepicker id="my-datepicker">
     <input type="timestamp">
     <fieldset>
       <legend>Navigasjon</legend>
@@ -147,12 +148,11 @@ demo-->
     render () {
       return <div>
         <button>Velg dato JSX</button>
-        <CoreToggle hidden popup>
+        <CoreToggle hidden popup className="my-popup">
           <CoreDatepicker
             timestamp={this.state.date.getTime()}
             disabled={(date) => date <= this.today}
-            onDatepickerChange={this.onChange}
-            className="my-datepicker">
+            onDatepickerChange={this.onChange}>
               <label>År<input type="year" /></label>
               <label>Måned<select></select></label>
               <table></table>
@@ -177,49 +177,49 @@ All date values - both HTML markup and JavaScript - accepts accepts dates as num
 ### HTML / JavaScript
 
 ```html
-  <div class="my-datepicker">
-    <!-- There are different behaviours depending on the type of <input>. -->
-    <!-- When 'radio' or 'checkbox' is used, core-datepicker checks the value field -->
-    <!-- to see if the date specified is matching the values of the <input>s. -->
-    <!-- When any other type is used, core-datepicker sets the type to number -->
-    <!-- and sets the date specified in the value field. -->
-    <!-- NOTE: Other input types are not handled by core-datepicker to allow -->
-    <!-- more customizability with other elements inside core-datepicker container -->
-    <input type="radio|checkbox|year|month|day|hour|minute|second|timestamp"/>
+<core-datepicker>
+  <!-- There are different behaviours depending on the type of <input>. -->
+  <!-- When 'radio' or 'checkbox' is used, core-datepicker checks the value field -->
+  <!-- to see if the date specified is matching the values of the <input>s. -->
+  <!-- When any other type is used, core-datepicker sets the type to number -->
+  <!-- and sets the date specified in the value field. -->
+  <!-- NOTE: Other input types are not handled by core-datepicker to allow -->
+  <!-- more customizability with other elements inside core-datepicker container -->
+  <input type="radio|checkbox|year|month|day|hour|minute|second|timestamp"/>
 
-    <!-- If an empty <select> is provided, core-datepicker will populate the select -->
-    <!-- with months and automatically handle the date state when an option is chosen -->
-    <select></select>
+  <!-- If an empty <select> is provided, core-datepicker will populate the select -->
+  <!-- with months and automatically handle the date state when an option is chosen -->
+  <select></select>
 
-    <!-- If you use a <select> that is already populated, core-datepicker will not -->
-    <!-- modify it, but handle the dates specified in values -->
-    <select>
-      <option value="2016-m-d">Set year to 2016</option>
-      <option value="19yy-1-1">Back 100 years and set to January 1st.</option>
-      <option value="1985-12-19">December 19, 1985</option>
-    </select>
+  <!-- If you use a <select> that is already populated, core-datepicker will not -->
+  <!-- modify it, but handle the dates specified in values -->
+  <select>
+    <option value="2016-m-d">Set year to 2016</option>
+    <option value="19yy-1-1">Back 100 years and set to January 1st.</option>
+    <option value="1985-12-19">December 19, 1985</option>
+  </select>
 
 
-    <!-- If an empty <table> is provided, core-datepicker will display all dates -->
-    <!-- for the current/chosen month -->
-    <table></table>
+  <!-- If an empty <table> is provided, core-datepicker will display all dates -->
+  <!-- for the current/chosen month -->
+  <table></table>
 
-    <!-- It is also possible to extend the datepicker with more features -->
-    <!-- As shown in the example, it is possible to provide buttons that moves -->
-    <!-- the date a certain amount of time  -->
-    <fieldset>
-      <legend>Navigasjon</legend>
-      <!-- Dates relative to today/now by using the keyword 'now' -->
-      <button value="now">I dag</button>
-      <button value="now - 1 day|week|month|year">I går/forrige uke/måned/år</button>
-      <button value="now + 1 day|week|month|year">I morgen/neste uke/måned/år</button>
+  <!-- It is also possible to extend the datepicker with more features -->
+  <!-- As shown in the example, it is possible to provide buttons that moves -->
+  <!-- the date a certain amount of time  -->
+  <fieldset>
+    <legend>Navigasjon</legend>
+    <!-- Dates relative to today/now by using the keyword 'now' -->
+    <button value="now">I dag</button>
+    <button value="now - 1 day|week|month|year">I går/forrige uke/måned/år</button>
+    <button value="now + 1 day|week|month|year">I morgen/neste uke/måned/år</button>
 
-      <!-- Semi-specific dates -->
-      <!-- Will use the first two digits of the current year and set the two last -->
-      <!-- digits of the year 0. Will set the date to 1st of January -->
-      <button value="yy00-01-01">Start of current century</button>
-    </fieldset>
-  </div>
+    <!-- Semi-specific dates -->
+    <!-- Will use the first two digits of the current year and set the two last -->
+    <!-- digits of the year 0. Will set the date to 1st of January -->
+    <button value="yy00-01-01">Start of current century</button>
+  </fieldset>
+</core-datepicker>
 ```
 
 ```js

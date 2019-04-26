@@ -1,4 +1,4 @@
-import { closest, escapeHTML, dispatchEvent, queryAll } from '../utils'
+import { addStyle, closest, escapeHTML, dispatchEvent, queryAll } from '../utils'
 import parse from '@nrk/simple-date-parse'
 
 const MASK = { year: '*-m-d', month: 'y-*-d', day: 'y-m-*', hour: '*:m', minute: 'h:*', second: 'h:m:*', timestamp: '*', null: '*' }
@@ -13,6 +13,7 @@ export default class CoreDatepicker extends HTMLElement {
     document.addEventListener('change', this)
     document.addEventListener('keydown', this)
     setTimeout(() => this.attributeChangedCallback()) // Render after children is parsed
+    addStyle(this.nodeName, `${this.nodeName}{display:block}`) //  default to display block
   }
   disconnectedCallback () {
     this._date = this._disabled = null // Garbage collection

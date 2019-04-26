@@ -1,42 +1,39 @@
-import { name, version } from './package.json'
-import { dispatchEvent, queryAll } from '../utils'
+import { addStyle, dispatchEvent } from '../utils'
 
-const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid attribute characters
+export default class CoreProgress extends HTMLElement {
+  static get observedAttributes () { return ['value', 'min', 'max'] }
 
-export default function progress (elements, value) {
-  const options = typeof value === 'object' ? value : { value }
-  const isNative = typeof window.HTMLProgressElement !== 'undefined'
-
-  // handle old browsers and gracefully degrade the progress element
-  if (!isNative && !document.getElementById(UUID)) {
-    const style = document.head.appendChild(document.createElement('style'))
-    style.textContent = `[${UUID}]::after{content:attr(aria-label)}`
-    style.id = UUID
+  connectedCallback () {
+    this._max = this.max // Store for later comparison
+    this._value = this.value
+    this.setAttribute('role', 'img') // Role img makes screen readers happy
+    addStyle(this.nodeName, `${this.nodeName}::after{content:attr(aria-label)}`) // Textual progress
   }
-
-  return queryAll(elements).map((progress) => {
-    const oldValue = progress.getAttribute(UUID) || progress.getAttribute('value') || '0'
-    const newValue = String(options.hasOwnProperty('value') ? options.value : oldValue)
-    const max = String(options.max || progress.getAttribute('max') || 1)
-    const indeterminate = Number(newValue) !== parseFloat(newValue) // handle numeric string values
+  attributeChangedCallback () {
+    if (!this._value) return // Only render after connectedCallback
+    const oldValue = this._value
+    const newValue = this.value
+    const max = this.max
+    const indeterminate = this.indeterminate
     const percentage = Math.round(newValue / max * 100) || 0
 
-    const noChanges = newValue === oldValue && max === progress.getAttribute('max') && indeterminate !== progress.hasAttribute('value')
-    const canUpdate = noChanges || dispatchEvent(progress, 'progress.change', { value: newValue, max, percentage, indeterminate })
+    const noChanges = newValue === oldValue && max === this.getAttribute('max') && indeterminate !== this.hasAttribute('value')
+    const canUpdate = noChanges || dispatchEvent(this, 'progress.change')
     const value = canUpdate ? newValue : oldValue
 
-    progress.setAttribute(UUID, value)
-    progress.setAttribute('role', 'img')
-
-    if (indeterminate) {
-      progress.removeAttribute('value')
-      progress.setAttribute('aria-label', value)
+    if (this.indeterminate) {
+      this.removeAttribute('value')
+      this.setAttribute('aria-label', value)
     } else {
-      progress.setAttribute('max', max) // Set max before value to make IE happy
-      progress.setAttribute('value', value)
-      progress.setAttribute('aria-label', `${percentage}%`)
+      this.setAttribute('max', max) // Set max before value to make IE happy
+      this.setAttribute('value', value)
+      this.setAttribute('aria-label', `${this.percentage}%`)
     }
-
-    return progress
-  })
+  }
+  get indeterminate () { return Number(this.value) !== parseFloat(this.value) } // handle numeric string values
+  get percentage () { return Math.round(this.value / this.max * 100) || 0 }
+  get value () { return Number(this.getAttribute('value')) || 0 }
+  set value (val) { this.setAttribute('value', val) }
+  get max () { return Number(this.getAttribute('max') || 1) }
+  set max (val) { this.setAttribute('max', val) }
 }

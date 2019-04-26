@@ -7,6 +7,7 @@ export default class CoreToggle extends HTMLElement {
     if (IS_IOS) document.documentElement.style.cursor = 'pointer' // Fix iOS events for closing popups (https://stackoverflow.com/a/16006333/8819615)
     if (!IS_ANDROID) this.setAttribute('aria-labelledby', this.button.id = this.button.id || getUUID()) // Andriod reads only label instead of content
 
+    this.setAttribute('role', 'group') // Help Edge
     this.value = this.button.textContent // Set up aria-label
     this.button.setAttribute('aria-expanded', this._open = !this.hidden)
     this.button.setAttribute('aria-controls', this.id = this.id || getUUID())
@@ -27,7 +28,6 @@ export default class CoreToggle extends HTMLElement {
   handleEvent (event) {
     if (event.defaultPrevented) return
     if (event.type === 'keydown' && event.keyCode === 27 && (event.target.getAttribute('aria-expanded') === 'true' ? event.target === this.button : closest(event.target, this.nodeName) === this)) {
-      this.button.focus()
       this.hidden = true
       return event.preventDefault() // Prevent closing maximized Safari and other coreToggles
     }

@@ -9,7 +9,7 @@ export function exclude () {}
 
 /**
 * addEvent
-* @param {String} uuid An unique ID of the event to bind - ensurnes single instance
+* @param {String} nodeName An unique ID of the event to bind - ensurnes single instance
 * @param {String} type The type of event to bind
 * @param {Function} handler The function to call on event
 * @param {Boolean|Object} options useCapture or options object for addEventListener. Defaults to false
@@ -18,6 +18,16 @@ export function addEvent (nodeName, type, handler, options = false, key) {
   if (!IS_BROWSER || window[key = `event-${nodeName}-${type}`]) return // Ensure single instance
   const node = (type === 'resize' || type === 'load') ? window : document
   node.addEventListener(window[key] = type, (event) => (event.nodeName = nodeName) && handler(event), options)
+}
+
+/**
+* addStyle
+* @param {String} nodeName An unique ID of the event to bind - ensurnes single instance
+* @param {String} css The css to inject
+*/
+export function addStyle (nodeName, css) {
+  document.getElementById(`style-${nodeName}`) ||
+  document.head.insertAdjacentHTML('afterbegin', `<style id="style-${nodeName}">${css}</style>`)
 }
 
 /**

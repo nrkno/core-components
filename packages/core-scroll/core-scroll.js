@@ -1,4 +1,4 @@
-import { IS_BROWSER, closest, dispatchEvent, throttle, getUUID, queryAll } from '../utils'
+import { IS_BROWSER, addStyle, closest, dispatchEvent, throttle, getUUID, queryAll } from '../utils'
 
 const DRAG = {}
 const MOVE = { up: { y: -1, prop: 'top' }, down: { y: 1, prop: 'bottom' }, left: { x: -1 }, right: { x: 1 } }
@@ -17,11 +17,10 @@ export default class CoreScoll extends HTMLElement {
 
   connectedCallback () {
     // Hide scrollbar in WebKit and default to display block
-    document.getElementById(this.nodeName) ||
-    document.head.insertAdjacentHTML('afterbegin', `<style id="${this.nodeName}">
+    addStyle(this.nodeName, `
       ${this.nodeName}{display:block}
       ${this.nodeName}::-webkit-scrollbar{display:none}
-    </style>`)
+    `)
 
     this.style.overflow = 'scroll' // Ensure visible scrollbars
     this.style.willChange = 'scroll-position' // Enhance performance
@@ -46,6 +45,7 @@ export default class CoreScoll extends HTMLElement {
     setTimeout(() => this.handleEvent()) // Initialize buttons after children is parsed
   }
   disconnectedCallback () {
+    this._throttledEvent = null // Garbage collection
     this.removeEventListener('mousedown', this)
     this.removeEventListener('wheel', this, EVENT_PASSIVE)
     this.removeEventListener('scroll', this._throttledEvent, EVENT_PASSIVE)
