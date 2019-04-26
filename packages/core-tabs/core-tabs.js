@@ -7,8 +7,8 @@ import {
   closest
 } from '../utils'
 
-const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid attribute characters
-const ARIA = IS_ANDROID ? 'data' : 'aria' // Andriod has a bug and reads only label instead of content
+const UUID = `data-${name}-${version}`.replace(/\W+/g, '-')
+const ARIA = IS_ANDROID ? 'data-labelledby' : 'aria-labelledby' // Android has a bug and reads only label instead of content
 const KEYS = { SPACE: 32, END: 35, HOME: 36, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40 }
 
 export default class CoreTabs extends HTMLElement {
@@ -17,7 +17,20 @@ export default class CoreTabs extends HTMLElement {
     this.setAttribute('role', 'tablist')
     this.addEventListener('click', this)
     this.addEventListener('keydown', this)
-    setTimeout(() => (this.tab = this.tab)) // setup selected tab after children is parsed
+
+    setTimeout(() => {
+      let next = this
+      this.tabs.forEach((tab, index) => {
+        const panel = document.getElementById(tab.getAttribute('aria-controls')) || (next = next.nextElementSibling || next)
+
+        tab.setAttribute('role', 'tab')
+        tab.setAttribute('aria-controls', panel.id = panel.id || getUUID())
+        panel.setAttribute(ARIA, tab.id = tab.id || getUUID())
+        panel.setAttribute('role', 'tabpanel')
+        panel.setAttribute('tabindex', '0')
+      })
+      this.tab = this.tab // Setup open
+    })
   }
 
   disconnectedCallback() {
@@ -47,7 +60,7 @@ export default class CoreTabs extends HTMLElement {
   }
 
   get tab () {
-    return this.tabs[this.panels.indexOf(this.panel)] || this.tabs[0]
+    return document.getElementById(this.panel.getAttribute(ARIA))
   }
   set tab (value) {
     if (!value) return
@@ -62,26 +75,15 @@ export default class CoreTabs extends HTMLElement {
       const openTab = index === nextIndex
       const openPanel = panel === panels[nextIndex]
 
-      tab.setAttribute('role', 'tab')
-      tab.setAttribute('tabindex', Number(openTab) - 1)
       tab.setAttribute('aria-selected', openTab)
-      tab.setAttribute('aria-controls', panel.id = panel.id || getUUID())
-      panel.setAttribute(`${ARIA}-labelledby`, tab.id = tab.id || getUUID())
-      panel.setAttribute('role', 'tabpanel')
-      panel.setAttribute('tabindex', '0')
-      panel.hidden = !openPanel
+      tab.setAttribute('tabindex', Number(openTab) - 1)
+      panel[openPanel ? 'removeAttribute' : 'setAttribute']('hidden', '')
     })
 
     if (prevIndex !== nextIndex) dispatchEvent(this, 'core-tabs.toggle')
   }
 
   get tabs () { return queryAll(this.children) }
-  get panel () { return this.panels.filter((panel) => !panel.hidden)[0] }
-  get panels () {
-    let next = this
-    return this.tabs.map((tab) => {
-      next = next.nextElementSibling || next
-      return document.getElementById(tab.getAttribute('aria-controls')) || next
-    })
-  }
+  get panel () { return this.panels.filter((panel) => !panel.hasAttribute('hidden'))[0] }
+  get panels () { return this.tabs.map((tab) => document.getElementById(tab.getAttribute('aria-controls'))) }
 }
