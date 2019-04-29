@@ -98,15 +98,15 @@ demo-->
     <table></table>
   </core-datepicker>
 </core-toggle>
-<button data-core-datepicker="my-datepicker" value="now">Nå</button>
-<button data-core-datepicker="my-datepicker" value="+1 week">Neste uke</button>
-<select data-core-datepicker="my-datepicker">
+<button for="my-datepicker" value="now">Nå</button>
+<button for="my-datepicker" value="+1 week">Neste uke</button>
+<select for="my-datepicker">
   <option>Tid</option>
   <option value="11:m">11</option>
   <option value="12:m">12</option>
   <option value="13:m">13</option>
 </select>
-<table data-core-datepicker="my-datepicker"></table>
+<table for="my-datepicker"></table>
 <input type="text" id="my-datepicker-output">
 <script>
   // Update GUI

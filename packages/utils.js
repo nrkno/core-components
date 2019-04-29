@@ -26,8 +26,9 @@ export function addEvent (nodeName, type, handler, options = false, key) {
 * @param {String} css The css to inject
 */
 export function addStyle (nodeName, css) {
-  document.getElementById(`style-${nodeName}`) ||
-  document.head.insertAdjacentHTML('afterbegin', `<style id="style-${nodeName}">${css}</style>`)
+  const key = `style-${nodeName.toLowerCase()}`
+  const min = css.replace(/\/\*[^!][^*]*\*\//g, '').replace(/\s*(^|[:;,{}]|$)\s*/g, '$1')
+  document.getElementById(key) || document.head.insertAdjacentHTML('afterbegin', `<style id="${key}">${min}</style>`)
 }
 
 /**

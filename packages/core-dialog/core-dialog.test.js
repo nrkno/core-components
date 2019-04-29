@@ -22,7 +22,7 @@ const standardHTML = `
 </dialog>`
 
 function getButton (name) {
-  return document.querySelector(`[data-core-dialog="${name}"]`)
+  return document.querySelector(`[for="${name}"]`)
 }
 
 // https://github.com/jsdom/jsdom/issues/1890

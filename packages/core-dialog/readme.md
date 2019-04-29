@@ -63,26 +63,26 @@ demo-->
 
 ```html
 <!--demo-->
-<button data-core-dialog="my-dialog">Open dialog</button>
+<button for="my-dialog">Open dialog</button>
 <core-dialog id="my-dialog" class="my-dialog" aria-label="første dialog tittel" hidden>
   <h1>This is a title</h1>
   <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
-  <button data-core-dialog="my-dialog-nested">Open an additional dialog</button>
+  <button for="my-dialog-nested">Open an additional dialog</button>
   <button type="button" autofocus style="visibility: hidden">Should not be focusable</button>
   <button type="button" autofocus>Autofocus</button>
-  <button data-core-dialog="close">Close</button>
+  <button for="close">Close</button>
   <core-dialog id="my-dialog-nested" class="my-dialog" aria-label="andre dialog tittel" hidden>
     <h1>Another dialog, triggered inside the first dialog</h1>
     <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero.</p>
-    <button data-core-dialog="close">Close</button>
+    <button for="close">Close</button>
   </core-dialog>
 </core-dialog>
-<button data-core-dialog="strict-dialog">Open strict dialog</button>
+<button for="strict-dialog">Open strict dialog</button>
 <core-dialog id="strict-dialog" class="my-dialog" aria-label="første dialog tittel" hidden strict>
   <h1>This is a title</h1>
   <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
   <button type="button">This button does nothing</button>
-  <button data-core-dialog="close">Close</button>
+  <button for="close">Close</button>
 </core-dialog>
 <div id="docs-react-dialog"></div>
 ```
@@ -128,11 +128,11 @@ demo-->
 
   ReactDOM.render(<DialogContainerDemo />, document.getElementById('jsx-dialog'))
   ReactDOM.render(<div>
-    <button data-core-dialog="dialog-jsx">Open strict dialog jsx</button>
+    <button for="dialog-jsx">Open strict dialog jsx</button>
     <CoreDialog hidden id="dialog-jsx" className="my-dialog" aria-label="React dialog" strict>
       <h1>Strict dialog for JSX</h1>
       <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
-      <button data-core-dialog="close">Lukk</button>
+      <button for="close">Lukk</button>
     </CoreDialog>
   </div>, document.getElementById('jsx-dialog-strict'))
 </script>
@@ -150,13 +150,13 @@ demo-->
 <core-dialog id="my-dialog" hidden {strict} aria-modal={true|false} aria-label={String}>
   <h1>Title of dialog</h1>
   <p>Some content</p>
-  <button data-core-dialog="close">Close dialog</button> <!-- Closes the current dialog -->
+  <button for="close">Close dialog</button> <!-- Closes the current dialog -->
 </core-dialog>
 <!-- strict: Prevents the dialog from closing on ESC-key and on backdrop click -->
 <!-- aria-modal: Shows (aria-modal="true". default) or hides (aria-modal="false") backdrop -->
 <!-- aria-label: Is read by screen readers -->
 
-<button data-core-dialog="my-dialog">Open dialog</button> <!-- Opens dialog with id="my-dialog" -->
+<button for="my-dialog">Open dialog</button> <!-- Opens dialog with id="my-dialog" -->
 ```
 
 ```js
@@ -173,7 +173,7 @@ import CoreDialog from '@nrk/core-dialog/jsx'
 <CoreDialog hidden {strict} aria-modal={true|false} aria-label="Title of dialog" onDialogToggle={(event) => {}}>
   <h1>My React/Preact dialog</h1>
   <p>Some content</p>
-  <button data-core-dialog="close"></button>
+  <button for="close"></button>
 </CoreDialog>
 ```
 

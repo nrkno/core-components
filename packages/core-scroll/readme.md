@@ -33,11 +33,11 @@ demo-->
 
 ```html
 <!--demo-->
-<button data-core-scroll="my-scroll-js" value="up" aria-label="Rull opp">&uarr;</button>
-<button data-core-scroll="my-scroll-js" value="down" aria-label="Rull ned">&darr;</button>
+<button for="my-scroll-js" value="up" aria-label="Rull opp">&uarr;</button>
+<button for="my-scroll-js" value="down" aria-label="Rull ned">&darr;</button>
 <br>
-<button data-core-scroll="my-scroll-js" value="left" aria-label="Rull til venstre">&larr;</button>
-<button data-core-scroll="my-scroll-js" value="right" aria-label="Rull til høyre">&rarr;</button>
+<button for="my-scroll-js" value="left" aria-label="Rull til venstre">&larr;</button>
+<button for="my-scroll-js" value="right" aria-label="Rull til høyre">&rarr;</button>
 <div class="my-wrap my-wrap-js">
   <core-scroll id="my-scroll-js" class="my-scroll">
     <div>1</div><div>2</div><div>3</div><div>4</div><a href="#">5</a>
@@ -116,7 +116,7 @@ Scroll speed is controlled by `friction` rather than `duration` (a short scroll 
 <small>Note: `core-scroll` should be replaced with a project specific name to avoid version conflicts.</small>
 
 ```html
-<button data-core-scroll="my-scroll-js" value="up" aria-label="Rull opp">&uarr;</button>
+<button for="my-scroll-js" value="up" aria-label="Rull opp">&uarr;</button>
 <core-scroll id="my-scroll-js" friction=".8"> <!-- Friction is optional. Defaults to .8 -->
   <!-- Direct children is used to calculate natural stop points for scroll -->
   <div>1</div>
