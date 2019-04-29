@@ -22,7 +22,7 @@ export default class CoreToggle extends HTMLElement {
     if (this._open === this.hidden) { // this._open comparison ensures actual change
       this.button.setAttribute('aria-expanded', this._open = !this.hidden)
       try { this.querySelector('[autofocus]').focus() } catch (err) {}
-      dispatchEvent(this, 'toggle')
+      dispatchEvent(this, 'core-toggle.toggle')
     }
   }
   handleEvent (event) {
@@ -33,7 +33,7 @@ export default class CoreToggle extends HTMLElement {
     }
     if (event.type === 'click') {
       const item = closest(event.target, 'a,button')
-      if (item && !item.hasAttribute('aria-expanded') && closest(event.target, this.nodeName) === this) dispatchEvent(this, 'toggle.select', item)
+      if (item && !item.hasAttribute('aria-expanded') && closest(event.target, this.nodeName) === this) dispatchEvent(this, 'core-toggle.select', item)
       else if (this.button.contains(event.target)) this.hidden = !this.hidden
       else if (this.popup && !this.contains(event.target)) this.hidden = true // Click in content or outside
     }
