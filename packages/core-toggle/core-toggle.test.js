@@ -57,7 +57,7 @@ describe('core-toggle', () => {
       <button>Toggle</button>
       <core-toggle hidden></core-toggle>
     `)
-    const triggered = await page.evaluate(() => {
+    await page.evaluate(() => {
       return new Promise((resolve, reject) => {
         window.addEventListener('core-toggle.toggle', resolve)
         document.querySelector('core-toggle').hidden = false
@@ -72,7 +72,7 @@ describe('core-toggle', () => {
         <button id="item">Select me</button>
       </core-toggle>
     `)
-    const selectedItem = await page.evaluate(() => {
+    const selected = await page.evaluate(() => {
       return new Promise((resolve, reject) => {
         window.addEventListener('core-toggle.select', ({ detail }) => resolve(detail.id))
         const toggle = document.querySelector('core-toggle')
@@ -80,6 +80,6 @@ describe('core-toggle', () => {
         toggle.children[0].click()
       })
     })
-    expect(selectedItem).toEqual('item')
+    expect(selected).toEqual('item')
   })
 })
