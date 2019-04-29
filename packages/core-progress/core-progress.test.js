@@ -8,8 +8,9 @@ describe('core-progress', () => {
 
   it('sets up properties', async () => {
     await page.setContent(`<core-progress></core-progress>`)
+    expect(await page.$eval('core-progress', el => el.type)).toEqual('linear')
+    expect(await page.$eval('core-progress', el => el.value)).toEqual(0)
     expect(await page.$eval('core-progress', el => el.getAttribute('role'))).toEqual('img')
-    expect(await page.$eval('core-progress', el => el.getAttribute('type'))).toEqual('linear')
     expect(await page.$eval('core-progress', el => el.getAttribute('aria-label'))).toEqual('0%')
   })
 
