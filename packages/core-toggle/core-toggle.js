@@ -11,6 +11,7 @@ export default class CoreToggle extends HTMLElement {
     this.value = this.button.textContent // Set up aria-label
     this.button.setAttribute('aria-expanded', this._open = !this.hidden)
     this.button.setAttribute('aria-controls', this.id = this.id || getUUID())
+    this.button.setAttribute('for', this.id) // Sync aria-controls and for
     document.addEventListener('keydown', this, true) // Use capture to enable checking defaultPrevented (from ESC key) in parents
     document.addEventListener('click', this)
   }

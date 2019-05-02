@@ -1,4 +1,4 @@
-import coreTabs from './core-tabs.js'
+import CoreTabs from './core-tabs.js'
 import { elementToReact } from '../utils.js'
 
-export default elementToReact(coreTabs)
+export default elementToReact(CoreTabs)
