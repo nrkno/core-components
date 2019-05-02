@@ -108,13 +108,13 @@ import CoreToggle from '@nrk/core-toggle/jsx'
 
 ### With for
 
-Putting the toggle button directly before the content is highly recommended, as this fulfills all accessibility requirements by default. There might be scenarios though, where styling makes this DOM structure impractical. In such cases, give the `core-toggle` a `for` attribute, and the `<button>` a `id` with corresponding value. Make sure there is no text between the button and toggle content, as this will break the experience for screen reader users:
+Putting the toggle button directly before the content is highly recommended, as this fulfills all accessibility requirements by default. There might be scenarios though, where styling makes this DOM structure impractical. In such cases, give the `<button>` a `for` attribute, and the `core-toggle` a `id` with corresponding value. Make sure there is no text between the button and toggle content, as this will break the experience for screen reader users:
 
 ```html
 <div>
-  <button id="my-button">Toggle VanillaJS</button>
+  <button for="my-toggle">Toggle VanillaJS</button>
 </div>
-<core-toggle for="my-button" hidden>Content</core-toggle>
+<core-toggle id="my-toggle" hidden>Content</core-toggle>
 ```
 
 ### Autofocus

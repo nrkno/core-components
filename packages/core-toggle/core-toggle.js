@@ -7,11 +7,10 @@ export default class CoreToggle extends HTMLElement {
     if (IS_IOS) document.documentElement.style.cursor = 'pointer' // Fix iOS events for closing popups (https://stackoverflow.com/a/16006333/8819615)
     if (!IS_ANDROID) this.setAttribute('aria-labelledby', this.button.id = this.button.id || getUUID()) // Andriod reads only label instead of content
 
-    this.setAttribute('role', 'group') // Help Edge
     this.value = this.button.textContent // Set up aria-label
+    this.setAttribute('role', 'group') // Help Edge
     this.button.setAttribute('aria-expanded', this._open = !this.hidden)
     this.button.setAttribute('aria-controls', this.id = this.id || getUUID())
-    this.button.setAttribute('for', this.id) // Sync aria-controls and for
     document.addEventListener('keydown', this, true) // Use capture to enable checking defaultPrevented (from ESC key) in parents
     document.addEventListener('click', this)
   }
@@ -28,18 +27,23 @@ export default class CoreToggle extends HTMLElement {
   }
   handleEvent (event) {
     if (event.defaultPrevented) return
-    if (event.type === 'keydown' && event.keyCode === 27 && (event.target.getAttribute('aria-expanded') === 'true' ? event.target === this.button : closest(event.target, this.nodeName) === this)) {
-      this.hidden = true
-      return event.preventDefault() // Prevent closing maximized Safari and other coreToggles
+    if (event.type === 'keydown' && event.keyCode === 27) {
+      const isButton = event.target.getAttribute && event.target.getAttribute('aria-expanded') === 'true'
+      const isHiding = isButton ? event.target === this.button : closest(event.target, this.nodeName) === this
+      if (isHiding) {
+        this.hidden = true
+        this.button.focus() // Move focus back to button
+        return event.preventDefault() // Prevent closing maximized Safari and other coreToggles
+      }
     }
     if (event.type === 'click') {
-      const item = closest(event.target, 'a,button')
-      if (item && !item.hasAttribute('aria-expanded') && closest(event.target, this.nodeName) === this) dispatchEvent(this, 'toggle.select', item)
-      else if (this.button.contains(event.target)) this.hidden = !this.hidden
+      const btn = closest(event.target, 'a,button')
+      if (btn && !btn.hasAttribute('aria-expanded') && closest(event.target, this.nodeName) === this) dispatchEvent(this, 'toggle.select', btn)
+      else if (btn && btn.getAttribute('aria-controls') === this.id) this.hidden = !this.hidden
       else if (this.popup && !this.contains(event.target)) this.hidden = true // Click in content or outside
     }
   }
-  get button () { return document.getElementById(this.getAttribute('for')) || this.previousElementSibling }
+  get button () { return (this.id && document.querySelector(`[for="${this.id}"]`)) || this.previousElementSibling }
 
   // aria-haspopup triggers forms mode in JAWS, therefore store as custom attr
   get popup () { return this.getAttribute('popup') === 'true' || this.getAttribute('popup') || this.hasAttribute('popup') }
