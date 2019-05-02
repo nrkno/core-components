@@ -1,72 +1,79 @@
-const coreProgress = require('./core-progress.min')
-const standardHTML = `
-<label>Progress:
-  <progress class="my-progress"></progress>
-</label>
-`
+const path = require('path')
 
 describe('core-progress', () => {
-  beforeEach(() => { document.body.innerHTML = standardHTML })
-  it('should exist', () => {
-    expect(coreProgress).toBeInstanceOf(Function)
+  beforeAll(async () => {
+    page.on('console', msg => console.log(msg._text))
+    await page.addScriptTag({ path: path.join(__dirname, 'core-progress.min.js') })
   })
 
-  it('should add all attributes upon init', () => {
-    coreProgress('.my-progress', 0.5)
-    expect(document.querySelector('.my-progress').getAttribute('value')).toBe('0.5')
-    expect(document.querySelector('.my-progress').getAttribute('max')).toBe('1')
-    expect(document.querySelector('.my-progress').getAttribute('role')).toBe('img')
-    expect(document.querySelector('.my-progress').getAttribute('aria-label')).toBe('50%')
+  it('sets up properties', async () => {
+    await page.setContent(`<core-progress></core-progress>`)
+    expect(await page.$eval('core-progress', el => el.type)).toEqual('linear')
+    expect(await page.$eval('core-progress', el => el.value)).toEqual(0)
+    expect(await page.$eval('core-progress', el => el.getAttribute('role'))).toEqual('img')
+    expect(await page.$eval('core-progress', el => el.getAttribute('aria-label'))).toEqual('0%')
   })
-  it('should update progress value when provided numerical value', () => {
-    coreProgress('.my-progress', '5')
-    expect(document.querySelector('.my-progress').getAttribute('value')).toBe('5')
-  })
-  it('should update progress value to numeric 0 when provided', () => {
-    coreProgress('.my-progress', '5')
-    coreProgress('.my-progress', 0)
-    expect(document.querySelector('.my-progress').getAttribute('value')).toBe('0')
-  })
-  it('should update progress value when provided object with property value', () => {
-    coreProgress('.my-progress', { value: 5, max: 100 })
-    expect(document.querySelector('.my-progress').getAttribute('value')).toBe('5')
-  })
-  it('should update aria-label with percentage', () => {
-    coreProgress('.my-progress', { value: 50, max: 100 })
-    expect(document.querySelector('.my-progress').getAttribute('aria-label')).toBe('50%')
 
-    coreProgress('.my-progress', 60)
-    expect(document.querySelector('.my-progress').getAttribute('aria-label')).toBe('60%')
+  it('updates label from value', async () => {
+    await page.setContent(`<core-progress value="0.2"></core-progress>`)
+    expect(await page.$eval('core-progress', el => el.getAttribute('aria-label'))).toEqual('20%')
+    await page.evaluate(() => document.querySelector('core-progress').value = 0)
+    expect(await page.$eval('core-progress', el => el.getAttribute('aria-label'))).toEqual('0%')
+    await page.evaluate(() => document.querySelector('core-progress').value = 1)
+    expect(await page.$eval('core-progress', el => el.getAttribute('aria-label'))).toEqual('100%')
   })
-  it('should remove progress value when provided string value and set aria-label', () => {
-    coreProgress('.my-progress', 'Loading...')
 
-    expect(document.querySelector('.my-progress').getAttribute('value')).toBeNull()
-    expect(document.querySelector('.my-progress').getAttribute('aria-label')).toBe('Loading...')
+  it('updates label from value as radial', async () => {
+    await page.setContent(`<core-progress value="0.2" type="radial"></core-progress>`)
+    expect(await page.$eval('core-progress', el => el.getAttribute('aria-label'))).toEqual('20%')
+    await page.evaluate(() => document.querySelector('core-progress').value = 0)
+    expect(await page.$eval('core-progress', el => el.getAttribute('aria-label'))).toEqual('0%')
+    await page.evaluate(() => document.querySelector('core-progress').value = 1)
+    expect(await page.$eval('core-progress', el => el.getAttribute('aria-label'))).toEqual('100%')
   })
-  it('should update progress max when provided object with property max', () => {
-    coreProgress('.my-progress', { value: 5, max: 10 })
-    expect(document.querySelector('.my-progress').getAttribute('max')).toBe('10')
 
-    coreProgress('.my-progress', { max: 100 })
-    expect(document.querySelector('.my-progress').getAttribute('max')).toBe('100')
+  it('updates label from indeterminate value', async () => {
+    await page.setContent(`<core-progress value="Loading..."></core-progress>`)
+    expect(await page.$eval('core-progress', el => el.getAttribute('aria-label'))).toEqual('Loading...')
   })
-  it('should add style tag when progress is not supported in browser', () => {
-    const progressElement = window.HTMLProgressElement
-    window.HTMLProgressElement = undefined
 
-    coreProgress('.my-progress', { value: 5, max: 10 })
-    expect(document.head.querySelector('style')).not.toBeNull()
-
-    window.HTMLProgressElement = progressElement
+  it('calculates percentage from max', async () => {
+    await page.setContent(`<core-progress value="0.5"></core-progress>`)
+    expect(await page.$eval('core-progress', el => el.getAttribute('aria-label'))).toEqual('50%')
+    await page.evaluate(() => document.querySelector('core-progress').max = 10)
+    expect(await page.$eval('core-progress', el => el.getAttribute('aria-label'))).toEqual('5%')
+    await page.evaluate(() => document.querySelector('core-progress').max = 100)
+    expect(await page.$eval('core-progress', el => el.getAttribute('aria-label'))).toEqual('1%')
   })
-  it('dispatches event upon value change', () => {
-    const progressSpy = jest.fn()
-    window.addEventListener('progress.change', progressSpy)
 
-    coreProgress('.my-progress', { value: 5, max: 100 })
-    coreProgress('.my-progress', 50)
+  it('does not trigger change event on max', async () => {
+    await page.setContent(`<core-progress></core-progress>`)
+    await page.evaluate(() => {
+      return new Promise((resolve, reject) => {
+        window.addEventListener('change', reject)
+        document.querySelector('core-progress').max = 2
+        setTimeout(resolve)
+      })
+    })
+  })
 
-    expect(progressSpy).toBeCalled()
+  it('triggers change event on value', async () => {
+    await page.setContent(`<core-progress></core-progress>`)
+    await page.evaluate(() => {
+      return new Promise((resolve, reject) => {
+        window.addEventListener('change', resolve)
+        document.querySelector('core-progress').value = 2
+      })
+    })
+  })
+
+  it('triggers change event on indeterminate value', async () => {
+    await page.setContent(`<core-progress></core-progress>`)
+    await page.evaluate(() => {
+      return new Promise((resolve, reject) => {
+        window.addEventListener('change', resolve)
+        document.querySelector('core-progress').value = 'Loading...'
+      })
+    })
   })
 })
