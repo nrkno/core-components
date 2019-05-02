@@ -15,6 +15,7 @@ describe('core-tabs', () => {
       <div id="panel-1">Text of tab 1</div>
       <div id="panel-2">Text of tab 2</div>
     `)
+    await page.waitFor('core-tabs [role="tab"]')
     expect(await page.$eval('core-tabs', el => el.getAttribute('role'))).toEqual('tablist')
     expect(await page.$eval('#tab-1', el => el.getAttribute('aria-controls'))).toBeTruthy()
     expect(await page.$eval('#tab-1', el => el.getAttribute('aria-controls') === 'panel-1')).toEqual(true)
@@ -47,6 +48,7 @@ describe('core-tabs', () => {
       <div id="panel-1">Text of tab 1</div>
       <div id="panel-2">Text of tab 2</div>
     `)
+    await page.waitFor('core-tabs [role="tab"]')
     await page.evaluate(() => document.querySelector('core-tabs').tab = 1)
     expect(await page.$eval('#tab-1', el => el.getAttribute('aria-selected'))).toEqual('false')
     expect(await page.$eval('#tab-2', el => el.getAttribute('aria-selected'))).toEqual('true')
@@ -61,6 +63,7 @@ describe('core-tabs', () => {
       <div id="panel-1">Text of tab 1</div>
       <div id="panel-2">Text of tab 2</div>
     `)
+    await page.waitFor('core-tabs [role="tab"]')
     await page.evaluate(() => document.querySelector('core-tabs').tab = 'tab-2')
     expect(await page.$eval('#tab-1', el => el.getAttribute('aria-selected'))).toEqual('false')
     expect(await page.$eval('#tab-2', el => el.getAttribute('aria-selected'))).toEqual('true')
@@ -75,6 +78,7 @@ describe('core-tabs', () => {
       <div id="panel-1">Text of tab 1</div>
       <div id="panel-2">Text of tab 2</div>
     `)
+    await page.waitFor('core-tabs [role="tab"]')
     await page.evaluate(() => document.querySelector('core-tabs').tab = document.querySelector('#tab-2'))
     expect(await page.$eval('#tab-1', el => el.getAttribute('aria-selected'))).toEqual('false')
     expect(await page.$eval('#tab-2', el => el.getAttribute('aria-selected'))).toEqual('true')
@@ -89,6 +93,7 @@ describe('core-tabs', () => {
       <div id="panel-2">Text of tab 2</div>
       <div id="panel-1">Text of tab 1</div>
     `)
+    await page.waitFor('core-tabs [role="tab"]')
     expect(await page.$eval('#tab-1', el => el.getAttribute('aria-selected'))).toEqual('true')
     expect(await page.$eval('#tab-1', el => el.getAttribute('tabindex'))).toEqual('0')
     expect(await page.$eval('#panel-1', el => el.hasAttribute('hidden'))).toEqual(false)
@@ -108,6 +113,7 @@ describe('core-tabs', () => {
       <div id="panel-1">Text of tab 1</div>
       <div id="panel-2">Text of tab 2</div>
     `)
+    await page.waitFor('core-tabs [role="tab"]')
     await page.evaluate(() => document.querySelector('core-tabs').tab = 1)
     expect(await page.$eval('#tab-2', el => el.getAttribute('aria-selected'))).toEqual('true')
     expect(await page.$eval('#panel-1', el => el.hasAttribute('hidden'))).toEqual(false)
@@ -123,9 +129,10 @@ describe('core-tabs', () => {
       <div id="panel-1">Text of tab 1</div>
       <div id="panel-2">Text of tab 2</div>
     `)
+    await page.waitFor('core-tabs [role="tab"]')
     const toggledTab = await page.evaluate(() => {
       return new Promise((resolve, reject) => {
-        window.addEventListener('core-tabs.toggle', ({ target }) => resolve(target.tab.id))
+        window.addEventListener('tabs.toggle', ({ target }) => resolve(target.tab.id))
         document.querySelector('core-tabs').tab = 1
       })
     })
