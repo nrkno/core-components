@@ -12,7 +12,7 @@
     "publish:major": "node bin/index.js --publish=major",
     "start": "rollup --config --watch",
     "static-publish": "npm run build && static-publish --directory=packages --account=nrk-core --latest --major",
-    "test": "npm run build && jest packages/core-toggle",
+    "test": "npm run build && jest",
     "test:watch": "jest --watch"
   },
   "devDependencies": {

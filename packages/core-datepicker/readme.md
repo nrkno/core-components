@@ -34,14 +34,13 @@ demo-->
 <!-- demo -->
 <script>
   // Change labels of months
-  coreDatepicker.months = ['January', 'Febuary', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-
-  // Change labels of days
-  coreDatepicker.days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+  coreDatepicker.months = []
 </script>
 <button class="my-toggle">Velg dato</button>
 <core-toggle popup hidden class="my-popup">
-  <core-datepicker id="my-datepicker">
+  <core-datepicker id="my-datepicker"
+    days="Mon,Tue,Wed,Thu,Fri,Sat,Sun"
+    months="January,Febuary,March,April,May,June,July,August,September,October,November,December">
     <input type="timestamp">
     <fieldset>
       <legend>Navigasjon</legend>
@@ -129,12 +128,6 @@ demo-->
 <!-- demo -->
 <div id="jsx-datepicker"></div>
 <script type="text/jsx">
-  // Change labels
-  // console.log(CoreDatepicker.days)
-  // CoreDatepicker.months = ['January', 'Febuary', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-  // CoreDatepicker.days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-  // console.log(CoreDatepicker.days)
-
   class MyDate extends React.Component {
     constructor (props) {
       super(props)
@@ -177,7 +170,7 @@ All date values - both HTML markup and JavaScript - accepts accepts dates as num
 ### HTML / JavaScript
 
 ```html
-<core-datepicker>
+<core-datepicker months="January,February,..." days="Mon,Tue,Wed,...">
   <!-- There are different behaviours depending on the type of <input>. -->
   <!-- When 'radio' or 'checkbox' is used, core-datepicker checks the value field -->
   <!-- to see if the date specified is matching the values of the <input>s. -->
