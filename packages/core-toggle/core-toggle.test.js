@@ -44,7 +44,7 @@ describe('core-toggle', () => {
     expect(await page.$eval('core-toggle', toggle => toggle.hasAttribute('hidden'))).toEqual(true)
   })
 
-  it.skip('respects existing aria-controls', async () => {
+  it('respects existing aria-controls', async () => {
     await page.setContent(`
       <div><button aria-controls="content">Toggle</button></div>
       <core-toggle id="content" hidden></core-toggle>
