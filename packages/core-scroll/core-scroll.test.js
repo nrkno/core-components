@@ -1,30 +1,24 @@
-const coreScroll = require('./core-scroll.min')
-const standardHTML = `
-<button data-core-scroll="my-scroll-js" value="up" aria-label="Rull opp">Up</button>
-<div>
-  <div id="my-scroll-js">
-    <div>Dette er en lang tekst</div>
-    <div>Dette er en lang tekst</div>
-    <div>Dette er en lang tekst</div>
-  </div>
-</div>
-`
+const path = require('path')
 
 describe('core-scroll', () => {
-  it('should exist', () => {
-    expect(coreScroll).toBeInstanceOf(Function)
+  beforeAll(async () => {
+    page.on('console', msg => console.log(msg._text))
+    await page.addScriptTag({ path: path.join(__dirname, 'core-scroll.min.js') })
   })
 
-  it('should initialize scroll container with appropriate styling', () => {
-    document.body.innerHTML = standardHTML
-
-    const scrollContainer = document.querySelector('#my-scroll-js')
-
-    coreScroll(scrollContainer)
-    expect(scrollContainer.style.overflow).toEqual('scroll')
-    expect(scrollContainer.style.webkitOverflowScrolling).toEqual('touch')
-    expect(scrollContainer.style.maxHeight).toEqual('calc(100% + 0px)')
-    expect(scrollContainer.style.marginRight).toEqual('-0px')
-    expect(scrollContainer.style.marginBottom).toEqual('-0px')
+  it('sets up properties', async () => {
+    await page.setContent(`
+      <button for="scroller" value="down">Down</button>
+      <core-scroll id="scroller">
+        <div>This is overflowing content</div>
+        <div>This is overflowing content</div>
+        <div>This is overflowing content</div>
+      </core-scroll>
+    `)
+    expect(await page.$eval('core-scroll', el => el.style.overflow)).toEqual('scroll')
+    expect(await page.$eval('core-scroll', el => el.style.webkitOverflowScrolling)).toEqual('touch')
+    expect(await page.$eval('core-scroll', el => el.style.maxHeight)).toEqual('calc(100% + 0px)')
+    expect(await page.$eval('core-scroll', el => el.style.marginRight)).toEqual('0px')
+    expect(await page.$eval('core-scroll', el => el.style.marginBottom)).toEqual('0px')
   })
 })

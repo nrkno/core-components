@@ -14,8 +14,6 @@ import coreProgress from '@nrk/core-progress'     // Vanilla JS
 import coreProgress from '@nrk/core-progress/jsx' // React/Preact JSX
 ```
 
-
-
 <!--demo
 <script src="core-progress/core-progress.min.js"></script>
 <script src="core-progress/core-progress.jsx.js"></script>
@@ -23,8 +21,7 @@ import coreProgress from '@nrk/core-progress/jsx' // React/Preact JSX
 .my-track { background: #ccc; border-radius: 3px; overflow: hidden; font: 700 12px/1 sans-serif }
 .my-track [value] { background: #16f; color: #fff; padding: 3px 6px; transition: 1s }
 .my-track [indeterminate] { animation: indeterminate 2s linear infinite; background: linear-gradient(90deg,#16f 25%, #8bf 50%, #16f 75%) 0/400% }
-.my-radial { stroke-linecap: round }
-/*${this.nodeName}::after{content:attr(aria-label)}*/
+.my-radial { color: #16f; stroke: #ccc; transition:stroke-dashoffset 1s }
 @keyframes indeterminate { to { background-position: 100% 0 } }
 </style>
 demo-->
@@ -38,7 +35,7 @@ demo-->
     <core-progress id="my-progress" value="20" max="100"></core-progress>
   </div>
 </label>
-<label>Round:
+<label>Radial:
   <div style="width:40px">
     <core-progress type="radial" class="my-radial" value="20" max="100"><hr></core-progress>
   </div>
@@ -83,16 +80,20 @@ demo-->
 
 ### HTML / Javascript
 
+<small>Note: `core-progress` should be replaced with a project specific name to avoid version conflicts.</small>
+
 ```html
 <label>Progress:
   <div class="my-track">
-    <core-progress id="my-progress" value={Number|String} max={Number}></core-progress>
+    <core-progress type="{linear|radial}" value={Number|String} max={Number}></core-progress>
   </div>
 </label>
 ```
 
 ```js
-TODO
+import CoreProgress from '@nrk/core-progress'
+
+window.customElements.define('core-progress', CoreProgress)
 ```
 
 ### React / Preact
@@ -122,6 +123,10 @@ document.addEventListener('progress.change', (event) => {
 })
 ```
 
-## Styling
+## Styling radial progress
 
-TODO
+Property | Affects | Examples
+:-- | :-- | :--
+`color` | Color of progress | <core-progress type="radial" style="width:30px;color:#00b9f2" value=".3"></core-progress>
+`stroke` | Color of track | <core-progress type="radial" style="width:30px;stroke:#ccc" value=".3"></core-progress>
+`stroke-width` | Percentage thickness | <core-progress type="radial" style="width:30px;stroke-width:100" value=".3"></core-progress>

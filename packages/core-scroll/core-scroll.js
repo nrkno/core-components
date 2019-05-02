@@ -24,7 +24,7 @@ export default class CoreScoll extends HTMLElement {
 
     this.style.overflow = 'scroll' // Ensure visible scrollbars
     this.style.willChange = 'scroll-position' // Enhance performance
-    this.style.webkitOverflowScrolling = 'touch' // Momentum scoll on iOS
+    this.style.webkitOverflowScrolling = 'touch' // Momentum scroll on iOS
 
     // Calculate sizes for hiding, must be after setting overflow:scroll
     const barWidth = this.offsetWidth - this.clientWidth

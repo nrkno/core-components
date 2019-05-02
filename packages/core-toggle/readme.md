@@ -106,9 +106,9 @@ import CoreToggle from '@nrk/core-toggle/jsx'
 
 ## Markup
 
-### With aria-controls
+### With for
 
-Putting the toggle button directly before the content is highly recommended, as this fulfills all accessibility requirements by default. There might be scenarios though, where styling makes this DOM structure impractical. In such cases, give the toggle button an `aria-controls` attribute, and the content an `id` with corresponding value. Make sure there is no text between the button and toggle content, as this will break the experience for screen reader users:
+Putting the toggle button directly before the content is highly recommended, as this fulfills all accessibility requirements by default. There might be scenarios though, where styling makes this DOM structure impractical. In such cases, give the toggle button an `for` attribute, and the content an `id` with corresponding value. Make sure there is no text between the button and toggle content, as this will break the experience for screen reader users:
 
 ```html
 <div>
@@ -125,30 +125,25 @@ If you have form elements inside a `@nrk/core-toggle`, you can optionally add a 
 
 ### toggle
 
-Before a `@nrk/core-toggle` changes open state, a [toggle event](https://www.w3schools.com/jsref/event_ontoggle.asp) is fired (both for VanillaJS and React/Preact components). The toggle event is cancelable, meaning you can use [`event.preventDefault()`](https://developer.mozilla.org/en-US/docs/Web/API/Event/preventDefault) to cancel toggling. The event also [bubbles](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Building_blocks/Events#Event_bubbling_and_capture), and can therefore be detected both from the button element itself, or any parent element (read [event delegation](https://stackoverflow.com/questions/1687296/what-is-dom-event-delegation)):
+Before a `@nrk/core-toggle` changes open state, a [toggle event](https://developer.mozilla.org/en-US/docs/Web/API/HTMLDetailsElement/toggle_event) is fired (both for VanillaJS and React/Preact components). The toggle event is cancelable, meaning you can use [`event.preventDefault()`](https://developer.mozilla.org/en-US/docs/Web/API/Event/preventDefault) to cancel toggling. The event also [bubbles](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Building_blocks/Events#Event_bubbling_and_capture), and can therefore be detected both from the button element itself, or any parent element (read [event delegation](https://stackoverflow.com/questions/1687296/what-is-dom-event-delegation)):
 
 
 ```js
-document.addEventListener('toggle', (event) => {
-  event.target                              // The button element triggering toggle event
-  event.detail.relatedTarget                // The content element controlled by button
-  event.detail.isOpen                       // The current toggle state (before toggle event has run)
-  event.detail.willOpen                     // The wanted toggle state
+document.addEventListener('core-toggle.toggle', (event) => {
+  event.target                              // The toggle element
 })
 ```
 
 ### toggle.select
 
-The `toggle.select` event is fired whenever an item is selected inside a toggle with the `popup` option enabled.
+The `toggle.select` event is fired whenever an `<a>` or `<button>` element is selected inside a toggle with the `popup` option enabled.
 Useful for setting the value of the toggle button with the selected value.
 
 
 ```js
-document.addEventListener('toggle.select', (event) => {
-  event.target                              // The buttom element triggering the event
-  event.detail.relatedTarget                // The content element controlled by button
-  event.detail.currentTarget                // The item element selected
-  event.detail.value                        // The selected item's value
+document.addEventListener('core-toggle.select', (event) => {
+  event.target                              // The toggle element
+  event.detail                              // The selected element
 })
 ```
 
