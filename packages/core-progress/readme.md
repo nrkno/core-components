@@ -7,7 +7,7 @@
 ## Installation
 
 ```bash
-npm install @nrk/core-progress --save-exact
+npm install @nrk/core-progress
 ```
 ```js
 import coreProgress from '@nrk/core-progress'     // Vanilla JS

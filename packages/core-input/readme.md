@@ -7,7 +7,7 @@
 ## Installation
 
 ```bash
-npm install @nrk/core-input --save-exact
+npm install @nrk/core-input
 ```
 ```js
 import coreInput from '@nrk/core-input'     // Vanilla JS

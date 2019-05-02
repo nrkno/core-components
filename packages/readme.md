@@ -8,7 +8,7 @@
 Components are individually installed for individual versioning:
 
 ```bash
-npm install @nrk/core-toggle --save-exact
+npm install @nrk/core-toggle
 ```
 
 ### Using NPM
