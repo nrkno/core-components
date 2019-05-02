@@ -80,7 +80,7 @@ export default class CoreTabs extends HTMLElement {
       panel[openPanel ? 'removeAttribute' : 'setAttribute']('hidden', '')
     })
 
-    if (prevIndex !== nextIndex) dispatchEvent(this, 'core-tabs.toggle')
+    if (prevIndex !== nextIndex) dispatchEvent(this, 'tabs.toggle')
   }
 
   get tabs () { return queryAll(this.children) }
