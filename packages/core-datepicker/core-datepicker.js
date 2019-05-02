@@ -66,7 +66,6 @@ export default class CoreDatepicker extends HTMLElement {
   get second () { return pad(this._date.getSeconds()) }
   get date () { return parse(this.getAttribute('timestamp') || this._date || Date.now()) }
   set date (val) { return this.setAttribute('timestamp', this.parse(val).getTime()) }
-
   set months (val) { this.setAttribute('months', [].concat(val).join(',')) }
   get months () { return (this.getAttribute('months') || MONTHS).split(/\s*,\s*/) }
   set days (val) { this.setAttribute('days', [].concat(val).join(',')) }
