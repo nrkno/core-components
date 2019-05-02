@@ -14,8 +14,6 @@ import coreTabs from '@nrk/core-tabs'     // Vanilla JS
 import CoreTabs from '@nrk/core-tabs/jsx' // React/Preact JSX
 ```
 
-
-
 <!--demo
 <script src="core-tabs/core-tabs.min.js"></script>
 <script src="core-tabs/core-tabs.jsx.js"></script>
@@ -53,27 +51,23 @@ demo-->
 
 ```html
 <!--demo-->
-<div id="jsx-tabs"></div>
+<div id="jsx-tabs" class="my-vertical-tabs"></div>
 <script type="text/jsx">
-  ReactDOM.render(<CoreTabs open={0} onToggle={function(){}} className='my-vertical-tabs'>
-    <div>
+  ReactDOM.render(<div>
+    <CoreTabs open={0} onToggle={function(){}}>
       <button>Button tab JSX</button>
       <button>Nested tabs JSX</button>
-    </div>
+    </CoreTabs>
+    <div>Text of tab 1</div>
     <div>
-      <div>Text of tab 1</div>
       <CoreTabs>
-        <div>
-          <button>Subtab 1 JSX</button>
-          <button>Subtab 2 JSX</button>
-        </div>
-        <div>
-          <div>Subpanel 1</div>
-          <div>Subpanel 2</div>
-        </div>
+        <button>Subtab 1 JSX</button>
+        <button hidden>Subtab 2 JSX</button>
       </CoreTabs>
+      <div>Subpanel 1</div>
+      <div hidden>Subpanel 2</div>
     </div>
-  </CoreTabs>, document.getElementById('jsx-tabs'))
+  </div>, document.getElementById('jsx-tabs'))
 </script>
 ```
 
@@ -121,15 +115,11 @@ import CoreTabs from '@nrk/core-tabs/jsx'
 // <CoreTabs> will handle state itself unless you call event.preventDefault() in onToggle
 
 <CoreTabs open={0} onToggle={(event) => {}}>
-  <div>                     // First element must contain tabs
-    <button>Tab 1</button>  // Tabs items must be <button> or <a>
-    <a href="#">Tab 2</a>
-  </div>
-  <div>                     // Next element must contain tabpanels
-    <div>Panel 1</div>      // No need to set hidden attribute in JSX; this is controlled by "open"
-    <div>Panel 2</div>
-  </div>
+  <button>Tab 1</button>  // Tabs items must be <button> or <a>
+  <a href="#">Tab 2</a>
 </CoreTabs>
+<div>Panel 1</div>        // Next elements must be tabpanels
+<div hidden>Panel 2</div> // Set hidden on the closed tabpanels
 ```
 
 
