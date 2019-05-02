@@ -46,12 +46,33 @@ describe('core-progress', () => {
     expect(await page.$eval('core-progress', el => el.getAttribute('aria-label'))).toEqual('1%')
   })
 
-  it('triggers change event', async () => {
+  it('does not trigger change event on max', async () => {
+    await page.setContent(`<core-progress></core-progress>`)
+    await page.evaluate(() => {
+      return new Promise((resolve, reject) => {
+        window.addEventListener('change', reject)
+        document.querySelector('core-progress').max = 2
+        setTimeout(resolve)
+      })
+    })
+  })
+
+  it('triggers change event on value', async () => {
     await page.setContent(`<core-progress></core-progress>`)
     await page.evaluate(() => {
       return new Promise((resolve, reject) => {
         window.addEventListener('change', resolve)
-        document.querySelector('core-progress').max = 2
+        document.querySelector('core-progress').value = 2
+      })
+    })
+  })
+
+  it('triggers change event on indeterminate value', async () => {
+    await page.setContent(`<core-progress></core-progress>`)
+    await page.evaluate(() => {
+      return new Promise((resolve, reject) => {
+        window.addEventListener('change', resolve)
+        document.querySelector('core-progress').value = 'Loading...'
       })
     })
   })
