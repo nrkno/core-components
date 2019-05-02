@@ -11,6 +11,7 @@ export default class CoreToggle extends HTMLElement {
     this.value = this.button.textContent // Set up aria-label
     this.button.setAttribute('aria-expanded', this._open = !this.hidden)
     this.button.setAttribute('aria-controls', this.id = this.id || getUUID())
+    this.button.setAttribute('for', this.id) // Sync aria-controls and for
     document.addEventListener('keydown', this, true) // Use capture to enable checking defaultPrevented (from ESC key) in parents
     document.addEventListener('click', this)
   }
@@ -22,7 +23,7 @@ export default class CoreToggle extends HTMLElement {
     if (this._open === this.hidden) { // this._open comparison ensures actual change
       this.button.setAttribute('aria-expanded', this._open = !this.hidden)
       try { this.querySelector('[autofocus]').focus() } catch (err) {}
-      dispatchEvent(this, 'core-toggle.toggle')
+      dispatchEvent(this, 'toggle')
     }
   }
   handleEvent (event) {
@@ -33,7 +34,7 @@ export default class CoreToggle extends HTMLElement {
     }
     if (event.type === 'click') {
       const item = closest(event.target, 'a,button')
-      if (item && !item.hasAttribute('aria-expanded') && closest(event.target, this.nodeName) === this) dispatchEvent(this, 'core-toggle.select', item)
+      if (item && !item.hasAttribute('aria-expanded') && closest(event.target, this.nodeName) === this) dispatchEvent(this, 'toggle.select', item)
       else if (this.button.contains(event.target)) this.hidden = !this.hidden
       else if (this.popup && !this.contains(event.target)) this.hidden = true // Click in content or outside
     }

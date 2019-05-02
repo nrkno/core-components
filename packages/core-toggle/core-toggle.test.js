@@ -44,12 +44,13 @@ describe('core-toggle', () => {
     expect(await page.$eval('core-toggle', toggle => toggle.hasAttribute('hidden'))).toEqual(true)
   })
 
-  it('respects existing aria-controls', async () => {
+  it('respects existing id and for attributes', async () => {
     await page.setContent(`
-      <div><button aria-controls="content">Toggle</button></div>
+      <div><button for="content">Toggle</button></div>
       <core-toggle id="content" hidden></core-toggle>
     `)
-    expect(await page.$eval('core-toggle', toggle => toggle.getAttribute('aria-labelledby') === document.querySelector('button').id)).toEqual(true)
+    expect(await page.$eval('core-toggle', toggle => toggle.id === 'content')).toEqual(true)
+    expect(await page.$eval('core-toggle', toggle => toggle.button.getAttribute('aria-controls') === toggle.id)).toEqual(true)
   })
 
   it('triggers toggle event', async () => {
@@ -59,7 +60,7 @@ describe('core-toggle', () => {
     `)
     await page.evaluate(() => {
       return new Promise((resolve, reject) => {
-        window.addEventListener('core-toggle.toggle', resolve)
+        window.addEventListener('toggle', resolve)
         document.querySelector('core-toggle').hidden = false
       })
     })
@@ -74,7 +75,7 @@ describe('core-toggle', () => {
     `)
     const selected = await page.evaluate(() => {
       return new Promise((resolve, reject) => {
-        window.addEventListener('core-toggle.select', ({ detail }) => resolve(detail.id))
+        window.addEventListener('toggle.select', ({ detail }) => resolve(detail.id))
         const toggle = document.querySelector('core-toggle')
         toggle.hidden = false
         toggle.children[0].click()
