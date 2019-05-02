@@ -86,13 +86,12 @@ describe('core-toggle', () => {
     expect(await page.$eval('core-toggle', el => el.hasAttribute('hidden'))).toEqual(true)
   })
 
-  it('respects existing id and for attributes', async () => {
+  it('respects existing for attribute', async () => {
     await page.setContent(`
-      <div><button for="content">Toggle</button></div>
-      <core-toggle id="content" hidden></core-toggle>
+      <div><button id="content">Toggle</button></div>
+      <core-toggle for="content" hidden></core-toggle>
     `)
-    expect(await page.$eval('core-toggle', el => el.id === 'content')).toEqual(true)
-    expect(await page.$eval('core-toggle', el => el.button.getAttribute('aria-controls') === el.id)).toEqual(true)
+    expect(await page.$eval('core-toggle', el => el.button.getAttribute('aria-controls') === el.getAttribute('for'))).toEqual(true)
   })
 
   it('triggers toggle event', async () => {
