@@ -1,39 +1,32 @@
-import { name, version } from './package.json'
-import {
-  IS_ANDROID,
-  dispatchEvent,
-  getUUID,
-  queryAll,
-  closest
-} from '../utils'
+import { IS_ANDROID, addStyle, dispatchEvent, getUUID, queryAll, closest } from '../utils'
 
-const UUID = `data-${name}-${version}`.replace(/\W+/g, '-')
 const ARIA = IS_ANDROID ? 'data-labelledby' : 'aria-labelledby' // Android has a bug and reads only label instead of content
 const KEYS = { SPACE: 32, END: 35, HOME: 36, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40 }
 
 export default class CoreTabs extends HTMLElement {
-
   connectedCallback () {
     this.setAttribute('role', 'tablist')
     this.addEventListener('click', this)
     this.addEventListener('keydown', this)
-
-    setTimeout(() => {
-      let next = this
-      this.tabs.forEach((tab, index) => {
-        const panel = document.getElementById(tab.getAttribute('aria-controls')) || (next = next.nextElementSibling || next)
-
-        tab.setAttribute('role', 'tab')
-        tab.setAttribute('aria-controls', panel.id = panel.id || getUUID())
-        panel.setAttribute(ARIA, tab.id = tab.id || getUUID())
-        panel.setAttribute('role', 'tabpanel')
-        panel.setAttribute('tabindex', '0')
-      })
-      this.tab = this.tab // Setup open
-    })
+    addStyle(this.nodeName, `${this.nodeName}{display:block}`) // Default to display: block
+    setTimeout(() => this.connectedChildren())
   }
 
-  disconnectedCallback() {
+  connectedChildren () {
+    let next = this
+    this.tabs.forEach((tab, index) => {
+      const panel = document.getElementById(tab.getAttribute('aria-controls')) || (next = next.nextElementSibling || next)
+
+      tab.setAttribute('role', 'tab')
+      tab.setAttribute('aria-controls', panel.id = panel.id || getUUID())
+      panel.setAttribute(ARIA, tab.id = tab.id || getUUID())
+      panel.setAttribute('role', 'tabpanel')
+      panel.setAttribute('tabindex', '0')
+    })
+    this.tab = this.tab // Setup open
+  }
+
+  disconnectedCallback () {
     this.removeEventListener('click', this)
     this.removeEventListener('keydown', this)
   }
@@ -80,7 +73,7 @@ export default class CoreTabs extends HTMLElement {
       panel[openPanel ? 'removeAttribute' : 'setAttribute']('hidden', '')
     })
 
-    if (prevIndex !== nextIndex) dispatchEvent(this, 'core-tabs.toggle')
+    if (prevIndex !== nextIndex) dispatchEvent(this, 'tabs.toggle')
   }
 
   get tabs () { return queryAll(this.children) }

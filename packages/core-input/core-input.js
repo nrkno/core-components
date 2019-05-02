@@ -1,11 +1,60 @@
-import { name, version } from './package.json'
+/* globals HTMLElement */
 import { IS_IOS, addEvent, escapeHTML, dispatchEvent, queryAll } from '../utils'
 
-const UUID = `data-${name}-${version}`.replace(/\W+/g, '-')
 const KEYS = { ENTER: 13, ESC: 27, PAGEUP: 33, PAGEDOWN: 34, END: 35, HOME: 36, UP: 38, DOWN: 40 }
 const AJAX_DEBOUNCE = 500
 
-export default function input (elements, content) {
+export default class CoreProgress extends HTMLElement {
+  static get observedAttributes () { return ['ajax', 'limit', 'hidden'] }
+
+  connectedCallback () {
+    const input = this.input
+
+    if (!IS_IOS) input.setAttribute('role', 'combobox') // iOS does not inform user area is editable if combobox
+    input.setAttribute('aria-autocomplete', 'list')
+    input.setAttribute('autocomplete', 'off')
+    input.setAttribute('aria-expanded', !this.hidden)
+    this.addEventListener('input', this.handleEvent)
+    this.addEventListener('keydown', this.handleEvent)
+    document.addEventListener('focus', this.handleEvent, true) // Usecapturing to support old Firefox
+    document.addEventListener('click', this.handleEvent)
+    setTimeout(() => this.connectedChildren())
+  }
+  connectedChildren () {
+    const limit = this.limit
+    queryAll('a,button', this).forEach((item, index, items) => {
+      item.setAttribute('aria-label', `${item.textContent.trim()}, ${index + 1} av ${items.length}`)
+      item.setAttribute('tabindex', '-1')
+      item.setAttribute('type', 'button')
+      if (limit && (index >= limit)) item.parentElement.setAttribute('hidden', '')
+    })
+  }
+  disconnectedCallback () {
+    this.removeEventListener('input', this.handleEvent)
+    this.removeEventListener('keydown', this.handleEvent)
+    document.removeEventListener('focus', this.handleEvent, true)
+    document.removeEventListener('click', this.handleEvent)
+  }
+  attributeChangedCallback (name, prev, next) {
+    setTimeout(() => { // Fixes VoiceOver Safari focus jumping to parentElement
+      input.setAttribute('aria-expanded', !this.hidden)
+    })
+  }
+  handleEvent (event) {
+    if (event.defaultPrevented) return
+
+  }
+
+  get input () { return document.getElementById(this.getAttribute('for')) || this.previousElementSibling }
+
+  get limit () { return Number(this.getAttribute('limit')) || Infinity }
+
+  // Must set attribute for IE11
+  get hidden () { return this.hasAttribute('hidden') }
+  set hidden (val) { this[val ? 'setAttribute' : 'removeAttribute']('hidden', '') }
+}
+
+function input (elements, content) {
   const options = typeof content === 'object' ? content : { content }
   const repaint = typeof options.content === 'string'
 

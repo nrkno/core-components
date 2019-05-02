@@ -55,7 +55,9 @@ export default class CoreDialog extends HTMLElement {
 
       if (action === this.id) button.setAttribute(this._opener, '') // iOS remember button
       if (toggle) this.hidden = action === 'close'
-    } else if (event.type === 'keydown' && (event.keyCode === 9 || event.keyCode === 27) && !this.hidden && closest(event.target, this.nodeName) === this) {
+    } else if (event.type === 'keydown' && (event.keyCode === 9 || event.keyCode === 27) && !this.hidden) {
+      const topDialog = queryAll(`${this.nodeName}:not([hidden])`).sort((a, b) => getZIndex(a) - getZIndex(b)).pop()
+      if (topDialog !== this) return // event.target can be <body> when dialog has no focused element
       if (event.keyCode === 9) keepFocus(this, event) // TAB
       if (event.keyCode === 27 && !this.strict) { // ESC
         event.preventDefault() // Prevent leaving maximized window in Safari

@@ -14,7 +14,7 @@ const HTML = `
   <button></button>
 `
 
-describe('core-input', () => {
+describe.skip('core-input', () => {
   beforeEach(() => {
     jest.spyOn(window, 'requestAnimationFrame').mockImplementation(cb => cb())
   })

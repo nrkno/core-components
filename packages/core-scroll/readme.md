@@ -111,7 +111,7 @@ demo-->
 
 ## Usage
 
-Scroll speed is controlled by `friction` rather than `duration` (a short scroll distance will have a shorter duration and vice versa) for a more natural feeling of motion. Buttons can control a `core-scroll` by targeting its ID and specifying a direction; `left|right|up|down`. The `disabled` is automatically added/removed to controller buttons when there is no more pixels to scroll in specified direction. Important: `@nrk/core-scroll` manipulates styling to hide scrollbars, [see how to work with margin and height &rarr;](#styling)
+Scroll speed is controlled by `friction` rather than `duration` (a short scroll distance will have a shorter duration and vice versa) for a more natural feeling of motion. Buttons can control a `core-scroll` by targeting its ID and specifying a direction; `left|right|up|down`. The `disabled` attribute is automatically added/removed to controller buttons when there is no more pixels to scroll in specified direction. Important: `@nrk/core-scroll` manipulates styling to hide scrollbars, [see how to work with margin and height &rarr;](#styling)
 
 <small>Note: `core-scroll` should be replaced with a project specific name to avoid version conflicts.</small>
 
