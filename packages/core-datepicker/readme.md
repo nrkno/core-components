@@ -1,17 +1,8 @@
 # Core Datepicker
 
-> `@nrk/core-datepicker` enhances all child `input`, `select` `table` and `button` elements with keyboard accessible functionality for selecting both dates and times. The interface and granularity of date refinement can easily be altered through markup.
+> `@nrk/core-datepicker` enhances all child `input`, `select` `table` and `button` elements with keyboard accessible functionality
+> for selecting both dates and times. The interface and granularity of date refinement can easily be altered through markup.
 
-
-## Installation
-
-```bash
-npm install @nrk/core-datepicker
-```
-```js
-import CoreDatepicker from '@nrk/core-datepicker'     // Vanilla JS
-import CoreDatepicker from '@nrk/core-datepicker/jsx' // React/Preact JSX
-```
 
 <!--demo
 <script src="https://unpkg.com/@webcomponents/custom-elements"></script>
@@ -28,7 +19,7 @@ import CoreDatepicker from '@nrk/core-datepicker/jsx' // React/Preact JSX
 </style>
 demo-->
 
-## Demo
+## Example
 
 ```html
 <!-- demo -->
@@ -161,6 +152,20 @@ demo-->
 </script>
 ```
 
+## Installation
+
+Using NPM provides own element namespace and extensibility.
+Recommended for apps and widgets:
+
+```bash
+npm install @nrk/core-datepicker  # Using NPM
+```
+
+Using static registers the custom element with default name automatically. Recommended for apps:
+
+```html
+<script src="https://static.nrk.no/core-components/major/1/core-datepicker/core-datepicker.min.js"></script>  <!-- Using static -->
+```
 
 
 ## Usage
@@ -170,7 +175,10 @@ All date values - both HTML markup and JavaScript - accepts accepts dates as num
 ### HTML / JavaScript
 
 ```html
-<core-datepicker months="January,February,..." days="Mon,Tue,Wed,...">
+<core-datepicker
+  timestamp="{String}"    <!-- Optional. Sets date from UNIX timestamp -->
+  months="{String}"       <!-- Optional. Comma separated list of custom month names to be used. ("Jan,Feb,...") -->
+  days="{String}">        <!-- Optional. Comma separated list of custom weekday names to be used ("Man,Tir,Ons,...") -->
   <!-- There are different behaviours depending on the type of <input>. -->
   <!-- When 'radio' or 'checkbox' is used, core-datepicker checks the value field -->
   <!-- to see if the date specified is matching the values of the <input>s. -->
@@ -216,14 +224,27 @@ All date values - both HTML markup and JavaScript - accepts accepts dates as num
 ```
 
 ```js
-import coreDatepicker from '@nrk/core-datepicker'
+import CoreDatepicker from '@nrk/core-datepicker'               // Using NPM
+window.customElements.define('core-datepicker', CoreProgress)   // Using NPM
 
-coreDatepicker(
-  String|Element|Elements, // Accepts a selector string, NodeList, Element or array of Elements
-  String|Date              // Specify the date which coreDatepicker should use.
-  // e.g:
-  'now + 2 days'           // Will set the date to the day after tomorrow
-})
+const myDatepicker = document.querySelector('core-datepicker')
+
+// Getters
+myDatepicker.date          // Get date object
+myDatepicker.timestamp     // Get timestamp
+myDatepicker.year          // Get year
+myDatepicker.month         // Get month
+myDatepicker.day           // Get day
+myDatepicker.hour          // Get hour
+myDatepicker.minute        // Get minute
+myDatepicker.second        // Get second
+// Setters
+myDatepicker.date = 'now'                    // Set date. Accepts simple-date-parse format or Date object
+myDatepicker.months = ['Jan', 'Feb', ...]    // Set list of custom month names to be used
+myDatepicker.days = ['Man', 'Tir', ...]      // Set list of custom weekday names to be used
+// Methods
+myDatepicker.parse('fri')                    // Utility function for parsing time and dates. Really just @nrk/simple-date-parse
+
 ```
 
 ### React / Preact
@@ -231,7 +252,10 @@ coreDatepicker(
 ```jsx
 import CoreDatepicker from '@nrk/core-datepicker/jsx'
 
-<CoreDatepicker date={String|Date} onChange={function () {}} >
+<CoreDatepicker timestamp={String}     // Optional. Sets date from timestamp
+                months={String}        // Optional. Comma separated list of custom month names to be used ("Jan,Feb,...")
+                days={String}>         // Optional. Comma separated list of custom weekday names to be used ("Man,Tir,Ons,...")
+                onChange={Function}>
   <input type="radio|checkbox|year|month|day|hour|minute|second|timestamp"/> /* Same as with vanilla js */
   <select></select> /* Same as with vanilla js */
   <table></table>   /* Same as with vanilla js */
@@ -241,57 +265,26 @@ import CoreDatepicker from '@nrk/core-datepicker/jsx'
 
 
 ## Events
-Events run in the order `datepicker.click.day`\* &rarr; `datepicker.render` &rarr; `datepicker.change`
-<br><small>\* datepicker.click.day only fires if user clicked inside the month days grid</small>
-
-### datepicker.render
-
-`'datepicker.render'` event is fired on every render. The `datepicker.render` can be used to disable specific dates or limit timespan (read: max/min). The bubbles and can therefore be detected both from button element itself, or any parent element (read event delegation):
-
-```js
-document.addEventListener('datepicker.render', (event) => {
-  event.target                        // The datepicker container
-  event.detail.nextDate               // The new date that triggered change
-  event.detail.prevDate               // The previous/current date
-  event.detail.disable(function)      // Pass a fuction to the disable parameter to visually dates
-  // Example, disable all future dates: event.detail.disable((date) => date > Date.now())
-})
-```
 
 ### datepicker.change
 
-`'datepicker.change'` event is fired when date is changed by user or programatically (both for VanillaJS and React/Preact components). The `datepicker.change` event is cancelable, meaning you can use `event.preventDefault()` to cancel change. The event also bubbles, and can therefore be detected both from button element itself, or any parent element (read event delegation):
+Fired when date is changed by user or programatically (both for VanillaJS and React/Preact components). The `datepicker.change` event is cancelable, meaning you can use `event.preventDefault()` to cancel change:
 
 ```js
 document.addEventListener('datepicker.change', (event) => {
-  event.target                        // The datepicker container
-  event.detail.nextDate               // The new date that triggered change
-  event.detail.prevDate               // The previous/current date
+  event.target     // The datepicker
+  event.detail     // The new date that triggered change
 })
 ```
 
 ### datepicker.click.day
 
-`'datepicker.click.day'` event is fired if the user clicks a day in the month days grid. The `datepicker.click.day` runs before `datepicker.change`. The event is cancelable, meaning you can use `event.preventDefault()`. The event also bubbles, and can therefore be detected both from button element itself, or any parent element (read event delegation):
+Fired if the user clicks a day in the month days grid. The `datepicker.click.day` runs before `datepicker.change`. The event is cancelable, meaning you can use `event.preventDefault()`:
 
 ```js
 document.addEventListener('datepicker.click.day', (event) => {
-  event.target                        // The datepicker container
-  event.detail.currentTarget          // The button clicked
-  event.detail.relatedTarget          // The table containing the button
-  event.detail.nextDate               // The new date that triggered change
-  event.detail.prevDate               // The previous/current date
+  event.target     // The datepicker
 })
-```
-
-## Methods
-
-### datepicker.parse
-
-A utility function for parsing time and dates. It's really just [`@nrk/simple-date-parse`](https://github.com/nrkno/simple-date-parse):
-
-```js
-coreDatepicker.parse('fri')
 ```
 
 ## Properties
@@ -299,13 +292,8 @@ coreDatepicker.parse('fri')
 `@nrk/core-datepicker` defaults to Norwegian Bookmål text without abbreviations (writing `September` instead of `Sept`). This can be configured by setting the `days` and `months` properties. Note that abbreviations should always be at least 3 characters long to ensure a better experience for screen reader users (for instance writing `Mon`, `Tue`... instead of `m`, `t`...).
 
 ```js
-//JS
-coreDatepicker.days = ['man', 'tir', 'ons', 'tor', 'fre', 'lør', 'søn'] // Change name of days
-coreDatepicker.months = ['jan', 'feb', ...] // Change name of months
-
-//JSX
-CoreDatepicker.days = ['man', 'tir', 'ons', 'tor', 'fre', 'lør', 'søn'] // Change name of days
-CoreDatepicker.months = ['jan', 'feb', ...] // Change name of months
+myDatepicker.days = ['man', 'tir', 'ons', 'tor', 'fre', 'lør', 'søn'] // Change name of days
+myDatepicker.months = ['jan', 'feb', ...] // Change name of months
 ```
 
 ## Styling
@@ -313,11 +301,12 @@ CoreDatepicker.months = ['jan', 'feb', ...] // Change name of months
 ### CSS
 
 ```css
-.my-datepicker                              /* Target datepicker container */
-.my-datepicker input:checked                /* Target selected checkbox/radio dates */
-.my-datepicker input:disabled               /* Target disabled checkbox/radio dates */
-.my-datepicker button:disabled              /* Target disabled dates */
-.my-datepicker button[autofocus]            /* Target the chosen date in month view */
-.my-datepicker button[aria-current="date"]  /* Target current date (today) in month view */
-.my-datepicker button[data-adjacent="true"] /* Target dates from next or previous month in the month view */
+.my-datepicker                                /* Target datepicker container */
+.my-datepicker input:checked                  /* Target selected checkbox/radio dates */
+.my-datepicker input:disabled                 /* Target disabled checkbox/radio dates */
+.my-datepicker button:disabled                /* Target disabled dates */
+.my-datepicker button[autofocus]              /* Target the chosen date in month view */
+.my-datepicker button[aria-current="date"]    /* Target current date (today) in month view */
+.my-datepicker button[data-adjacent="false"]  /* Target date in current month in the month view */
+.my-datepicker button[data-adjacent="true"]   /* Target date in next or previous month in the month view */
 ```

@@ -1,6 +1,6 @@
 # Core Tabs
 
-> `<core-tabs>` converts `<button>` and `<a>` elements to keyboard accessible tabs, controlling following tabpanels.
+> `@nrk/core-tabs` converts `<button>` and `<a>` elements to keyboard accessible tabs, controlling following tabpanels.
 > Tabs can be nested and easily extended with custom animations or behaviour through the `tabs.toggle` event.
 
 <!--demo
@@ -16,26 +16,27 @@
 </style>
 demo-->
 
-## Demo
+## Example
 
 ```html
 <!--demo-->
 <core-tabs>
-  <button>Button tab</button>
-  <button>Nested tabs</button>
-  <a href="#link">Link tab</a>
+  <button>Tab 1</button>
+  <button>Tab 2</button>
+  <a href="#link">Tab 3</a>
 </core-tabs>
-<div>Text of tabpanel 1</div>
+<div>Tabpanel 1</div>
 <div hidden>
   <core-tabs>
     <button>Subtab 1</button>
     <button>Subtab 2</button>
     <button>Subtab 3</button>
   </core-tabs>
-  <div>Text of subpanel tabpanel 1</div>
-  <div>Text of subpanel tabpanel 2</div>
+  <div>Subtabpanel 1</div>
+  <div>Subtabpanel 2</div>
+  <div>Subtabpanel 3</div>
 </div>
-<div hidden>Text of tabpanel 3</div>
+<div hidden>Tabpanel 3</div>
 ```
 
 ```html
@@ -43,33 +44,40 @@ demo-->
 <div id="jsx-tabs" class="my-vertical-tabs"></div>
 <script type="text/jsx">
   ReactDOM.render(<div>
-    <CoreTabs open={0} onToggle={function(){}}>
-      <button>Button tab JSX</button>
-      <button>Nested tabs JSX</button>
+    <CoreTabs>
+      <button>Vertical tab 1 JSX</button>
+      <button>Vertical tab 2 JSX</button>
     </CoreTabs>
-    <div>Text of tab 1</div>
+    <div>Tabpanel 1 JSX</div>
     <div>
       <CoreTabs>
         <button>Subtab 1 JSX</button>
         <button hidden>Subtab 2 JSX</button>
       </CoreTabs>
-      <div>Subpanel 1</div>
-      <div hidden>Subpanel 2</div>
+      <div>Subtabpanel 1</div>
+      <div hidden>Subtabpanel 2</div>
     </div>
   </div>, document.getElementById('jsx-tabs'))
 </script>
 ```
 
 
+## Installation
 
-## Usage
-
-
-### Installation
+Using NPM provides own element namespace and extensibility.
+Recommended for apps and widgets:
 
 ```bash
-npm install @nrk/core-tabs
+npm install @nrk/core-tabs  # Using NPM
 ```
+
+Using static registers the custom element with default name automatically. Recommended for apps:
+
+```html
+<script src="https://static.nrk.no/core-components/major/1/core-tabs/core-tabs.min.js"></script>  <!-- Using static -->
+```
+
+## Usage
 
 ### HTML / JavaScript
 
@@ -85,18 +93,18 @@ npm install @nrk/core-tabs
 ```
 
 ```js
-import CoreTabs from '@nrk/core-tabs'
+import CoreTabs from '@nrk/core-tabs'                 // Using NPM
+window.customElements.define('core-tabs', CoreTabs)   // Using NPM
 
-window.customElements.define('core-toggle', CoreTabs)  // Register custom element
 const myTabs = document.querySelector('core-tabs')
 
 // Getters
-myTabs.tab        // {Element} Get active tab
-myTabs.tabs       // {Array} Get all tabs
-myTabs.panel      // {Element} Get active tabpanel
-myTabs.panels     // {Array} Get all tabpanels
+myTabs.tab        // Get active tab
+myTabs.tabs       // Get all tabs
+myTabs.panel      // Get active tabpanel
+myTabs.panels     // Get all tabpanels
 // Setters
-myTabs.tab = 0    // {Number|String|Element} Set active tab from index, id or element
+myTabs.tab = 0    // Set active tab from index, id or element
 ```
 
 ### React / Preact
@@ -118,11 +126,14 @@ import CoreTabs from '@nrk/core-tabs/jsx'
 
 
 ## Events
-`'tabs.toggle'` is fired when toggling a tab. The event bubbles and can therefore be detected both from button element itself, or any parent element (read event delegation):
+
+### tabs.toggle
+
+Fired when toggling a tab:
 
 ```js
 document.addEventListener('tabs.toggle', (event) =>
-  event.target     // The core-tabs element triggering event
+  event.target     // The tabs element
 })
 ```
 
