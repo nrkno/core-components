@@ -1,7 +1,3 @@
-const { name, version } = require('./package.json')
-const coreInput = require('./core-input.min')
-
-const UUID = `data-${name}-${version}`.replace(/\W+/g, '-')
 const HTML = `
   <input type="text" placeholder="Type something...">
   <ul hidden>

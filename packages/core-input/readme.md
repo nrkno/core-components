@@ -10,7 +10,7 @@
 npm install @nrk/core-input
 ```
 ```js
-import coreInput from '@nrk/core-input'     // Vanilla JS
+import CoreInput from '@nrk/core-input'     // Vanilla JS
 import CoreInput from '@nrk/core-input/jsx' // React/Preact JSX
 ```
 
@@ -24,33 +24,34 @@ demo-->
 
 ```html
 <!--demo-->
-<input type="text" class="my-input" placeholder="Type &quot;C&quot;...">
-<ul hidden>
-  <li><button>Chrome</button></li>
-  <li><button>Firefox</button></li>
-  <li><button>Opera</button></li>
-  <li><button>Safari</button></li>
-  <li><button>Microsoft Edge</button></li>
-</ul>
-<script>
-  coreInput('.my-input')
-</script>
+<input type="text" placeholder="Type &quot;C&quot;...">
+<core-input hidden>
+  <ul>
+    <li><button>Chrome</button></li>
+    <li><button>Firefox</button></li>
+    <li><button>Opera</button></li>
+    <li><button>Safari</button></li>
+    <li><button>Microsoft Edge</button></li>
+  </ul>
+</core-input>
 ```
 
 ```html
 <!--demo-->
 <div id="jsx-input"></div>
 <script type="text/jsx">
-  ReactDOM.render(<CoreInput>
+  ReactDOM.render(<div>
     <input type='text' placeholder='Type "C"... (JSX)' />
-    <ul className='my-dropdown'>
-      <li><button>Chrome</button></li>
-      <li><button>Firefox</button></li>
-      <li><button>Opera</button></li>
-      <li><button>Safari</button></li>
-      <li><button>Microsoft Edge</button></li>
-    </ul>
-  </CoreInput>, document.getElementById('jsx-input'))
+    <CoreInput className='my-dropdown' hidden>
+      <ul>
+        <li><button>Chrome</button></li>
+        <li><button>Firefox</button></li>
+        <li><button>Opera</button></li>
+        <li><button>Safari</button></li>
+        <li><button>Microsoft Edge</button></li>
+      </ul>
+    </CoreInput>
+  </div>, document.getElementById('jsx-input'))
 </script>
 ```
 
@@ -68,11 +69,13 @@ Always use `coreInput.escapeHTML(String)` to safely render data from API or user
 
 ```html
 <input type="text" class="my-input">                  <!-- Input element must be a textual <input> -->
-<ul hidden>                                           <!-- Can be any tag, but items should be inside <li> -->
-  <li><button>Item 1</button></li>                    <!-- Items must be <button> or <a> -->
-  <li><button value="Suprise!">Item 2</button></li>   <!-- Alternative value can be defined -->
-  <li><a href="https://www.nrk.no/">NRK.no</a></li>   <!-- Actual links are recommended when applicable -->
-</ul>
+<core-input hidden>
+  <ul>                                                  <!-- Can be any tag, but items should be inside <li> -->
+    <li><button>Item 1</button></li>                    <!-- Items must be <button> or <a> -->
+    <li><button value="Suprise!">Item 2</button></li>   <!-- Alternative value can be defined -->
+    <li><a href="https://www.nrk.no/">NRK.no</a></li>   <!-- Actual links are recommended when applicable -->
+  </ul>
+</core-input>
 ```
 ```js
 import coreInput from '@nrk/core-input'
@@ -104,14 +107,14 @@ import CoreInput from '@nrk/core-input/jsx'
 // Props like className, style, etc. will be applied as actual attributes
 // <CoreInput> will handle state itself unless you call event.preventDefault() in onFilter, onSelect or onAjax
 
-<CoreInput open={Boolean}                // Use to force open state. Defaults to value of aria-expanded.
+<input type="text" />   // First element must result in a input-tag. Accepts both elements and components
+<CoreInput hidden={Boolean}              // Use to force open state. Defaults to value of aria-expanded.
            limit={Number}                // Limit the maximum number of results in list.
            ajax={String|Object}          // Fetches external data. See event 'input.ajax'. Example: 'https://search.com?q={{value}}'
            onFilter={Function}           // See 'input.filter' event
            onSelect={Function}           // See 'input.select' event
            onAjax={Function}             // See 'input.ajax' event
            onAjaxBeforeSend={Function}>  // See 'input.ajax.beforeSend' event
-  <input type="text" />   // First element must result in a input-tag. Accepts both elements and components
   <ul>                    // Next element will be used for items. Accepts both elements and components
     <li><button>Item 1</button></li>                  // Interactive items must be <button> or <a>
     <li><button value="Suprise!">Item 2</button></li> // Alternative value can be defined
@@ -217,7 +220,7 @@ Ajax requests can be stopped by calling `event.preventDefault()` on `'input.filt
 <!--demo-->
 <input class="my-input-ajax" placeholder="Country...">
 <ul class="my-dropdown" hidden></ul>
-<script>
+<!--<script>
   // Initialize
   coreInput('.my-input-ajax', {
     ajax: 'https://restcountries.eu/rest/v2/name/{{value}}?fields=name'
@@ -237,13 +240,13 @@ Ajax requests can be stopped by calling `event.preventDefault()` on `'input.filt
       .map(function (html) { return '<li><button>' + html + '</button></li>' })           // Generate list
       .join('') : '<li><button>No results</button></li>')
   })
-</script>
+</script>-->
 ```
 
 ```html
 <!--demo-->
 <div id="jsx-input-ajax"></div>
-<script type="text/jsx">
+<!--script type="text/jsx">
   class AjaxInput extends React.Component {
     constructor (props) {
       super(props)
@@ -280,7 +283,7 @@ Ajax requests can be stopped by calling `event.preventDefault()` on `'input.filt
     }
   }
   ReactDOM.render(<AjaxInput />, document.getElementById('jsx-input-ajax'))
-</script>
+</script>-->
 ```
 
 
@@ -291,7 +294,7 @@ Hybrid solution; lazy load items, but let `core-input` still handle filtering:
 <!--demo-->
 <input class="my-input-lazy" placeholder="Country...">
 <ul class="my-dropdown" hidden></ul>
-<script>
+<!--<script>
   window.getCountries = function (callback) {
     var xhr = new XMLHttpRequest()
     var url = 'https://restcountries.eu/rest/v2/?fields=name'
@@ -311,13 +314,13 @@ Hybrid solution; lazy load items, but let `core-input` still handle filtering:
         .join(''))
     })
   }, true)
-</script>
+</script>-->
 ```
 
 ```html
 <!--demo-->
 <div id="jsx-input-lazy"></div>
-<script type="text/jsx">
+<!--<script type="text/jsx">
   class LazyInput extends React.Component {
     constructor (props) {
       super(props)
@@ -341,7 +344,7 @@ Hybrid solution; lazy load items, but let `core-input` still handle filtering:
   }
 
   ReactDOM.render(<LazyInput />, document.getElementById('jsx-input-lazy'))
-</script>
+</script>-->
 ```
 
 
@@ -352,7 +355,7 @@ Synchronous operation; dynamically populating items based input value:
 <!--demo-->
 <input class="my-input-dynamic" placeholder="Type your email...">
 <ul class="my-dropdown" hidden></ul>
-<script>
+<!--<script>
   coreInput('.my-input-dynamic')
 
   document.addEventListener('input.filter', (event) => {
@@ -367,13 +370,13 @@ Synchronous operation; dynamically populating items based input value:
       return '<li><button>' + coreInput.highlight(value.replace(/(@.*|$)/, '@' + mail), value) + '</button><li>'
     }).join('') : '')
   })
-</script>
+</script>-->
 ```
 
 ```html
 <!--demo-->
 <div id="jsx-input-dynamic"></div>
-<script>
+<!--<script>
   class DynamicInput extends React.Component {
     constructor (props) {
       super(props)
@@ -401,7 +404,7 @@ Synchronous operation; dynamically populating items based input value:
   }
 
   ReactDOM.render(<DynamicInput />, document.getElementById('jsx-input-dynamic'))
-</script>
+</script>-->
 ```
 
 

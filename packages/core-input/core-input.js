@@ -1,6 +1,7 @@
 /* globals HTMLElement */
 import { IS_IOS, addEvent, escapeHTML, dispatchEvent, queryAll } from '../utils'
 
+const UUID = 'input'
 const KEYS = { ENTER: 13, ESC: 27, PAGEUP: 33, PAGEDOWN: 34, END: 35, HOME: 36, UP: 38, DOWN: 40 }
 const AJAX_DEBOUNCE = 500
 
@@ -14,6 +15,7 @@ export default class CoreProgress extends HTMLElement {
     input.setAttribute('aria-autocomplete', 'list')
     input.setAttribute('autocomplete', 'off')
     input.setAttribute('aria-expanded', !this.hidden)
+    // const open = typeof options.open === 'undefined' ? input === document.activeElement : options.open
     this.addEventListener('input', this.handleEvent)
     this.addEventListener('keydown', this.handleEvent)
     document.addEventListener('focus', this.handleEvent, true) // Usecapturing to support old Firefox
@@ -22,8 +24,11 @@ export default class CoreProgress extends HTMLElement {
   }
   connectedChildren () {
     const limit = this.limit
-    queryAll('a,button', this).forEach((item, index, items) => {
-      item.setAttribute('aria-label', `${item.textContent.trim()}, ${index + 1} av ${items.length}`)
+    const items = queryAll('a,button', this)
+    const total = Math.min(items.length, limit)
+
+    items.forEach((item, index, items) => {
+      item.setAttribute('aria-label', `${item.textContent.trim()}, ${index + 1} av ${total}`)
       item.setAttribute('tabindex', '-1')
       item.setAttribute('type', 'button')
       if (limit && (index >= limit)) item.parentElement.setAttribute('hidden', '')
@@ -36,18 +41,26 @@ export default class CoreProgress extends HTMLElement {
     document.removeEventListener('click', this.handleEvent)
   }
   attributeChangedCallback (name, prev, next) {
-    setTimeout(() => { // Fixes VoiceOver Safari focus jumping to parentElement
-      input.setAttribute('aria-expanded', !this.hidden)
-    })
+    // setTimeout(() => { // Fixes VoiceOver Safari focus jumping to parentElement
+    //   this.input.setAttribute('aria-expanded', !this.hidden)
+    // })
   }
   handleEvent (event) {
-    if (event.defaultPrevented) return
+    if (event.ctrlKey || event.altKey || event.metaKey || event.defaultPrevented) return
+    if (event.type === 'click' || event.type === 'focus') {
+      const open = this.input === event.target || this.contains(event.target)
+      const item = event.type === 'click' && open && queryAll('[tabindex="-1"]', this).filter((item) => item.contains(event.target))[0]
 
+      if (item) onSelect(input, { relatedTarget: list, currentTarget: item, value: item.value || item.textContent.trim() })
+      else setupExpand(input, open)
+    }
   }
 
   get input () { return document.getElementById(this.getAttribute('for')) || this.previousElementSibling }
+  get items () { return queryAll('[tabindex="-1"]', this) }
 
   get limit () { return Number(this.getAttribute('limit')) || Infinity }
+  set limit (val) { this.setAttribute('limit', val) }
 
   // Must set attribute for IE11
   get hidden () { return this.hasAttribute('hidden') }
@@ -83,21 +96,6 @@ input.escapeHTML = escapeHTML
 input.highlight = (haystack, needle) => {
   const escapedRegExp = needle.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&') // From lodash
   return escapeHTML(haystack).replace(new RegExp(escapedRegExp || '.^', 'gi'), '<mark>$&</mark>')
-}
-
-addEvent(UUID, 'click', onClickOrFocus)
-addEvent(UUID, 'focus', onClickOrFocus, true) // Use focus with capturing instead of focusin for old Firefox
-function onClickOrFocus (event) {
-  if (event.ctrlKey || event.altKey || event.metaKey || event.defaultPrevented) return
-
-  queryAll(`[${UUID}]`).forEach((input) => {
-    const list = input.nextElementSibling
-    const open = input === event.target || list.contains(event.target)
-    const item = event.type === 'click' && open && queryAll('[tabindex="-1"]', list).filter((item) => item.contains(event.target))[0]
-
-    if (item) onSelect(input, { relatedTarget: list, currentTarget: item, value: item.value || item.textContent.trim() })
-    else setupExpand(input, open)
-  })
 }
 
 addEvent(UUID, 'input', ({ target: input }) => {

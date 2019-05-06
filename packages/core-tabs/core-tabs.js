@@ -1,6 +1,6 @@
-import { IS_ANDROID, addStyle, dispatchEvent, getUUID, queryAll, closest } from '../utils'
+import { IS_ANDROID, dispatchEvent, getUUID, queryAll, closest } from '../utils'
 
-const ARIA = IS_ANDROID ? 'data-labelledby' : 'aria-labelledby' // Android has a bug and reads only label instead of content
+const FROM = IS_ANDROID ? 'data-labelledby' : 'aria-labelledby' // Android has a bug and reads only label instead of content
 const KEYS = { SPACE: 32, END: 35, HOME: 36, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40 }
 
 export default class CoreTabs extends HTMLElement {
@@ -8,18 +8,17 @@ export default class CoreTabs extends HTMLElement {
     this.setAttribute('role', 'tablist')
     this.addEventListener('click', this)
     this.addEventListener('keydown', this)
-    addStyle(this.nodeName, `${this.nodeName}{display:block}`) // Default to display: block
     setTimeout(() => this.connectedChildren())
   }
 
   connectedChildren () {
     let next = this
     this.tabs.forEach((tab, index) => {
-      const panel = document.getElementById(tab.getAttribute('aria-controls')) || (next = next.nextElementSibling || next)
+      const panel = document.getElementById(tab.getAttribute('for')) || (next = next.nextElementSibling || next)
 
       tab.setAttribute('role', 'tab')
       tab.setAttribute('aria-controls', panel.id = panel.id || getUUID())
-      panel.setAttribute(ARIA, tab.id = tab.id || getUUID())
+      panel.setAttribute(FROM, tab.id = tab.id || getUUID())
       panel.setAttribute('role', 'tabpanel')
       panel.setAttribute('tabindex', '0')
     })
@@ -53,7 +52,7 @@ export default class CoreTabs extends HTMLElement {
   }
 
   get tab () {
-    return document.getElementById(this.panel.getAttribute(ARIA))
+    return document.getElementById(this.panel.getAttribute(FROM))
   }
   set tab (value) {
     if (!value) return

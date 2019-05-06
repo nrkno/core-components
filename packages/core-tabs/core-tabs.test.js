@@ -84,11 +84,11 @@ describe('core-tabs', () => {
     expect(await page.$eval('#tab-2', el => el.getAttribute('aria-selected'))).toEqual('true')
   })
 
-  it('respects aria-controls on tabs', async () => {
+  it('respects for on tabs', async () => {
     await page.setContent(`
       <core-tabs>
-        <button id="tab-1" aria-controls="panel-1">First tab</button>
-        <button id="tab-2" aria-controls="panel-2">Second tab</button>
+        <button id="tab-1" for="panel-1">First tab</button>
+        <button id="tab-2" for="panel-2">Second tab</button>
       </core-tabs>
       <div id="panel-2">Text of tab 2</div>
       <div id="panel-1">Text of tab 1</div>
@@ -102,12 +102,12 @@ describe('core-tabs', () => {
     expect(await page.$eval('#panel-2', el => el.hasAttribute('hidden'))).toEqual(true)
   })
 
-  it('respects aria-controls for single panel', async () => {
+  it('respects for for single panel', async () => {
     await page.setContent(`
       <core-tabs>
-        <button id="tab-1" aria-controls="panel-1">First tab</button>
-        <button id="tab-2" aria-controls="panel-1">Second tab</button>
-        <button id="tab-3" aria-controls="panel-2">Third tab</button>
+        <button id="tab-1" for="panel-1">First tab</button>
+        <button id="tab-2" for="panel-1">Second tab</button>
+        <button id="tab-3" for="panel-2">Third tab</button>
       </core-tabs>
       <p>I'm an element</p>
       <div id="panel-1">Text of tab 1</div>
