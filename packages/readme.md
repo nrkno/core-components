@@ -38,7 +38,7 @@ Read the documentation for each component for usage and more.
 
 ## Extending
 
-Making a new custom element extending a core component can be done easily.
+Making a new custom element extending a core component with new functionality is done easily.
 Create a new class `MyToggle` that extends the component you want using the following skeleton:
 
 ```js
@@ -76,7 +76,7 @@ window.customElements.define('my-toggle', MyToggle)
 ```
 
 ## Motivation
-Despite [well documented accessibility specifications](https://www.w3.org/TR/wai-aria-practices-1.1/), best practice simply becomes unusable in several screen readers and browsers due to implementation differences. `@nrk/core-components` aims to provide the best possible good user experience regardless of browser (IE/Edge 9+, Safari, Firefox, Chrome, Opera), screen reader (MacOS/iOS: VoiceOver, Android: TalkBack , Windows: JAWS/NVDA) and other existing javascript (version conflicts and performance optimization is resolved with version bound [event delegation](https://stackoverflow.com/questions/1687296/what-is-dom-event-delegation)).
+Despite [well documented accessibility specifications](https://www.w3.org/TR/wai-aria-practices-1.1/), best practice simply becomes unusable in several screen readers and browsers due to implementation differences. `@nrk/core-components` aims to provide the best possible good user experience regardless of browser (IE/Edge 11+, Safari, Firefox, Chrome, Opera), screen reader (MacOS/iOS: VoiceOver, Android: TalkBack , Windows: JAWS/NVDA) and other existing javascript.
 
 HTML form elements are accessible by nature, and have quite compatible and well documented native APIs.
 Best practices and styling tips is not a pure functionality concern, and therefore not covered by core-components, for now.
