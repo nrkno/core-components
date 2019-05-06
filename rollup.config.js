@@ -5,15 +5,8 @@ const resolve = require('rollup-plugin-node-resolve')
 const serve = require('rollup-plugin-serve')
 const json = require('rollup-plugin-json')
 const { uglify } = require('rollup-plugin-uglify')
-const { pkgs, getPackageName } = require('./bin/index.js') // Find all packages
 const { version } = require('./package.json')
-const fs = require('fs')
-
-;['readme.md', 'packages/readme.md'].forEach((path) => {
-  const readme = String(fs.readFileSync(path))
-  const versioned = readme.replace(/core-components\/major\/\d+/, `core-components/major/${version.match(/\d+/)}`)
-  fs.writeFileSync(path, versioned)
-})
+const utils = require('./bin/index.js')
 
 const minify = uglify({ output: { comments: /^!/ } })
 const globals = { 'react-dom': 'ReactDOM', react: 'React' } // Exclude from output
@@ -27,9 +20,11 @@ const plugins = [
   !process.env.ROLLUP_WATCH || serve('packages')
 ]
 
-export default pkgs.reduce((all, path) => {
+utils.buildDocs()
+
+export default utils.pkgs.reduce((all, path) => {
   const { version } = require(`${path}/package.json`)
-  const file = getPackageName(path)
+  const file = utils.getPackageName(path)
   const name = file.replace(/-./g, (m) => m.slice(-1).toUpperCase())
   const jsx = name.replace(/./, (m) => m.toUpperCase())
 

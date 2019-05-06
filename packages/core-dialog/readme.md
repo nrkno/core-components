@@ -141,7 +141,7 @@ npm install @nrk/core-dialog  # Using NPM
 Using static registers the custom element with default name automatically. Recommended for apps:
 
 ```html
-<script src="https://static.nrk.no/core-components/major/1/core-dialog/core-dialog.min.js"></script>  <!-- Using static -->
+<script src="https://static.nrk.no/core-components/major/5/core-dialog/core-dialog.min.js"></script>  <!-- Using static -->
 ```
 
 

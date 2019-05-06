@@ -17,7 +17,7 @@ Alternatively, install components from static.
 Using static registers the custom element with default tag name automatically. Recommended for apps:
 
 ```html
-<script src="https://static.nrk.no/core-components/major/1/core-datepicker/core-datepicker.min.js"></script>  <!-- Using static -->
+<script src="https://static.nrk.no/core-components/major/5/core-datepicker/core-datepicker.min.js"></script>  <!-- Using static -->
 ```
 
 VanillaJS components installed from NPM needs to be registered globally so your browser

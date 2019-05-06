@@ -1,12 +1,22 @@
 const { execSync } = require('child_process')
 const path = require('path')
+const glob = require('fast-glob')
+const pkg = require('../package.json')
 const fs = require('fs')
 const args = getProcessArgs()
 const pkgs = getPackagePaths()
 
-module.exports = { args, pkgs, getProcessArgs, getPackageName, getPackagePaths }
+module.exports = { args, pkgs, getProcessArgs, getPackageName, getPackagePaths, buildDocs }
 
-// Utilities -------------------------------------------------------------------
+function buildDocs () {
+  glob(['**/*.md', '!**/node_modules/**']).then((readmes) => {
+    for (const readme of readmes) {
+      const md = fs.readFileSync(readme, 'utf-8')
+      fs.writeFileSync(readme, String(md).replace(/\/major\/\d+/g, `/major/${pkg.version.match(/\d+/)}`))
+    }
+  })
+}
+
 function getProcessArgs () {
   return process.argv.slice(2).reduce((args, arg) => {
     const [key, value = true] = arg.split('=')
@@ -27,7 +37,6 @@ function getPackagePaths () {
   }, [])
 }
 
-// Exectution: install ---------------------------------------------------------
 if (args.install) {
   pkgs.forEach((path) => {
     console.log(`Installing ${getPackageName(path)}`)
@@ -36,7 +45,6 @@ if (args.install) {
   })
 }
 
-// Exectution: publish ---------------------------------------------------------
 if (args.publish) {
   const update = pkgs.filter((path) => args[getPackageName(path)])
   const action = args.publish.replace(/./, (m) => m.toUpperCase()) // Title case action
