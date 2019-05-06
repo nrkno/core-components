@@ -16,7 +16,7 @@
     "test:watch": "jest --watch"
   },
   "devDependencies": {
-    "jest": "24.7.1",
+    "jest": "24.8.0",
     "jest-buble": "2.0.0",
     "prop-types": "15.7.2",
     "react": "16.8.6",
