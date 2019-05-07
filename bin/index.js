@@ -9,12 +9,11 @@ const pkgs = getPackagePaths()
 module.exports = { args, pkgs, getProcessArgs, getPackageName, getPackagePaths, buildDocs }
 
 function buildDocs () {
-  glob(['**/*.md', '!**/node_modules/**']).then((readmes) => {
-    for (const readme of readmes) {
-      const md = fs.readFileSync(readme, 'utf-8')
-      fs.writeFileSync(readme, String(md).replace(/\/major\/\d+/g, `/major/${pkg.version.match(/\d+/)}`))
-    }
-  })
+  const readmes = glob.sync(['**/*.md', '!**/node_modules/**'])
+  for (const readme of readmes) {
+    const md = fs.readFileSync(readme, 'utf-8')
+    fs.writeFileSync(readme, String(md).replace(/\/major\/\d+/g, `/major/${pkg.version.match(/\d+/)}`))
+  }
 }
 
 function getProcessArgs () {
