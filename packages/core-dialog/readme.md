@@ -1,18 +1,8 @@
 # Core Dialog
 
-> `<core-dialog>` is an element with which the user interacts with to perform some task or decision. `@nrk/core-dialog` supports nestability, keyboard navigation containment and restoring focus when dialog is closed.
+> `@nrk/core-dialog` is an elevated element with which the user interacts with to perform some task or decision.
+> It supports nestability, keyboard navigation containment and restoring focus when dialog is closed.
 
-
-
-## Installation
-
-```bash
-npm install @nrk/core-dialog
-```
-```js
-import coreDialog from '@nrk/core-dialog'     // Vanilla JS
-import CoreDialog from '@nrk/core-dialog/jsx' // React/Preact JSX
-```
 
 <!-- <script src="https://unpkg.com/preact"></script>
 <script src="https://unpkg.com/preact-compat"></script>
@@ -59,7 +49,7 @@ import CoreDialog from '@nrk/core-dialog/jsx' // React/Preact JSX
 </style>
 demo-->
 
-## Demo
+## Example
 
 ```html
 <!--demo-->
@@ -139,30 +129,59 @@ demo-->
 ```
 
 
+## Installation
+
+Using NPM provides own element namespace and extensibility.
+Recommended for apps and widgets:
+
+```bash
+npm install @nrk/core-dialog  # Using NPM
+```
+
+Using static registers the custom element with default name automatically. Recommended for apps:
+
+```html
+<script src="https://static.nrk.no/core-components/major/5/core-dialog/core-dialog.min.js"></script>  <!-- Using static -->
+```
+
 
 ## Usage
 
 ### HTML / JavaScript
 
-<small>Note: `core-dialog` should be replaced with a project specific name to avoid version conflicts.</small>
-
 ```html
-<core-dialog id="my-dialog" hidden {strict} aria-modal={true|false} aria-label={String}>
+<core-dialog id="my-dialog"
+             hidden                   <!-- Hide dialog by default -->
+             strict                   <!-- Optional. If true, prevents the dialog from closing on ESC-key and on backdrop click -->
+             aria-modal="{Boolean}"   <!-- Optional. If true shows backdrop, else hides it -->
+             aria-label="{String}">   <!-- Optional. Is read by screen readers -->
   <h1>Title of dialog</h1>
   <p>Some content</p>
-  <button for="close">Close dialog</button> <!-- Closes the current dialog -->
+  <button for="close">Close dialog</button>   <!-- Closes the current dialog -->
 </core-dialog>
-<!-- strict: Prevents the dialog from closing on ESC-key and on backdrop click -->
-<!-- aria-modal: Shows (aria-modal="true". default) or hides (aria-modal="false") backdrop -->
-<!-- aria-label: Is read by screen readers -->
-
-<button for="my-dialog">Open dialog</button> <!-- Opens dialog with id="my-dialog" -->
+<button for="my-dialog">Open dialog</button>  <!-- Opens dialog with id="my-dialog" -->
 ```
 
 ```js
-import CoreDialog from '@nrk/core-dialog'
+import CoreDialog from '@nrk/core-dialog'                 // Using NPM
+window.customElements.define('core-dialog', CoreDialog)   // Using NPM
 
-window.customElements.define('core-dialog', CoreDialog)
+const myDialog = document.querySelector('core-dialog')
+
+// Getters
+myDialog.open            // True if not hidden
+myDialog.modal           // True if modal
+myDialog.strict          // True if strict
+myDialog.backdrop        // Get backdrop element
+// Setters
+myDialog.open = false    // Set open mode
+myDialog.modal = true    // Set modal mode
+myDialog.strict = false  // Set strict mode
+myDialog.hidden = true   // Close dialog
+// Methods
+myDialog.close()         // Close dialog
+myDialog.show()          // Open dialog
+myDialog.showModal()     // Open dialog as modal
 ```
 
 ### React / Preact
@@ -170,7 +189,11 @@ window.customElements.define('core-dialog', CoreDialog)
 ```jsx
 import CoreDialog from '@nrk/core-dialog/jsx'
 
-<CoreDialog hidden {strict} aria-modal={true|false} aria-label="Title of dialog" onDialogToggle={(event) => {}}>
+<CoreDialog hidden                            // Hide dialog by default
+            strict                            // Optional. If true, prevents the dialog from closing on ESC-key and on backdrop click
+            aria-modal={Boolean}              // Optional. If true shows backdrop, else hides it
+            aria-label={String}               // Optional. Is read by screen readers
+            onDialogToggle={Function}>        // Optional. Toggle event handler
   <h1>My React/Preact dialog</h1>
   <p>Some content</p>
   <button for="close"></button>
@@ -191,19 +214,18 @@ content with `<h1 tabindex="-1">Dialog title</h1>`.
 
 ### Elements order
 
-Though not strictly required, the `<button>` opening a `@nrk/core-dialog` should be placed directly before the `<core-dialog>` itself. This eases the mental model for screen reader users.
+Though not strictly required, the `<button>` opening a dialog should be placed directly before the `<core-dialog>` itself. This eases the mental model for screen reader users.
 
 
 ## Events
 
+### dialog.toggle
+
+Fired when a dialog is toggled:
+
 ```js
 document.addEventListener('dialog.toggle', (event) => {
-  event.target              // CoreDialog element
-  event.detail.open         // Current open state
-  event.detail.hidden       // Current hidden state
-  event.detail.modal        // Current modal state
-  event.detail.strict       // Current strict state
-  event.detail.backdrop     // Backdrop element
+  event.target    // The dialog element
 })
 ```
 
@@ -217,4 +239,4 @@ document.addEventListener('dialog.toggle', (event) => {
 .my-dialog + backdrop[hidden] {}      /* Target backdrop in closed state */
 ```
 
-<small>Note : There is a z-index limit for the backdrop at 2000000000. Do not use higher z-index values in your site in order for `core-dialog` to work properly. The limit exists because some browser extensions, like [ghostery](https://chrome.google.com/webstore/detail/ghostery-%E2%80%93-privacy-ad-blo/mlomiejdfkolichcflejclcbmpeaniij?hl=en) have absurdly high z-indexes. The issue is further explained [here](https://techjunkie.com/maximum-z-index-value).</small>
+**Note:** There is a z-index limit for the backdrop at 2000000000. Do not use higher z-index values in your site in order for `core-dialog` to work properly. The limit exists because some browser extensions, like [ghostery](https://chrome.google.com/webstore/detail/ghostery-%E2%80%93-privacy-ad-blo/mlomiejdfkolichcflejclcbmpeaniij?hl=en) have absurdly high z-indexes. The issue is further explained [here](https://techjunkie.com/maximum-z-index-value).

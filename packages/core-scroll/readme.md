@@ -1,16 +1,8 @@
 # Core Scroll
 
-> `@nrk/core-scroll` enhances any tag with content to be scrollable with mouse interaction on non-touch-devices. `core-scroll` also hides the scrollbars and automatically disables animation for users who prefers [reduced motion](https://css-tricks.com/introduction-reduced-motion-media-query/).
+> `@nrk/core-scroll` enhances any tag with content to be scrollable with mouse interaction on non-touch-devices.
+> It also hides the scrollbars and automatically disables animation for users who prefers [reduced motion](https://css-tricks.com/introduction-reduced-motion-media-query/).
 
-## Installation
-
-```bash
-npm install @nrk/core-scroll
-```
-```js
-import CoreScroll from '@nrk/core-scroll'     // Vanilla JS
-import CoreScroll from '@nrk/core-scroll/jsx' // React/Preact JSX
-```
 
 <!-- <script src="https://unpkg.com/preact"></script>
 <script src="https://unpkg.com/preact-compat"></script>
@@ -29,7 +21,7 @@ import CoreScroll from '@nrk/core-scroll/jsx' // React/Preact JSX
 </style>
 demo-->
 
-## Demo
+## Example
 
 ```html
 <!--demo-->
@@ -107,84 +99,99 @@ demo-->
 </script>
 ```
 
+## Installation
 
+Using NPM provides own element namespace and extensibility.
+Recommended for apps and widgets:
+
+```bash
+npm install @nrk/core-scroll  # Using NPM
+```
+
+Using static registers the custom element with default name automatically. Recommended for apps:
+
+```html
+<script src="https://static.nrk.no/core-components/major/5/core-scroll/core-scroll.min.js"></script>  <!-- Using static -->
+```
 
 ## Usage
 
-Scroll speed is controlled by `friction` rather than `duration` (a short scroll distance will have a shorter duration and vice versa) for a more natural feeling of motion. Buttons can control a `core-scroll` by targeting its ID and specifying a direction; `left|right|up|down`. The `disabled` attribute is automatically added/removed to controller buttons when there is no more pixels to scroll in specified direction. Important: `@nrk/core-scroll` manipulates styling to hide scrollbars, [see how to work with margin and height &rarr;](#styling)
-
-<small>Note: `core-scroll` should be replaced with a project specific name to avoid version conflicts.</small>
+Buttons can control a `core-scroll` by targeting its ID and specifying a direction. The `disabled` attribute is automatically added/removed to controller buttons when there is no more pixels to scroll in specified direction. Important: `core-scroll` manipulates styling to hide scrollbars, [see how to work with margin and height &rarr;](#styling)
 
 ```html
-<button for="my-scroll-js" value="up" aria-label="Rull opp">&uarr;</button>
-<core-scroll id="my-scroll-js" friction=".8"> <!-- Friction is optional. Defaults to .8 -->
-  <!-- Direct children is used to calculate natural stop points for scroll -->
-  <div>1</div>
+<button
+  for="my-scroll-js"      <!-- {String} Id of <core-scroll> -->
+  value="up"              <!-- {String} Sets direction of scroll. Possible values: "left", "right", "up" or "down" -->
+  aria-label="Rull opp">  <!-- {String} Sets label -->
+  &uarr;
+</button>
+<core-scroll
+  id="my-scroll-js"       <!-- {String} Id corresponding to for attribute of <button> -->
+  friction=".2">          <!-- {Number} Optional. Default 0.8. Controls scroll speed. Lower friction means higher speed -->
+  <div>1</div>            <!-- Direct children is used to calculate natural stop points for scroll -->
   <div>2</div>
   <div>3</div>
 </core-scroll>
 ```
 
 ```js
-import CoreScroll from '@nrk/core-scroll'
+import CoreScroll from '@nrk/core-scroll'                 // Using NPM
+window.customElements.define('core-scroll', CoreScroll)   // Using NPM
 
-window.customElements.define('core-scroll', CoreScroll)
+const myScroll = document.querySelector('core-scroll')
 
-// Controlling using .scroll method:
-document.getElementById('my-scroll').scroll('left') // up|down|left|right
-document.getElementById('my-scroll').scroll({x: 0, y: 10}) // exact scroll position
-document.getElementById('my-scroll').scroll({x: 0, move: 'down'}) // combination
-
-// Reading state
-document.getElementById('my-scroll').scrollLeft
-document.getElementById('my-scroll').scrollRight
-document.getElementById('my-scroll').scrollTop
-document.getElementById('my-scroll').scrollBottom
+// Getters
+myScroll.scrollLeft                   // Amount of pixels remaining in scroll direction left
+myScroll.scrollRight                  // Amount of pixels remaining in scroll direction right
+myScroll.scrollTop                    // Amount of pixels remaining in scroll direction up
+myScroll.scrollBottom                 // Amount of pixels remaining in scroll direction down
+// Methods
+myScroll.scroll('left')               // Scroll in specified direction
+myScroll.scroll({x: 0, y: 10})        // Scroll to exact position
+myScroll.scroll({x: 0, move: 'down'}) // Scroll with position and direction
 ```
 
 ### React / Preact
 ```jsx
 import CoreScroll from '@nrk/core-scroll/jsx'
 
-<CoreScroll onScrollChange={(event) => {}}>
+<CoreScroll friction={Number}         // Optional. Default 0.8. Controls scroll speed
+            onScrollChange={Function} // Optional. Scroll change event handler
+            onScrollClick={Function}> // Optional. Scroll click event handler
   {/* elements */}
 </CoreScroll>
 
-// See example implementation on using onScrollChange with buttons
 ```
-
-
 
 ## Events
 
 ### scroll.change
-`'scroll.change'` is fired regularly during a scroll. The event is [throttled](https://css-tricks.com/the-difference-between-throttling-and-debouncing/) to run every 500ms and ensure better performance. The event bubbles, and can therefore be detected both from button element itself, or any parent element (read event delegation):
+
+Fired regularly during a scroll. The event is [throttled](https://css-tricks.com/the-difference-between-throttling-and-debouncing/) to run every 500ms and ensure better performance:
 
 
 ```js
 document.addEventListener('scroll.change', (event) => {
-  event.target              // The core-scroll element triggering scroll.change event
-  event.target.scrollLeft   // Amount of pixels remaining in scroll direction left
-  event.target.scrollRight  // Amount of pixels remaining in scroll direction right
-  event.target.scrollTop    // Amount of pixels remaining in scroll direction up
-  event.target.scrollBottom // Amount of pixels remaining in scroll direction down
+  event.target   // The scroll element
 })
 ```
 
 
 ### scroll.click
-`'scroll.click'` is fired when clicking a button controlling `@nrk/core-scroll`. The event bubbles, and can therefore be detected both from button element itself, or any parent element (read event delegation):
+
+Fired when clicking a button controlling `core-scroll`:
 
 
 ```js
 document.addEventListener('scroll.click', (event) => {
-  event.target        // The core-scroll element triggering scroll.change event
+  event.target        // The scroll element
   event.detail.move   // Direction to move (left, right, up, down)
 })
 ```
 
 ### scroll
-`'scroll'` [is a native event](https://developer.mozilla.org/en-US/docs/Web/Events/scroll) fired for every scrolled pixel. Be cautious about performance when listening to `scroll`; heavy or many read/write operations will slow down your page. The event does not bubble, and you therefore need [`useCapture`](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#Parameters) set to true when listening for `scroll` events from a parent element:
+
+[A native event](https://developer.mozilla.org/en-US/docs/Web/Events/scroll) fired for every scrolled pixel. Be cautious about performance when listening to `scroll`; heavy or many read/write operations will slow down your page. The event does not bubble, and you therefore need [`useCapture`](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#Parameters) set to true when listening for `scroll` events from a parent element:
 
 ```js
 document.addEventListener('scroll', (event) => {
@@ -203,19 +210,19 @@ document.addEventListener('scroll', (event) => {
 
 ### Scrollbar hiding
 
-`@nrk/core-scroll` adds negative margins in some browsers to hide scrollbars. Therefore, make sure to place `@nrk/core-scroll` inside a wrapper element with `overflow: hidden`:
+`core-scroll` adds negative margins in some browsers to hide scrollbars. Therefore, make sure to place `core-scroll` inside a wrapper element with `overflow: hidden`:
 
 ```
-<div style="overflow:hidden"><div id="core-scroll"></div></div>
+<div style="overflow:hidden"><core-scroll>...</core-scroll></div>
 ```
 
 ### Setting height
 
-By default, `@nrk/core-scroll` scales based on content. If you want to set a fixed height, set this on the wrapper element (not directly on the `@nrk/core-scroll` element):
+By default, `core-scroll` scales based on content. If you want to set a fixed height, set this on the wrapper element (not directly on the `core-scroll` element):
 
 ✅ Do | 🚫 Don't
 :-- | :--
-`<div style="overflow:hidden;height:200px"><div id="core-scroll"></div></div>` | `<div style="overflow:hidden"><div id="core-scroll" style="height:200px"></div></div>`
+`<div style="overflow:hidden;height:200px"><core-scroll>...</core-scroll></div>` | `<div style="overflow:hidden"><core-scroll style="height:200px"></core-scroll></div>`
 
 ### Button states
 
