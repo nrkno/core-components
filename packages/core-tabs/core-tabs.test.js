@@ -49,7 +49,7 @@ describe('core-tabs', () => {
       <div id="panel-2">Text of tab 2</div>
     `)
     await page.waitFor('core-tabs [role="tab"]')
-    await page.evaluate(() => document.querySelector('core-tabs').tab = 1)
+    await page.evaluate(() => (document.querySelector('core-tabs').tab = 1))
     expect(await page.$eval('#tab-1', el => el.getAttribute('aria-selected'))).toEqual('false')
     expect(await page.$eval('#tab-2', el => el.getAttribute('aria-selected'))).toEqual('true')
   })
@@ -64,7 +64,7 @@ describe('core-tabs', () => {
       <div id="panel-2">Text of tab 2</div>
     `)
     await page.waitFor('core-tabs [role="tab"]')
-    await page.evaluate(() => document.querySelector('core-tabs').tab = 'tab-2')
+    await page.evaluate(() => (document.querySelector('core-tabs').tab = 'tab-2'))
     expect(await page.$eval('#tab-1', el => el.getAttribute('aria-selected'))).toEqual('false')
     expect(await page.$eval('#tab-2', el => el.getAttribute('aria-selected'))).toEqual('true')
   })
@@ -79,7 +79,7 @@ describe('core-tabs', () => {
       <div id="panel-2">Text of tab 2</div>
     `)
     await page.waitFor('core-tabs [role="tab"]')
-    await page.evaluate(() => document.querySelector('core-tabs').tab = document.querySelector('#tab-2'))
+    await page.evaluate(() => (document.querySelector('core-tabs').tab = document.querySelector('#tab-2')))
     expect(await page.$eval('#tab-1', el => el.getAttribute('aria-selected'))).toEqual('false')
     expect(await page.$eval('#tab-2', el => el.getAttribute('aria-selected'))).toEqual('true')
   })
@@ -114,7 +114,7 @@ describe('core-tabs', () => {
       <div id="panel-2">Text of tab 2</div>
     `)
     await page.waitFor('core-tabs [role="tab"]')
-    await page.evaluate(() => document.querySelector('core-tabs').tab = 1)
+    await page.evaluate(() => (document.querySelector('core-tabs').tab = 1))
     expect(await page.$eval('#tab-2', el => el.getAttribute('aria-selected'))).toEqual('true')
     expect(await page.$eval('#panel-1', el => el.hasAttribute('hidden'))).toEqual(false)
     expect(await page.$eval('#panel-2', el => el.hasAttribute('hidden'))).toEqual(true)

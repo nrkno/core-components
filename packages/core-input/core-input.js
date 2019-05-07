@@ -1,4 +1,4 @@
-/* globals HTMLElement */
+/* eslint: ignore */
 import { IS_IOS, addEvent, escapeHTML, dispatchEvent, queryAll } from '../utils'
 
 const UUID = 'input'

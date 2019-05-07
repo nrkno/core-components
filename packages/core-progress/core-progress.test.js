@@ -17,18 +17,18 @@ describe('core-progress', () => {
   it('updates label from value', async () => {
     await page.setContent(`<core-progress value="0.2"></core-progress>`)
     expect(await page.$eval('core-progress', el => el.getAttribute('aria-label'))).toEqual('20%')
-    await page.evaluate(() => document.querySelector('core-progress').value = 0)
+    await page.evaluate(() => (document.querySelector('core-progress').value = 0))
     expect(await page.$eval('core-progress', el => el.getAttribute('aria-label'))).toEqual('0%')
-    await page.evaluate(() => document.querySelector('core-progress').value = 1)
+    await page.evaluate(() => (document.querySelector('core-progress').value = 1))
     expect(await page.$eval('core-progress', el => el.getAttribute('aria-label'))).toEqual('100%')
   })
 
   it('updates label from value as radial', async () => {
     await page.setContent(`<core-progress value="0.2" type="radial"></core-progress>`)
     expect(await page.$eval('core-progress', el => el.getAttribute('aria-label'))).toEqual('20%')
-    await page.evaluate(() => document.querySelector('core-progress').value = 0)
+    await page.evaluate(() => (document.querySelector('core-progress').value = 0))
     expect(await page.$eval('core-progress', el => el.getAttribute('aria-label'))).toEqual('0%')
-    await page.evaluate(() => document.querySelector('core-progress').value = 1)
+    await page.evaluate(() => (document.querySelector('core-progress').value = 1))
     expect(await page.$eval('core-progress', el => el.getAttribute('aria-label'))).toEqual('100%')
   })
 
@@ -40,9 +40,9 @@ describe('core-progress', () => {
   it('calculates percentage from max', async () => {
     await page.setContent(`<core-progress value="0.5"></core-progress>`)
     expect(await page.$eval('core-progress', el => el.getAttribute('aria-label'))).toEqual('50%')
-    await page.evaluate(() => document.querySelector('core-progress').max = 10)
+    await page.evaluate(() => (document.querySelector('core-progress').max = 10))
     expect(await page.$eval('core-progress', el => el.getAttribute('aria-label'))).toEqual('5%')
-    await page.evaluate(() => document.querySelector('core-progress').max = 100)
+    await page.evaluate(() => (document.querySelector('core-progress').max = 100))
     expect(await page.$eval('core-progress', el => el.getAttribute('aria-label'))).toEqual('1%')
   })
 

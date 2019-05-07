@@ -29,9 +29,9 @@ describe('core-dialog', () => {
     await page.click('button[for="close"]')
     expect(await page.$eval('core-dialog', el => el.hasAttribute('hidden'))).toEqual(true)
     expect(await page.$eval('core-dialog + backdrop', el => el.hasAttribute('hidden'))).toEqual(true)
-    await page.evaluate(() => document.querySelector('core-dialog').hidden = false)
+    await page.evaluate(() => (document.querySelector('core-dialog').hidden = false))
     expect(await page.$eval('core-dialog + backdrop', el => el.hasAttribute('hidden'))).toEqual(false)
-    await page.evaluate(() => document.querySelector('core-dialog').hidden = true)
+    await page.evaluate(() => (document.querySelector('core-dialog').hidden = true))
     expect(await page.$eval('core-dialog + backdrop', el => el.hasAttribute('hidden'))).toEqual(true)
   })
 
@@ -107,7 +107,6 @@ describe('core-dialog', () => {
     await page.evaluate(() => document.querySelector('core-dialog + backdrop').click())
     expect(await page.$eval('core-dialog', el => el.hasAttribute('hidden'))).toEqual(false)
   })
-
 
   it('triggers toggle event', async () => {
     await page.setContent(`

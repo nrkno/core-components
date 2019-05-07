@@ -98,7 +98,7 @@ describe('core-datepicker', () => {
     const days = await page.$eval('core-datepicker', el => el.days)
     expect(days.length).toEqual(7)
     for (let i = 1; i <= 7; i++) {
-      expect(await page.$eval(`core-datepicker thead tr th:nth-child(${i})`, el => el.textContent)).toEqual(days[i-1])
+      expect(await page.$eval(`core-datepicker thead tr th:nth-child(${i})`, el => el.textContent)).toEqual(days[i - 1])
     }
     expect(await page.$$eval(`core-datepicker table td button[data-adjacent="false"]`, els => els.length)).toEqual(31)
     expect(await page.$eval('core-datepicker button[autofocus]', el => el.textContent)).toEqual('1')
@@ -139,7 +139,7 @@ describe('core-datepicker', () => {
     await page.waitFor('core-datepicker select option')
     expect(await page.$eval('core-datepicker select', el => el.childElementCount)).toEqual(12)
     for (let i = 1; i <= 12; i++) {
-      expect(await page.$eval(`core-datepicker option:nth-child(${i})`, el => el.textContent)).toEqual(months[i-1])
+      expect(await page.$eval(`core-datepicker option:nth-child(${i})`, el => el.textContent)).toEqual(months[i - 1])
     }
   })
 
@@ -153,7 +153,7 @@ describe('core-datepicker', () => {
     await page.waitFor('core-datepicker table thead')
     expect(await page.$eval('core-datepicker table thead tr', el => el.childElementCount)).toEqual(7)
     for (let i = 1; i <= 7; i++) {
-      expect(await page.$eval(`core-datepicker thead tr th:nth-child(${i})`, el => el.textContent)).toEqual(days[i-1])
+      expect(await page.$eval(`core-datepicker thead tr th:nth-child(${i})`, el => el.textContent)).toEqual(days[i - 1])
     }
   })
 
@@ -164,7 +164,7 @@ describe('core-datepicker', () => {
         <table></table>
       </core-datepicker>
     `)
-    await page.evaluate(() => document.querySelector('core-datepicker').disabled = date => date > new Date('2018-01-01'))
+    await page.evaluate(() => (document.querySelector('core-datepicker').disabled = date => date > new Date('2018-01-01')))
     await page.waitFor('core-datepicker table button')
 
     expect(await page.$eval('core-datepicker tbody tr:nth-child(1) td:nth-child(1) button', el => el.disabled)).toEqual(false)

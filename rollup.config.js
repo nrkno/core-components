@@ -5,7 +5,6 @@ const resolve = require('rollup-plugin-node-resolve')
 const serve = require('rollup-plugin-serve')
 const json = require('rollup-plugin-json')
 const { uglify } = require('rollup-plugin-uglify')
-const { version } = require('./package.json')
 const utils = require('./bin/index.js')
 
 const minify = uglify({ output: { comments: /^!/ } })
