@@ -23,7 +23,7 @@ export default class Input extends React.Component {
   componentWillUnmount () {
     this.el.removeEventListener('input.filter', this.onFilter)
     this.el.removeEventListener('input.select', this.onSelect)
-    this.el.removeEventListener('input.beforeSend', this.onAjaxBeforeSend)
+    this.el.removeEventListener('input.ajax.beforeSend', this.onAjaxBeforeSend)
     this.el.removeEventListener('input.ajax', this.onAjax)
   }
   render () {
@@ -45,6 +45,7 @@ Input.Highlight = ({ text, query = '' }) =>
 Input.propTypes = {
   onFilter: PropTypes.func,
   onSelect: PropTypes.func,
+  onAjaxBeforeSend: PropTypes.func,
   onAjax: PropTypes.func,
   open: PropTypes.bool,
   limit: PropTypes.number,

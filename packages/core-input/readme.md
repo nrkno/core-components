@@ -302,7 +302,7 @@ Hybrid solution; lazy load items, but let `core-input` still handle filtering:
   }
 
   document.addEventListener('focus', function (event) {
-    if (event.target.className.indexOf('my-input-lazy') === -1) return // Make sure we are on correct input
+    if (!event.target.className || event.target.className.indexOf('my-input-lazy') === -1) return // Make sure we are on correct input
 
     event.target.className = '' // Prevent double execution
     window.getCountries(function (items) {
