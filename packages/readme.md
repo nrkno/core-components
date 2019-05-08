@@ -60,8 +60,8 @@ class MyToggle extends CoreToggle {
     // Your disconnect code here...
   }
 
-  attributeChangedCallback (...args) {
-    super.attributeChangedCallback(...args)
+  attributeChangedCallback (name, oldValue, newValue) {
+    super.attributeChangedCallback(name, oldValue, newValue)
     // Your attribute change code here...
   }
 

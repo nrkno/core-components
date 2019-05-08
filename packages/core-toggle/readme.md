@@ -83,7 +83,6 @@ Using static registers the custom element with default name automatically. Recom
 <button>Toggle VanillaJS</button>       <!-- Must be <button> placed directly before <core-toggle> or use id + for attributes -->
 <core-toggle
   hidden                                <!-- Set hidden attribute to prevent FOUC -->
-  for="String"                          <!-- Optional. Defaults to previousElementSibling. Sets the corresponding toggle button by id -->
   popup="Boolean|String"                <!-- Optional. Defaults to false. Enable or disable if clicking outside toggle should close it. Provide a string to control the aria-label text on the toggle -->
   value="String">                       <!-- Optional. Defaults to button.innerHTML. Sets innerHTML of the button and safely updates aria-label for screen readers -->
   <div>Content</div>
