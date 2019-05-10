@@ -1,10 +1,16 @@
+const puppeteer = require('puppeteer')
 const path = require('path')
+let browser, page
 
 describe('core-tabs', () => {
   beforeAll(async () => {
+    browser = await puppeteer.launch()
+    page = await browser.newPage()
     page.on('console', msg => console.log(msg._text))
     await page.addScriptTag({ path: path.join(__dirname, 'core-tabs.min.js') })
   })
+
+  afterAll(async () => { await browser.close() })
 
   it('sets up all properties', async () => {
     await page.setContent(`

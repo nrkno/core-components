@@ -19,7 +19,6 @@
     "@babel/preset-env": "^7.4.4",
     "fast-glob": "^2.2.6",
     "jest": "^24.7.1",
-    "jest-puppeteer": "^4.1.1",
     "puppeteer": "^1.15.0",
     "rollup": "^1.10.1",
     "rollup-plugin-babel": "^4.3.2",
@@ -45,6 +44,7 @@
       "before",
       "after",
       "beforeAll",
+      "afterAll",
       "beforeEach",
       "afterEach",
       "test",
@@ -54,7 +54,6 @@
     ]
   },
   "jest": {
-    "preset": "jest-puppeteer",
     "testURL": "http://localhost/"
   }
 }

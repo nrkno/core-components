@@ -1,10 +1,16 @@
+const puppeteer = require('puppeteer')
 const path = require('path')
+let browser, page
 
 describe('core-datepicker', () => {
   beforeAll(async () => {
+    browser = await puppeteer.launch()
+    page = await browser.newPage()
     page.on('console', msg => console.log(msg._text))
     await page.addScriptTag({ path: path.join(__dirname, 'core-datepicker.min.js') })
   })
+
+  afterAll(async () => { await browser.close() })
 
   it('sets up properties', async () => {
     const date = new Date('2019-04-30T10:44:56')
@@ -196,7 +202,7 @@ describe('core-datepicker', () => {
     await page.evaluate(() => {
       return new Promise((resolve, reject) => {
         window.addEventListener('datepicker.click.day', resolve)
-        document.querySelector('core-datepicker tbody tr:nth-child(2) td:nth-child(7) button').click()
+        document.querySelector('core-datepicker button').click()
       })
     })
   })
