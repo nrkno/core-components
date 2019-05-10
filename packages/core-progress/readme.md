@@ -105,16 +105,16 @@ window.customElements.define('core-progress', CoreProgress)   // Using NPM
 const myProgress = document.querySelector('core-progress')
 
 // Getters
- myProgress.type                   // The progress type
- myProgress.value                  // The current progress value
- myProgress.max                    // The max progress value
- myProgress.percentage             // The calculated percentage from (value / max * 100)
- myProgress.indeterminate          // True if the progress is indeterminate (no value attribute)
+myProgress.type                   // The progress type
+myProgress.value                  // The current progress value
+myProgress.max                    // The max progress value
+myProgress.percentage             // The calculated percentage from (value / max * 100)
+myProgress.indeterminate          // True if the progress is indeterminate (no value attribute)
 // Setters
- myProgress.type = 'radial'        // Set the progress type. Possible values: "linear" and "radial"
- myProgress.value = .5             // Set the progress value. If string, indeterminate is set to true
- myProgress.max = 10               // Set the max progress value
- myProgress.indeterminate = true   // Set indeterminate value
+myProgress.type = 'radial'        // Set the progress type. Possible values: "linear" and "radial"
+myProgress.value = .5             // Set the progress value. If string, indeterminate is set to true
+myProgress.max = 10               // Set the max progress value
+myProgress.indeterminate = true   // Set indeterminate value
 ```
 
 ### React / Preact
