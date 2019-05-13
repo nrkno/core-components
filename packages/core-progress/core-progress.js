@@ -13,7 +13,7 @@ export default class CoreProgress extends HTMLElement {
     const percentage = this.indeterminate ? 100 : this.percentage
 
     this.setAttribute('aria-label', this.indeterminate || `${this.percentage}%`)
-    this[this.indeterminate ? 'setAttribute' : 'removeAttribute']('indeterminate', '')
+    this.toggleAttribute('indeterminate', this.indeterminate)
 
     if (this.type === 'linear') this.style.width = `${percentage}%`
     if (this.type === 'radial') this.style.strokeDashoffset = Math.round((100 - percentage) * Math.PI)

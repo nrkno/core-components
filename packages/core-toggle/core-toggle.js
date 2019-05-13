@@ -15,6 +15,7 @@ export default class CoreToggle extends HTMLElement {
     document.addEventListener('click', this)
   }
   disconnectedCallback () {
+    this._button = null
     document.removeEventListener('keydown', this, true)
     document.removeEventListener('click', this)
   }
@@ -43,15 +44,18 @@ export default class CoreToggle extends HTMLElement {
       else if (this.popup && !this.contains(event.target)) this.hidden = true // Click in content or outside
     }
   }
-  get button () { return (this.id && document.querySelector(`[for="${this.id}"]`)) || this.previousElementSibling }
+  get button () {
+    if (this._button && this._button.getAttribute('for') === this.id) return this._button // Speed up
+    return (this._button = this.id && document.querySelector(`[for="${this.id}"]`)) || this.previousElementSibling
+  }
 
   // aria-haspopup triggers forms mode in JAWS, therefore store as custom attr
   get popup () { return this.getAttribute('popup') === 'true' || this.getAttribute('popup') || this.hasAttribute('popup') }
-  set popup (val) { this[val ? 'setAttribute' : 'removeAttribute']('popup', val) }
+  set popup (val) { this.toggleAttribute('hidden', val) }
 
   // Must set attribute for IE11
   get hidden () { return this.hasAttribute('hidden') }
-  set hidden (val) { this[val ? 'setAttribute' : 'removeAttribute']('hidden', '') }
+  set hidden (val) { this.toggleAttribute('hidden', val) }
 
   // Sets this.button aria-label, so visible button text can be augmentet with intension of button
   // Example: Button text: "01.02.2019", aria-label: "01.02.2019, Choose date"
