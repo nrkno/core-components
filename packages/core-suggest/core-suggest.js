@@ -8,8 +8,8 @@ export default class CoreSuggest extends HTMLElement {
   static get observedAttributes () { return ['hidden'] }
 
   connectedCallback () {
-    // this._observer = new window.MutationObserver(() => onMutation(this)) // Enhance <a> and <button> markup
-    // this._observer.observe(this, { subtree: true, childList: true, attributes: true, attributeFilter: ['hidden'] })
+    this._observer = new window.MutationObserver(() => onMutation(this)) // Enhance <a> and <button> markup
+    this._observer.observe(this, { subtree: true, childList: true, attributes: true, attributeFilter: ['hidden'] })
 
     if (IS_IOS) this.input.setAttribute('role', 'combobox') // iOS does not inform about editability if combobox
     this.input.setAttribute('autocomplete', 'off')
@@ -18,7 +18,7 @@ export default class CoreSuggest extends HTMLElement {
 
     document.addEventListener('click', this)
     document.addEventListener('input', this)
-    // document.addEventListener('keydown', this)
+    document.addEventListener('keydown', this)
     document.addEventListener('focusin', this)
 
     if (document.activeElement === this.input) this.hidden = false // Open if active
@@ -28,7 +28,7 @@ export default class CoreSuggest extends HTMLElement {
     this._observer.disconnect()
     document.removeEventListener('click', this)
     document.removeEventListener('input', this)
-    // document.removeEventListener('keydown', this)
+    document.removeEventListener('keydown', this)
     document.removeEventListener('focusin', this)
   }
   attributeChangedCallback (name, prev, next) {
@@ -102,7 +102,7 @@ function onMutation (self) {
       }
     }
   }
-  // self._observer.takeRecords() // Empty mutation queue to skip mutations done by highlighting
+  self._observer.takeRecords() // Empty mutation queue to skip mutations done by highlighting
 }
 
 function onInput (self, event) {
@@ -166,7 +166,7 @@ function onAjaxSend (self, ajax) {
     ajax.onload = () => {
       try { ajax.responseJSON = JSON.parse(ajax.responseText) } catch (err) { ajax.responseJSON = false }
       dispatchEvent(self, 'suggest.ajax', ajax)
-      onMutation(self)
+      // onMutation(self)
     }
     ajax.open('GET', self.ajax.replace('{{value}}', window.encodeURIComponent(self.input.value)), true)
     ajax.setRequestHeader('X-Requested-With', 'XMLHttpRequest') // https://en.wikipedia.org/wiki/List_of_HTTP_header_fields#Requested-With
