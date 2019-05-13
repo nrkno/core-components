@@ -17,7 +17,7 @@
     "start": "rollup --config --watch",
     "static-publish": "npm run build && static-publish --directory=packages --account=nrk-core --latest --major",
     "test": "npm run build && ava -v && standard -v",
-    "test:watch": "jest --watch"
+    "test:watch": "ava -w"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.4.4",
