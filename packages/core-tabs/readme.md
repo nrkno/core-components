@@ -1,18 +1,7 @@
 # Core Tabs
 
-> `@nrk/core-tabs` converts `<button>` and `<a>` elements to keyboard accessible tabs, controlling children of next element sibling (tabpanels). Tabs can be nested and easily extended with custom animations or behaviour through the `tabs.toggle` event.
-
-
-
-## Installation
-
-```bash
-npm install @nrk/core-tabs --save-exact
-```
-```js
-import coreTabs from '@nrk/core-tabs'     // Vanilla JS
-import CoreTabs from '@nrk/core-tabs/jsx' // React/Preact JSX
-```
+> `@nrk/core-tabs` converts `<button>` and `<a>` elements to keyboard accessible tabs, controlling following tabpanels.
+> Tabs can be nested and easily extended with custom animations or behaviour through the `tabs.toggle` event.
 
 <!--demo
 <script src="core-tabs/core-tabs.min.js"></script>
@@ -27,26 +16,27 @@ import CoreTabs from '@nrk/core-tabs/jsx' // React/Preact JSX
 </style>
 demo-->
 
-## Demo
+## Example
 
 ```html
 <!--demo-->
-<core-tabs> <!-- Direct children must be <a> or <button>. Do not use <li> -->
-  <button>Button tab</button>
-  <button>Nested tabs</button>
-  <a href="#link">Link tab</a>
+<core-tabs>
+  <button>Tab 1</button>
+  <button>Tab 2</button>
+  <a href="#link">Tab 3</a>
 </core-tabs>
-<div>Text of tabpanel 1</div>
-<div hidden> <!-- hidden prevents flash of unstyled content -->
+<div>Tabpanel 1</div>
+<div hidden>
   <core-tabs>
     <button>Subtab 1</button>
     <button>Subtab 2</button>
     <button>Subtab 3</button>
   </core-tabs>
-  <div>Text of subpanel tabpanel 1</div>
-  <div>Text of subpanel tabpanel 2</div>
+  <div>Subtabpanel 1</div>
+  <div>Subtabpanel 2</div>
+  <div>Subtabpanel 3</div>
 </div>
-<div hidden>Text of tabpanel 3</div>
+<div hidden>Tabpanel 3</div>
 ```
 
 ```html
@@ -54,55 +44,67 @@ demo-->
 <div id="jsx-tabs" class="my-vertical-tabs"></div>
 <script type="text/jsx">
   ReactDOM.render(<div>
-    <CoreTabs open={0} onToggle={function(){}}>
-      <button>Button tab JSX</button>
-      <button>Nested tabs JSX</button>
+    <CoreTabs>
+      <button>Vertical tab 1 JSX</button>
+      <button>Vertical tab 2 JSX</button>
     </CoreTabs>
-    <div>Text of tab 1</div>
+    <div>Tabpanel 1 JSX</div>
     <div>
       <CoreTabs>
         <button>Subtab 1 JSX</button>
         <button hidden>Subtab 2 JSX</button>
       </CoreTabs>
-      <div>Subpanel 1</div>
-      <div hidden>Subpanel 2</div>
+      <div>Subtabpanel 1</div>
+      <div hidden>Subtabpanel 2</div>
     </div>
   </div>, document.getElementById('jsx-tabs'))
 </script>
 ```
 
 
+## Installation
+
+Using NPM provides own element namespace and extensibility.
+Recommended for apps and widgets:
+
+```bash
+npm install @nrk/core-tabs  # Using NPM
+```
+
+Using static registers the custom element with default name automatically. Recommended for apps:
+
+```html
+<script src="https://static.nrk.no/core-components/major/5/core-tabs/core-tabs.min.js"></script>  <!-- Using static -->
+```
 
 ## Usage
 
 ### HTML / JavaScript
 
 ```html
-<div class="my-tabs"> <!-- Direct children must be <a> or <button>. Do not use <li> -->
-  <button id="tab-1">Tab 1</button>
-  <button id="tab-2">Tab 2</button>
-  <button id="tab-3">Tab 2</button>
-</div>
-<div> <!-- Next element children will become panels of correlating tab -->
-  <div>Tab 1 content </div>
-  <div hidden>Tab 2 content</div>
-  <div hidden>Tab 3 content</div>
-</div>
+<core-tabs tab="Number|String|Element">   <!-- Optional. Sets active tab from index, id or element -->
+  <button>Tab 1</button>                  <!-- Tab elements must be <a> or <button>. Do not use <li> -->
+  <a href="#">Tab 2</a>
+  <button>Tab 2</button>
+</core-tabs>
+<div>Tabpanel 1 content</div>             <!-- First tabpanel is the next element sibling of core-tabs -->
+<div hidden>Tabpanel 1 content</div>      <!-- Second tabpanel. Use hidden attribute to prevent FOUC -->
+<div hidden>Tabpanel 1 content</div>      <!-- Third tabpanel.  Use hidden attribute to prevent FOUC -->
 ```
 
 ```js
-import coreTabs from '@nrk/core-tabs'
+import CoreTabs from '@nrk/core-tabs'                 // Using NPM
+window.customElements.define('core-tabs', CoreTabs)   // Using NPM
 
-coreTabs(
-  String|Element|Elements,    // Accepts a selector string, NodeList, Element or array of Elements
-  String|Element|Number       // Optional. Set tab selection with string id, element or tab index number
-)
+const myTabs = document.querySelector('core-tabs')
 
-// Examples:
-coreTabs('.my-tabs')              // Initalize tabs on element
-coreTabs('.my-tabs', 3)           // Initalize tabs and select 3rd tab
-coreTabs('.my-tabs', '#tab-2')    // Initalize tabs and select 2nd tab
-coreTabs('.my-tabs', element)     // Initalize tabs and select tab from element
+// Getters
+myTabs.tab        // Get active tab
+myTabs.tabs       // Get all tabs
+myTabs.panel      // Get active tabpanel
+myTabs.panels     // Get all tabpanels
+// Setters
+myTabs.tab = 0    // Set active tab from index, id or element
 ```
 
 ### React / Preact
@@ -110,40 +112,30 @@ coreTabs('.my-tabs', element)     // Initalize tabs and select tab from element
 ```js
 import CoreTabs from '@nrk/core-tabs/jsx'
 
-// All props are optional, and defaults are shown below
-// Props like className, style, etc. will be applied as actual attributes
-// <CoreTabs> will handle state itself unless you call event.preventDefault() in onToggle
-
-<CoreTabs open={0} onToggle={(event) => {}}>
-  <button>Tab 1</button>  // Tabs items must be <button> or <a>
+<CoreTabs
+  tab={Number|String|Element}   // Optional. Sets active tab from number, id or element
+  onTabsToggle={Function}>      // Optional. Listen to toggle event
+  <button>Tab 1</button>        // Tab elements must be <a> or <button>. Do not use <li>
   <a href="#">Tab 2</a>
 </CoreTabs>
-<div>Panel 1</div>        // Next elements must be tabpanels
-<div hidden>Panel 2</div> // Set hidden on the closed tabpanels
+<div>Tabpanel 1 content</div>             // First tabpanel is the next element sibling of CoreTabs
+<div hidden>Tabpanel 1 content</div>      // Second tabpanel. Use hidden attribute to prevent FOUC
+<div hidden>Tabpanel 1 content</div>      // Third tabpanel.  Use hidden attribute to prevent FOUC
 ```
 
 
 
 ## Events
-`'tabs.toggle'` is fired before toggle (both for VanillaJS and React/Preact components). The `tabs.toggle` event is cancelable, meaning you can use `event.preventDefault()` to cancel default toggling. The event also bubbles, and can therefore be detected both from button element itself, or any parent element (read event delegation):
+
+### tabs.toggle
+
+Fired when toggling a tab:
 
 ```js
-document.addEventListener('tabs.toggle', (event) => {
-  event.target                // The core-tabs element triggering tabs.toggle event
-  event.detail.isOpen         // Index of the open tab
-  event.detail.willOpen       // Index of the clicked tab
-  event.detail.tabs           // Array of tab elements
-  event.detail.panels         // Array of panel elements
-
-  // TIP - access the actual DOM elements:
-  const isOpenTab = event.detail.tabs[event.detail.isOpen]
-  const isOpenPanel = event.detail.panels[event.detail.isOpen]
-  const willOpenTab = event.detail.tabs[event.detail.willOpen]
-  const willOpenPanel = event.detail.panels[event.detail.willOpen]
+document.addEventListener('tabs.toggle', (event) =>
+  event.target     // The tabs element
 })
 ```
-
-
 
 ## Styling
 All styling in documentation is example only. Both the tabs and tabpanels receive attributes reflecting the current toggle state:
@@ -159,19 +151,15 @@ All styling in documentation is example only. Both the tabs and tabpanels receiv
 ```
 
 
-
 ## FAQ
-### Why must tabs be direct children of `core-tabs` element and not inside `<li>`?
+### Why must tabs be direct children of `core-tabs` element and not inside `<ul><li>...</li></ul>`?
 A `<ul>`/`<li>` structure would seem logical for tabs, but this causes some screen readers to incorrectly announce tabs as single (tab 1 of 1).
 
-### Does panels always need to direct children of next element?
-The aria specification does not allow any elements that are focusable by a screen reader to be placed between tabs and panels. Therefore, `@nrk/core-tabs` defaults to use children of next element as panels.
+### Does panels always need be a next element sibling?
+The aria specification does not allow any elements that are focusable by a screen reader to be placed between tabs and panels. Therefore, `core-tabs` defaults to use the next element siblings as panels.
 This behaviour can be overridden, by setting up `id` on panel elements and `aria-controls` on tab element. Use with caution and *only* do this if your project *must* use another DOM structure. Example:
 
 ```js
-const tabs = Array.from(document.querySelectorAll('.my-tabs__tab'))
-const panels = Array.from(document.querySelectorAll('.my-tabs__panel'))
-tabs.forEach((tabs, index) => tab.setAttribute('aria-controls', panels[index].id = 'my-panel-' + i))
-
-coreTabs('.my-tabs')
+const myTabs = document.querySelector('core-tabs')
+myTabs.tabs.forEach((tabs, index) => tab.setAttribute('aria-controls', myTabs.panels[index].id = 'my-panel-' + index))
 ```

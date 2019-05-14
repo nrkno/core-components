@@ -4,6 +4,10 @@
   "author": "NRK <opensource@nrk.no> (https://www.nrk.no/)",
   "version": "5.5.5",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nrkno/core-components.git"
+  },
   "scripts": {
     "build": "rollup --config",
     "install": "node bin/index.js --install",
@@ -12,14 +16,19 @@
     "publish:major": "node bin/index.js --publish=major",
     "start": "rollup --config --watch",
     "static-publish": "npm run build && static-publish --directory=packages --account=nrk-core --latest --major",
-    "test": "npm run build && jest",
-    "test:watch": "jest --watch"
+    "test": "npm run build && ava -v && standard -v",
+    "test:watch": "ava -w"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.4.4",
-    "jest": "^24.7.1",
-    "jest-puppeteer": "^4.1.1",
+    "@babel/preset-react": "^7.0.0",
+    "ava": "^1.4.1",
+    "esm": "^3.2.22",
+    "fast-glob": "^2.2.6",
+    "jsdom": "^15.1.0",
     "puppeteer": "^1.15.0",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
     "rollup": "^1.10.1",
     "rollup-plugin-babel": "^4.3.2",
     "rollup-plugin-commonjs": "^9.3.4",
@@ -29,29 +38,21 @@
     "rollup-plugin-uglify": "^6.0.2",
     "standard": "^12.0.1"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/nrkno/core-components.git"
+  "ava": {
+    "require": [
+      "esm"
+    ],
+    "babel": {
+      "testOptions": {
+        "presets": [
+          "@babel/preset-react"
+        ]
+      }
+    }
   },
   "standard": {
-    "ignore": [
-      "docs"
-    ],
     "globals": [
-      "HTMLElement",
-      "describe",
-      "it",
-      "before",
-      "after",
-      "beforeEach",
-      "afterEach",
-      "test",
-      "expect",
-      "jest"
+      "HTMLElement"
     ]
-  },
-  "jest": {
-    "preset": "jest-puppeteer",
-    "testURL": "http://localhost/"
   }
 }

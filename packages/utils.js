@@ -122,7 +122,7 @@ export function elementToReact (elementClass, ...attr) {
 * getUUID
 * @return {String} A generated unique ID
 */
-export function getUUID (el) {
+export function getUUID () {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 5)
 }
 
