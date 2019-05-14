@@ -6,27 +6,52 @@ It provides effortless and flexible usage, while under the hood enhancing markup
 ## Documentation
 https://static.nrk.no/core-components/latest/
 
+
 ## Installation
 
-Components are individually installed for individual versioning:
-
-```bash
-npm install @nrk/core-toggle
-```
+All components are provided as [custom elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements) and React elements. They are individually installed for individual versioning:
 
 ### Using NPM
 
-```js
-import coreToggle from '@nrk/core-toggle'     // Vanilla JS
-import CoreToggle from '@nrk/core-toggle/jsx' // ...or React/Preact compatible JSX
+Using NPM provides own element namespace and extensibility.
+Recommended for apps and widgets:
+
+```bash
+npm install @nrk/core-dialog
 ```
+
 ### Using static
 
-Recommended only for prototyping.
+Using static registers the custom element with default name automatically. Recommended for apps:
 
 ```html
-<script src="https://static.nrk.no/core-components/major/5/core-toggle/core-toggle.min.js"></script>
+<script src="https://static.nrk.no/core-components/major/1/core-dialog/core-dialog.min.js"></script>
 ```
+
+
+## Usage
+
+### HTML / JavaScript
+
+```js
+import CoreDialog from '@nrk/core-dialog'                 // Using NPM
+window.customElements.define('core-dialog', CoreDialog)   // Using NPM
+```
+
+```html
+<core-dialog modal hidden>...</core-dialog>
+```
+
+### React / Preact
+
+```js
+import CoreDialog from '@nrk/core-dialog/jsx'
+
+<CoreDialog modal hidden>...</CoreDialog>
+```
+
+For more info, refer to the [documentation](https://static.nrk.no/core-components/latest/).
+
 
 ## Local development
 First clone `@nrk/core-components` and install its dependencies:
@@ -57,5 +82,5 @@ git push origin feature/my-changes
 npm run publish:minor -- --core-input --core-toggle # Specify packages to publish
 ```
 
-> NOTE! Please also make sure to keep commits small and clean (that the commit message actually refers to the updated files).  
+> NOTE! Please also make sure to keep commits small and clean (that the commit message actually refers to the updated files).
 > Stylistically, make sure the commit message is **Capitalized** and **starts with a verb in the present tense** (for example `Add minification support`).
