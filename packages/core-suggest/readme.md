@@ -1,26 +1,22 @@
 # Core Suggest
 
-> `@nrk/core-suggest` enhances `<input>` fields with keyboard accessible functionality for autocomplete suggestions, search results and smart select box abilities.
-
-
-
-## Installation
-
-```bash
-npm install @nrk/core-suggest
-```
-```js
-import CoreSuggest from '@nrk/core-suggest'     // Vanilla JS
-import CoreSuggest from '@nrk/core-suggest/jsx' // React/Preact JSX
-```
-
+<!-- <script src="https://unpkg.com/preact"></script>
+<script src="https://unpkg.com/preact-compat"></script>
+<script>
+  window.React = preactCompat
+  window.ReactDOM = preactCompat
+</script> -->
 <!--demo
+<script src="https://unpkg.com/@webcomponents/custom-elements"></script>
 <script src="core-suggest/core-suggest.min.js"></script>
 <script src="core-suggest/core-suggest.jsx.js"></script>
 <style>li button:focus {outline: 3px solid rgb(94, 158, 215)}</style>
 demo-->
 
-## Demo
+> `@nrk/core-suggest` enhances `<input>` fields with keyboard accessible functionality for autocomplete suggestions, search results and smart select box abilities.
+
+
+## Example
 
 ```html
 <!--demo-->
@@ -55,21 +51,37 @@ demo-->
 </script>
 ```
 
+## Installation
+
+Using NPM provides own element namespace and extensibility.
+Recommended for apps and widgets:
+
+```bash
+npm install @nrk/core-suggest  # Using NPM
+```
+
+Using static registers the custom element with default name automatically. Recommended for apps:
+
+```html
+<script src="https://static.nrk.no/core-components/major/5/core-suggest/core-suggest.min.js"></script>  <!-- Using static -->
+```
 
 
 ## Usage
 
-Typing toggles the [hidden attribute](https://developer.mozilla.org/en/docs/Web/HTML/Global_attributes/hidden) on items of type `<button>` and `<a>`, based on matching [textContent](https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent). Focusing the input unhides the following element. The default filtering behavior can easily be altered through the The default filtering behavior can easily be altered through the `'suggest.select'`, `'suggest.filter'`, `'suggest.ajax'` and  `'suggest.ajax.beforeSend'` [events](#events).
+Typing into the input toggles the [hidden attribute](https://developer.mozilla.org/en/docs/Web/HTML/Global_attributes/hidden) on items of type `<button>` and `<a>`, based on matching [textContent](https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent) inside `<core-suggest>`. Focusing the input unhides the following element. The default filtering behavior can easily be altered through the `'suggest.select'`, `'suggest.filter'`, `'suggest.ajax'` and  `'suggest.ajax.beforeSend'` [events](#events).
 
-Results will be rendered in the element directly after the `<input>`.
+Results will be rendered in the element inside `<core-suggest>`.
 Always use `coreSuggest.escapeHTML(String)` to safely render data from API or user.
 
 ### HTML / JavaScript
 
 
 ```html
-<input type="text">
-<core-suggest hidden>
+<input type="text">                                     <!-- Must be a textual input element -->
+<core-suggest limit="{Number}"                          <!-- Optional. Limit maxium number of result items. Defaults to Infinity -->
+              ajax="{String}"                           <!-- Optional. Fetches external data. See event 'suggest.ajax'. Example: 'https://search.com?q={{value}}' -->
+              hidden>                                   <!-- Use hidden to toggle visibility -->
   <ul>                                                  <!-- Can be any tag, but items should be inside <li> -->
     <li><button>Item 1</button></li>                    <!-- Items must be <button> or <a> -->
     <li><button value="Suprise!">Item 2</button></li>   <!-- Alternative value can be defined -->
@@ -77,25 +89,23 @@ Always use `coreSuggest.escapeHTML(String)` to safely render data from API or us
   </ul>
 </core-suggest>
 ```
+
 ```js
-import coreSuggest from '@nrk/core-suggest'
+import CoreSuggest from '@nrk/core-suggest'                 // Using NPM
+window.customElements.define('core-suggest', CoreSuggest)   // Using NPM
 
-coreSuggest(                              // Initializes input element
-  String|Element|Elements,              // Accepts a selector string, NodeList, Element or array of Elements
-  String|Object {                       // Optional. String sets content HTML, object sets options
-    open: Boolean,                      // Use to force open state. Defaults to value of aria-expanded.
-    content: String,                    // Sets content HTML. HTML is used for full flexibility on markup
-    limit: Number,                      // Sets the maximum number of visible items in list. Doesn't affect actual number of items
-    ajax: String                        // Fetches external data. See event 'suggest.ajax'. Example: 'https://search.com?q={{value}}'
-  }
-})
+const mySuggest = document.querySelector('core-suggest')
 
-// Example initialize and limit items to 5
-coreSuggest('.my-input', { limit: 5 })
-// Example setting HTML content and escaping items
-coreSuggest('.my-input', '<li><a href="?q=' + coreSuggest.escapeHTML(input.value) + '">More results</a></li>')
-// Example setting HTML content and highlighting matched items
-coreSuggest('.my-input', '<li><button>' + coreSuggest.highlight(item.text, input.value) + '</button></li>')
+// Getters
+mySuggest.ajax       // Get ajax URL value
+mySuggest.limit      // Get limit
+mySuggest.hidden     // Get hidden
+// Setters
+mySuggest.ajax = "https://search.com?q={{value}}"    // Set ajax endpoint URL for fetching external data
+mySuggest.limit = 5                                  // Set limit for results
+mySuggest.hidden = false                             // Set hidde value
+// Methods
+mySuggest.escapeHTML('<span>...</span>')             // Utility function for escaping HTML string
 ```
 
 ### React / Preact
@@ -103,18 +113,14 @@ coreSuggest('.my-input', '<li><button>' + coreSuggest.highlight(item.text, input
 ```js
 import CoreSuggest from '@nrk/core-suggest/jsx'
 
-// All props are optional, and defaults are shown below
-// Props like className, style, etc. will be applied as actual attributes
-// <CoreSuggest> will handle state itself unless you call event.preventDefault() in onFilter, onSelect or onAjax
-
 <input type="text" />   // First element must result in a input-tag. Accepts both elements and components
-<CoreSuggest hidden={Boolean}              // Use to force open state. Defaults to value of aria-expanded.
-           limit={Number}                // Limit the maximum number of results in list.
-           ajax={String|Object}          // Fetches external data. See event 'suggest.ajax'. Example: 'https://search.com?q={{value}}'
-           onFilter={Function}           // See 'suggest.filter' event
-           onSelect={Function}           // See 'suggest.select' event
-           onAjax={Function}             // See 'suggest.ajax' event
-           onAjaxBeforeSend={Function}>  // See 'suggest.ajax.beforeSend' event
+<CoreSuggest hidden={Boolean}              // Use hidden to toggle visibility
+             limit={Number}                // Limit the maximum number of results in list.
+             ajax={String|Object}          // Fetches external data. See event 'suggest.ajax'. Example: 'https://search.com?q={{value}}'
+             onFilter={Function}           // See 'suggest.filter' event
+             onSelect={Function}           // See 'suggest.select' event
+             onAjax={Function}             // See 'suggest.ajax' event
+             onAjaxBeforeSend={Function}>  // See 'suggest.ajax.beforeSend' event
   <ul>                    // Next element will be used for items. Accepts both elements and components
     <li><button>Item 1</button></li>                  // Interactive items must be <button> or <a>
     <li><button value="Suprise!">Item 2</button></li> // Alternative value can be defined
@@ -124,33 +130,29 @@ import CoreSuggest from '@nrk/core-suggest/jsx'
 ```
 
 
-
 ## Events
 
 ### suggest.filter
-`'suggest.filter'` is fired before a default filtering (both for VanillaJS and React/Preact components). The `suggest.filter` event is cancelable, meaning you can use `event.preventDefault()` to cancel default filtering and respond to users typing yourself. The event also bubbles, and can therefore be detected both from the input element itself, or any parent element (read event delegation):
+Fired before a default filtering occurs:
 
 ```js
 document.addEventListener('suggest.filter', (event) => {
-  event.target                // The core-suggest element triggering suggest.filter event
-  event.detail.relatedTarget  // The content element controlled by input
+  event.target      // The core-suggest element
 })
 ```
 
 ### suggest.select
-`'suggest.select'` event is fired when the user clicks/selects a item (both for VanillaJS and React/Preact components). The `suggest.select` event is cancelable, meaning you can use `event.preventDefault()` to cancel replacing the input value and handle select-action yourself. The event also bubbles, and can therefore be detected both from the button element itself, or any parent element (read event delegation):
+Fired when an item is clicked/selected:
 
 ```js
 document.addEventListener('suggest.select', (event) => {
-  event.target                // The core-suggest element triggering suggest.select event
-  event.detail.relatedTarget  // The content element controlled by input
-  event.detail.currentTarget  // The item clicked/selected
-  event.detail.value          // The item value
+  event.target      // The core-suggest element
+  event.detail      // The item clicked/selected
 })
 ```
 
 ### suggest.ajax.beforeSend
-The `'suggest.ajax.beforeSend'` event is fired before sending debounced ajax requests. If you wish to alter the [XMLHttpRequest](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest), use `event.preventDefault()` and then execute [XHR methods](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest#Methods) on the `event.detail`. If not prevented, requests are sent using the `GET` method and the header `'X-Requested-With': 'XMLHttpRequest'`. The event bubbles, and can therefore be detected both from the input element itself, or any parent element (read event delegation):
+Fired before sending debounced ajax requests. If you wish to alter the [XMLHttpRequest](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest), use `event.preventDefault()` and then execute [XHR methods](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest#Methods) on the `event.detail`. If not prevented, requests are sent using the `GET` method and the header `'X-Requested-With': 'XMLHttpRequest'`.
 
 ```js
 document.addEventListener('suggest.ajax.beforeSend', (event) => {
@@ -171,7 +173,7 @@ document.addEventListener('suggest.ajax.beforeSend', (event) => {
 ```
 
 ### suggest.ajax
-`'suggest.ajax'` event is fired when the input field receives data from ajax. The event also bubbles, and can therefore be detected both from the input element itself, or any parent element (read event delegation):
+Fired when the input field receives data from ajax:
 
 ```js
 document.addEventListener('suggest.ajax', (event) => {
@@ -181,8 +183,6 @@ document.addEventListener('suggest.ajax', (event) => {
   event.detail.responseJSON  // The response json. Defaults to false if no valid JSON found
 })
 ```
-
-
 
 ## Styling
 All styling in documentation is example only. Both the `<button>` and content element receive attributes reflecting the current toggle state:
@@ -201,7 +201,6 @@ All styling in documentation is example only. Both the `<button>` and content el
 ```
 
 
-
 ## Notes
 
 ### Ajax
@@ -212,7 +211,7 @@ If you need to alter default headers, request method or post data, use the [`sug
 
 
 
-## Demo: Ajax
+## Example: Ajax
 
 Ajax requests can be stopped by calling `event.preventDefault()` on `'suggest.filter'`. Remember to always escape html and debounce requests when fetching data from external sources. The http request sent by `@nrk/core-suggest` will have header `X-Requested-With: XMLHttpRequest` for easier [server side detection and CSRF prevention](https://www.owasp.org/index.php/Cross-Site_Request_Forgery_%28CSRF%29_Prevention_Cheat_Sheet#Protecting_REST_Services:_Use_of_Custom_Request_Headers).
 
@@ -288,7 +287,7 @@ Ajax requests can be stopped by calling `event.preventDefault()` on `'suggest.fi
 
 
 
-## Demo: Lazy
+## Example: Lazy
 Hybrid solution; lazy load items, but let `core-suggest` still handle filtering:
 ```html
 <!--demo-->
@@ -349,7 +348,7 @@ Hybrid solution; lazy load items, but let `core-suggest` still handle filtering:
 
 
 
-## Demo: Dynamic
+## Example: Dynamic
 Synchronous operation; dynamically populating items based input value:
 ```html
 <!--demo-->
