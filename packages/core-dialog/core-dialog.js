@@ -78,11 +78,11 @@ export default class CoreDialog extends HTMLElement {
   get modal () { return this.getAttribute('aria-modal') !== 'false' }
   set modal (val) { this.setAttribute('aria-modal', Boolean(val)) }
   get strict () { return this.hasAttribute('strict') }
-  set strict (val) { this[val ? 'setAttribute' : 'removeAttribute']('strict', '') }
+  set strict (val) { this.toggleAttribute('strict', val) }
 
   // Must set attribute for IE11
   get hidden () { return this.hasAttribute('hidden') }
-  set hidden (val) { this[val ? 'setAttribute' : 'removeAttribute']('hidden', '') }
+  set hidden (val) { this.toggleAttribute('hidden', val) }
 
   get backdrop () {
     const next = this.nextElementSibling

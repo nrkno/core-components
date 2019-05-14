@@ -118,7 +118,7 @@ function table (self, table) {
     button.setAttribute(`data-adjacent`, month !== dayMonth)
     button.setAttribute('aria-label', `${dayInMonth}. ${self.months[dayMonth]}`)
     button.setAttribute('aria-current', day.getDate() === today.getDate() && day.getMonth() === today.getMonth() && day.getFullYear() === today.getFullYear() && 'date')
-    button[isSelected ? 'setAttribute' : 'removeAttribute']('autofocus', '')
+    button.toggleAttribute('autofocus', isSelected)
     day.setDate(dayInMonth + 1)
   })
 }

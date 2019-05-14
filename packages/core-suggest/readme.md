@@ -1,22 +1,22 @@
-# Core Input
+# Core Suggest
 
-> `@nrk/core-input` enhances `<input>` fields with keyboard accessible functionality for autocomplete suggestions, search results and smart select box abilities.
+> `@nrk/core-suggest` enhances `<input>` fields with keyboard accessible functionality for autocomplete suggestions, search results and smart select box abilities.
 
 
 
 ## Installation
 
 ```bash
-npm install @nrk/core-input
+npm install @nrk/core-suggest
 ```
 ```js
-import CoreInput from '@nrk/core-input'     // Vanilla JS
-import CoreInput from '@nrk/core-input/jsx' // React/Preact JSX
+import CoreSuggest from '@nrk/core-suggest'     // Vanilla JS
+import CoreSuggest from '@nrk/core-suggest/jsx' // React/Preact JSX
 ```
 
 <!--demo
-<script src="core-input/core-input.min.js"></script>
-<script src="core-input/core-input.jsx.js"></script>
+<script src="core-suggest/core-suggest.min.js"></script>
+<script src="core-suggest/core-suggest.jsx.js"></script>
 <style>li button:focus {outline: 3px solid rgb(94, 158, 215)}</style>
 demo-->
 
@@ -24,16 +24,16 @@ demo-->
 
 ```html
 <!--demo-->
-<input type="text" placeholder="Type &quot;C&quot;...">
-<core-input hidden>
+<input type="text" list="my-list" placeholder="Type &quot;C&quot;...">
+<core-suggest hidden id="list">
   <ul>
-    <li><button>Chrome</button></li>
+    <li><button>Chro<b>me</b></button></li>
     <li><button>Firefox</button></li>
     <li><button>Opera</button></li>
     <li><button>Safari</button></li>
     <li><button>Microsoft Edge</button></li>
   </ul>
-</core-input>
+</core-suggest>
 ```
 
 ```html
@@ -42,7 +42,7 @@ demo-->
 <script type="text/jsx">
   ReactDOM.render(<div>
     <input type='text' placeholder='Type "C"... (JSX)' />
-    <CoreInput className='my-dropdown' hidden>
+    <CoreSuggest className='my-dropdown' hidden>
       <ul>
         <li><button>Chrome</button></li>
         <li><button>Firefox</button></li>
@@ -50,7 +50,7 @@ demo-->
         <li><button>Safari</button></li>
         <li><button>Microsoft Edge</button></li>
       </ul>
-    </CoreInput>
+    </CoreSuggest>
   </div>, document.getElementById('jsx-input'))
 </script>
 ```
@@ -59,109 +59,109 @@ demo-->
 
 ## Usage
 
-Typing toggles the [hidden attribute](https://developer.mozilla.org/en/docs/Web/HTML/Global_attributes/hidden) on items of type `<button>` and `<a>`, based on matching [textContent](https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent). Focusing the input unhides the following element. The default filtering behavior can easily be altered through the The default filtering behavior can easily be altered through the `'input.select'`, `'input.filter'`, `'input.ajax'` and  `'input.ajax.beforeSend'` [events](#events).
+Typing toggles the [hidden attribute](https://developer.mozilla.org/en/docs/Web/HTML/Global_attributes/hidden) on items of type `<button>` and `<a>`, based on matching [textContent](https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent). Focusing the input unhides the following element. The default filtering behavior can easily be altered through the The default filtering behavior can easily be altered through the `'suggest.select'`, `'suggest.filter'`, `'suggest.ajax'` and  `'suggest.ajax.beforeSend'` [events](#events).
 
 Results will be rendered in the element directly after the `<input>`.
-Always use `coreInput.escapeHTML(String)` to safely render data from API or user.
+Always use `coreSuggest.escapeHTML(String)` to safely render data from API or user.
 
 ### HTML / JavaScript
 
 
 ```html
-<input type="text" class="my-input">                  <!-- Input element must be a textual <input> -->
-<core-input hidden>
+<input type="text">
+<core-suggest hidden>
   <ul>                                                  <!-- Can be any tag, but items should be inside <li> -->
     <li><button>Item 1</button></li>                    <!-- Items must be <button> or <a> -->
     <li><button value="Suprise!">Item 2</button></li>   <!-- Alternative value can be defined -->
     <li><a href="https://www.nrk.no/">NRK.no</a></li>   <!-- Actual links are recommended when applicable -->
   </ul>
-</core-input>
+</core-suggest>
 ```
 ```js
-import coreInput from '@nrk/core-input'
+import coreSuggest from '@nrk/core-suggest'
 
-coreInput(                              // Initializes input element
+coreSuggest(                              // Initializes input element
   String|Element|Elements,              // Accepts a selector string, NodeList, Element or array of Elements
   String|Object {                       // Optional. String sets content HTML, object sets options
     open: Boolean,                      // Use to force open state. Defaults to value of aria-expanded.
     content: String,                    // Sets content HTML. HTML is used for full flexibility on markup
     limit: Number,                      // Sets the maximum number of visible items in list. Doesn't affect actual number of items
-    ajax: String                        // Fetches external data. See event 'input.ajax'. Example: 'https://search.com?q={{value}}'
+    ajax: String                        // Fetches external data. See event 'suggest.ajax'. Example: 'https://search.com?q={{value}}'
   }
 })
 
 // Example initialize and limit items to 5
-coreInput('.my-input', { limit: 5 })
+coreSuggest('.my-input', { limit: 5 })
 // Example setting HTML content and escaping items
-coreInput('.my-input', '<li><a href="?q=' + coreInput.escapeHTML(input.value) + '">More results</a></li>')
+coreSuggest('.my-input', '<li><a href="?q=' + coreSuggest.escapeHTML(input.value) + '">More results</a></li>')
 // Example setting HTML content and highlighting matched items
-coreInput('.my-input', '<li><button>' + coreInput.highlight(item.text, input.value) + '</button></li>')
+coreSuggest('.my-input', '<li><button>' + coreSuggest.highlight(item.text, input.value) + '</button></li>')
 ```
 
 ### React / Preact
 
 ```js
-import CoreInput from '@nrk/core-input/jsx'
+import CoreSuggest from '@nrk/core-suggest/jsx'
 
 // All props are optional, and defaults are shown below
 // Props like className, style, etc. will be applied as actual attributes
-// <CoreInput> will handle state itself unless you call event.preventDefault() in onFilter, onSelect or onAjax
+// <CoreSuggest> will handle state itself unless you call event.preventDefault() in onFilter, onSelect or onAjax
 
 <input type="text" />   // First element must result in a input-tag. Accepts both elements and components
-<CoreInput hidden={Boolean}              // Use to force open state. Defaults to value of aria-expanded.
+<CoreSuggest hidden={Boolean}              // Use to force open state. Defaults to value of aria-expanded.
            limit={Number}                // Limit the maximum number of results in list.
-           ajax={String|Object}          // Fetches external data. See event 'input.ajax'. Example: 'https://search.com?q={{value}}'
-           onFilter={Function}           // See 'input.filter' event
-           onSelect={Function}           // See 'input.select' event
-           onAjax={Function}             // See 'input.ajax' event
-           onAjaxBeforeSend={Function}>  // See 'input.ajax.beforeSend' event
+           ajax={String|Object}          // Fetches external data. See event 'suggest.ajax'. Example: 'https://search.com?q={{value}}'
+           onFilter={Function}           // See 'suggest.filter' event
+           onSelect={Function}           // See 'suggest.select' event
+           onAjax={Function}             // See 'suggest.ajax' event
+           onAjaxBeforeSend={Function}>  // See 'suggest.ajax.beforeSend' event
   <ul>                    // Next element will be used for items. Accepts both elements and components
     <li><button>Item 1</button></li>                  // Interactive items must be <button> or <a>
     <li><button value="Suprise!">Item 2</button></li> // Alternative value can be defined
     <li><a href="https://www.nrk.no/">NRK.no</a></li> // Actual links are recommended when applicable
   </ul>
-</CoreInput>
+</CoreSuggest>
 ```
 
 
 
 ## Events
 
-### input.filter
-`'input.filter'` is fired before a default filtering (both for VanillaJS and React/Preact components). The `input.filter` event is cancelable, meaning you can use `event.preventDefault()` to cancel default filtering and respond to users typing yourself. The event also bubbles, and can therefore be detected both from the input element itself, or any parent element (read event delegation):
+### suggest.filter
+`'suggest.filter'` is fired before a default filtering (both for VanillaJS and React/Preact components). The `suggest.filter` event is cancelable, meaning you can use `event.preventDefault()` to cancel default filtering and respond to users typing yourself. The event also bubbles, and can therefore be detected both from the input element itself, or any parent element (read event delegation):
 
 ```js
-document.addEventListener('input.filter', (event) => {
-  event.target                // The core-input element triggering input.filter event
+document.addEventListener('suggest.filter', (event) => {
+  event.target                // The core-suggest element triggering suggest.filter event
   event.detail.relatedTarget  // The content element controlled by input
 })
 ```
 
-### input.select
-`'input.select'` event is fired when the user clicks/selects a item (both for VanillaJS and React/Preact components). The `input.select` event is cancelable, meaning you can use `event.preventDefault()` to cancel replacing the input value and handle select-action yourself. The event also bubbles, and can therefore be detected both from the button element itself, or any parent element (read event delegation):
+### suggest.select
+`'suggest.select'` event is fired when the user clicks/selects a item (both for VanillaJS and React/Preact components). The `suggest.select` event is cancelable, meaning you can use `event.preventDefault()` to cancel replacing the input value and handle select-action yourself. The event also bubbles, and can therefore be detected both from the button element itself, or any parent element (read event delegation):
 
 ```js
-document.addEventListener('input.select', (event) => {
-  event.target                // The core-input element triggering input.select event
+document.addEventListener('suggest.select', (event) => {
+  event.target                // The core-suggest element triggering suggest.select event
   event.detail.relatedTarget  // The content element controlled by input
   event.detail.currentTarget  // The item clicked/selected
   event.detail.value          // The item value
 })
 ```
 
-### input.ajax.beforeSend
-The `'input.ajax.beforeSend'` event is fired before sending debounced ajax requests. If you wish to alter the [XMLHttpRequest](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest), use `event.preventDefault()` and then execute [XHR methods](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest#Methods) on the `event.detail`. If not prevented, requests are sent using the `GET` method and the header `'X-Requested-With': 'XMLHttpRequest'`. The event bubbles, and can therefore be detected both from the input element itself, or any parent element (read event delegation):
+### suggest.ajax.beforeSend
+The `'suggest.ajax.beforeSend'` event is fired before sending debounced ajax requests. If you wish to alter the [XMLHttpRequest](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest), use `event.preventDefault()` and then execute [XHR methods](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest#Methods) on the `event.detail`. If not prevented, requests are sent using the `GET` method and the header `'X-Requested-With': 'XMLHttpRequest'`. The event bubbles, and can therefore be detected both from the input element itself, or any parent element (read event delegation):
 
 ```js
-document.addEventListener('input.ajax.beforeSend', (event) => {
-  event.target  // The core-input element triggering input.ajax.beforeSend event
+document.addEventListener('suggest.ajax.beforeSend', (event) => {
+  event.target  // The core-suggest element triggering suggest.ajax.beforeSend event
   event.detail  // The XMLHttpRequest object
 })
 ```
 
 ```js
 // Example
-document.addEventListener('input.ajax.beforeSend', (event) => {
+document.addEventListener('suggest.ajax.beforeSend', (event) => {
   event.preventDefault() // Stop default behaviour
   event.detail.open('POST', 'https://example.com')
   event.detail.setRequestHeader('Content-Type', 'application/json')
@@ -170,12 +170,12 @@ document.addEventListener('input.ajax.beforeSend', (event) => {
 })
 ```
 
-### input.ajax
-`'input.ajax'` event is fired when the input field receives data from ajax. The event also bubbles, and can therefore be detected both from the input element itself, or any parent element (read event delegation):
+### suggest.ajax
+`'suggest.ajax'` event is fired when the input field receives data from ajax. The event also bubbles, and can therefore be detected both from the input element itself, or any parent element (read event delegation):
 
 ```js
-document.addEventListener('input.ajax', (event) => {
-  event.target  // The core-input element triggering input.ajax event
+document.addEventListener('suggest.ajax', (event) => {
+  event.target  // The core-suggest element triggering suggest.ajax event
   event.detail  // The ajax request
   event.detail.responseText  // The response body text
   event.detail.responseJSON  // The response json. Defaults to false if no valid JSON found
@@ -206,15 +206,15 @@ All styling in documentation is example only. Both the `<button>` and content el
 
 ### Ajax
 
-When using `@nrk/core-input` with the `ajax: https://search.com?q={{value}}` functionality, make sure to implement both a `Searching...` status (while fetching data from the server), and a `No hits` status (if server responds with no results). These status indicators are highly recommended, but not provided by default as the context of use will affect the optimal textual formulation. [See example implementation →](#demo-ajax)
+When using `@nrk/core-suggest` with the `ajax: https://search.com?q={{value}}` functionality, make sure to implement both a `Searching...` status (while fetching data from the server), and a `No hits` status (if server responds with no results). These status indicators are highly recommended, but not provided by default as the context of use will affect the optimal textual formulation. [See example implementation →](#demo-ajax)
 
-If you need to alter default headers, request method or post data, use the [`input.ajax.beforeSend` event  →](#input-ajax-beforesend)
+If you need to alter default headers, request method or post data, use the [`suggest.ajax.beforeSend` event  →](#input-ajax-beforesend)
 
 
 
 ## Demo: Ajax
 
-Ajax requests can be stopped by calling `event.preventDefault()` on `'input.filter'`. Remember to always escape html and debounce requests when fetching data from external sources. The http request sent by `@nrk/core-input` will have header `X-Requested-With: XMLHttpRequest` for easier [server side detection and CSRF prevention](https://www.owasp.org/index.php/Cross-Site_Request_Forgery_%28CSRF%29_Prevention_Cheat_Sheet#Protecting_REST_Services:_Use_of_Custom_Request_Headers).
+Ajax requests can be stopped by calling `event.preventDefault()` on `'suggest.filter'`. Remember to always escape html and debounce requests when fetching data from external sources. The http request sent by `@nrk/core-suggest` will have header `X-Requested-With: XMLHttpRequest` for easier [server side detection and CSRF prevention](https://www.owasp.org/index.php/Cross-Site_Request_Forgery_%28CSRF%29_Prevention_Cheat_Sheet#Protecting_REST_Services:_Use_of_Custom_Request_Headers).
 
 ```html
 <!--demo-->
@@ -222,21 +222,21 @@ Ajax requests can be stopped by calling `event.preventDefault()` on `'input.filt
 <ul class="my-dropdown" hidden></ul>
 <!--<script>
   // Initialize
-  coreInput('.my-input-ajax', {
+  coreSuggest('.my-input-ajax', {
     ajax: 'https://restcountries.eu/rest/v2/name/{{value}}?fields=name'
   })
-  document.addEventListener('input.filter', function (event) {
+  document.addEventListener('suggest.filter', function (event) {
     var input = event.target
     var value = input.value.trim()
 
     if (input.className.indexOf('my-input-ajax') === -1) return // Make sure we are on correct input
-    coreInput(input, value ? '<li><button>Searching for ' + coreInput.highlight(value, value) + '...</button></li>' : '')
+    coreSuggest(input, value ? '<li><button>Searching for ' + coreSuggest.highlight(value, value) + '...</button></li>' : '')
   })
-  document.addEventListener('input.ajax', function (event) {
+  document.addEventListener('suggest.ajax', function (event) {
     if (event.target.className.indexOf('my-input-ajax') === -1) return // Make sure we are on correct input
     var items = event.detail.responseJSON
-    coreInput(event.target, items.length ? items.slice(0, 10)
-      .map(function (item) { return coreInput.highlight(item.name, event.target.value) }) // Hightlight items
+    coreSuggest(event.target, items.length ? items.slice(0, 10)
+      .map(function (item) { return coreSuggest.highlight(item.name, event.target.value) }) // Hightlight items
       .map(function (html) { return '<li><button>' + html + '</button></li>' })           // Generate list
       .join('') : '<li><button>No results</button></li>')
   })
@@ -265,7 +265,7 @@ Ajax requests can be stopped by calling `event.preventDefault()` on `'input.filt
       this.setState({items: items.length ? items : [{name: 'No results'}]})
     }
     render () {
-      return <CoreInput
+      return <CoreSuggest
        ajax="https://restcountries.eu/rest/v2/name/{{value}}?fields=name"
        onFilter={this.onFilter}
        onAjax={this.onAjax}>
@@ -274,12 +274,12 @@ Ajax requests can be stopped by calling `event.preventDefault()` on `'input.filt
           {this.state.items.slice(0, 10).map((item, key) =>
             <li key={key}>
               <button>
-                <CoreInput.Highlight text={item.name} query={this.state.value} />
+                <CoreSuggest.Highlight text={item.name} query={this.state.value} />
               </button>
             </li>
           )}
         </ul>
-      </CoreInput>
+      </CoreSuggest>
     }
   }
   ReactDOM.render(<AjaxInput />, document.getElementById('jsx-input-ajax'))
@@ -289,7 +289,7 @@ Ajax requests can be stopped by calling `event.preventDefault()` on `'input.filt
 
 
 ## Demo: Lazy
-Hybrid solution; lazy load items, but let `core-input` still handle filtering:
+Hybrid solution; lazy load items, but let `core-suggest` still handle filtering:
 ```html
 <!--demo-->
 <input class="my-input-lazy" placeholder="Country...">
@@ -309,8 +309,8 @@ Hybrid solution; lazy load items, but let `core-input` still handle filtering:
 
     event.target.className = '' // Prevent double execution
     window.getCountries(function (items) {
-      coreInput(event.target, items
-        .map(function (item) { return '<li><button>' + coreInput.escapeHTML(item.name) + '</button></li>'})
+      coreSuggest(event.target, items
+        .map(function (item) { return '<li><button>' + coreSuggest.escapeHTML(item.name) + '</button></li>'})
         .join(''))
     })
   }, true)
@@ -332,14 +332,14 @@ Hybrid solution; lazy load items, but let `core-input` still handle filtering:
       window.getCountries((items) => this.setState({items})) // getCountries defined in JS
     }
     render () {
-      return <CoreInput onFocus={this.onFocus}>
+      return <CoreSuggest onFocus={this.onFocus}>
         <input type='text' placeholder='Country... (JSX)' />
         <ul className='my-dropdown'>
           {this.state.items.map((item, key) =>
             <li key={key}><button>{item.name}</button></li>
           )}
         </ul>
-      </CoreInput>
+      </CoreSuggest>
     }
   }
 
@@ -356,9 +356,9 @@ Synchronous operation; dynamically populating items based input value:
 <input class="my-input-dynamic" placeholder="Type your email...">
 <ul class="my-dropdown" hidden></ul>
 <!--<script>
-  coreInput('.my-input-dynamic')
+  coreSuggest('.my-input-dynamic')
 
-  document.addEventListener('input.filter', (event) => {
+  document.addEventListener('suggest.filter', (event) => {
     if (event.target.className.indexOf('my-input-dynamic') === -1) return // Make sure we are on correct input
     event.preventDefault()
 
@@ -366,8 +366,8 @@ Synchronous operation; dynamically populating items based input value:
     var input = event.target
     var value = input.value.trim()
 
-    coreInput(input, value ? mails.map(function (mail) {
-      return '<li><button>' + coreInput.highlight(value.replace(/(@.*|$)/, '@' + mail), value) + '</button><li>'
+    coreSuggest(input, value ? mails.map(function (mail) {
+      return '<li><button>' + coreSuggest.highlight(value.replace(/(@.*|$)/, '@' + mail), value) + '</button><li>'
     }).join('') : '')
   })
 </script>-->
@@ -392,14 +392,14 @@ Synchronous operation; dynamically populating items based input value:
       this.setState({value, items})
     }
     render () {
-      return <CoreInput onFilter={this.onFilter}>
+      return <CoreSuggest onFilter={this.onFilter}>
         <input type='text' placeholder='Type your email... (JSX)' />
         <ul className='my-dropdown'>
           {this.state.items.map((text, key) =>
-            <li key={key}><button><CoreInput.Highlight text={text} query={this.state.value} /></button></li>
+            <li key={key}><button><CoreSuggest.Highlight text={text} query={this.state.value} /></button></li>
           )}
         </ul>
-      </CoreInput>
+      </CoreSuggest>
     }
   }
 
@@ -415,7 +415,7 @@ Synchronous operation; dynamically populating items based input value:
 Despite having a native [`<datalist>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/datalist) element for autocomplete lists, there are several issues regarding [browser support](https://caniuse.com/#feat=details), varying [accessibility](http://accessibleculture.org/articles/2012/03/screen-readers-and-details-summary/) support as well as no ability for custom styling or custom behavior.
 
 ### Why is there only a subset of aria attributes in use?
-Despite well documented [examples in the aria 1.1 spesification](https://www.w3.org/TR/2017/NOTE-wai-aria-practices-1.1-20171214/examples/combobox/aria1.1pattern/listbox-combo.html), "best practice" simply becomes unusable in several screen reader due to implementation differences. `core-input` aims to provide a equally good user experience regardless if a screen reader passes events to browser or not (events are often hijacked for quick-navigation). Several techniques and attributes have been thoroughly tested:
+Despite well documented [examples in the aria 1.1 spesification](https://www.w3.org/TR/2017/NOTE-wai-aria-practices-1.1-20171214/examples/combobox/aria1.1pattern/listbox-combo.html), "best practice" simply becomes unusable in several screen reader due to implementation differences. `core-suggest` aims to provide a equally good user experience regardless if a screen reader passes events to browser or not (events are often hijacked for quick-navigation). Several techniques and attributes have been thoroughly tested:
 
 - `aria-activedescendant`/`aria-selected` - ignored in Android, lacks indication of list length in JAWS</li>
 - `aria-owns` - full list is read for every keystroke in NVDA</li>
@@ -424,5 +424,5 @@ Despite well documented [examples in the aria 1.1 spesification](https://www.w3.
 - `aria-live="assertive"` - fails to correctly inform user if current target is link or button</li>
 - `role="combobox"` - skipped in iOS as VoiceOver fails to inform current field is editable</li>
 
-### How do I use core-input with multiple tags/output values?
-Tagging and screen readers is a complex matter, requiring more than comma separated values. Currently, tagging is just a part of the wishlist for core-input. If tagging functionality is of interest for your project, please add a +1 to the [tagging task](https://github.com/nrkno/core-components/issues/9), describe your needs in a comment, and you'll be updated about progress.
+### How do I use core-suggest with multiple tags/output values?
+Tagging and screen readers is a complex matter, requiring more than comma separated values. Currently, tagging is just a part of the wishlist for core-suggest. If tagging functionality is of interest for your project, please add a +1 to the [tagging task](https://github.com/nrkno/core-components/issues/9), describe your needs in a comment, and you'll be updated about progress.

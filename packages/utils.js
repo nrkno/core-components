@@ -4,8 +4,13 @@ export const IS_BROWSER = typeof window !== 'undefined'
 export const IS_ANDROID = IS_BROWSER && /(android)/i.test(navigator.userAgent) // Bad, but needed
 export const IS_IOS = IS_BROWSER && /iPad|iPhone|iPod/.test(String(navigator.platform))
 
-// TODO Remove
-export function exclude () {}
+// Polyfill toggleAttribute for IE
+if (IS_BROWSER && !window.Element.prototype.toggleAttribute) {
+  window.Element.prototype.toggleAttribute = function (name, force = !this.hasAttribute(name)) {
+    if (!force === this.hasAttribute(name)) this[force ? 'setAttribute' : 'removeAttribute'](name, '')
+    return force
+  }
+}
 
 /**
 * addEvent
