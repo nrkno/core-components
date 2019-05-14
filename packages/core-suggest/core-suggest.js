@@ -20,7 +20,7 @@ export default class CoreSuggest extends HTMLElement {
     document.addEventListener('input', this)
     document.addEventListener('keydown', this)
     document.addEventListener('focusin', this)
-    setTimeout(() => onInput(this, { target: this.input }))        // Filter items 
+    setTimeout(() => onInput(this, { target: this.input })) // Filter items
     if (document.activeElement === this.input) this.hidden = false // Open if active
   }
   disconnectedCallback () {

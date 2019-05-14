@@ -23,10 +23,6 @@ demo-->
 
 ```html
 <!-- demo -->
-<script>
-  // Change labels of months
-  coreDatepicker.months = []
-</script>
 <button class="my-toggle">Velg dato</button>
 <core-toggle popup hidden class="my-popup">
   <core-datepicker id="my-datepicker"
@@ -256,9 +252,9 @@ import CoreDatepicker from '@nrk/core-datepicker/jsx'
                 months={String}        // Optional. Comma separated list of custom month names to be used ("Jan,Feb,...")
                 days={String}>         // Optional. Comma separated list of custom weekday names to be used ("Man,Tir,Ons,...")
                 onChange={Function}>
-  <input type="radio|checkbox|year|month|day|hour|minute|second|timestamp"/> /* Same as with vanilla js */
-  <select></select> /* Same as with vanilla js */
-  <table></table>   /* Same as with vanilla js */
+  <input type="radio|checkbox|year|month|day|hour|minute|second|timestamp"/> // Same as with vanilla js
+  <select></select>                    // Same as with vanilla js
+  <table></table>                      // Same as with vanilla js
 <CoreDatepicker>
 ```
 
