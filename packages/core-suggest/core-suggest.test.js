@@ -89,14 +89,14 @@ test('sets up and parses limit option', withPage, async (t, page) => {
   await page.$eval('core-suggest', el => { el.limit = 2 })
   t.is(await page.$eval('core-suggest', el => el.limit), 2)
   await page.$eval('core-suggest', el => { el.limit = -2 })
-  t.is(await page.$eval('core-suggest', el => el.limit), 0)
+  t.is(await page.$eval('core-suggest', el => el.limit), Infinity)
   await page.$eval('core-suggest', el => { el.limit = null })
-  t.is(await page.$eval('core-suggest', el => el.limit), 0)
+  t.is(await page.$eval('core-suggest', el => el.limit), Infinity)
   await page.$eval('core-suggest', el => { el.limit = undefined })
-  t.is(await page.$eval('core-suggest', el => el.limit), 0)
+  t.is(await page.$eval('core-suggest', el => el.limit), Infinity)
 })
 
-test('limits suggestions from limit option', withPage, async (t, page) => {
+test('filters suggestions from limit option', withPage, async (t, page) => {
   await page.setContent(`
     <input type="text">
     <core-suggest limit="2" hidden>
@@ -113,6 +113,7 @@ test('limits suggestions from limit option', withPage, async (t, page) => {
   t.true(await page.$eval('li:nth-child(3) button', el => el.hasAttribute('hidden')))
   t.true(await page.$eval('li:nth-child(4) button', el => el.hasAttribute('hidden')))
   await page.$eval('core-suggest', el => { el.limit = 3 })
+  await page.type('input', 's')
   t.false(await page.$eval('li:nth-child(1) button', el => el.hasAttribute('hidden')))
   t.false(await page.$eval('li:nth-child(2) button', el => el.hasAttribute('hidden')))
   t.false(await page.$eval('li:nth-child(3) button', el => el.hasAttribute('hidden')))
