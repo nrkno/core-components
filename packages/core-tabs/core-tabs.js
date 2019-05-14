@@ -67,7 +67,7 @@ export default class CoreTabs extends HTMLElement {
 
       tab.setAttribute('aria-selected', openTab)
       tab.setAttribute('tabindex', Number(openTab) - 1)
-      panel.toggleAttribute('hidden', openPanel)
+      panel.toggleAttribute('hidden', !openPanel)
     })
 
     if (prevIndex !== nextIndex) dispatchEvent(this, 'tabs.toggle')
