@@ -108,7 +108,7 @@ test('respects exisiting aria-label with popup and value', withPage, async (t, p
     <button aria-label="Label">Toggle</button>
     <core-toggle popup hidden></core-toggle>
   `)
-  await page.$eval('core-toggle', el => el.value = 'Button text')
+  await page.$eval('core-toggle', el => (el.value = 'Button text'))
   t.is(await page.$eval('button', el => el.getAttribute('aria-label')), 'Label')
   t.is(await page.$eval('button', el => el.textContent), await page.$eval('core-toggle', el => el.value))
 })
@@ -118,7 +118,7 @@ test('sets aria-label with popup and value', withPage, async (t, page) => {
     <button>Toggle</button>
     <core-toggle popup hidden></core-toggle>
   `)
-  await page.$eval('core-toggle', el => el.value = 'Button text')
+  await page.$eval('core-toggle', el => (el.value = 'Button text'))
   t.is(await page.$eval('button', el => el.getAttribute('aria-label')), 'Button text')
   t.is(await page.$eval('button', el => el.textContent), await page.$eval('core-toggle', el => el.value))
 })

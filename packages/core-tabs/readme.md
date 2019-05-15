@@ -3,6 +3,12 @@
 > `@nrk/core-tabs` converts `<button>` and `<a>` elements to keyboard accessible tabs, controlling following tabpanels.
 > Tabs can be nested and easily extended with custom animations or behaviour through the `tabs.toggle` event.
 
+<!-- <script src="https://unpkg.com/preact"></script>
+<script src="https://unpkg.com/preact-compat"></script>
+<script>
+  window.React = preactCompat
+  window.ReactDOM = preactCompat
+</script> -->
 <!--demo
 <script src="core-tabs/core-tabs.min.js"></script>
 <script src="core-tabs/core-tabs.jsx.js"></script>
@@ -65,13 +71,13 @@ demo-->
 ## Installation
 
 Using NPM provides own element namespace and extensibility.
-Recommended for apps and widgets:
+Recommended:
 
 ```bash
 npm install @nrk/core-tabs  # Using NPM
 ```
 
-Using static registers the custom element with default name automatically. Recommended for apps:
+Using static registers the custom element with default name automatically:
 
 ```html
 <script src="https://static.nrk.no/core-components/major/5/core-tabs/core-tabs.min.js"></script>  <!-- Using static -->
@@ -82,7 +88,7 @@ Using static registers the custom element with default name automatically. Recom
 ### HTML / JavaScript
 
 ```html
-<core-tabs tab="Number|String|Element">   <!-- Optional. Sets active tab from index, id or element -->
+<core-tabs>
   <button>Tab 1</button>                  <!-- Tab elements must be <a> or <button>. Do not use <li> -->
   <a href="#">Tab 2</a>
   <button>Tab 2</button>
@@ -94,7 +100,7 @@ Using static registers the custom element with default name automatically. Recom
 
 ```js
 import CoreTabs from '@nrk/core-tabs'                 // Using NPM
-window.customElements.define('core-tabs', CoreTabs)   // Using NPM
+window.customElements.define('core-tabs', CoreTabs)   // Using NPM. Replace 'core-tabs' with 'my-tabs' to namespace
 
 const myTabs = document.querySelector('core-tabs')
 
@@ -104,7 +110,9 @@ myTabs.tabs       // Get all tabs
 myTabs.panel      // Get active tabpanel
 myTabs.panels     // Get all tabpanels
 // Setters
-myTabs.tab = 0    // Set active tab from index, id or element
+myTabs.tab = 0        // Set active tab from index
+myTabs.tab = 'my-tab' // Set active tab from id
+myTabs.tab = myTab    // Set active tab from element
 ```
 
 ### React / Preact
@@ -152,14 +160,14 @@ All styling in documentation is example only. Both the tabs and tabpanels receiv
 
 
 ## FAQ
-### Why must tabs be direct children of `core-tabs` element and not inside `<ul><li>...</li></ul>`?
+### Why aren't tabs wrapped in `<ul><li>...</li></ul>`?
 A `<ul>`/`<li>` structure would seem logical for tabs, but this causes some screen readers to incorrectly announce tabs as single (tab 1 of 1).
 
 ### Does panels always need be a next element sibling?
 The aria specification does not allow any elements that are focusable by a screen reader to be placed between tabs and panels. Therefore, `core-tabs` defaults to use the next element siblings as panels.
-This behaviour can be overridden, by setting up `id` on panel elements and `aria-controls` on tab element. Use with caution and *only* do this if your project *must* use another DOM structure. Example:
+This behaviour can be overridden, by setting up `id` on panel elements and the `for` attribute on tab element. Use with caution and *only* do this if your project *must* use another DOM structure. Example:
 
 ```js
 const myTabs = document.querySelector('core-tabs')
-myTabs.tabs.forEach((tabs, index) => tab.setAttribute('aria-controls', myTabs.panels[index].id = 'my-panel-' + index))
+myTabs.tabs.forEach((tabs, index) => tab.setAttribute('for', myTabs.panels[index].id = 'my-panel-' + index))
 ```

@@ -3,7 +3,12 @@
 > `@nrk/core-datepicker` enhances all child `input`, `select` `table` and `button` elements with keyboard accessible functionality
 > for selecting both dates and times. The interface and granularity of date refinement can easily be altered through markup.
 
-
+<!-- <script src="https://unpkg.com/preact"></script>
+<script src="https://unpkg.com/preact-compat"></script>
+<script>
+  window.React = preactCompat
+  window.ReactDOM = preactCompat
+</script> -->
 <!--demo
 <script src="https://unpkg.com/@webcomponents/custom-elements"></script>
 <script src="core-toggle/core-toggle.min.js"></script>
@@ -151,13 +156,13 @@ demo-->
 ## Installation
 
 Using NPM provides own element namespace and extensibility.
-Recommended for apps and widgets:
+Recommended:
 
 ```bash
 npm install @nrk/core-datepicker  # Using NPM
 ```
 
-Using static registers the custom element with default name automatically. Recommended for apps:
+Using static registers the custom element with default name automatically:
 
 ```html
 <script src="https://static.nrk.no/core-components/major/5/core-datepicker/core-datepicker.min.js"></script>  <!-- Using static -->
@@ -221,7 +226,7 @@ All date values - both HTML markup and JavaScript - accepts accepts dates as num
 
 ```js
 import CoreDatepicker from '@nrk/core-datepicker'               // Using NPM
-window.customElements.define('core-datepicker', CoreProgress)   // Using NPM
+window.customElements.define('core-datepicker', CoreProgress)   // Using NPM. Replace 'core-datepicker' with 'my-datepicker' to namespace
 
 const myDatepicker = document.querySelector('core-datepicker')
 
@@ -238,6 +243,7 @@ myDatepicker.second        // Get second
 myDatepicker.date = 'now'                    // Set date. Accepts simple-date-parse format or Date object
 myDatepicker.months = ['Jan', 'Feb', ...]    // Set list of custom month names to be used
 myDatepicker.days = ['Man', 'Tir', ...]      // Set list of custom weekday names to be used
+myDatepicker.disabled = Function|Boolean     // Disable dates. If true disable all dates. Function receives each date, returns a boolean.
 // Methods
 myDatepicker.parse('fri')                    // Utility function for parsing time and dates. Really just @nrk/simple-date-parse
 
@@ -248,10 +254,11 @@ myDatepicker.parse('fri')                    // Utility function for parsing tim
 ```jsx
 import CoreDatepicker from '@nrk/core-datepicker/jsx'
 
-<CoreDatepicker timestamp={String}     // Optional. Sets date from timestamp
-                months={String}        // Optional. Comma separated list of custom month names to be used ("Jan,Feb,...")
-                days={String}>         // Optional. Comma separated list of custom weekday names to be used ("Man,Tir,Ons,...")
-                onChange={Function}>
+<CoreDatepicker timestamp={String}                // Optional. Sets date from timestamp
+                months={String}                   // Optional. Comma separated list of custom month names to be used ("Jan,Feb,...")
+                days={String}>                    // Optional. Comma separated list of custom weekday names to be used ("Man,Tir,Ons,...")
+                onDatepickerChange={Function}>    // Optional. See 'datepicker.change'
+                onDatepickerClickDay={Function}>  // Optional. See 'datepicker.click.day'
   <input type="radio|checkbox|year|month|day|hour|minute|second|timestamp"/> // Same as with vanilla js
   <select></select>                    // Same as with vanilla js
   <table></table>                      // Same as with vanilla js
@@ -264,7 +271,7 @@ import CoreDatepicker from '@nrk/core-datepicker/jsx'
 
 ### datepicker.change
 
-Fired when date is changed by user or programatically (both for VanillaJS and React/Preact components). The `datepicker.change` event is cancelable, meaning you can use `event.preventDefault()` to cancel change:
+Fired when date is changed by user or programatically:
 
 ```js
 document.addEventListener('datepicker.change', (event) => {
@@ -275,7 +282,7 @@ document.addEventListener('datepicker.change', (event) => {
 
 ### datepicker.click.day
 
-Fired if the user clicks a day in the month days grid. The `datepicker.click.day` runs before `datepicker.change`. The event is cancelable, meaning you can use `event.preventDefault()`:
+Fired if the user clicks a day in the month days grid. The `datepicker.click.day` runs before `datepicker.change`:
 
 ```js
 document.addEventListener('datepicker.click.day', (event) => {
@@ -290,7 +297,10 @@ document.addEventListener('datepicker.click.day', (event) => {
 ```js
 myDatepicker.days = ['man', 'tir', 'ons', 'tor', 'fre', 'lør', 'søn'] // Change name of days
 myDatepicker.months = ['jan', 'feb', ...] // Change name of months
+myDatepicker.disabled = (date) => date > Date.now() // Disable future dates
+myDatepicker.disabled = false // Enable all dates
 ```
+
 
 ## Styling
 

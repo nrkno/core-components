@@ -132,13 +132,13 @@ demo-->
 ## Installation
 
 Using NPM provides own element namespace and extensibility.
-Recommended for apps and widgets:
+Recommended:
 
 ```bash
 npm install @nrk/core-dialog  # Using NPM
 ```
 
-Using static registers the custom element with default name automatically. Recommended for apps:
+Using static registers the custom element with default name automatically:
 
 ```html
 <script src="https://static.nrk.no/core-components/major/5/core-dialog/core-dialog.min.js"></script>  <!-- Using static -->
@@ -155,7 +155,6 @@ Using static registers the custom element with default name automatically. Recom
              hidden                    <!-- Hide dialog by default -->
              strict                    <!-- Optional. If true, prevents the dialog from closing on ESC-key and on backdrop click -->
              modal                     <!-- Optional. Set to enable dark backdrop -->
-             aria-modal="{Boolean}"    <!-- Optional. If true shows backdrop, else hides it -->
              aria-label="{String}">    <!-- Optional. Is read by screen readers -->
   <h1>Title of dialog</h1>
   <p>Some content</p>
@@ -165,7 +164,7 @@ Using static registers the custom element with default name automatically. Recom
 
 ```js
 import CoreDialog from '@nrk/core-dialog'                 // Using NPM
-window.customElements.define('core-dialog', CoreDialog)   // Using NPM
+window.customElements.define('core-dialog', CoreDialog)   // Using NPM. Replace 'core-dialog' with 'my-dialog' to namespace
 
 const myDialog = document.querySelector('core-dialog')
 
@@ -194,7 +193,7 @@ import CoreDialog from '@nrk/core-dialog/jsx'
 <CoreDialog id="my-dialog"
             hidden                            // Hide dialog by default
             strict                            // Optional. If true, prevents the dialog from closing on ESC-key and on backdrop click
-            aria-modal={Boolean}              // Optional. If true shows backdrop, else hides it
+            modal                             // Optional. Set to enable dark backdrop
             aria-label={String}               // Optional. Is read by screen readers
             onDialogToggle={Function}>        // Optional. Toggle event handler. See event 'dialog.toggle'
   <h1>My React/Preact dialog</h1>

@@ -13,7 +13,7 @@ All components are provided as [custom elements](https://developer.mozilla.org/e
 
 ### Using NPM
 
-Using NPM provides own element namespace and extensibility. Recommended for apps and widgets:
+Using NPM provides own element namespace and extensibility. Recommended:
 
 ```bash
 npm install @nrk/core-dialog
@@ -21,7 +21,7 @@ npm install @nrk/core-dialog
 
 ### Using static
 
-Using static registers the custom element with its default tag name automatically. Recommended for apps:
+Using static registers the custom element with its default tag name automatically:
 
 ```html
 <script src="https://static.nrk.no/core-components/major/5/core-dialog/core-dialog.min.js"></script>

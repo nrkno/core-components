@@ -2,6 +2,12 @@
 
 > `@nrk/core-progress` is an accessible progress element for displaying linear and radial progresses.
 
+<!-- <script src="https://unpkg.com/preact"></script>
+<script src="https://unpkg.com/preact-compat"></script>
+<script>
+  window.React = preactCompat
+  window.ReactDOM = preactCompat
+</script> -->
 <!--demo
 <script src="core-progress/core-progress.min.js"></script>
 <script src="core-progress/core-progress.jsx.js"></script>
@@ -62,7 +68,7 @@ demo-->
 <!--demo-->
 <label>Radial progress:
   <div style="width:40px">
-    <core-progress type="radial" class="my-radial" value=".75"><hr></core-progress>
+    <core-progress type="radial" class="my-radial" value=".75"></core-progress>
   </div>
 </label>
 ```
@@ -70,13 +76,13 @@ demo-->
 ## Installation
 
 Using NPM provides own element namespace and extensibility.
-Recommended for apps and widgets:
+Recommended:
 
 ```bash
 npm install @nrk/core-progress  # Using NPM
 ```
 
-Using static registers the custom element with default name automatically. Recommended for apps:
+Using static registers the custom element with default name automatically:
 
 ```html
 <script src="https://static.nrk.no/core-components/major/5/core-progress/core-progress.min.js"></script>  <!-- Using static -->
@@ -100,7 +106,7 @@ Using static registers the custom element with default name automatically. Recom
 
 ```js
 import CoreProgress from '@nrk/core-progress'                 // Using NPM
-window.customElements.define('core-progress', CoreProgress)   // Using NPM
+window.customElements.define('core-progress', CoreProgress)   // Using NPM. Replace 'core-progress' with 'my-progress' to namespace
 
 const myProgress = document.querySelector('core-progress')
 

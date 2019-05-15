@@ -7,14 +7,14 @@
 
 Install components from NPM. Using NPM provides namespacing of components by letting you
 register the custom element under any tag name and adding the possibility to add more functionality to
-your component by extending it. Recommended for apps and widgets:
+your component by extending it. This is recommended:
 
 ```bash
 npm install @nrk/core-datepicker  # Using NPM
 ```
 
 Alternatively, install components from static.
-Using static registers the custom element with its default tag name automatically. Recommended for apps:
+Using static registers the custom element with its default tag name automatically:
 
 ```html
 <script src="https://static.nrk.no/core-components/major/5/core-datepicker/core-datepicker.min.js"></script>  <!-- Using static -->
@@ -25,10 +25,13 @@ will know about it before usage.
 
 ```js
 import CoreDatepicker from '@nrk/core-datepicker'                 // Using NPM
-window.customElements.define('core-datepicker', CoreDatepicker)   // Set to 'my-datepicker' for own namespace
+window.customElements.define('core-datepicker', CoreDatepicker)   // Using NPM
 ```
 
-Then, use the component in your HTML:
+Replace `'core-datepicker'` with `'my-datepicker'` to effectively namespace your element
+and avoid potential naming conflicts in your project.
+
+Use the component in your HTML:
 
 ```html
 <core-datepicker days="Man,Tir,Ons,Tor,Fre,Lør,Søn">...</core-datepicker>
@@ -75,59 +78,22 @@ class MyToggle extends CoreToggle {
 window.customElements.define('my-toggle', MyToggle)
 ```
 
-## Migration
+Note that these functions are optional to extend if your component doesn't require
+it in its lifecycle.
 
-The following packages were rewritten as custom elements in the version transition:
-
-* `@nrk/core-datepicker@2` &rarr; `@nrk/core-datepicker@3`
-* `@nrk/core-dialog@1` &rarr; `@nrk/core-dialog@2`
-* `@nrk/core-progress@1` &rarr; `@nrk/core-progress@2`
-* `@nrk/core-scroll@3` &rarr; `@nrk/core-scroll@4`
-* `@nrk/core-tabs@1` &rarr; `@nrk/core-tabs@2`
-* `@nrk/core-toggle@2` &rarr; `@nrk/core-toggle@3`
-* `@nrk/core-input@1` &rarr; `@nrk/core-suggest@1` (renamed)
-
-To migrate to new version, you need to adjust to new syntax, properties and methods in VanillaJS and React. Simply upgrade your component's version number to the latest major using NPM `npm install @nrk/core-toggle@3` or using `major/6` monorepo version from static.
-
-Once installed, you need to change your HTML and JS from old syntax:
-
-```html
-<button>Toggle</button>
-<div hidden>...</div>
-<script>
-  const toggle = document.querySelector('div')
-  coreToggle(toggle, {
-    popup: true       // Popup option
-  })
-</script>
-```
-
-to new custom element syntax:
-
-```html
-<button>Toggle</button>
-<core-toggle popup hidden>  <!-- Popup option -->
-  ...
-</core-toggle>
-```
-If you're consuming the component from NPM, you also need to register the element in order to use it .
-This step is done automatically when using static:
-```js
-import CoreToggle from '@nrk/core-toggle'                 // Using NPM
-window.customElements.define('core-toggle', CoreToggle)   // Using NPM
-```
-React syntax remains more or less the same and some props are changed.
-Most options provided to the old VanillaJS components are now plain element attributes (see `popup` above). Refer to [the documentation](https://static.nrk.no/core-components/latest/index.html)
-for your component to for a list of getters, setters, methods and events.
 
 ## Testing
 
 Due to the [lack of support for custom elements in jsdom](https://github.com/jsdom/jsdom/issues/1030) you need to use a headless browser environment like [puppeteer](https://github.com/GoogleChrome/puppeteer) to write your unit tests involving core components. Alternatively, it may be possible to [patch the default jsdom environment](https://github.com/jsdom/jsdom/issues/1030#issuecomment-486974452) to support custom elements without resorting the a headless browser, but this is untested.
 For an example on how to do it with puppeteer, see [our unit tests](https://github.com/nrkno/core-components/blob/master/packages/core-datepicker/core-datepicker.test.js).
 
+## Browser support
+
+* Browsers: IE/Edge 11+, Safari, Firefox, Chrome, Opera
+* Screen readers: MacOS/iOS: VoiceOver, Android: TalkBack , Windows: JAWS/NVDA
 
 ## Motivation
-Despite [well documented accessibility specifications](https://www.w3.org/TR/wai-aria-practices-1.1/), best practice simply becomes unusable in several screen readers and browsers due to implementation differences. `@nrk/core-components` aims to provide the best possible good user experience regardless of browser (IE/Edge 11+, Safari, Firefox, Chrome, Opera), screen reader (MacOS/iOS: VoiceOver, Android: TalkBack , Windows: JAWS/NVDA) and other existing javascript.
+Despite [well documented accessibility specifications](https://www.w3.org/TR/wai-aria-practices-1.1/), best practice simply becomes unusable in several screen readers and browsers due to implementation differences. `@nrk/core-components` aims to provide the best possible good user experience regardless of browser, screen reader and other existing javascript.
 
 HTML form elements are accessible by nature, and have quite compatible and well documented native APIs.
 Best practices and styling tips is not a pure functionality concern, and therefore not covered by core-components, for now.

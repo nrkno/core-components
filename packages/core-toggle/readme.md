@@ -63,13 +63,13 @@ demo-->
 ## Installation
 
 Using NPM provides own element namespace and extensibility.
-Recommended for apps and widgets:
+Recommended:
 
 ```bash
 npm install @nrk/core-toggle  # Using NPM
 ```
 
-Using static registers the custom element with default name automatically. Recommended for apps:
+Using static registers the custom element with default name automatically:
 
 ```html
 <script src="https://static.nrk.no/core-components/major/5/core-toggle/core-toggle.min.js"></script>  <!-- Using static -->
@@ -83,15 +83,14 @@ Using static registers the custom element with default name automatically. Recom
 <button>Toggle VanillaJS</button>       <!-- Must be <button> placed directly before <core-toggle> or use id + for attributes -->
 <core-toggle
   hidden                                <!-- Set hidden attribute to prevent FOUC -->
-  popup="Boolean|String"                <!-- Optional. Defaults to false. Enable or disable if clicking outside toggle should close it. Provide a string to control the aria-label text on the toggle -->
-  value="String">                       <!-- Optional. Defaults to button.innerHTML. Sets innerHTML of the button and safely updates aria-label for screen readers -->
+  popup="{Boolean|String}">             <!-- Optional. Defaults to false. Enable or disable if clicking outside toggle should close it. Provide a string to control the aria-label text on the toggle -->
   <div>Content</div>
 </core-toggle>
 ```
 
 ```js
 import CoreToggle from '@nrk/core-toggle'                 // Using NPM
-window.customElements.define('core-toggle', CoreToggle)   // Using NPM
+window.customElements.define('core-toggle', CoreToggle)   // Using NPM. Replace 'core-toggle' with 'my-toggle' to namespace
 
 const myToggle = document.querySelector('core-toggle')
 
@@ -103,7 +102,7 @@ myToggle.value          // Get toggle button text
 // Setters
 myToggle.popup = true   // Enable or disable if clicking outside toggle should close it. Provide a string to control the aria-label text on the toggle
 myToggle.hidden = true  // Set hidden attribute
-myToggle.value = 'Velg' // Set toggle button text
+myToggle.value = 'Velg' // Sets innerHTML of the button and safely updates aria-label for screen readers. Defaults to button.innerHTML
 ```
 
 ### React / Preact
@@ -114,7 +113,8 @@ import CoreToggle from '@nrk/core-toggle/jsx'
 <CoreToggle
   hidden                         // Set hidden attribute to prevent FOUC
   popup={Boolean|String}         // Optional. Defaults to false. Enable or disable if clicking outside toggle should close it. Provide a string to control the aria-label text on the toggle
-  onToggle={Function}>           // Optional. Toggle event listener
+  onToggle={Function}            // Optional. Toggle event listener. See event 'toggle'
+  onToggleSelect={Function}>     // Optional. Toggle select event listener. See event 'toggle.select'
   <button>Use with JSX</button>  // First element must result in a <button>. Accepts both elements and components
   <div>Content</div>             // Next element will be toggled. Accepts both elements and components
 </CoreToggle>
@@ -141,7 +141,7 @@ If you have form elements inside a `core-toggle`, you can optionally add a `auto
 
 ### toggle
 
-Before a `core-toggle` changes open state, a [toggle event](https://developer.mozilla.org/en-US/docs/Web/API/HTMLDetailsElement/toggle_event) is fired. The toggle event is cancelable, meaning you can use [`event.preventDefault()`](https://developer.mozilla.org/en-US/docs/Web/API/Event/preventDefault) to cancel toggling:
+Fired after open state changes:
 
 
 ```js
@@ -160,6 +160,7 @@ Useful for setting the value of the toggle button with the selected value.
 document.addEventListener('toggle.select', (event) => {
   event.target   // The toggle element
   event.detail   // The selected element
+  event.target.value = event.detail  // Example: set value of toggle to selected element
 })
 ```
 

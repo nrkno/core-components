@@ -102,13 +102,13 @@ demo-->
 ## Installation
 
 Using NPM provides own element namespace and extensibility.
-Recommended for apps and widgets:
+Recommended:
 
 ```bash
 npm install @nrk/core-scroll  # Using NPM
 ```
 
-Using static registers the custom element with default name automatically. Recommended for apps:
+Using static registers the custom element with default name automatically:
 
 ```html
 <script src="https://static.nrk.no/core-components/major/5/core-scroll/core-scroll.min.js"></script>  <!-- Using static -->
@@ -136,7 +136,7 @@ Buttons can control a `core-scroll` by targeting its ID and specifying a directi
 
 ```js
 import CoreScroll from '@nrk/core-scroll'                 // Using NPM
-window.customElements.define('core-scroll', CoreScroll)   // Using NPM
+window.customElements.define('core-scroll', CoreScroll)   // Using NPM. Replace 'core-scroll' with 'my-scroll' to namespace
 
 const myScroll = document.querySelector('core-scroll')
 
