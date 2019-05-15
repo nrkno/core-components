@@ -87,11 +87,10 @@ test('closes on outside click with popup', withPage, async (t, page) => {
   await page.setContent(`
     <button>Toggle</button>
     <core-toggle popup hidden></core-toggle>
-    <div>Something else</div>
   `)
   await page.click('button')
   t.false(await page.$eval('core-toggle', el => el.hasAttribute('hidden')))
-  await page.click('div')
+  await page.click('body')
   t.true(await page.$eval('core-toggle', el => el.hasAttribute('hidden')))
 })
 
@@ -102,6 +101,26 @@ test('respects "for" attribute', withPage, async (t, page) => {
   `)
   t.true(await page.$eval('core-toggle', el => el.button.getAttribute('for') === el.id))
   t.true(await page.$eval('core-toggle', el => el.button.getAttribute('aria-controls') === el.id))
+})
+
+test('respects exisiting aria-label with popup and value', withPage, async (t, page) => {
+  await page.setContent(`
+    <button aria-label="Label">Toggle</button>
+    <core-toggle popup hidden></core-toggle>
+  `)
+  await page.$eval('core-toggle', el => el.value = 'Button text')
+  t.is(await page.$eval('button', el => el.getAttribute('aria-label')), 'Label')
+  t.is(await page.$eval('button', el => el.textContent), await page.$eval('core-toggle', el => el.value))
+})
+
+test('sets aria-label with popup and value', withPage, async (t, page) => {
+  await page.setContent(`
+    <button>Toggle</button>
+    <core-toggle popup hidden></core-toggle>
+  `)
+  await page.$eval('core-toggle', el => el.value = 'Button text')
+  t.is(await page.$eval('button', el => el.getAttribute('aria-label')), 'Button text')
+  t.is(await page.$eval('button', el => el.textContent), await page.$eval('core-toggle', el => el.value))
 })
 
 test('triggers toggle event', withPage, async (t, page) => {
