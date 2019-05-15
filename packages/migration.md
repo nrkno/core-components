@@ -35,7 +35,11 @@ With static, use the `major/6` version in the URL:
 <script src="https://static.nrk.no/core-components/major/5/core-toggle/core-toggle.min.js"></script>  <!-- Using static -->
 ```
 
-Once installed, you need to change your HTML and JS usage from the old syntax:
+### Usage
+
+Once installed, you need to change your HTML/JS or JSX usage from the old syntax.
+
+VanillaJS old:
 
 ```html
 <button>Toggle</button>
@@ -48,7 +52,7 @@ Once installed, you need to change your HTML and JS usage from the old syntax:
 </script>
 ```
 
-to new custom element syntax:
+VanillaJS new:
 
 ```html
 <button>Toggle</button>
@@ -57,8 +61,29 @@ to new custom element syntax:
 </core-toggle>
 ```
 
+
+In React the new markup structure is new the same as VanillaJS, so a change is needed some places:
+
+React old:
+```html
+<CoreToggle popup>
+  <button>Toggle</button>
+  <div>Content</div>
+</CoreToggle>
+```
+React new:
+
+```html
+<button>Toggle</button>
+<CoreToggle popup hidden>
+  <div>Content</div>
+</CoreToggle>
+```
+
+### Registering
+
 If you're consuming the component from NPM, you also need to register the element in your JS in order to use it.
-This step is done automatically when using static and in React-land, so not needed in that case:
+This step is done automatically when using static or React components, so not needed in that case:
 
 ```js
 import CoreToggle from '@nrk/core-toggle'                 // Using NPM
@@ -78,6 +103,9 @@ which is the component.
 
 - Some React event names has changed from `on{EventName}` to the `on{Name}{EventName}` form. This matches the VanillaJS event names 1:1,
 only with the `on`-prefix and capitalized name. For example `onToggle` in `@nrk/core-dialog` has changed to `onDialogToggle`.
+
+- React components are now just thin wrappers around the vanilla components - forwarding all props and events from them.
+The markup in JSX will now follow the VanillaJS markup, logically. See react example above.
 
 - Data attributes using the `core-` prefix are gone. CSS selectors using these (for example `[data-core-dialog]`)
 in your code may need to be updated. Instead the standard `for` attribute is used widely in the new solution.
