@@ -50,7 +50,7 @@ export default class CoreSuggest extends HTMLElement {
   get ajax () { return this.getAttribute('ajax') || '' } // Always return string consistent with .value or .className
   set ajax (url) { this.setAttribute('ajax', url) }
 
-  get limit () { return Math.max(0, Number(this.getAttribute('limit'))) || Infinity }
+  get limit () { return Math.max(0, this.getAttribute('limit')) || Infinity }
   set limit (int) { this.setAttribute('limit', int) }
 
   // Must set attribute for IE11
