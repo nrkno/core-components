@@ -9,12 +9,11 @@ https://static.nrk.no/core-components/latest/
 
 ## Installation
 
-All components are provided as [custom elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements) and React elements. They are individually installed for individual versioning:
+All components are provided as [custom elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements) and React components. They are installed individually.
 
 ### Using NPM
 
-Using NPM provides own element namespace and extensibility.
-Recommended for apps and widgets:
+Using NPM provides own element namespace and extensibility. Recommended for apps and widgets:
 
 ```bash
 npm install @nrk/core-dialog
@@ -22,10 +21,10 @@ npm install @nrk/core-dialog
 
 ### Using static
 
-Using static registers the custom element with default name automatically. Recommended for apps:
+Using static registers the custom element with its default tag name automatically. Recommended for apps:
 
 ```html
-<script src="https://static.nrk.no/core-components/major/1/core-dialog/core-dialog.min.js"></script>
+<script src="https://static.nrk.no/core-components/major/5/core-dialog/core-dialog.min.js"></script>
 ```
 
 

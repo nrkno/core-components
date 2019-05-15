@@ -14,7 +14,7 @@ npm install @nrk/core-datepicker  # Using NPM
 ```
 
 Alternatively, install components from static.
-Using static registers the custom element with default tag name automatically. Recommended for apps:
+Using static registers the custom element with its default tag name automatically. Recommended for apps:
 
 ```html
 <script src="https://static.nrk.no/core-components/major/5/core-datepicker/core-datepicker.min.js"></script>  <!-- Using static -->
@@ -74,6 +74,10 @@ class MyToggle extends CoreToggle {
 // Register your custom element
 window.customElements.define('my-toggle', MyToggle)
 ```
+
+## Testing
+
+Due to the [lack of support for custom elements in jsdom](https://github.com/jsdom/jsdom/issues/1030) you need to use a headless browser environment like [puppeteer](https://github.com/GoogleChrome/puppeteer) that supports custom elements to write your unit tests involving core components. Alternatively, it may be possible to [patch the default jsdom environment](https://github.com/jsdom/jsdom/issues/1030#issuecomment-486974452) to support custom elements without resorting the a headless browser, but this is untested. For an example on how to do it with puppeteer, see [our unit tests](https://github.com/nrkno/core-components/blob/master/packages/core-datepicker/core-datepicker.test.js).
 
 ## Motivation
 Despite [well documented accessibility specifications](https://www.w3.org/TR/wai-aria-practices-1.1/), best practice simply becomes unusable in several screen readers and browsers due to implementation differences. `@nrk/core-components` aims to provide the best possible good user experience regardless of browser (IE/Edge 11+, Safari, Firefox, Chrome, Opera), screen reader (MacOS/iOS: VoiceOver, Android: TalkBack , Windows: JAWS/NVDA) and other existing javascript.
