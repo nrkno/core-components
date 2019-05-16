@@ -20,7 +20,7 @@ export default class CoreSuggest extends HTMLElement {
     document.addEventListener('input', this)
     document.addEventListener('keydown', this)
     document.addEventListener('focusin', this)
-    setTimeout(() => onInput(this, { target: this.input })) // Filter items
+    setTimeout(() => onMutation(this)) // Ensure limit is respected
     if (document.activeElement === this.input) this.hidden = false // Open if active
   }
   disconnectedCallback () {
@@ -58,9 +58,17 @@ export default class CoreSuggest extends HTMLElement {
   set hidden (val) { this.toggleAttribute('hidden', val) }
 }
 
+function toggleItem (item, show) {
+  const li = item.parentElement // JAWS requires hiding parent <li> (if existing)
+  if (li.nodeName === 'LI') li.toggleAttribute('hidden', show)
+  item.toggleAttribute('hidden', show)
+}
+
 // This can happen quite frequently so make it fast
 function onMutation (self) {
   const needle = self.input.value.toLowerCase().trim()
+  const items = self.querySelectorAll('a:not([hidden]),button:not([hidden])')
+  const limit = Math.min(items.length, self.limit)
 
   // Remove old highlights
   const marks = self.getElementsByTagName('mark')
@@ -70,10 +78,11 @@ function onMutation (self) {
     parent.normalize && parent.normalize()
   }
 
-  for (let els = self.querySelectorAll('a:not([hidden]),button:not([hidden])'), i = 0, l = els.length; i < l; ++i) {
-    els[i].setAttribute('aria-label', `${els[i].textContent}, ${i + 1} av ${l}`)
-    els[i].setAttribute('tabindex', '-1') // setAttribute a bit faster than tabIndex prop
-    els[i].setAttribute('type', 'button') // Ensure <button> does not submit forms
+  for (let i = 0, l = items.length; i < l; ++i) {
+    items[i].setAttribute('aria-label', `${items[i].textContent}, ${i + 1} av ${limit}`)
+    items[i].setAttribute('tabindex', '-1') // setAttribute a bit faster than tabIndex prop
+    items[i].setAttribute('type', 'button') // Ensure <button> does not submit forms
+    toggleItem(items[i], i >= limit)
   }
 
   if (needle) {
@@ -108,16 +117,11 @@ function onMutation (self) {
 function onInput (self, event) {
   if (event.target !== self.input || !dispatchEvent(self, 'suggest.filter') || onAjax(self)) return
   const value = self.input.value.toLowerCase()
-  const limit = self.limit
-  let index = 0
+  const items = self.querySelectorAll('a,button')
 
-  queryAll('a,button', self).forEach((item) => {
-    const hide = (item.value || item.textContent).toLowerCase().indexOf(value) === -1 || ++index > limit
-    const elem = item.parentElement.nodeName === 'LI' ? item.parentElement : item
-    elem.toggleAttribute('hidden', hide) // JAWS requires hiding of <li> (if existing)
-    item.toggleAttribute('hidden', hide)
-  })
-  onMutation(self)
+  for (let i = 0, l = items.length; i < l; ++i) {
+    toggleItem(items[i], (items[i].value || items[i].textContent).toLowerCase().indexOf(value) === -1)
+  }
 }
 
 function onKey (self, event) {
