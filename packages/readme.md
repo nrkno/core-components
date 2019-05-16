@@ -1,37 +1,35 @@
 # Core Components
 
-> `@nrk/core-components` is a kit of lightweight, unstyled and accessible [Javascript](https://stackoverflow.com/questions/20435653/what-is-vanillajs) and [React](https://reactjs.org/) / [Preact](https://github.com/developit/preact-compat) components.
+> `@nrk/core-components` is a kit of lightweight, unstyled and accessible [Javascript](https://stackoverflow.com/questions/20435653/what-is-vanillajs) and [React](https://reactjs.org/) / [Preact](https://github.com/developit/preact-compat) custom element based components.
 > It provides effortless and flexible usage, while under the hood enhancing markup and functionality for best best user experience across all major browsers and screen readers.
 
 
 ## Installation
 
-Install components from NPM. Using NPM provides namespacing of components by letting you
-register the custom element under any tag name. Recommended:
+### Using NPM (recommended)
+Using NPM provides namespacing of components by letting you
+register the custom element under any tag name:
 
 ```bash
 npm install @nrk/core-datepicker  # Using NPM
 ```
 
-Alternatively, install components from static.
-Using static registers the custom element with its default tag name automatically:
-
-```html
-<script src="https://static.nrk.no/core-components/major/5/core-datepicker/core-datepicker.min.js"></script>  <!-- Using static -->
-```
-
-VanillaJS components installed from NPM needs to be registered globally so your browser
-will know about it before usage.
-
 ```js
 import CoreDatepicker from '@nrk/core-datepicker'                 // Using NPM
-window.customElements.define('core-datepicker', CoreDatepicker)   // Using NPM
+window.customElements.define('core-datepicker', CoreDatepicker)   // Replace 'core-datepicker' with your own tag name
+
+import CoreDatepicker from '@nrk/core-datepicker/jsx'             // Using NPM
+<CoreDatepicker ...propsHere></CoreDatepicker>                    // React modules resovles custom tag names under the hood
 ```
 
-Replace `'core-datepicker'` with `'my-datepicker'` to effectively namespace your element
-and avoid potential naming conflicts in your project.
+### Using static.nrk.no (avoid)
+Using static registers the custom element with its default tag name (i.e. `core-toggle`) automatically:
 
-Use the component in your HTML:
+```html
+<script src="https://static.nrk.no/core-components/major/5/core-datepicker/core-datepicker.min.js"></script>
+```
+
+### Use the component in your HTML
 
 ```html
 <core-datepicker days="Man,Tir,Ons,Tor,Fre,Lør,Søn">...</core-datepicker>
@@ -81,12 +79,6 @@ window.customElements.define('my-toggle', MyToggle)
 Note that these functions are optional to extend if your component doesn't require
 it in its lifecycle.
 
-
-## Testing
-
-Due to the [lack of support for custom elements in jsdom](https://github.com/jsdom/jsdom/issues/1030) you need to use a headless browser environment like [puppeteer](https://github.com/GoogleChrome/puppeteer) to write your unit tests involving core components. Alternatively, it may be possible to [patch the default jsdom environment](https://github.com/jsdom/jsdom/issues/1030#issuecomment-486974452) to support custom elements without resorting the a headless browser, but this is untested.
-For an example on how to do it with puppeteer, see [our unit tests](https://github.com/nrkno/core-components/blob/master/packages/core-datepicker/core-datepicker.test.js).
-
 ## Browser support
 
 * Browsers: IE/Edge 11+, Safari, Firefox, Chrome, Opera
@@ -97,3 +89,8 @@ Despite [well documented accessibility specifications](https://www.w3.org/TR/wai
 
 HTML form elements are accessible by nature, and have quite compatible and well documented native APIs.
 Best practices and styling tips is not a pure functionality concern, and therefore not covered by core-components, for now.
+
+## Testing
+
+Due to the [lack of support for custom elements in jsdom](https://github.com/jsdom/jsdom/issues/1030) you need to use a headless browser environment like [puppeteer](https://github.com/GoogleChrome/puppeteer) to write your unit tests involving core components. Alternatively, it may be possible to [patch the default jsdom environment](https://github.com/jsdom/jsdom/issues/1030#issuecomment-486974452) to support custom elements without resorting the a headless browser, but this is untested.
+For an example on how to do it with puppeteer, see [our unit tests](https://github.com/nrkno/core-components/blob/master/packages/core-datepicker/core-datepicker.test.js).
