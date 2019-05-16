@@ -1,7 +1,6 @@
 # Core Components
 
-> `@nrk/core-components` is a kit of lightweight, unstyled and accessible [Javascript](https://stackoverflow.com/questions/20435653/what-is-vanillajs) and [React](https://reactjs.org/) / [Preact](https://github.com/developit/preact-compat) custom element based components.
-> It provides effortless and flexible usage, while under the hood enhancing markup and functionality for best best user experience across all major browsers and screen readers.
+> A kit of lightweight, unstyled and accessible [Javascript](https://stackoverflow.com/questions/20435653/what-is-vanillajs) and [React](https://reactjs.org/) / [Preact](https://github.com/developit/preact-compat) custom element based components. It provides effortless and flexible usage, while under the hood enhancing markup and functionality for best best user experience across all major browsers and screen readers.
 
 
 ## Installation
@@ -32,9 +31,10 @@ Using static registers the custom element with its default tag name (i.e. `core-
 ### Use the component in your HTML
 
 ```html
-<core-datepicker days="Man,Tir,Ons,Tor,Fre,Lør,Søn">...</core-datepicker>
+<core-datepicker days="Man,Tir,Ons,Tor,Fre,Lør,Søn">...</core-datepicker>   <!-- VanillaJS -->
+<CoreDatepicker days="Man,Tir,Ons,Tor,Fre,Lør,Søn">...</CoreDatepicker>     <!-- React/Preact -->
 ```
-Read the documentation for each component for usage and more.
+Read the documentation on each component for more usage, details and examples.
 
 
 ## Extending
