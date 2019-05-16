@@ -1,13 +1,13 @@
 # Core Components
 
-> `@nrk/core-components` is a kit of lightweight, unstyled and accessible [Javascript](https://stackoverflow.com/questions/20435653/what-is-vanillajs) and [React](https://reactjs.org/) / [Preact](https://github.com/developit/preact-compat) components. It provides effortless and flexible usage, while under the hood enhancing markup and functionality for best best user experience across all major browsers and screen readers.
+> `@nrk/core-components` is a kit of lightweight, unstyled and accessible [Javascript](https://stackoverflow.com/questions/20435653/what-is-vanillajs) and [React](https://reactjs.org/) / [Preact](https://github.com/developit/preact-compat) components.
+> It provides effortless and flexible usage, while under the hood enhancing markup and functionality for best best user experience across all major browsers and screen readers.
 
 
 ## Installation
 
 Install components from NPM. Using NPM provides namespacing of components by letting you
-register the custom element under any tag name and adding the possibility to add more functionality to
-your component by extending it. This is recommended:
+register the custom element under any tag name. Recommended:
 
 ```bash
 npm install @nrk/core-datepicker  # Using NPM

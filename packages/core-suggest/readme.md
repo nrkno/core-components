@@ -367,7 +367,7 @@ Synchronous operation; dynamically populating items based input value:
     if (input.id !== 'my-input-dynamic') return // Make sure we are on correct input
     event.preventDefault()
     suggest.innerHTML = `<ul>${value ? mails.map((mail) => {
-      return '<li><button>' + value.replace(/(@.*|$)/, '@' + mail) + '</button><li>'
+      return '<li><button>' + value.replace(/(@.*|$)/, '@' + mail) + '</button></li>'
     }).join('') : ''}</ul>`
   })
 </script>

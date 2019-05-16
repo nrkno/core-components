@@ -51,7 +51,7 @@ export default class CoreToggle extends HTMLElement {
 
   // aria-haspopup triggers forms mode in JAWS, therefore store as custom attr
   get popup () { return this.getAttribute('popup') === 'true' || this.getAttribute('popup') || this.hasAttribute('popup') }
-  set popup (val) { this.toggleAttribute('hidden', val) }
+  set popup (val) { this[val === false ? 'removeAttribute' : 'setAttribute']('popup', val) }
 
   // Must set attribute for IE11
   get hidden () { return this.hasAttribute('hidden') }

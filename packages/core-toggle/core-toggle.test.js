@@ -106,21 +106,32 @@ test('respects "for" attribute', withPage, async (t, page) => {
 test('respects exisiting aria-label with popup and value', withPage, async (t, page) => {
   await page.setContent(`
     <button aria-label="Label">Toggle</button>
-    <core-toggle popup hidden></core-toggle>
+    <core-toggle popup="Another label" hidden></core-toggle>
   `)
   await page.$eval('core-toggle', el => (el.value = 'Button text'))
-  t.is(await page.$eval('button', el => el.getAttribute('aria-label')), 'Label')
   t.is(await page.$eval('button', el => el.textContent), await page.$eval('core-toggle', el => el.value))
+  t.is(await page.$eval('button', el => el.getAttribute('aria-label')), 'Label')
 })
 
-test('sets aria-label with popup and value', withPage, async (t, page) => {
+test('sets aria-label with popup attr and value', withPage, async (t, page) => {
   await page.setContent(`
     <button>Toggle</button>
-    <core-toggle popup hidden></core-toggle>
+    <core-toggle popup="Some label" hidden></core-toggle>
   `)
   await page.$eval('core-toggle', el => (el.value = 'Button text'))
-  t.is(await page.$eval('button', el => el.getAttribute('aria-label')), 'Button text')
   t.is(await page.$eval('button', el => el.textContent), await page.$eval('core-toggle', el => el.value))
+  t.is(await page.$eval('button', el => el.getAttribute('aria-label')), 'Button text,Some label')
+})
+
+test('sets aria-label with popup prop and value', withPage, async (t, page) => {
+  await page.setContent(`
+    <button>Toggle</button>
+    <core-toggle hidden></core-toggle>
+  `)
+  await page.$eval('core-toggle', el => (el.popup = 'Some label'))
+  await page.$eval('core-toggle', el => (el.value = 'Button text'))
+  t.is(await page.$eval('button', el => el.textContent), await page.$eval('core-toggle', el => el.value))
+  t.is(await page.$eval('button', el => el.getAttribute('aria-label')), 'Button text,Some label')
 })
 
 test('triggers toggle event', withPage, async (t, page) => {
