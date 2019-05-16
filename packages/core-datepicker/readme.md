@@ -262,7 +262,7 @@ import CoreDatepicker from '@nrk/core-datepicker/jsx'
   <input type="radio|checkbox|year|month|day|hour|minute|second|timestamp"/> // Same as with vanilla js
   <select></select>                    // Same as with vanilla js
   <table></table>                      // Same as with vanilla js
-<CoreDatepicker>
+</CoreDatepicker>
 ```
 
 

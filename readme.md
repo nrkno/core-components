@@ -1,6 +1,6 @@
 # Core Components
 
-> `@nrk/core-components` is a kit of lightweight, unstyled and accessible [Javascript](https://stackoverflow.com/questions/20435653/what-is-vanillajs) and [React](https://reactjs.org/) / [Preact](https://github.com/developit/preact-compat) components.
+> A kit of lightweight, unstyled and accessible [Javascript](https://stackoverflow.com/questions/20435653/what-is-vanillajs) and [React](https://reactjs.org/) / [Preact](https://github.com/developit/preact-compat) components.
 It provides effortless and flexible usage, while under the hood enhancing markup and functionality for best best user experience across all major browsers and screen readers.
 
 ## Documentation
@@ -9,7 +9,6 @@ https://static.nrk.no/core-components/latest/
 
 ## Installation
 
-All components are provided as [custom elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements) and React components. They are installed individually.
 
 ### Using NPM
 
@@ -32,13 +31,13 @@ Using static registers the custom element with its default tag name automaticall
 
 ### HTML / JavaScript
 
+```html
+<core-dialog modal hidden>...</core-dialog>
+```
+
 ```js
 import CoreDialog from '@nrk/core-dialog'                 // Using NPM
 window.customElements.define('core-dialog', CoreDialog)   // Using NPM
-```
-
-```html
-<core-dialog modal hidden>...</core-dialog>
 ```
 
 ### React / Preact

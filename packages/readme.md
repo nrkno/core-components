@@ -1,13 +1,13 @@
 # Core Components
 
-> `@nrk/core-components` is a kit of lightweight, unstyled and accessible [Javascript](https://stackoverflow.com/questions/20435653/what-is-vanillajs) and [React](https://reactjs.org/) / [Preact](https://github.com/developit/preact-compat) components.
+> A kit of lightweight, unstyled and accessible [Javascript](https://stackoverflow.com/questions/20435653/what-is-vanillajs) and [React](https://reactjs.org/) / [Preact](https://github.com/developit/preact-compat) components.
 > It provides effortless and flexible usage, while under the hood enhancing markup and functionality for best best user experience across all major browsers and screen readers.
 
 
 ## Installation
 
-Install components from NPM. Using NPM provides namespacing of components by letting you
-register the custom element under any tag name. Recommended:
+Install components from NPM. This provides possibility to namespace the custom element by letting you
+register it under own tag name. Recommended:
 
 ```bash
 npm install @nrk/core-datepicker  # Using NPM
@@ -20,23 +20,20 @@ Using static registers the custom element with its default tag name automaticall
 <script src="https://static.nrk.no/core-components/major/5/core-datepicker/core-datepicker.min.js"></script>  <!-- Using static -->
 ```
 
-VanillaJS components installed from NPM needs to be registered globally so your browser
-will know about it before usage.
+Custom elements needs to be registered once globally so your browser will know about it before usage.  This step is done automatically when installing from static or using React components:
 
 ```js
 import CoreDatepicker from '@nrk/core-datepicker'                 // Using NPM
-window.customElements.define('core-datepicker', CoreDatepicker)   // Using NPM
+window.customElements.define('core-datepicker', CoreDatepicker)   // Using NPM. Replace 'core-datepicker' with 'my-datepicker' to namespace
 ```
 
-Replace `'core-datepicker'` with `'my-datepicker'` to effectively namespace your element
-and avoid potential naming conflicts in your project.
-
-Use the component in your HTML:
+Then, the component is ready to be used in your markup:
 
 ```html
-<core-datepicker days="Man,Tir,Ons,Tor,Fre,Lør,Søn">...</core-datepicker>
+<core-datepicker days="Man,Tir,Ons,Tor,Fre,Lør,Søn">...</core-datepicker>   <!-- VanillaJS -->
+<CoreDatepicker days="Man,Tir,Ons,Tor,Fre,Lør,Søn">...</CoreDatepicker>     <!-- React/Preact -->
 ```
-Read the documentation for each component for usage and more.
+Read the documentation on each component for more usage, details and examples.
 
 
 ## Extending
