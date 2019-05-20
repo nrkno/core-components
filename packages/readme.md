@@ -81,7 +81,7 @@ it in its lifecycle.
 
 ## Browser support
 
-* Browsers: IE/Edge 11+, Safari, Firefox, Chrome, Opera
+* Browsers: IE/Edge 11+ ([with polyfill](https://github.com/webcomponents/custom-elements)), Safari, Firefox, Chrome, Opera
 * Screen readers: MacOS/iOS: VoiceOver, Android: TalkBack , Windows: JAWS/NVDA
 
 ## Motivation
