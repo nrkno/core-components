@@ -23,7 +23,7 @@
     "react-dom": "16.8.6",
     "rollup": "1.11.3",
     "rollup-plugin-buble": "0.19.6",
-    "rollup-plugin-commonjs": "9.3.4",
+    "rollup-plugin-commonjs": "10.0.0",
     "rollup-plugin-json": "4.0.0",
     "rollup-plugin-node-resolve": "4.2.4",
     "rollup-plugin-serve": "1.0.1",
