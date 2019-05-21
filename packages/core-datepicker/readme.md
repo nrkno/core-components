@@ -165,7 +165,7 @@ npm install @nrk/core-datepicker  # Using NPM
 Using static registers the custom element with default name automatically:
 
 ```html
-<script src="https://static.nrk.no/core-components/major/5/core-datepicker/core-datepicker.min.js"></script>  <!-- Using static -->
+<script src="https://static.nrk.no/core-components/major/6/core-datepicker/core-datepicker.min.js"></script>  <!-- Using static -->
 ```
 
 

@@ -25,7 +25,7 @@ import CoreDatepicker from '@nrk/core-datepicker/jsx'             // Using NPM
 Using static registers the custom element with its default tag name (i.e. `core-toggle`) automatically:
 
 ```html
-<script src="https://static.nrk.no/core-components/major/5/core-datepicker/core-datepicker.min.js"></script>
+<script src="https://static.nrk.no/core-components/major/6/core-datepicker/core-datepicker.min.js"></script>
 ```
 
 ### Use the component in your HTML

@@ -32,7 +32,7 @@ npm install @nrk/core-toggle@3  # Using NPM.
 ### With static, use the `major/6` version in the URL:
 
 ```html
-<script src="https://static.nrk.no/core-components/major/5/core-toggle/core-toggle.min.js"></script>  <!-- Using static -->
+<script src="https://static.nrk.no/core-components/major/6/core-toggle/core-toggle.min.js"></script>  <!-- Using static -->
 ```
 
 ## Step 2 - Render
