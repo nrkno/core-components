@@ -1,10 +1,10 @@
 {
-  "name": "@nrk/core-input",
+  "name": "@nrk/core-suggest",
   "homepage": "https://static.nrk.no/core-components/latest/",
   "author": "NRK <opensource@nrk.no> (https://www.nrk.no/)",
-  "version": "1.4.4",
+  "version": "1.0.0",
   "license": "MIT",
-  "main": "core-input.cjs.js",
+  "main": "core-suggest.cjs.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nrkno/core-components.git"
