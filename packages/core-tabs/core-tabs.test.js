@@ -1,181 +1,150 @@
-const coreTabs = require('./core-tabs.min')
+import test from 'ava'
+import path from 'path'
+import puppeteer from 'puppeteer'
 
-function expectActiveTab (tab, { controls }) {
-  expect(tab.getAttribute('aria-controls')).toEqual(controls)
-  expect(tab.getAttribute('aria-controls')).toBeTruthy()
-  expect(tab.getAttribute('role')).toEqual('tab')
-  expect(tab.getAttribute('tabindex')).toEqual('0')
-  expect(tab.getAttribute('aria-selected')).toEqual('true')
+async function withPage (t, run) {
+  const browser = await puppeteer.launch()
+  const page = await browser.newPage()
+  page.on('console', msg => console.log(msg._text))
+  await page.addScriptTag({ path: path.join(__dirname, 'core-tabs.min.js') })
+  try {
+    await run(t, page)
+  } finally {
+    await page.close()
+    await browser.close()
+  }
 }
 
-function expectInactiveTab (tab, { controls }) {
-  expect(tab.getAttribute('aria-controls')).toEqual(controls)
-  expect(tab.getAttribute('aria-controls')).toBeTruthy()
-  expect(tab.getAttribute('role')).toEqual('tab')
-  expect(tab.getAttribute('tabindex')).toEqual('-1')
-  expect(tab.getAttribute('aria-selected')).toEqual('false')
-}
+test('sets up all properties', withPage, async (t, page) => {
+  await page.setContent(`
+    <core-tabs>
+      <button id="tab-1">First tab</button>
+      <button id="tab-2">Second tab</button>
+    </core-tabs>
+    <div id="panel-1">Text of tab 1</div>
+    <div id="panel-2">Text of tab 2</div>
+  `)
+  await page.waitFor('core-tabs [role="tab"]')
+  t.is(await page.$eval('core-tabs', el => el.getAttribute('role')), 'tablist')
+  t.truthy(await page.$eval('#tab-1', el => el.getAttribute('aria-controls')))
+  t.true(await page.$eval('#tab-1', el => el.getAttribute('aria-controls') === 'panel-1'))
+  t.is(await page.$eval('#tab-1', el => el.getAttribute('role')), 'tab')
+  t.is(await page.$eval('#tab-1', el => el.getAttribute('tabindex')), '0')
+  t.is(await page.$eval('#tab-1', el => el.getAttribute('aria-selected')), 'true')
+  t.truthy(await page.$eval('#tab-2', el => el.getAttribute('aria-controls')))
+  t.true(await page.$eval('#tab-2', el => el.getAttribute('aria-controls') === 'panel-2'))
+  t.is(await page.$eval('#tab-2', el => el.getAttribute('role')), 'tab')
+  t.is(await page.$eval('#tab-2', el => el.getAttribute('tabindex')), '-1')
+  t.is(await page.$eval('#tab-2', el => el.getAttribute('aria-selected')), 'false')
+  t.truthy(await page.$eval('#panel-1', el => el.getAttribute('aria-labelledby')))
+  t.true(await page.$eval('#panel-1', el => el.getAttribute('aria-labelledby') === 'tab-1'))
+  t.is(await page.$eval('#panel-1', el => el.getAttribute('role')), 'tabpanel')
+  t.is(await page.$eval('#panel-1', el => el.getAttribute('tabindex')), '0')
+  t.false(await page.$eval('#panel-1', el => el.hasAttribute('hidden')))
+  t.truthy(await page.$eval('#panel-2', el => el.getAttribute('aria-labelledby')))
+  t.true(await page.$eval('#panel-2', el => el.getAttribute('aria-labelledby') === 'tab-2'))
+  t.is(await page.$eval('#panel-2', el => el.getAttribute('role')), 'tabpanel')
+  t.is(await page.$eval('#panel-2', el => el.getAttribute('tabindex')), '0')
+  t.true(await page.$eval('#panel-2', el => el.hasAttribute('hidden')))
+})
 
-function expectActivePanel (panel, { labelledby }) {
-  expect(panel.getAttribute('aria-labelledby')).toEqual(labelledby)
-  expect(panel.getAttribute('aria-labelledby')).toBeTruthy()
-  expect(panel.getAttribute('role')).toEqual('tabpanel')
-  expect(panel.getAttribute('tabindex')).toEqual('0')
-  expect(panel.hasAttribute('hidden')).toBeFalsy()
-}
+test('selects tab by index', withPage, async (t, page) => {
+  await page.setContent(`
+    <core-tabs>
+      <button id="tab-1">First tab</button>
+      <button id="tab-2">Second tab</button>
+    </core-tabs>
+    <div id="panel-1">Text of tab 1</div>
+    <div id="panel-2">Text of tab 2</div>
+  `)
+  await page.waitFor('core-tabs [role="tab"]')
+  await page.evaluate(() => { document.querySelector('core-tabs').tab = 1 })
+  t.is(await page.$eval('#tab-1', el => el.getAttribute('aria-selected')), 'false')
+  t.is(await page.$eval('#tab-2', el => el.getAttribute('aria-selected')), 'true')
+})
 
-function expectInactivePanel (panel, { labelledby }) {
-  expect(panel.getAttribute('aria-labelledby')).toEqual(labelledby)
-  expect(panel.getAttribute('aria-labelledby')).toBeTruthy()
-  expect(panel.getAttribute('role')).toEqual('tabpanel')
-  expect(panel.getAttribute('tabindex')).toEqual('0')
-  expect(panel.hasAttribute('hidden')).toBeTruthy()
-}
-const standardHTML = `
-<div class="my-tabs">
-  <button>Button tab 1</button>
-  <a>Button tab 2</a>
-</div>
-<!-- Next element children will become panels of correlating tab -->
-<div>
-  <article>Text of tab 1</article>
-  <section>Text of tab 2</section>
-</div>`
+test('selects tab by id', withPage, async (t, page) => {
+  await page.setContent(`
+    <core-tabs>
+      <button id="tab-1">First tab</button>
+      <button id="tab-2">Second tab</button>
+    </core-tabs>
+    <div id="panel-1">Text of tab 1</div>
+    <div id="panel-2">Text of tab 2</div>
+  `)
+  await page.waitFor('core-tabs [role="tab"]')
+  await page.evaluate(() => (document.querySelector('core-tabs').tab = 'tab-2'))
+  t.is(await page.$eval('#tab-1', el => el.getAttribute('aria-selected')), 'false')
+  t.is(await page.$eval('#tab-2', el => el.getAttribute('aria-selected')), 'true')
+})
 
-const standardHTMLWithReUse = `
-<div id="tabs">
-  <button id="tab-1" aria-controls="panel-1">Button tab 1</button>
-  <button id="tab-2" aria-controls="panel-1">Button tab 2</button>
-</div>
-<!-- Same panel will be re-used -->
-<div id="panels">
-  <div id="panel-1">Text of tab 1</div>
-</div>`
+test('selects tab by element', withPage, async (t, page) => {
+  await page.setContent(`
+    <core-tabs>
+      <button id="tab-1">First tab</button>
+      <button id="tab-2">Second tab</button>
+    </core-tabs>
+    <div id="panel-1">Text of tab 1</div>
+    <div id="panel-2">Text of tab 2</div>
+  `)
+  await page.waitFor('core-tabs [role="tab"]')
+  await page.evaluate(() => (document.querySelector('core-tabs').tab = document.querySelector('#tab-2')))
+  t.is(await page.$eval('#tab-1', el => el.getAttribute('aria-selected')), 'false')
+  t.is(await page.$eval('#tab-2', el => el.getAttribute('aria-selected')), 'true')
+})
 
-describe('core-tabs', () => {
-  it('should init on standard HTML', () => {
-    document.body.innerHTML = standardHTML
+test('respects for on tabs', withPage, async (t, page) => {
+  await page.setContent(`
+    <core-tabs>
+      <button id="tab-1" for="panel-1">First tab</button>
+      <button id="tab-2" for="panel-2">Second tab</button>
+    </core-tabs>
+    <div id="panel-2">Text of tab 2</div>
+    <div id="panel-1">Text of tab 1</div>
+  `)
+  await page.waitFor('core-tabs [role="tab"]')
+  t.is(await page.$eval('#tab-1', el => el.getAttribute('aria-selected')), 'true')
+  t.is(await page.$eval('#tab-1', el => el.getAttribute('tabindex')), '0')
+  t.false(await page.$eval('#panel-1', el => el.hasAttribute('hidden')))
+  t.is(await page.$eval('#tab-2', el => el.getAttribute('aria-selected')), 'false')
+  t.is(await page.$eval('#tab-2', el => el.getAttribute('tabindex')), '-1')
+  t.true(await page.$eval('#panel-2', el => el.hasAttribute('hidden')))
+})
 
-    coreTabs('.my-tabs')
+test('respects for for single panel', withPage, async (t, page) => {
+  await page.setContent(`
+    <core-tabs>
+      <button id="tab-1" for="panel-1">First tab</button>
+      <button id="tab-2" for="panel-1">Second tab</button>
+      <button id="tab-3" for="panel-2">Third tab</button>
+    </core-tabs>
+    <p>I'm an element</p>
+    <div id="panel-1">Text of tab 1</div>
+    <div id="panel-2">Text of tab 2</div>
+  `)
+  await page.waitFor('core-tabs [role="tab"]')
+  await page.evaluate(() => (document.querySelector('core-tabs').tab = 1))
+  t.is(await page.$eval('#tab-2', el => el.getAttribute('aria-selected')), 'true')
+  t.false(await page.$eval('#panel-1', el => el.hasAttribute('hidden')))
+  t.true(await page.$eval('#panel-2', el => el.hasAttribute('hidden')))
+})
 
-    const tablist = document.querySelector('.my-tabs')
-    const tab1 = document.querySelector('button')
-    const tab2 = document.querySelector('a')
-    const panel1 = document.querySelector('article')
-    const panel2 = document.querySelector('section')
-
-    expect(tablist.getAttribute('role')).toEqual('tablist')
-
-    expectActiveTab(tab1, { controls: panel1.id })
-    expectActivePanel(panel1, { labelledby: tab1.id })
-
-    expectInactiveTab(tab2, { controls: panel2.id })
-    expectInactivePanel(panel2, { labelledby: tab2.id })
-  })
-  it('should init on standard HTML with ids, reverse ordered panels', () => {
-    document.body.innerHTML = `
-    <div id="tabs">
-      <button id="tab-1" aria-controls="panel-1">Button tab 1</button>
-      <button id="tab-2" aria-controls="panel-2">Button tab 2</button>
-    </div>
-    <!-- Next element children will become panels of correlating tab -->
-    <div id="panels">
-      <div id="panel-2">Text of tab 2</div>
-      <div id="panel-1">Text of tab 1</div>
-    </div>`
-
-    coreTabs('#tabs')
-
-    const tablist = document.querySelector('#tabs')
-    const tab1 = document.querySelector('#tab-1')
-    const tab2 = document.querySelector('#tab-2')
-    const panel1 = document.querySelector('#panel-1')
-    const panel2 = document.querySelector('#panel-2')
-
-    expect(tablist.getAttribute('role')).toEqual('tablist')
-
-    expectActiveTab(tab1, { controls: panel1.id })
-    expectActivePanel(panel1, { labelledby: tab1.id })
-
-    expectInactiveTab(tab2, { controls: panel2.id })
-    expectInactivePanel(panel2, { labelledby: tab2.id })
-  })
-  it('should init with active tab index', () => {
-    document.body.innerHTML = standardHTML
-
-    coreTabs('.my-tabs', 1)
-
-    const tab1 = document.querySelector('button')
-    const tab2 = document.querySelector('a')
-    const panel1 = document.querySelector('article')
-    const panel2 = document.querySelector('section')
-
-    expectInactiveTab(tab1, { controls: panel1.id })
-    expectInactivePanel(panel1, { labelledby: tab1.id })
-    expectActiveTab(tab2, { controls: panel2.id })
-    expectActivePanel(panel2, { labelledby: tab2.id })
-  })
-  it('should init with active tab element', () => {
-    document.body.innerHTML = standardHTML
-
-    const tab1 = document.querySelector('button')
-    const tab2 = document.querySelector('a')
-
-    coreTabs('.my-tabs', tab2)
-
-    const panel1 = document.querySelector('article')
-    const panel2 = document.querySelector('section')
-
-    expectInactiveTab(tab1, { controls: panel1.id })
-    expectInactivePanel(panel1, { labelledby: tab1.id })
-    expectActiveTab(tab2, { controls: panel2.id })
-    expectActivePanel(panel2, { labelledby: tab2.id })
-  })
-  it('should init on html without panels as nextElementSibling. panels found by aria-controls', () => {
-    document.body.innerHTML = `
-    <div>
-      <div id="my-tabs">
-        <button aria-controls="panel-1">Button tab</button>
-        <button aria-controls="panel-2">Button tab</button>
-      </div>
-    </div>
-    <!--
-      Putting tabs somewhere else in the DOM.
-      NB! there must not be any semantic content between tabs and panels.
-    -->
-    <div>
-      <div id="panel-1">Panel 1</div>
-      <div id="panel-2">Panel 2</div>
-    </div>`
-
-    coreTabs('#my-tabs', 0)
-
-    expectActivePanel(document.querySelector('#panel-1'), {
-      labelledby: document.querySelector('[aria-controls=panel-1]').id
-    })
-    expectInactivePanel(document.querySelector('#panel-2'), {
-      labelledby: document.querySelector('[aria-controls=panel-2]').id
+test('triggers toggle event', withPage, async (t, page) => {
+  await page.setContent(`
+    <core-tabs>
+      <button id="tab-1">First tab</button>
+      <button id="tab-2">Second tab</button>
+    </core-tabs>
+    <div id="panel-1">Text of tab 1</div>
+    <div id="panel-2">Text of tab 2</div>
+  `)
+  await page.waitFor('core-tabs [role="tab"]')
+  const toggledTab = await page.evaluate(() => {
+    return new Promise((resolve, reject) => {
+      window.addEventListener('tabs.toggle', ({ target }) => resolve(target.tab.id))
+      document.querySelector('core-tabs').tab = 1
     })
   })
-  it('should update panel aria-labelledby when controlled by multiple tabs', () => {
-    document.body.innerHTML = standardHTMLWithReUse
-
-    const tabs = document.querySelector('#tabs')
-    const panel = document.querySelector('#panel-1')
-
-    coreTabs(tabs, 0)
-    expectActivePanel(panel, { labelledby: tabs.children[0].id })
-
-    coreTabs(tabs, 1)
-    expectActivePanel(panel, { labelledby: tabs.children[1].id })
-  })
-  it('should trigger tabs.toggle', () => {
-    document.body.innerHTML = standardHTML
-    document.addEventListener('tabs.toggle', (event) => {
-      expect(event.detail.isOpen).toBe(0)
-      expect(event.detail.willOpen).toBe(1)
-    })
-
-    coreTabs('.my-tabs', 1)
-  })
+  t.is(toggledTab, 'tab-2')
+  t.is(await page.$eval('core-tabs', el => el.tab.id), toggledTab)
 })

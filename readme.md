@@ -1,32 +1,55 @@
 # Core Components
 
-> `@nrk/core-components` is a kit of lightweight, unstyled and accessible [Javascript](https://stackoverflow.com/questions/20435653/what-is-vanillajs) and [React](https://reactjs.org/) / [Preact](https://github.com/developit/preact-compat) components.
+> A kit of lightweight, unstyled and accessible [Javascript](https://stackoverflow.com/questions/20435653/what-is-vanillajs) and [React](https://reactjs.org/) / [Preact](https://github.com/developit/preact-compat) components.
 It provides effortless and flexible usage, while under the hood enhancing markup and functionality for best best user experience across all major browsers and screen readers.
 
 ## Documentation
 https://static.nrk.no/core-components/latest/
 
+
 ## Installation
 
-Components are individually installed for individual versioning:
-
-```bash
-npm install @nrk/core-toggle --save-exact
-```
 
 ### Using NPM
 
-```js
-import coreToggle from '@nrk/core-toggle'     // Vanilla JS
-import CoreToggle from '@nrk/core-toggle/jsx' // ...or React/Preact compatible JSX
+Using NPM provides own element namespace and extensibility. Recommended:
+
+```bash
+npm install @nrk/core-dialog
 ```
+
 ### Using static
 
-Recommended only for prototyping.
+Using static registers the custom element with its default tag name automatically:
 
 ```html
-<script src="https://static.nrk.no/core-components/major/5/core-toggle/core-toggle.min.js"></script>
+<script src="https://static.nrk.no/core-components/major/5/core-dialog/core-dialog.min.js"></script>
 ```
+
+
+## Usage
+
+### HTML / JavaScript
+
+```html
+<core-dialog modal hidden>...</core-dialog>
+```
+
+```js
+import CoreDialog from '@nrk/core-dialog'                 // Using NPM
+window.customElements.define('core-dialog', CoreDialog)   // Using NPM
+```
+
+### React / Preact
+
+```js
+import CoreDialog from '@nrk/core-dialog/jsx'
+
+<CoreDialog modal hidden>...</CoreDialog>
+```
+
+For more info, refer to the [documentation](https://static.nrk.no/core-components/latest/).
+
 
 ## Local development
 First clone `@nrk/core-components` and install its dependencies:
@@ -57,5 +80,5 @@ git push origin feature/my-changes
 npm run publish:minor -- --core-input --core-toggle # Specify packages to publish
 ```
 
-> NOTE! Please also make sure to keep commits small and clean (that the commit message actually refers to the updated files).  
+> NOTE! Please also make sure to keep commits small and clean (that the commit message actually refers to the updated files).
 > Stylistically, make sure the commit message is **Capitalized** and **starts with a verb in the present tense** (for example `Add minification support`).

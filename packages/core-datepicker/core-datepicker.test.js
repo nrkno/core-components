@@ -1,241 +1,212 @@
-const coreDatepicker = require('./core-datepicker.min')
+import test from 'ava'
+import path from 'path'
+import puppeteer from 'puppeteer'
 
-const standardHTML = `
-<div class="my-datepicker">
-  <input type="timestamp" />
-  <select></select>
-  <table></table>
-</div>
-`
+async function withPage (t, run) {
+  const browser = await puppeteer.launch()
+  const page = await browser.newPage()
+  page.on('console', msg => console.log(msg._text))
+  await page.addScriptTag({ path: path.join(__dirname, 'core-datepicker.min.js') })
+  try {
+    await run(t, page)
+  } finally {
+    await page.close()
+    await browser.close()
+  }
+}
 
-const customSelectHTML = `
-<div class="my-datepicker">
-  <input type="timestamp" />
-  <select>
-    <option value="2016-m-d">Set year to 2016</option>
-    <option value="19yy-1-1">Back 100 years and set to January 1st.</option>
-    <option value="1985-12-19">December 19, 1985</option>
-  </select>
-  <select></select>
-  <table></table>
-</div>
-`
+test('sets up properties', withPage, async (t, page) => {
+  const date = new Date('2019-04-30T10:44:56')
+  await page.setContent(`<core-datepicker timestamp="${date.getTime()}"></core-datepicker>`)
+  t.is(await page.$eval('core-datepicker', el => el.year), '2019')
+  t.is(await page.$eval('core-datepicker', el => el.month), '04')
+  t.is(await page.$eval('core-datepicker', el => el.day), '30')
+  t.is(await page.$eval('core-datepicker', el => el.hour), '10')
+  t.is(await page.$eval('core-datepicker', el => el.minute), '44')
+  t.is(await page.$eval('core-datepicker', el => el.second), '56')
+  t.is(await page.$eval('core-datepicker', el => el.date.getTime()), date.getTime())
+  t.is(await page.$eval('core-datepicker', el => el.days.join(',')), 'man,tirs,ons,tors,fre,lør,søn')
+  t.is(await page.$eval('core-datepicker', el => el.months.join(',')),
+    'januar,februar,mars,april,mai,juni,juli,august,september,oktober,november,desember')
+})
 
-describe('core-datepicker', () => {
-  beforeEach(() => {
-    coreDatepicker.months = ['januar', 'februar', 'mars', 'april', 'mai', 'juni', 'juli', 'august', 'september', 'oktober', 'november', 'desember']
-    coreDatepicker.days = ['man', 'tirs', 'ons', 'tors', 'fre', 'lør', 'søn']
-  })
+test('sets input values from timestamp', withPage, async (t, page) => {
+  const date = new Date('2019-04-30T10:44:56')
+  await page.setContent(`
+    <core-datepicker timestamp="${date.getTime()}">
+      <input type="year">
+      <input type="month">
+      <input type="day">
+      <input type="hour">
+      <input type="minute">
+      <input type="second">
+      <input type="timestamp">
+    </core-datepicker>
+  `)
+  t.true(await page.$$eval('core-datepicker input', els => els.every(el => el.type === 'number')))
+  t.true(await page.$$eval('core-datepicker input', els => els.every(el => el.hasAttribute('data-type'))))
+  t.is(await page.$eval('core-datepicker input[data-type="year"]', el => el.value), '2019')
+  t.is(await page.$eval('core-datepicker input[data-type="month"]', el => el.value), '04')
+  t.is(await page.$eval('core-datepicker input[data-type="day"]', el => el.value), '30')
+  t.is(await page.$eval('core-datepicker input[data-type="hour"]', el => el.value), '10')
+  t.is(await page.$eval('core-datepicker input[data-type="minute"]', el => el.value), '44')
+  t.is(await page.$eval('core-datepicker input[data-type="second"]', el => el.value), '56')
+  t.is(await page.$eval('core-datepicker input[data-type="timestamp"]', el => el.value), String(date.getTime()))
+})
 
-  it('should exists', () => {
-    expect(coreDatepicker).toBeInstanceOf(Function)
-  })
+test('populates empty select with months', withPage, async (t, page) => {
+  await page.setContent(`
+    <core-datepicker>
+      <select></select>
+    </core-datepicker>
+  `)
+  await page.waitFor('core-datepicker select option')
+  t.is(await page.$eval('core-datepicker select', el => el.childElementCount), 12)
+  for (let i = 1; i <= 12; i++) {
+    t.is(await page.$eval(`core-datepicker option:nth-child(${i})`, el => el.value), `y-${i}-d`)
+  }
+  t.is(await page.$eval('core-datepicker option:nth-child(1)', el => el.textContent), 'januar')
+  t.is(await page.$eval('core-datepicker option:nth-child(2)', el => el.textContent), 'februar')
+  t.is(await page.$eval('core-datepicker option:nth-child(3)', el => el.textContent), 'mars')
+  t.is(await page.$eval('core-datepicker option:nth-child(4)', el => el.textContent), 'april')
+  t.is(await page.$eval('core-datepicker option:nth-child(5)', el => el.textContent), 'mai')
+  t.is(await page.$eval('core-datepicker option:nth-child(6)', el => el.textContent), 'juni')
+  t.is(await page.$eval('core-datepicker option:nth-child(7)', el => el.textContent), 'juli')
+  t.is(await page.$eval('core-datepicker option:nth-child(8)', el => el.textContent), 'august')
+  t.is(await page.$eval('core-datepicker option:nth-child(9)', el => el.textContent), 'september')
+  t.is(await page.$eval('core-datepicker option:nth-child(10)', el => el.textContent), 'oktober')
+  t.is(await page.$eval('core-datepicker option:nth-child(11)', el => el.textContent), 'november')
+  t.is(await page.$eval('core-datepicker option:nth-child(12)', el => el.textContent), 'desember')
+})
 
-  it('should dispatch render when datepicker is initialized ', () => {
-    document.body.innerHTML = standardHTML
-    const callback = jest.fn()
-    const datepickerEl = document.querySelector('.my-datepicker')
+test('re-uses custom select', withPage, async (t, page) => {
+  await page.setContent(`
+    <core-datepicker>
+      <select>
+        <option>---</option>
+        <option value="2016-m-d">Set year to 2016</option>
+        <option value="19yy-1-1">Back 100 years and set to January 1st.</option>
+        <option value="1985-12-19">December 19, 1985</option>
+      </select>
+    </core-datepicker>
+  `)
+  t.is(await page.$eval('core-datepicker select', el => el.childElementCount), 4)
+  t.is(await page.$eval('core-datepicker option:nth-child(1)', el => el.value), '---')
+  t.is(await page.$eval('core-datepicker option:nth-child(2)', el => el.value), '2016-m-d')
+  t.is(await page.$eval('core-datepicker option:nth-child(3)', el => el.value), '19yy-1-1')
+})
 
-    datepickerEl.addEventListener('datepicker.render', callback)
+test('populates empty table', withPage, async (t, page) => {
+  const date = new Date('2018-01-01')
+  await page.setContent(`
+    <core-datepicker timestamp="${date.getTime()}">
+      <table></table>
+    </core-datepicker>
+  `)
+  await page.waitFor('core-datepicker table button')
+  const days = await page.$eval('core-datepicker', el => el.days)
+  t.is(days.length, 7)
+  for (let i = 1; i <= 7; i++) {
+    t.is(await page.$eval(`core-datepicker thead tr th:nth-child(${i})`, el => el.textContent), days[i - 1])
+  }
+  t.is(await page.$$eval(`core-datepicker table td button[data-adjacent="false"]`, els => els.length), 31)
+  t.is(await page.$eval('core-datepicker button[autofocus]', el => el.textContent), '1')
+})
 
-    coreDatepicker(datepickerEl)
-    expect(callback).toBeCalled()
-  })
+test('marks today\'s date in table', withPage, async (t, page) => {
+  const date = new Date()
+  await page.setContent(`
+    <core-datepicker timestamp="${date.getTime()}">
+      <table></table>
+    </core-datepicker>
+  `)
+  await page.waitFor('core-datepicker table button')
+  t.true(await page.$eval('core-datepicker button[aria-current="date"]', el => el !== null))
+  t.is(await page.$eval('core-datepicker button[aria-current="date"]', el => el.textContent), String(date.getDate()))
+})
 
-  it('should set selected date if date parameter is set', () => {
-    document.body.innerHTML = standardHTML
-    const datepickerEl = document.querySelector('.my-datepicker')
-    const now = new Date()
+test('changes date on day clicked', withPage, async (t, page) => {
+  const date = new Date('2018-01-01')
+  await page.setContent(`
+    <core-datepicker timestamp="${date.getTime()}">
+      <table></table>
+    </core-datepicker>
+  `)
+  await page.waitFor('core-datepicker table button')
+  t.is(await page.$eval('core-datepicker button[autofocus]', el => el.textContent), '1')
+  await page.click('core-datepicker tbody tr:nth-child(2) td:nth-child(5) button')
+  t.is(await page.$eval('core-datepicker button[autofocus]', el => el.textContent), '12')
+})
 
-    coreDatepicker(datepickerEl, now.getTime())
-    expect(Number(datepickerEl.querySelector('input').value)).toEqual(now.getTime())
-  })
+test('changes month names', withPage, async (t, page) => {
+  const months = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'oktober', 'november', 'december']
+  await page.setContent(`
+    <core-datepicker months="${months.join()}">
+      <select></select>
+    </core-datepicker>`
+  )
+  await page.waitFor('core-datepicker select option')
+  t.is(await page.$eval('core-datepicker select', el => el.childElementCount), 12)
+  for (let i = 1; i <= 12; i++) {
+    t.is(await page.$eval(`core-datepicker option:nth-child(${i})`, el => el.textContent), months[i - 1])
+  }
+})
 
-  it('should change month names in select when replacing months property', () => {
-    document.body.innerHTML = standardHTML
-    const monthsEn = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'oktober', 'november', 'december']
-    const datepickerEl = document.querySelector('.my-datepicker')
+test('changes day names', withPage, async (t, page) => {
+  const days = ['abc', 'def', 'ghi', 'jkl', 'mno', 'pqr', 'stu']
+  await page.setContent(`
+    <core-datepicker days="${days.join()}">
+      <table></table>
+    </core-datepicker>`
+  )
+  await page.waitFor('core-datepicker table thead')
+  t.is(await page.$eval('core-datepicker table thead tr', el => el.childElementCount), 7)
+  for (let i = 1; i <= 7; i++) {
+    t.is(await page.$eval(`core-datepicker thead tr th:nth-child(${i})`, el => el.textContent), days[i - 1])
+  }
+})
 
-    coreDatepicker.months = monthsEn
+test('disables elements from function', withPage, async (t, page) => {
+  const date = new Date('2018-01-01')
+  await page.setContent(`
+    <core-datepicker timestamp="${date.getTime()}">
+      <table></table>
+    </core-datepicker>
+  `)
+  await page.evaluate(() => (document.querySelector('core-datepicker').disabled = date => date > new Date('2018-01-01')))
+  await page.waitFor('core-datepicker table button')
 
-    coreDatepicker(datepickerEl)
-    datepickerEl.querySelectorAll('select option').forEach((option, index) => {
-      expect(option.textContent).toEqual(monthsEn[index])
+  t.false(await page.$eval('core-datepicker tbody tr:nth-child(1) td:nth-child(1) button', el => el.disabled))
+  t.true(await page.$$eval('core-datepicker tbody tr:nth-child(2) button', els => els.every(el => el.disabled)))
+  t.true(await page.$$eval('core-datepicker tbody tr:nth-child(3) button', els => els.every(el => el.disabled)))
+  t.true(await page.$$eval('core-datepicker tbody tr:nth-child(4) button', els => els.every(el => el.disabled)))
+})
+
+test('triggers change event', withPage, async (t, page) => {
+  const date = new Date('2018-01-01')
+  const expected = new Date('2018-01-02')
+  await page.setContent(`<core-datepicker timestamp="${date.getTime()}"></core-datepicker>`)
+  const newDate = await page.evaluate(() => {
+    return new Promise((resolve, reject) => {
+      window.addEventListener('datepicker.change', ({ detail }) => resolve(detail.getTime()))
+      document.querySelector('core-datepicker').date = new Date('2018-01-02')
     })
   })
+  t.is(newDate, expected.getTime())
+})
 
-  it('should change days names in table when replacing days property', () => {
-    document.body.innerHTML = standardHTML
-    const daysTest = ['abc', 'def', 'ghi', 'jkl', 'mno', 'pqr', 'stu']
-    const datepickerEl = document.querySelector('.my-datepicker')
-
-    coreDatepicker.days = daysTest
-    coreDatepicker(datepickerEl)
-    datepickerEl.querySelectorAll('thead tr th').forEach((option, index) => {
-      expect(option.textContent).toEqual(daysTest[index])
+test('triggers click day event', withPage, async (t, page) => {
+  const date = new Date('2018-01-01')
+  await page.setContent(`
+    <core-datepicker timestamp="${date.getTime()}">
+      <table></table>
+    </core-datepicker>`
+  )
+  await page.evaluate(() => {
+    return new Promise((resolve, reject) => {
+      window.addEventListener('datepicker.click.day', resolve)
+      document.querySelector('core-datepicker button').click()
     })
   })
-
-  describe('<input />', () => {
-    it('should set selected year if input is type year', () => {
-      document.body.innerHTML = standardHTML
-      const datepickerEl = document.querySelector('.my-datepicker')
-      const inputEl = datepickerEl.querySelector('input')
-      const now = new Date()
-
-      // Test year type
-      inputEl.type = 'year'
-
-      coreDatepicker(datepickerEl, now.getTime())
-      expect(Number(inputEl.value)).toEqual(now.getFullYear())
-    })
-
-    it('should set selected month if input is type month', () => {
-      document.body.innerHTML = standardHTML
-      const datepickerEl = document.querySelector('.my-datepicker')
-      const inputEl = datepickerEl.querySelector('input')
-      const now = new Date()
-
-      // Test month type
-      inputEl.type = 'month'
-
-      coreDatepicker(datepickerEl, now.getTime())
-      expect(Number(inputEl.value)).toEqual(now.getMonth() + 1)
-    })
-
-    it('should set selected day if input is type day', () => {
-      document.body.innerHTML = standardHTML
-      const datepickerEl = document.querySelector('.my-datepicker')
-      const inputEl = datepickerEl.querySelector('input')
-      const now = new Date()
-
-      // Test day type
-      inputEl.type = 'day'
-
-      coreDatepicker(datepickerEl, now.getTime())
-      expect(Number(inputEl.value)).toEqual(now.getDate())
-    })
-
-    it('should set selected hour if input is type hour', () => {
-      document.body.innerHTML = standardHTML
-      const datepickerEl = document.querySelector('.my-datepicker')
-      const inputEl = datepickerEl.querySelector('input')
-      const now = new Date()
-
-      // Test hour type
-      inputEl.type = 'hour'
-
-      coreDatepicker(datepickerEl, now.getTime())
-      expect(Number(inputEl.value)).toEqual(now.getHours())
-    })
-
-    it('should set selected minute if input is type minute', () => {
-      document.body.innerHTML = standardHTML
-      const datepickerEl = document.querySelector('.my-datepicker')
-      const inputEl = datepickerEl.querySelector('input')
-      const now = new Date()
-
-      // Test minute type
-      inputEl.type = 'minute'
-
-      coreDatepicker(datepickerEl, now.getTime())
-      expect(Number(inputEl.value)).toEqual(now.getMinutes())
-    })
-
-    it('should set selected second if input is type second', () => {
-      document.body.innerHTML = standardHTML
-      const datepickerEl = document.querySelector('.my-datepicker')
-      const inputEl = datepickerEl.querySelector('input')
-      const now = new Date()
-
-      // Test second type
-      inputEl.type = 'second'
-
-      coreDatepicker(datepickerEl, now.getTime())
-      expect(Number(inputEl.value)).toEqual(now.getSeconds())
-    })
-  })
-
-  describe('<select>', () => {
-    it('should use custom select if specified and not overwrite options', () => {
-      document.body.innerHTML = customSelectHTML
-      const datepickerEl = document.querySelector('.my-datepicker')
-      const selectEl = datepickerEl.querySelector('select')
-
-      coreDatepicker(datepickerEl)
-      expect(selectEl.childElementCount).toEqual(3)
-      expect(selectEl.children[0].value).toEqual('2016-m-d')
-      expect(selectEl.children[0].textContent).toEqual('Set year to 2016')
-    })
-
-    it('should support multiple select (one custom and one default)', () => {
-      document.body.innerHTML = customSelectHTML
-      const datepickerEl = document.querySelector('.my-datepicker')
-      const selectsEl = datepickerEl.querySelectorAll('select')
-
-      coreDatepicker(datepickerEl)
-      expect(selectsEl.length).toEqual(2)
-      expect(selectsEl[0].children[0].textContent).toEqual('Set year to 2016')
-      expect(selectsEl[1].children[0].textContent).toEqual(coreDatepicker.months[0])
-    })
-  })
-
-  describe('<table>', () => {
-    it('should show days of the week in header', () => {
-      document.body.innerHTML = standardHTML
-      const datepickerEl = document.querySelector('.my-datepicker')
-      coreDatepicker(datepickerEl)
-
-      const tableHeaders = datepickerEl.querySelectorAll('table th')
-      expect(tableHeaders.length).toEqual(7)
-      tableHeaders.forEach((el, i) => expect(el.textContent).toEqual(coreDatepicker.days[i]))
-    })
-    it('should display the current month with all dates', () => {
-      document.body.innerHTML = standardHTML
-      const datepickerEl = document.querySelector('.my-datepicker')
-      const nowJan = new Date('2018-01-01') // So we know the months has 31 days and starts on monday
-
-      coreDatepicker(datepickerEl, nowJan)
-      expect(datepickerEl.querySelectorAll('table button')[30].textContent).toEqual('31')
-    })
-    it('should change date if a day is clicked', () => {
-      document.body.innerHTML = standardHTML
-      const datepickerEl = document.querySelector('.my-datepicker')
-      const tableEl = datepickerEl.querySelector('table')
-      // Fri Jan 12 2018
-      const current = new Date(1515774608994)
-
-      coreDatepicker(datepickerEl, current)
-      const jan1Btn = tableEl.querySelector('tbody tr td button')
-      const jan12Btn = tableEl.querySelector('tbody tr:nth-child(2) td:nth-child(5) button')
-
-      jan1Btn.click()
-      expect(jan1Btn.getAttribute('data-core-datepicker-selected')).toEqual('true')
-      expect(jan12Btn.getAttribute('data-core-datepicker-selected')).toEqual('false')
-    })
-
-    it('should disable the dates specified by disable method', () => {
-      document.body.innerHTML = standardHTML
-      const datepickerEl = document.querySelector('.my-datepicker')
-      const tableEl = datepickerEl.querySelector('table')
-      // Fri Jan 12 2018
-      const current = new Date(1515774608994)
-
-      datepickerEl.addEventListener('datepicker.render', (event) => {
-        event.detail.disable((date) => date > current)
-      })
-
-      coreDatepicker(datepickerEl, current)
-
-      const currentBtn = tableEl.querySelector('tbody tr:nth-child(2) td:nth-child(5) button')
-      const prevBtn = tableEl.querySelector('tbody tr:nth-child(2) td:nth-child(4) button')
-      const nextBtn = tableEl.querySelector('tbody tr:nth-child(2) td:nth-child(6) button')
-
-      expect(currentBtn.hasAttribute('disabled')).toBe(false)
-      expect(prevBtn.hasAttribute('disabled')).toBe(false)
-      expect(nextBtn.hasAttribute('disabled')).toBe(true)
-      tableEl.querySelectorAll('tbody tr:nth-child(3) td')
-        .forEach((td) => expect(td.children[0].hasAttribute('disabled')).toEqual(true))
-    })
-  })
+  t.pass()
 })

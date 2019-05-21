@@ -1,30 +1,32 @@
-const coreScroll = require('./core-scroll.min')
-const standardHTML = `
-<button data-core-scroll="my-scroll-js" value="up" aria-label="Rull opp">Up</button>
-<div>
-  <div id="my-scroll-js">
-    <div>Dette er en lang tekst</div>
-    <div>Dette er en lang tekst</div>
-    <div>Dette er en lang tekst</div>
-  </div>
-</div>
-`
+import test from 'ava'
+import path from 'path'
+import puppeteer from 'puppeteer'
 
-describe('core-scroll', () => {
-  it('should exist', () => {
-    expect(coreScroll).toBeInstanceOf(Function)
-  })
+async function withPage (t, run) {
+  const browser = await puppeteer.launch()
+  const page = await browser.newPage()
+  page.on('console', msg => console.log(msg._text))
+  await page.addScriptTag({ path: path.join(__dirname, 'core-scroll.min.js') })
+  try {
+    await run(t, page)
+  } finally {
+    await page.close()
+    await browser.close()
+  }
+}
 
-  it('should initialize scroll container with appropriate styling', () => {
-    document.body.innerHTML = standardHTML
-
-    const scrollContainer = document.querySelector('#my-scroll-js')
-
-    coreScroll(scrollContainer)
-    expect(scrollContainer.style.overflow).toEqual('scroll')
-    expect(scrollContainer.style.webkitOverflowScrolling).toEqual('touch')
-    expect(scrollContainer.style.maxHeight).toEqual('calc(100% + 0px)')
-    expect(scrollContainer.style.marginRight).toEqual('-0px')
-    expect(scrollContainer.style.marginBottom).toEqual('-0px')
-  })
+test('sets up properties', withPage, async (t, page) => {
+  await page.setContent(`
+    <button for="scroller" value="down">Down</button>
+    <core-scroll id="scroller">
+      <div>This is overflowing content</div>
+      <div>This is overflowing content</div>
+      <div>This is overflowing content</div>
+    </core-scroll>
+  `)
+  t.is(await page.$eval('core-scroll', el => el.style.overflow), 'scroll')
+  t.is(await page.$eval('core-scroll', el => el.style.webkitOverflowScrolling), 'touch')
+  t.is(await page.$eval('core-scroll', el => el.style.maxHeight), 'calc(100% + 0px)')
+  t.is(await page.$eval('core-scroll', el => el.style.marginRight), '0px')
+  t.is(await page.$eval('core-scroll', el => el.style.marginBottom), '0px')
 })

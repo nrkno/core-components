@@ -1,146 +1,121 @@
-import { name, version } from './package.json'
-import { queryAll, addEvent, dispatchEvent } from '../utils'
+import { closest, dispatchEvent, getUUID, queryAll } from '../utils'
 
-let OPENER
-const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid attribute characters
-const ATTR = 'data-core-dialog'
-const KEYS = { ESC: 27, TAB: 9 }
-const OPENER_ATTR = `${UUID}-opener`
-const FOCUSABLE_ELEMENTS = '[tabindex],a,button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled])'
+const FOCUSABLE = '[tabindex],a,button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled])'
 
-export default function dialog (dialogs, open) {
-  const options = typeof open === 'object' ? open : { open }
+export default class CoreDialog extends HTMLElement {
+  static get observedAttributes () { return ['hidden'] }
 
-  return queryAll(dialogs).map((dialog) => {
-    const hasFocusable = queryAll(FOCUSABLE_ELEMENTS, dialog).length
-    const hasBackdrop = (dialog.nextElementSibling || {}).nodeName === 'BACKDROP'
-    const strict = typeof options.strict === 'boolean' ? options.strict : dialog.getAttribute(UUID) === 'true'
-    const modal = typeof options.modal === 'boolean' ? options.modal : dialog.getAttribute('aria-modal') !== 'false'
-    const label = options.label || dialog.getAttribute('aria-label')
+  connectedCallback () {
+    this._open = !this.hidden // Used to ensures actual change in attributeChangedCallback
+    this._opener = `data-dialog-${getUUID()}` // Used to identify what element opened the dialog
+    this.setAttribute('role', 'dialog')
+    this.setAttribute('aria-modal', this.modal)
+    this.addEventListener('transitionend', this)
+    document.addEventListener('keydown', this)
+    document.addEventListener('click', this)
+  }
+  disconnectedCallback () {
+    this.removeEventListener('transitionend', this)
+    document.removeEventListener('keydown', this)
+    document.removeEventListener('click', this)
+  }
+  attributeChangedCallback (name) {
+    if (this._open === this.hidden) { // this._open comparison ensures actual change
+      const opener = document.querySelector(`[${this._opener}]`)
+      const active = opener || document.activeElement || document.body
+      const zIndex = Math.min(Math.max(...queryAll('body *').map(getZIndex)), 2000000000) // Avoid overflowing z-index. See techjunkie.com/maximum-z-index-value
 
-    dialog.setAttribute(UUID, strict)
-    dialog.setAttribute('role', 'dialog')
-    dialog.setAttribute('aria-modal', modal)
-    if (label) dialog.setAttribute('aria-label', label)
-    if (!hasBackdrop) dialog.insertAdjacentElement('afterend', document.createElement('backdrop'))
-    if (!hasFocusable) console.warn(dialog, 'is initialized without focusable elements. Please add [tabindex="-1"] the main element (for instance a <h1>)')
+      // Trigger repaint to fix IE11 from not closing dialog
+      this.className = this.className // eslint-disable-line
+      this.backdrop.hidden = !this.modal || this.hidden
+      this._open = !this.hidden
 
-    setOpen(dialog, options.open, options.opener)
-    return dialog
-  })
+      if (!this.hidden) {
+        this.style.zIndex = zIndex + 2
+        this.backdrop.style.zIndex = zIndex + 1
+        active.setAttribute(this._opener, '') // Remember opener element
+        setFocus(this)
+      } else if (opener) {
+        opener.focus()
+        opener.removeAttribute(this._opener)
+        setTimeout(() => opener.focus()) // Move focus after paint (helps iOS)
+      }
+
+      dispatchEvent(this, 'dialog.toggle')
+    }
+  }
+  handleEvent (event) {
+    if (event.defaultPrevented) return
+    if (event.type === 'transitionend' && event.target === this && !this.hidden) setFocus(this)
+    else if (event.type === 'click') {
+      if (event.target === this.backdrop && !this.strict) return this.close()
+      const button = closest(event.target, `button[for]`)
+      const action = button && button.getAttribute('for')
+      const toggle = action === 'close' ? closest(event.target, this.nodeName) === this : action === this.id
+
+      if (action === this.id) button.setAttribute(this._opener, '') // iOS remember button
+      if (toggle) this.hidden = action === 'close'
+    } else if (event.type === 'keydown' && (event.keyCode === 9 || event.keyCode === 27) && !this.hidden) {
+      const topDialog = queryAll(`${this.nodeName}:not([hidden])`).sort((a, b) => getZIndex(a) - getZIndex(b)).pop()
+      if (topDialog !== this) return // event.target can be <body> when dialog has no focused element
+      if (event.keyCode === 9) keepFocus(this, event) // TAB
+      if (event.keyCode === 27 && !this.strict) { // ESC
+        event.preventDefault() // Prevent leaving maximized window in Safari
+        this.close()
+      }
+    }
+  }
+
+  close () { this.hidden = true }
+  show () { this.modal = this.hidden = false }
+  showModal () {
+    this.modal = true
+    this.hidden = false
+  }
+
+  get open () { return !this.hidden }
+  set open (val) { this.hidden = !val }
+  get modal () { return this.getAttribute('aria-modal') !== 'false' }
+  set modal (val) { this.setAttribute('aria-modal', Boolean(val)) }
+  get strict () { return this.hasAttribute('strict') }
+  set strict (val) { this.toggleAttribute('strict', val) }
+
+  // Must set attribute for IE11
+  get hidden () { return this.hasAttribute('hidden') }
+  set hidden (val) { this.toggleAttribute('hidden', val) }
+
+  get backdrop () {
+    const next = this.nextElementSibling
+    if (next && next.nodeName === 'BACKDROP') return next
+    const back = document.createElement('backdrop')
+    back.hidden = true
+    return this.insertAdjacentElement('afterend', back)
+  }
 }
 
-addEvent(UUID, 'click', (event) => {
-  // This functions handles if the user clicked on a open or close button.
-  // We need to do this loop in order for the close button to know which
-  // dialog it should close.
-  for (let el = event.target, isClose; el; el = el.parentElement) {
-    const action = el.getAttribute(ATTR)
-    const prev = el.previousElementSibling
-    const isBackdrop = prev && prev.getAttribute(UUID) === 'false' && (el = prev)
-    isClose = isClose || isBackdrop || action === 'close'
+function isVisible (el) {
+  return el.clientWidth && el.clientHeight && window.getComputedStyle(el).getPropertyValue('visibility') !== 'hidden'
+}
 
-    if (isClose) el.hasAttribute(UUID) && setOpen(el, false)
-    else if (action) dialog(document.getElementById(action), { open: true, opener: el }) // Target dialog
-  }
-})
-
-// Ensure focus is set after animations
-addEvent(UUID, 'transitionend', ({ target }) => { // NB: target can be document
-  if (target.hasAttribute && target.hasAttribute(UUID) && target.hasAttribute('open')) setFocus(target)
-  else if (OPENER) setTimeout(() => (OPENER = OPENER && OPENER.focus()), 16) // Move focus after paint
-})
-
-addEvent(UUID, 'keydown', (event) => {
-  const key = event.keyCode
-  const dialog = (key === KEYS.ESC || key === KEYS.TAB) && getTopLevelDialog()
-
-  if (dialog && key === KEYS.TAB) keepFocus(dialog, event)
-  if (dialog && key === KEYS.ESC && dialog.getAttribute(UUID) === 'false') {
-    if (!event.defaultPrevented) setOpen(dialog, false) // Only close if not prevented
-    event.preventDefault() // Prevent leaving maximized window in Safari
-  }
-})
-
-const getZIndexOfElement = (element) => {
+function getZIndex (element) {
   for (var el = element, zIndex = 1; el; el = el.offsetParent) {
     zIndex += Number(window.getComputedStyle(el).getPropertyValue('z-index')) || 0
   }
   return zIndex
 }
 
-// Find the last focused element before opening the dialog
-const getLastFocusedElement = () =>
-  queryAll(`[${OPENER_ATTR}]`).sort((a, b) =>
-    a.getAttribute(OPENER_ATTR) > b.getAttribute(OPENER_ATTR)
-  ).pop()
-
-const getTopLevelDialog = () =>
-  queryAll(`[${UUID}][open]`).sort((a, b) =>
-    getZIndexOfElement(a) > getZIndexOfElement(b)
-  ).pop()
-
-function setOpen (dialog, open, opener = document.activeElement) {
-  const isOpen = dialog.hasAttribute('open')
-  const willOpen = typeof open === 'boolean' ? open : (open === 'toggle' ? !isOpen : isOpen)
-  const isNative = typeof window.HTMLDialogElement !== 'undefined' && typeof dialog.show === 'function'
-  const isUpdate = isOpen === willOpen || dispatchEvent(dialog, 'dialog.toggle', { isOpen, willOpen })
-  const nextOpen = isUpdate ? willOpen : dialog.hasAttribute('open') // dispatchEvent can change attributes, so check open again
-  const nextBack = nextOpen && dialog.getAttribute('aria-modal') !== 'false'
-  const backdrop = dialog.nextElementSibling
-  const lastFocus = isUpdate && getLastFocusedElement() // Store before open, as native dialog moves focus to [autofocus]
-
-  if (isNative) {
-    dialog.open = !nextOpen // Update to opposite value to ensure show/close can run without error
-    dialog[nextOpen ? 'show' : 'close']()
-  } else {
-    dialog[nextOpen ? 'setAttribute' : 'removeAttribute']('open', '') // Toggle open attribute
-    // Trigger repaint to fix IE11 from not closing dialog
-    dialog.className = dialog.className // eslint-disable-line
-  }
-  backdrop[nextBack ? 'removeAttribute' : 'setAttribute']('hidden', '')
-
-  if (isUpdate) {
-    const lastIndex = Number(lastFocus && lastFocus.getAttribute(OPENER_ATTR)) || 0
-    const topZIndex = Math.min(Math.max(...queryAll('*').map(getZIndexOfElement)), 2000000000) // Avoid overflowing z-index. See techjunkie.com/maximum-z-index-value
-
-    if (nextOpen) {
-      dialog.style.zIndex = topZIndex + 2
-      dialog.nextElementSibling.style.zIndex = topZIndex + 1
-      if (opener && opener.setAttribute) opener.setAttribute(OPENER_ATTR, lastIndex + 1) // Remember opener element
-      setFocus(dialog)
-    } else if (lastFocus) {
-      (OPENER = lastFocus).removeAttribute(OPENER_ATTR) // Focus opener after transition
-    }
-  }
+function setFocus (el) {
+  if (el.contains(document.activeElement) || !isVisible(el)) return // Do not move if focus is already inside
+  const focusable = queryAll('[autofocus]', el).concat(queryAll(FOCUSABLE, el)).filter(isVisible)[0]
+  try { focusable.focus() } catch (err) { console.warn(el, 'is initialized without focusable elements. Please add [tabindex="-1"] the main element (for instance a <h1>)') }
 }
 
-function isVisible (el) {
-  return el.clientWidth && el.clientHeight &&
-    window.getComputedStyle(el).getPropertyValue('visibility') !== 'hidden'
-}
-
-function setFocus (dialog) {
-  if (dialog.contains(document.activeElement)) return // Do not move if focus is already inside
-  queryAll('[autofocus]', dialog)
-    .concat(queryAll(FOCUSABLE_ELEMENTS, dialog))
-    .concat(dialog)
-    .filter(isVisible)
-    .every(el => el.focus()) // Only focuses the first visible element
-}
-
-/**
- * keepFocus ensures that the user cannot tab outside an
- * active dialog
- * @param {Element} dialog dialog to keep focus within
- * @param {Object} event keyboard event from keydown
- */
-function keepFocus (dialog, event) {
-  const focusable = queryAll(FOCUSABLE_ELEMENTS, dialog).filter(isVisible)
+function keepFocus (el, event) {
+  const focusable = queryAll(FOCUSABLE, el).filter(isVisible)
   const onEdge = focusable[event.shiftKey ? 0 : focusable.length - 1]
 
   // If focus moves us outside the dialog, we need to refocus to inside the dialog
-  if (event.target === onEdge || !dialog.contains(event.target)) {
+  if (event.target === onEdge || !el.contains(event.target)) {
     event.preventDefault()
     focusable[event.shiftKey ? focusable.length - 1 : 0].focus()
   }

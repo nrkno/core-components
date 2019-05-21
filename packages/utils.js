@@ -1,23 +1,39 @@
+import React from 'react'
+
 export const IS_BROWSER = typeof window !== 'undefined'
 export const IS_ANDROID = IS_BROWSER && /(android)/i.test(navigator.userAgent) // Bad, but needed
 export const IS_IOS = IS_BROWSER && /iPad|iPhone|iPod/.test(String(navigator.platform))
-export const HAS_EVENT_OPTIONS = ((has = false) => {
-  try { window.addEventListener('test', null, { get passive () { has = true } }) } catch (e) {}
-  return has
-})()
+
+// Polyfill toggleAttribute for IE
+if (IS_BROWSER && !window.Element.prototype.toggleAttribute) {
+  window.Element.prototype.toggleAttribute = function (name, force = !this.hasAttribute(name)) {
+    if (!force === this.hasAttribute(name)) this[force ? 'setAttribute' : 'removeAttribute'](name, '')
+    return force
+  }
+}
 
 /**
 * addEvent
-* @param {String} uuid An unique ID of the event to bind - ensurnes single instance
+* @param {String} nodeName An unique ID of the event to bind - ensurnes single instance
 * @param {String} type The type of event to bind
 * @param {Function} handler The function to call on event
 * @param {Boolean|Object} options useCapture or options object for addEventListener. Defaults to false
 */
-export function addEvent (uuid, type, handler, options = false) {
-  if (typeof window === 'undefined' || window[uuid = `${uuid}-${type}`]) return // Ensure single instance
-  if (!HAS_EVENT_OPTIONS && typeof options === 'object') options = Boolean(options.capture) // Fix unsupported options
+export function addEvent (nodeName, type, handler, options = false, key) {
+  if (!IS_BROWSER || window[key = `event-${nodeName}-${type}`]) return // Ensure single instance
   const node = (type === 'resize' || type === 'load') ? window : document
-  node.addEventListener(window[uuid] = type, handler, options)
+  node.addEventListener(window[key] = type, (event) => (event.nodeName = nodeName) && handler(event), options)
+}
+
+/**
+* addStyle
+* @param {String} nodeName An unique ID of the event to bind - ensurnes single instance
+* @param {String} css The css to inject
+*/
+export function addStyle (nodeName, css) {
+  const key = `style-${nodeName.toLowerCase()}`
+  const min = css.replace(/\/\*[^!][^*]*\*\//g, '').replace(/\s*(^|[:;,{}]|$)\s*/g, '$1')
+  document.getElementById(key) || document.head.insertAdjacentHTML('afterbegin', `<style id="${key}">${min}</style>`)
 }
 
 /**
@@ -31,17 +47,19 @@ export function escapeHTML (str) {
 }
 
 /**
-* exclude
-* @param {Object} target The target object
-* @param {Object} exclude The source to exclude keys from
-* @return {Object} The target object without keys found in source
+* closest
+* @param {Element} element Element to traverse up from
+* @param {String} selector A selector to search for matching parents or element itself
+* @return {Element|null}  Element which is the closest ancestor matching selector
 */
-export function exclude (target, exclude, include = {}) {
-  return Object.keys(target).reduce((acc, key) => {
-    if (!exclude.hasOwnProperty(key)) acc[key] = target[key]
-    return acc
-  }, include)
-}
+export const closest = (() => {
+  const proto = typeof window === 'undefined' ? {} : window.Element.prototype
+  const match = proto.matches || proto.msMatchesSelector || proto.webkitMatchesSelector
+  return proto.closest ? (el, css) => el.closest(css) : (el, css) => {
+    for (;el; el = el.parentElement) if (match.call(el, css)) return el
+    return null
+  }
+})()
 
 /**
 * dispatchEvent - with infinite loop prevention
@@ -50,9 +68,8 @@ export function exclude (target, exclude, include = {}) {
 * @param {Object} detail Detail object (bubbles and cancelable is set to true)
 * @return {Boolean} Whether the event was canceled
 */
-const IGNORE = 'prevent_recursive_dispatch_maximum_callstack'
 export function dispatchEvent (element, name, detail = {}) {
-  const ignore = `${IGNORE}${name}`
+  const ignore = `prevent_recursive_dispatch_maximum_callstack${name}`
   let event
 
   if (element[ignore]) return true // We are already processing this event, so skip sending a new one
@@ -72,19 +89,41 @@ export function dispatchEvent (element, name, detail = {}) {
   return result // Follow W3C standard for return value
 }
 
+export function elementToReact (elementClass, ...attr) {
+  const name = elementClass.name || String(elementClass).match(/function ([^(]+)/)[1] // String match for IE11
+  const tag = `${name.replace(/\W+/, '-')}-${getUUID()}`.toLowerCase()
+  if (IS_BROWSER && !window.customElements.get(tag)) window.customElements.define(tag, elementClass)
+
+  return class extends React.Component {
+    constructor (props) {
+      super(props)
+      this.ref = (el) => (this.el = el)
+      attr.forEach((k) => {
+        const on = `on${k.replace(/(^|\.)./g, (m) => m.slice(-1).toUpperCase())}` // input.filter => onInputFilter
+        this[k] = (event) => this.props[on] && this.props[on](event)
+      })
+    }
+    componentDidMount () { attr.forEach((k) => this.props[k] ? (this.el[k] = this.props[k]) : this.el.addEventListener(k, this[k])) }
+    componentDidUpdate (prev) { attr.forEach((k) => prev[k] !== this.props[k] && (this.el[k] = this.props[k])) }
+    componentWillUnmount () { attr.forEach((k) => this.el.removeEventListener(k, this[k])) }
+    render () {
+      // Convert React props to CustomElement props https://github.com/facebook/react/issues/12810
+      return React.createElement(tag, Object.keys(this.props).reduce((props, k) => {
+        if (k === 'className') props.class = this.props[k] // Fixes className for custom elements
+        else if (this.props[k] === true) props[k] = '' // Fixes boolean attributes
+        else if (this.props[k] !== false) props[k] = this.props[k]
+        return props
+      }, { ref: this.ref }))
+    }
+  }
+}
+
 /**
 * getUUID
 * @return {String} A generated unique ID
 */
-export function getUUID (el) {
+export function getUUID () {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 5)
-}
-
-/**
-* requestAnimFrame (super simple polyfill)
-*/
-export function requestAnimFrame (fn) {
-  (window.requestAnimationFrame || window.setTimeout)(fn)
 }
 
 /**

@@ -1,63 +1,78 @@
 # Core Toggle
 
-> `@nrk/core-toggle` simply makes a `<button>` toggle the visibility of next element sibling. Toggles can be nested and easily extended with custom animations or behavior through the [toggle event](#events). It has two modes:
+> `@nrk/core-toggle` makes a `<button>` toggle the visibility of next element sibling. Toggles can be nested and easily extended with custom animations or behavior through the [toggle event](#events).
 
-
+<!-- <script src="https://unpkg.com/preact"></script>
+<script src="https://unpkg.com/preact-compat"></script>
+<script>
+  window.React = preactCompat
+  window.ReactDOM = preactCompat
+</script> -->
 <!--demo
+<script src="https://unpkg.com/@webcomponents/custom-elements"></script>
 <script src="core-toggle/core-toggle.min.js"></script>
 <script src="core-toggle/core-toggle.jsx.js"></script>
+<style>core-toggle:not([hidden]){display:block}</style>
 demo-->
 
-## Installation
-
-```bash
-npm install @nrk/core-toggle --save-exact
-```
-```js
-import coreToggle from '@nrk/core-toggle'     // Vanilla JS
-import CoreToggle from '@nrk/core-toggle/jsx' // React/Preact JSX
-```
-
-
-## Demo
+## Example
 
 ```html
 <!--demo-->
-<button class="my-popup">Popup VanillaJS</button>
-<ul class="my-dropdown" hidden>
-  <li><a>Link</a></li>
-  <li>
-    <button class="my-popup">Can also be nested</button>
-    <ul class="my-dropdown" hidden>
-      <li><a>Sub-link</a></li>
-      <li><input type="text" autofocus aria-label="Skriv her"></li>
-    </ul>
-  </li>
-</ul>
-<script>
-  coreToggle('.my-popup', { popup: 'Example picker' })
-</script>
+<button>Popup VanillaJS</button>
+<core-toggle class="my-dropdown" popup hidden>
+  <ul>
+    <li><a>Link</a></li>
+    <li>
+      <button>Can also be nested</button>
+      <core-toggle class="my-dropdown" popup hidden>
+        <ul>
+          <li><a>Sub-link</a></li>
+          <li><input type="text" autofocus aria-label="Skriv her"></li>
+        </ul>
+      </core-toggle>
+    </li>
+  </ul>
+</core-toggle>
 ```
 
 ```html
 <!--demo-->
 <div id="jsx-toggle-popup"></div>
 <script type="text/jsx">
-  ReactDOM.render(<CoreToggle popup='Example picker'>
+  ReactDOM.render(<>
     <button>Popup JSX</button>
-    <ul className='my-dropdown'>
-      <li><a href='#'>Link</a></li>
-      <li>
-        <CoreToggle popup='Example picker'>
+    <CoreToggle className='my-dropdown' hidden popup onToggleSelect={console.warn}>
+      <ul>
+        <li><button>Select</button></li>
+        <li><a href='#'>Link</a></li>
+        <li>
           <button>Can also be nested</button>
-          <ul className='my-dropdown'>
-            <li><a href='#'>Sub-link</a></li>
-          </ul>
-        </CoreToggle>
-      </li>
-    </ul>
-  </CoreToggle>, document.getElementById('jsx-toggle-popup'))
+          <CoreToggle className='my-dropdown' hidden popup>
+            <ul>
+              <li><a href='#'>Sub-link</a></li>
+            </ul>
+          </CoreToggle>
+        </li>
+      </ul>
+    </CoreToggle>
+  </>, document.getElementById('jsx-toggle-popup'))
 </script>
+```
+
+## Installation
+
+Using NPM provides own element namespace and extensibility.
+Recommended:
+
+```bash
+npm install @nrk/core-toggle  # Using NPM
+```
+
+Using static registers the custom element with default name automatically:
+
+```html
+<script src="https://static.nrk.no/core-components/major/5/core-toggle/core-toggle.min.js"></script>  <!-- Using static -->
 ```
 
 ## Usage
@@ -65,144 +80,148 @@ import CoreToggle from '@nrk/core-toggle/jsx' // React/Preact JSX
 ### HTML / JavaScript
 
 ```html
-<button class="my-toggle">Toggle VanillaJS</button>  <!-- must be <button> -->
-<div hidden>Content</div>                            <!-- use hidden to prevent flash of unstyled content -->
+<button>Toggle VanillaJS</button>       <!-- Must be <button> placed directly before <core-toggle> or use id + for attributes -->
+<core-toggle
+  hidden                                <!-- Set hidden attribute to prevent FOUC -->
+  popup="{Boolean|String}">             <!-- Optional. Defaults to false. Enable or disable if clicking outside toggle should close it. Provide a string to control the aria-label text on the toggle -->
+  <div>Content</div>
+</core-toggle>
 ```
 
 ```js
-import coreToggle from '@nrk/core-toggle'
+import CoreToggle from '@nrk/core-toggle'                 // Using NPM
+window.customElements.define('core-toggle', CoreToggle)   // Using NPM. Replace 'core-toggle' with 'my-toggle' to namespace
 
-coreToggle(String|Element|Elements, {   // Accepts a selector string, NodeList, Element or array of Elements
-  open: Boolean                         // Optional. Defaults to aria-expanded or false. Set to force open state.
-  popup: Boolean|String                 // Optional. Defaults to false. Enable or disable if clicking outside toggle should close it. Provide a string to control the aria-label text on the toggle.
-  value: String                         // Optional. Defaults to button.innerHTML. Sets innerHTML of the button and safely updates aria-label for screen readers.
-})
+const myToggle = document.querySelector('core-toggle')
+
+// Getters
+myToggle.button         // Get toggle button element
+myToggle.popup          // Get popup value
+myToggle.hidden         // Get hidden value
+myToggle.value          // Get toggle button text
+// Setters
+myToggle.popup = true   // Enable or disable if clicking outside toggle should close it. Provide a string to control the aria-label text on the toggle
+myToggle.hidden = true  // Set hidden attribute
+myToggle.value = 'Velg' // Sets innerHTML of the button and safely updates aria-label for screen readers. Defaults to button.innerHTML
 ```
 
 ### React / Preact
 
-```jsx
+```js
 import CoreToggle from '@nrk/core-toggle/jsx'
 
-// All props are optional, and defaults are shown below
-// Props like className, style, etc. will be applied as actual attributes
-// <CoreToggle> will handle state itself unless you call event.preventDefault() in onToggle
-
-<CoreToggle open={false} popup={false} onToggle={(event) => {}}>
-  <button>Use with JSX</button>  // First element must result in a <button>-tag. Accepts both elements and components
+<CoreToggle
+  hidden                         // Set hidden attribute to prevent FOUC
+  popup={Boolean|String}         // Optional. Defaults to false. Enable or disable if clicking outside toggle should close it. Provide a string to control the aria-label text on the toggle
+  onToggle={Function}            // Optional. Toggle event listener. See event 'toggle'
+  onToggleSelect={Function}>     // Optional. Toggle select event listener. See event 'toggle.select'
+  <button>Use with JSX</button>  // First element must result in a <button>. Accepts both elements and components
   <div>Content</div>             // Next element will be toggled. Accepts both elements and components
 </CoreToggle>
 ```
 
 ## Markup
 
-### With aria-controls
+### With for
 
-Putting the toggle button directly before the content is highly recommended, as this fulfills all accessibility requirements by default. There might be scenarios though, where styling makes this DOM structure impractical. In such cases, give the toggle button an `aria-controls` attribute, and the content an `id` with corresponding value. Make sure there is no text between the button and toggle content, as this will break the experience for screen reader users:
+Putting the toggle button directly before the content is highly recommended, as this fulfills all accessibility requirements by default. There might be scenarios though, where styling makes this DOM structure impractical. In such cases, give the `<button>` a `for` attribute, and the `core-toggle` a `id` with corresponding value. Make sure there is no text between the button and toggle content, as this will break the experience for screen reader users:
 
 ```html
 <div>
-  <button class="my-toggle" aria-controls="content">Toggle VanillaJS</button>
+  <button for="my-toggle">Toggle VanillaJS</button>
 </div>
-<div id="content" hidden>Content</div>
+<core-toggle id="my-toggle" hidden>Content</core-toggle>
 ```
 
 ### Autofocus
 
-If you have form elements inside a `@nrk/core-toggle`, you can optionally add a `autofocus` attribute to the most prominent form element. This helps the user navigate quickly when toggle is opened.
-
-
-
+If you have form elements inside a `core-toggle`, you can optionally add a `autofocus` attribute to the most prominent form element. This helps the user navigate quickly when toggle is opened.
 
 ## Events
 
 ### toggle
 
-Before a `@nrk/core-toggle` changes open state, a [toggle event](https://www.w3schools.com/jsref/event_ontoggle.asp) is fired (both for VanillaJS and React/Preact components). The toggle event is cancelable, meaning you can use [`event.preventDefault()`](https://developer.mozilla.org/en-US/docs/Web/API/Event/preventDefault) to cancel toggling. The event also [bubbles](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Building_blocks/Events#Event_bubbling_and_capture), and can therefore be detected both from the button element itself, or any parent element (read [event delegation](https://stackoverflow.com/questions/1687296/what-is-dom-event-delegation)):
+Fired after open state changes:
 
 
 ```js
 document.addEventListener('toggle', (event) => {
-  event.target                              // The button element triggering toggle event
-  event.detail.relatedTarget                // The content element controlled by button
-  event.detail.isOpen                       // The current toggle state (before toggle event has run)
-  event.detail.willOpen                     // The wanted toggle state
+  event.target   // The toggle element
 })
 ```
 
 ### toggle.select
 
-The `toggle.select` event is fired whenever an item is selected inside a toggle with the `popup` option enabled.
+Fired whenever an `<a>` or `<button>` element is selected inside a toggle with the `popup` option enabled.
 Useful for setting the value of the toggle button with the selected value.
 
 
 ```js
 document.addEventListener('toggle.select', (event) => {
-  event.target                              // The buttom element triggering the event
-  event.detail.relatedTarget                // The content element controlled by button
-  event.detail.currentTarget                // The item element selected
-  event.detail.value                        // The selected item's value
+  event.target   // The toggle element
+  event.detail   // The selected element
+  event.target.value = event.detail  // Example: set value of toggle to selected element
 })
 ```
 
 
 ## Styling
 
-All styling in documentation is example only. Both the `<button>` and content element receive attributes reflecting the current toggle state:
+**Note:** `core-toggle` is `display: inline` by default. Change this by for instance setting `core-tabs:not([hidden]) { display: block | flex | grid }` or similar in your app. Not needed when `position` or `float` is used. All styling in documentation is example only. Both the `<button>` and `core-toggle` element receive attributes reflecting the current toggle state:
 
 ```css
-.my-toggle {}                         /* Target button in any state */
-.my-toggle[aria-expanded="true"] {}   /* Target only open button */
-.my-toggle[aria-expanded="false"] {}  /* Target only closed button */
+.my-button {}                         /* Target button in any state */
+.my-button[aria-expanded="true"] {}   /* Target only open button */
+.my-button[aria-expanded="false"] {}  /* Target only closed button */
 
 .my-toggle-content {}                 /* Target content in any state */
 .my-toggle-content:not([hidden]) {}   /* Target only open content */
 .my-toggle-content[hidden] {}         /* Target only closed content */
 ```
 
-## Demo: Expand
+## Example: Expand
 
 Content is only toggled when clicking the button. Great for accordions and expand/collapse panels.
 
 ```html
 <!--demo-->
-<button class="my-toggle">Toggle VanillaJS</button>  <!-- must be <button> -->
-<div hidden>Content</div>                                       <!-- hidden prevents flash of unstyled content -->
-<script>
-  coreToggle('.my-toggle') // Optionally pass {open: true|false} as second argument to open/close
-</script>
+<button>Toggle VanillaJS</button>  <!-- must be <button> -->
+<core-toggle hidden>Content</core-toggle>  <!-- hidden prevents flash of unstyled content -->
 ```
 ```html
 <!--demo-->
 <div id="jsx-toggle-default"></div>
 <script type="text/jsx">
-  ReactDOM.render(<CoreToggle popup={false} open={false} onToggle={function(){}}>
+  ReactDOM.render(<>
     <button>Toggle JSX</button>
-    <div>Content</div>
-  </CoreToggle>, document.getElementById('jsx-toggle-default'))
+    <CoreToggle hidden onToggle={console.log}>Content</CoreToggle>
+  </>, document.getElementById('jsx-toggle-default'))
 </script>
 ```
 
 
-## Demo: Select
+## Example: Select
 
 Listen to the `toggle.select` event and update the button's value from the selected item
 to create a component that behaves like a `<select>`:
 
 ```html
 <!--demo-->
-<button class="my-popup-value">Select number</button>
-<ul class="my-dropdown" hidden>
-  <li><button>One</button></li>
-  <li><button>Two</button></li>
-  <li><button>Three</button></li>
-</ul>
+<button>Episode 1</button>
+<core-toggle class="my-select my-dropdown" hidden popup="Choose episode">
+  <ul>
+    <li><button>Episode 1</button></li>
+    <li><button>Episode 2</button></li>
+    <li><button>Episode 3</button></li>
+  </ul>
+</core-toggle>
 <script>
   document.addEventListener('toggle.select', (event) => {
-      if (event.target.className !== 'my-popup-value') return
-      coreToggle(event.target, { value: event.detail.value, open: false })
+    if (!event.target.classList.contains('my-select')) return
+    event.target.value = event.detail
+    event.target.hidden = true
+    event.target.button.focus()
   })
-  coreToggle('.my-popup-value', { popup: 'Number picker'})
 </script>
 ```
 
@@ -217,24 +236,25 @@ to create a component that behaves like a `<select>`:
       this.onSelect = this.onSelect.bind(this)
     }
     onSelect (event) {
-      this.setState({ value: event.detail.value })
+      event.target.hidden = true
+      this.setState({ value: event.detail.textContent })
     }
     render () {
-      return <CoreToggle popup='Example picker' open={false} onToggleSelect={this.onSelect}>
+      return <>
         <button>{this.state.value}</button>
-        <ul className='my-dropdown'>
-          <li><button>One</button></li>
-          <li><button>Two</button></li>
-          <li><button>Three</button></li>
-        </ul>
-      </CoreToggle>
+        <CoreToggle className='my-dropdown' popup='Example picker' hidden onToggleSelect={this.onSelect}>
+          <ul>
+            <li><button>One</button></li>
+            <li><button>Two</button></li>
+            <li><button>Three</button></li>
+          </ul>
+        </CoreToggle>
+      </>
     }
   }
   ReactDOM.render(<MyToggleSelect/>, document.getElementById('jsx-toggle-select'))
 </script>
 ```
-
-
 
 ## FAQ
 

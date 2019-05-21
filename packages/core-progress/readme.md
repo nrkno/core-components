@@ -1,53 +1,38 @@
 # Core Progress
 
-> `@nrk/core-progress` enhances the `<progress>` element and makes it universally accessible
+> `@nrk/core-progress` is an accessible progress element for displaying linear and radial progresses.
 
-
-
-## Installation
-
-```bash
-npm install @nrk/core-progress --save-exact
-```
-```js
-import coreProgress from '@nrk/core-progress'     // Vanilla JS
-import coreProgress from '@nrk/core-progress/jsx' // React/Preact JSX
-```
-
-
-
+<!-- <script src="https://unpkg.com/preact"></script>
+<script src="https://unpkg.com/preact-compat"></script>
+<script>
+  window.React = preactCompat
+  window.ReactDOM = preactCompat
+</script> -->
 <!--demo
 <script src="core-progress/core-progress.min.js"></script>
 <script src="core-progress/core-progress.jsx.js"></script>
 <style>
-
+.my-track { background: #ccc; border-radius: 3px; overflow: hidden; font: 700 12px/1 sans-serif }
+.my-track [value] { background: #16f; color: #fff; padding: 3px 6px; transition: 1s }
+.my-track [indeterminate] { animation: indeterminate 2s linear infinite; background: linear-gradient(90deg,#16f 25%, #8bf 50%, #16f 75%) 0/400% }
+.my-radial { color: #16f; stroke: #ccc; transition:stroke-dashoffset 1s }
+@keyframes indeterminate { to { background-position: 100% 0 } }
 </style>
 demo-->
 
-## Demo
+## Example
+
 
 ```html
 <!--demo-->
-<label>Progress:
-  <progress class="my-progress" value="20" max="100"></progress>
+<label>
+  Progress:
+  <div class="my-track">
+    <core-progress value=".5"></core-progress>
+  </div>
 </label>
-<script>
-  // optional: init progress when attributes value or max are not present:
-  // coreProgress('.my-progress');
-  coreProgress('.my-progress', 50); // update progress
-</script>
 ```
 
-```html
-<!--demo-->
-<label>Indeterminate progress:
-  <progress class="my-indeterminate-progress" max="100"></progress>
-</label>
-<script>
-  // Progress is indeterminate when no value attribute is present.
-  coreProgress('.my-indeterminate-progress', 'Loading...');
-</script>
-```
 
 ```html
 <!--demo-->
@@ -59,8 +44,10 @@ demo-->
       this.state = { value: 50, max: 100 }
     }
     render () {
-      return <label> Progress JSX:
-        <CoreProgress className="my-jsx-progress" value={this.state.value} max={this.state.max} onChange={(state) => this.setState(state)} />
+      return <label>Progress JSX:
+        <div className="my-track">
+          <CoreProgress value={this.state.value} max={this.state.max} onProgressChange={(state) => this.setState(state)} />
+        </div>
       </label>
     }
   }
@@ -68,28 +55,72 @@ demo-->
 </script>
 ```
 
+```html
+<!--demo-->
+<label>Indeterminate progress:
+  <div class="my-track">
+    <core-progress value="Loading..." max="100"></core-progress>
+  </div>
+</label>
+```
+
+```html
+<!--demo-->
+<label>Radial progress:
+  <div style="width:40px">
+    <core-progress type="radial" class="my-radial" value=".75"></core-progress>
+  </div>
+</label>
+```
+
+## Installation
+
+Using NPM provides own element namespace and extensibility.
+Recommended:
+
+```bash
+npm install @nrk/core-progress  # Using NPM
+```
+
+Using static registers the custom element with default name automatically:
+
+```html
+<script src="https://static.nrk.no/core-components/major/5/core-progress/core-progress.min.js"></script>  <!-- Using static -->
+```
+
+
 
 ## Usage
 
 ### HTML / Javascript
 
 ```html
-<label>Progress:
-  <progress class="my-progress"></progress>
-</label>
+<div class="my-track">
+  <core-progress type="{String}"            <!-- Optional. Default "linear". Type of progress. Possible values: "linear" and "radial" -->
+                 value="{Number|String}"    <!-- Optional. Default 0. Value progress value. If string, indeterminate is set to true -->
+                 max="{Number}"             <!-- Optional. Default 1. Maximum value. Progress percentage is calculated relative to this -->
+                 indeterminate="{Boolean}"  <!-- Optional. Set indeterminate value -->
+  </core-progress>
+</div>
 ```
 
 ```js
-coreProgress(
-  String|Element|Elements,  // Accepts a selector string, NodeList, Element or array of Elements
-  Number|String|Object      // Optional. Set value, indeterminate status or options
-)
+import CoreProgress from '@nrk/core-progress'                 // Using NPM
+window.customElements.define('core-progress', CoreProgress)   // Using NPM. Replace 'core-progress' with 'my-progress' to namespace
 
-// Examples:
-coreProgress('.my-progress')                         // Initalize and ensure accessibility correct attributes
-coreProgress('.my-progress', 1)                      // Set progress value directly with number
-coreProgress('.my-progress', 'Loading...')           // Set indeterminate status using non-numerical string. The same string will be read by screen readers.
-coreProgress('.my-progress', {value: 50, max: 100})  // Set progress value and/or maximum value
+const myProgress = document.querySelector('core-progress')
+
+// Getters
+myProgress.type                   // The progress type
+myProgress.value                  // The current progress value
+myProgress.max                    // The max progress value
+myProgress.percentage             // The calculated percentage from (value / max * 100)
+myProgress.indeterminate          // True if the progress is indeterminate (no value attribute)
+// Setters
+myProgress.type = 'radial'        // Set the progress type. Possible values: "linear" and "radial"
+myProgress.value = .5             // Set the progress value. If string, indeterminate is set to true
+myProgress.max = 10               // Set the max progress value
+myProgress.indeterminate = true   // Set indeterminate value
 ```
 
 ### React / Preact
@@ -97,28 +128,50 @@ coreProgress('.my-progress', {value: 50, max: 100})  // Set progress value and/o
 ```js
 import CoreProgress from '@nrk/core-progress/jsx'
 
-<CoreProgress value={Number|String} max={Number} onChange={(event) => {}} />
+<div className="my-track">
+  <CoreProgress type={String}                   // Optional. Default "linear". Type of progress. Possible values: "linear" and "radial"
+                value={Number|String}           // Optional. Default 0. Value of progress relative to max. If string, indeterminate is set to true
+                max={Number}                    // Optional. Default 1. Maximum value. Progress percentage is calculated relative to this
+                indeterminate={Boolean}         // Optional. Set indeterminate value
+                onProgressChange={Function} />  // Optional. Progress change event handler
+</div>
 ```
-
-
 
 ## Events
 
-Before a `@nrk/core-progress` changes state, a `progress.change` event is fired (both for VanillaJS and React/Preact components). The event is cancelable, meaning you can use [`event.preventDefault()`](https://developer.mozilla.org/en-US/docs/Web/API/Event/preventDefault) to cancel the state change. The event also [bubbles](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Building_blocks/Events#Event_bubbling_and_capture), and can therefore be detected both from the progress element itself, or any parent element (read [event delegation](https://stackoverflow.com/questions/1687296/what-is-dom-event-delegation)):
+### progress.change
+
+Fired when the progress value changes:
 
 
 ```js
 document.addEventListener('progress.change', (event) => {
-  event.target                  // The progress element
-  event.detail.value            // The current progress value
-  event.detail.max              // The max progress value
-  event.detail.percentage       // The calculated percentage from (value / max * 100)
-  event.detail.indeterminate    // True if the progress is indeterminate (no value attribute)
+  event.target    // The progress element
 })
 ```
 
-
 ## Styling
 
-The progress element can be a bit hard to style nicely, but [CSS-tricks](https://css-tricks.com/html5-progress-element/) has some nice tips on how to make it pretty!
-*Note: As Internet Explorer 9 does not support `<progress>`, `@nrk/core-progress` instead shows progress as a percentage string.*
+For linear progress bars, wrap the `<core-progress>` in a container element that will work as the track
+and style it appropriately along with the progress:
+
+```html
+<style>
+.my-track { /* */ }
+.my-track [value] { /* */ }
+.my-track [indeterminate] { /* */ }
+</style>
+
+<div class="my-track">
+  <core-progress value="Loading..." max="100"></core-progress>
+</div>
+```
+
+For radial progress bars you don't need a wrapper. Use the following properties on the `<core-progress>` element itself
+to style track and progress:
+
+Property | Affects | Example
+:-- | :-- | :--
+`color` | Color of progress | <core-progress type="radial" style="width:30px;color:#00b9f2" value=".3"></core-progress>
+`stroke` | Color of track | <core-progress type="radial" style="width:30px;stroke:#ccc" value=".3"></core-progress>
+`stroke-width` | Percentage thickness | <core-progress type="radial" style="width:30px;stroke-width:100" value=".3"></core-progress>

@@ -1,78 +1,90 @@
 // using require instead of import to play nicely with travis ci
-
-const buble = require('rollup-plugin-buble')
+const babel = require('rollup-plugin-babel')
 const commonjs = require('rollup-plugin-commonjs')
-const json = require('rollup-plugin-json')
 const resolve = require('rollup-plugin-node-resolve')
 const serve = require('rollup-plugin-serve')
+const json = require('rollup-plugin-json')
 const { uglify } = require('rollup-plugin-uglify')
-const { pkgs, getPackageName } = require('./bin/index.js') // Find all packages
-const { version } = require('./package.json')
-const path = require('path')
-const fs = require('fs')
+const utils = require('./bin/index.js')
 
-const isBuild = !process.env.ROLLUP_WATCH
+const minify = uglify({ output: { comments: /^!/ } })
+const globals = { 'react-dom': 'ReactDOM', react: 'React' } // Exclude from output
+const external = Object.keys(globals)
+const treeshake = { pureExternalModules: true } // Strip React require
+const plugins = [
+  json(),
+  resolve({ dedupe: external }),
+  commonjs(),
+  babel({ presets: [['@babel/preset-env', { modules: false }]] }),
+  !process.env.ROLLUP_WATCH || serve('packages')
+]
 
-if (isBuild) {
-  const readmes = ['readme.md', path.join('packages', 'readme.md')]
-  readmes.forEach((path) => {
-    const readme = String(fs.readFileSync(path))
-    const versioned = readme.replace(/core-components\/major\/\d+/, `core-components/major/${version.match(/\d+/)}`)
-    fs.writeFileSync(path, versioned)
-  })
-}
+utils.buildDocs()
 
-const server = isBuild || serve('packages')
-const globals = { 'react-dom': 'ReactDOM', react: 'React', 'prop-types': 'PropTypes' } // Exclude from output
-const pluginsCJS = [json(), resolve(), commonjs(), buble(), server]
-const pluginsUMD = pluginsCJS.concat(uglify({ output: { comments: /^!/ } }))
-
-export default pkgs.reduce((all, path) => {
-  const pkg = require(`${path}/package.json`)
-  const file = getPackageName(path)
-  const banner = `/*! @nrk/${file} v${pkg.version} - Copyright (c) 2017-${new Date().getFullYear()} NRK */`
-  const nameCamelCase = file.replace(/-./g, (m) => m.slice(-1).toUpperCase())
-  const nameTitleCase = nameCamelCase.replace(/./, (m) => m.toUpperCase())
+export default utils.pkgs.reduce((all, path) => {
+  const { version } = require(`${path}/package.json`)
+  const file = utils.getPackageName(path)
+  const name = file.replace(/-./g, (m) => m.slice(-1).toUpperCase())
+  const jsx = name.replace(/./, (m) => m.toUpperCase())
 
   return all.concat({
     input: `${path}/${file}.js`, // JS CJS
-    plugins: pluginsCJS,
     output: {
       format: 'cjs',
       file: `${path}/${file}.cjs.js`,
-      name: nameCamelCase
-    }
+      globals
+    },
+    treeshake,
+    external,
+    plugins
   }, {
     input: `${path}/${file}.js`, // JS UMD
-    plugins: pluginsUMD,
     output: {
       format: 'umd',
       file: `${path}/${file}.min.js`,
-      name: nameCamelCase,
+      banner: `/*! @nrk/${file} v${version} - Copyright (c) 2017-${new Date().getFullYear()} NRK */`,
+      footer: `window.customElements.define('${file}', ${name})`,
       sourcemap: true,
-      banner
-    }
+      globals,
+      name
+    },
+    treeshake,
+    external,
+    plugins: plugins.concat(minify)
   }, {
     input: `${path}/${file}.jsx`, // JSX CJS
-    external: Object.keys(globals),
-    plugins: pluginsCJS,
     output: {
       format: 'cjs',
       file: `${path}/jsx.js`,
-      name: nameTitleCase,
       globals
-    }
+    },
+    treeshake,
+    external,
+    plugins
   }, {
-    input: `${path}/${file}.jsx`, // JSX UMD
-    external: Object.keys(globals),
-    plugins: pluginsUMD,
+    input: `${path}/${file}.jsx`, // JSX UMD (only used in docs)
     output: {
       format: 'umd',
       file: `${path}/${file}.jsx.js`,
-      name: nameTitleCase,
+      name: jsx,
       sourcemap: true,
-      globals,
-      banner
-    }
+      globals
+    },
+    treeshake,
+    external,
+    plugins
   })
-}, [])
+}, [
+  {
+    input: 'packages/utils.js', // JS UMD for tests
+    output: {
+      format: 'umd',
+      file: 'packages/utils.min.js',
+      sourcemap: false,
+      name: 'utils',
+      globals
+    },
+    plugins,
+    external
+  }
+])

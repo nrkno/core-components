@@ -1,195 +1,158 @@
-import { name, version } from './package.json'
-import { IS_BROWSER, addEvent, dispatchEvent, requestAnimFrame, throttle, queryAll } from '../utils'
+import { IS_BROWSER, addStyle, closest, dispatchEvent, throttle, getUUID, queryAll } from '../utils'
 
 const DRAG = {}
-const ATTR = 'data-core-scroll'
-const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid attribute characters
 const MOVE = { up: { y: -1, prop: 'top' }, down: { y: 1, prop: 'bottom' }, left: { x: -1 }, right: { x: 1 } }
-const SIGNIFICANT_DRAG_THRESHOLD = 10
-const FRICTION = 0.8
-const VELOCITY = 20
-const NEEDS_MOUSEDOWN = /INPUT|TEXTAREA|SELECT/
+const NEEDS_MOUSEDOWN = '[contenteditable="true"],input,select,textarea'
+const EVENT_PASSIVE = ((has = false) => {
+  try { window.addEventListener('test', null, { get passive () { has = { passive: true } } }) } catch (e) {}
+  return has
+})()
 
 // https://css-tricks.com/introduction-reduced-motion-media-query/
-const requestJump = IS_BROWSER && window.matchMedia && window.matchMedia('(prefers-reduced-motion)').matches
+const requestJumps = IS_BROWSER && window.matchMedia && window.matchMedia('(prefers-reduced-motion)').matches
+const requestFrame = IS_BROWSER && (window.requestAnimationFrame || window.setTimeout)
 
-export default function scroll (elements, move = '') {
-  const options = typeof move === 'object' ? move : { move }
-  const isChange = 'x' in options || 'y' in options || options.move
+export default class CoreScoll extends HTMLElement {
+  connectedCallback () {
+    // Hide scrollbar in WebKit and default to display block
+    addStyle(this.nodeName, `
+      ${this.nodeName}{display:block}
+      ${this.nodeName}::-webkit-scrollbar{display:none}
+    `)
 
-  return queryAll(elements).map((target) => {
-    if (!target.hasAttribute(UUID)) { // Reduce read / write operations
-      target.setAttribute(UUID, options.friction || '')
-      hideScrollbars(target)
+    this.style.overflow = 'scroll' // Ensure visible scrollbars
+    this.style.willChange = 'scroll-position' // Enhance performance
+    this.style.webkitOverflowScrolling = 'touch' // Momentum scroll on iOS
+
+    // Calculate sizes for hiding, must be after setting overflow:scroll
+    const barWidth = this.offsetWidth - this.clientWidth
+    const barHeight = this.offsetHeight - this.clientHeight
+
+    // Also ensure height does not grow higher than parent element
+    this.style.marginRight = `-${barWidth}px`
+    this.style.marginBottom = `-${barHeight}px`
+    this.style.maxHeight = `calc(100% + ${barHeight}px)`
+    this._throttledEvent = throttle(this.handleEvent.bind(this), 500)
+
+    this.addEventListener('mousedown', this)
+    this.addEventListener('wheel', this, EVENT_PASSIVE)
+    this.addEventListener('scroll', this._throttledEvent, EVENT_PASSIVE)
+    window.addEventListener('resize', this._throttledEvent, EVENT_PASSIVE)
+    window.addEventListener('load', this) // Update state when we are sure all CSS is loaded
+    document.addEventListener('click', this)
+    setTimeout(() => this.handleEvent()) // Initialize buttons after children is parsed
+  }
+  disconnectedCallback () {
+    this._throttledEvent = null // Garbage collection
+    this.removeEventListener('mousedown', this)
+    this.removeEventListener('wheel', this, EVENT_PASSIVE)
+    this.removeEventListener('scroll', this._throttledEvent, EVENT_PASSIVE)
+    window.removeEventListener('resize', this._throttledEvent, EVENT_PASSIVE)
+    window.removeEventListener('load', this)
+    document.removeEventListener('click', this)
+  }
+  handleEvent (event = {}) {
+    if (event.defaultPrevented) return
+    if (event.type === 'wheel') DRAG.animate = false // Stop momentum animation onWheel
+    else if (event.type === 'mousedown') onMousedown.call(this, event)
+    else if (event.type === 'click') {
+      const btn = this.id && closest(event.target, `[for="${this.id}"]`)
+      if (btn && dispatchEvent(this, 'scroll.click', { move: btn.value })) this.scroll(btn.value)
+    } else {
+      const scroll = { left: this.scrollLeft, up: this.scrollTop, right: this.scrollRight, down: this.scrollBottom }
+      const cursor = (scroll.left || scroll.right || scroll.up || scroll.down) ? 'grab' : ''
+
+      queryAll(this.id && `[for="${this.id}"]`).forEach((el) => (el.disabled = !scroll[el.value]))
+      dispatchEvent(this, 'scroll.change')
+
+      if (!event.type) { // Do not change cursor while dragging
+        this.style.cursor = `-webkit-${cursor}`
+        this.style.cursor = cursor
+      }
     }
-    if (isChange) scrollTo(target, parsePoint(target, options))
-    else onChange(target) // Updates button states
-    return target
-  })
-}
+  }
+  scroll (point) {
+    const { x, y } = parsePoint(this, point)
+    const uuid = DRAG.animate = getUUID() // Giving the animation an ID to workaround IE timeout issues
+    const friction = this.friction
+    let moveX = requestJumps ? 1 : x - this.scrollLeft
+    let moveY = requestJumps ? 1 : y - this.scrollTop
 
-addEvent(UUID, 'mousedown', onMousedown)
-addEvent(UUID, 'resize', throttle(onChange, 500)) // Update button states on resize
-addEvent(UUID, 'scroll', throttle(onChange, 500), { passive: true, capture: true }) // capture catches events without bubbling
-addEvent(UUID, 'wheel', () => (DRAG.animate = false), { passive: true }) // Stop animation on wheel scroll
-addEvent(UUID, 'load', onChange) // Update state when we are sure all CSS is loaded
-addEvent(UUID, 'click', onClick)
+    const move = () => {
+      if (DRAG.animate === uuid && (Math.round(moveX) || Math.round(moveY))) {
+        this.scrollLeft = x - Math.round(moveX *= friction)
+        this.scrollTop = y - Math.round(moveY *= friction)
+        requestFrame(move)
+      }
+    }
+    move()
+  }
+
+  get scrollRight () { return this.scrollWidth - this.clientWidth - this.scrollLeft }
+  get scrollBottom () { return this.scrollHeight - this.clientHeight - this.scrollTop }
+  get friction () { return Math.min(0.99, this.getAttribute('friction')) || 0.8 } // Avoid friction 1 (infinite)
+  set friction (val) { this.setAttribute('friction', val) }
+}
 
 function onMousedown (event) {
-  for (let el = event.target; el; el = el.parentElement) {
-    if (el.contentEditable === 'true' || NEEDS_MOUSEDOWN.test(el.nodeName)) return // No dragging when user clicks input fields
-    if (!event.defaultPrevented && el.hasAttribute && el.hasAttribute(UUID)) {
-      event.preventDefault() // Prevent text selection and enable nesting
+  if (closest(event.target, NEEDS_MOUSEDOWN)) return
+  event.preventDefault() // Prevent text selection and enable nesting
 
-      DRAG.pageX = event.pageX
-      DRAG.pageY = event.pageY
-      DRAG.diffSumX = 0
-      DRAG.diffSumY = 0
-      DRAG.scrollX = el.scrollLeft
-      DRAG.scrollY = el.scrollTop
-      DRAG.animate = DRAG.diffX = DRAG.diffY = 0 // Reset
-      DRAG.target = el
+  DRAG.pageX = event.pageX
+  DRAG.pageY = event.pageY
+  DRAG.animate = DRAG.diffX = DRAG.diffY = 0 // Reset
+  DRAG.scrollX = this.scrollLeft
+  DRAG.scrollY = this.scrollTop
+  DRAG.target = this
 
-      document.body.style.cursor = el.style.cursor = '-webkit-grabbing'
-      document.body.style.cursor = el.style.cursor = 'grabbing'
-      document.addEventListener('mousemove', onMousemove)
-      document.addEventListener('mouseup', onMouseup)
-    }
-  }
-}
-
-function hideScrollbars (element) {
-  if (!document.getElementById(UUID)) { // Hide scrollbar in WebKit
-    document.head.insertAdjacentHTML('beforeend',
-      `<style id="${UUID}">[${UUID}]::-webkit-scrollbar{display:none}</style>`)
-  }
-
-  element.style.overflow = 'scroll' // Ensure visible scrollbars
-  element.style.willChange = 'scroll-position' // Enhance performance
-  element.style.webkitOverflowScrolling = 'touch' // Momentum scoll on iOS
-
-  // Calculate sizes for hiding, must be after setting overflow:scroll
-  const barWidth = element.offsetWidth - element.clientWidth
-  const barHeight = element.offsetHeight - element.clientHeight
-
-  // Also ensure height does not grow higher than parent element
-  element.style.marginRight = `-${barWidth}px`
-  element.style.marginBottom = `-${barHeight}px`
-  element.style.maxHeight = `calc(100% + ${barHeight}px)`
-}
-
-/**
- * Check that the current drag is significant.
- *
- * When the user clicks on an element and the cursor moves slightly, it is most
- * likely that the user wanted to click in stead of drag.
- */
-function isSignificantDrag () {
-  return (
-    Math.abs(DRAG.diffSumX) > SIGNIFICANT_DRAG_THRESHOLD ||
-    Math.abs(DRAG.diffSumY) > SIGNIFICANT_DRAG_THRESHOLD
-  )
+  document.body.style.cursor = this.style.cursor = '-webkit-grabbing'
+  document.body.style.cursor = this.style.cursor = 'grabbing'
+  document.addEventListener('mousemove', onMousemove)
+  document.addEventListener('mouseup', onMouseup)
 }
 
 function onMousemove (event) {
   DRAG.diffX = DRAG.pageX - (DRAG.pageX = event.pageX)
   DRAG.diffY = DRAG.pageY - (DRAG.pageY = event.pageY)
-  DRAG.diffSumX += DRAG.diffX
-  DRAG.diffSumY += DRAG.diffY
   DRAG.target.scrollLeft = DRAG.scrollX += DRAG.diffX
   DRAG.target.scrollTop = DRAG.scrollY += DRAG.diffY
-  if (isSignificantDrag()) {
-    DRAG.target.style.pointerEvents = 'none' // Prevent links when we know there has been movement
+
+  // Prevent links when we know there has been significant movement
+  if (Math.abs(DRAG.scrollX) > 10 || Math.abs(DRAG.scrollY) > 10) {
+    DRAG.target.style.pointerEvents = 'none'
   }
 }
 
 function onMouseup (event) {
-  const isMomentum = DRAG.diffX || DRAG.diffY // Click-drag-scrollbar will not create momentum
+  const momentum = (DRAG.diffX || DRAG.diffY) ? 20 : 0 // Click-drag-scrollbar will not create momentum
   document.removeEventListener('mousemove', onMousemove)
   document.removeEventListener('mouseup', onMouseup)
   document.body.style.cursor = ''
-  onChange(DRAG.target)
 
-  if (isMomentum) {
-    scrollTo(DRAG.target, {
-      x: DRAG.scrollX + DRAG.diffX * VELOCITY,
-      y: DRAG.scrollY + DRAG.diffY * VELOCITY
+  if (momentum) {
+    DRAG.target.scroll({
+      x: DRAG.scrollX + DRAG.diffX * momentum,
+      y: DRAG.scrollY + DRAG.diffY * momentum
     })
   }
   DRAG.target.style.pointerEvents = '' // Allow events again
+  DRAG.target.style.cursor = '-webkit-grab'
+  DRAG.target.style.cursor = 'grab'
   DRAG.target = null // Prevent memory leak
 }
 
-function onChange (event) {
-  const target = event.target || event
-  if (event.type === 'resize' || event.type === 'load') return queryAll(`[${UUID}]`).forEach(onChange) // Update all
-  if (target.hasAttribute && target.hasAttribute(UUID)) { // target can be document
-    const detail = { left: target.scrollLeft, up: target.scrollTop }
-    detail.right = target.scrollWidth - target.clientWidth - detail.left
-    detail.down = target.scrollHeight - target.clientHeight - detail.up
-    const cursor = (detail.left || detail.right || detail.up || detail.down) ? 'grab' : ''
-
-    dispatchEvent(target, 'scroll.change', detail)
-
-    if (!event.type) { // Do not change cursor while dragging
-      target.style.cursor = `-webkit-${cursor}`
-      target.style.cursor = cursor
-    }
-
-    if (target.id) {
-      queryAll(`[${ATTR}]`).forEach((el) => {
-        if (el.getAttribute(ATTR) === target.id) el.disabled = !detail[el.value]
-      })
-    }
-  }
-}
-
-function onClick (event) {
-  if (event.defaultPrevented) return
-  for (let el = event.target; el; el = el.parentElement) {
-    const target = document.getElementById(el.getAttribute(ATTR))
-    if (target && dispatchEvent(target, 'scroll.click', { move: el.value })) {
-      return scroll(target, el.value)
-    }
-  }
-}
-
-function scrollTo (target, { x, y }) {
-  // Giving the animation an ID to workaround IE timeout issues
-  const friction = Math.min(0.99, target.getAttribute(UUID)) || FRICTION // Avoid friction 1 (infinite)
-  const uuid = DRAG.animate = Math.floor(Date.now() * Math.random()).toString(16)
-  const endX = Math.max(0, Math.min(x, target.scrollWidth - target.clientWidth))
-  const endY = Math.max(0, Math.min(y, target.scrollHeight - target.clientHeight))
-  let moveX = requestJump ? 1 : endX - target.scrollLeft
-  let moveY = requestJump ? 1 : endY - target.scrollTop
-
-  const move = () => {
-    if (DRAG.animate === uuid && (Math.round(moveX) || Math.round(moveY))) {
-      target.scrollLeft = endX - Math.round(moveX *= friction)
-      target.scrollTop = endY - Math.round(moveY *= friction)
-      requestAnimFrame(move)
-    }
-  }
-  move()
-}
-
-function parsePoint (target, { x, y, move }) {
-  const point = { x, y, move: MOVE[move] }
-  // {
-  //   to: 'left|top|right|bottom|Element'
-  //   x: 'left|top|right|bottom|px'
-  //   y: 'left|top|right|bottom|px'
-  // }
-  if (typeof point.x !== 'number') point.x = target.scrollLeft
-  if (typeof point.y !== 'number') point.y = target.scrollTop
-  if (point.move) {
+function parsePoint (el, move) {
+  const point = typeof move === 'object' ? move : { move }
+  if (typeof point.x !== 'number') point.x = el.scrollLeft
+  if (typeof point.y !== 'number') point.y = el.scrollTop
+  if ((point.move = MOVE[point.move])) {
     const axis = point.move.x ? 'x' : 'y'
     const start = point.move.x ? 'left' : 'top'
-    const bounds = target.getBoundingClientRect()
-    const scroll = bounds[start] - target[point.move.x ? 'scrollLeft' : 'scrollTop']
+    const bounds = el.getBoundingClientRect()
+    const scroll = bounds[start] - el[point.move.x ? 'scrollLeft' : 'scrollTop']
     const edge = bounds[start] + bounds[point.move.x ? 'width' : 'height'] * point.move[axis]
 
-    queryAll(target.children).every((el) => { // Use .every as this loop stops on return false
+    queryAll(el.children).every((el) => { // Use .every as this loop stops on return false
       const rect = el.getBoundingClientRect()
       const marg = el.ownerDocument.defaultView.getComputedStyle(el)[`margin-${start}`]
 
@@ -197,5 +160,8 @@ function parsePoint (target, { x, y, move }) {
       return rect[point.move.prop || move] < edge
     })
   }
-  return point
+  return {
+    x: Math.max(0, Math.min(point.x, el.scrollWidth - el.clientWidth)),
+    y: Math.max(0, Math.min(point.y, el.scrollHeight - el.clientHeight))
+  }
 }

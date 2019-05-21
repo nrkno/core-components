@@ -1,98 +1,134 @@
-const coreDialog = require('./core-dialog.min')
+import test from 'ava'
+import path from 'path'
+import puppeteer from 'puppeteer'
 
-describe('core-dialog', () => {
-  test('should exists', () => {
-    expect(coreDialog).toBeInstanceOf(Function)
-  })
+async function withPage (t, run) {
+  const browser = await puppeteer.launch()
+  const page = await browser.newPage()
+  page.on('console', msg => console.log(msg._text))
+  await page.addScriptTag({ path: path.join(__dirname, 'core-dialog.min.js') })
+  try {
+    await run(t, page)
+  } finally {
+    await page.close()
+    await browser.close()
+  }
+}
+
+test('sets up properties', withPage, async (t, page) => {
+  await page.setContent(`
+    <button for="dialog-1">Open</button>
+    <core-dialog id="dialog-1" hidden></core-dialog>
+  `)
+  t.is(await page.$eval('core-dialog', el => el.getAttribute('role')), 'dialog')
+  t.is(await page.$eval('core-dialog', el => el.getAttribute('aria-modal')), 'true')
 })
 
-const standardHTML = `
-<button data-core-dialog="dialog-0">Open dialog 1</button>
-<dialog id="dialog-0" aria-label="Dialog label 1">
-  <button data-core-dialog="close"></button>
-  <button data-core-dialog="dialog-1">Open nested dialog 2</button>
-  <dialog id="dialog-1">
-    <button data-core-dialog="close"></button>
-    <button data-core-dialog="dialog-2">Open after dialog 3</button>
-  </dialog>
-</dialog>
-<dialog id="dialog-2" aria-label="Dialog label 2">
-  <button data-core-dialog="dialog-0">Open dialog 1</button>
-  <button data-core-dialog="close"></button>
-</dialog>`
+test('opens and closes', withPage, async (t, page) => {
+  await page.setContent(`
+    <button for="dialog">Open</button>
+    <core-dialog id="dialog" hidden>
+      <div>Some content</div>
+      <button for="close">Close</button>
+    </core-dialog>
+  `)
+  await page.click('button[for="dialog"]')
+  t.false(await page.$eval('core-dialog', el => el.hasAttribute('hidden')))
+  t.false(await page.$eval('core-dialog + backdrop', el => el.hasAttribute('hidden')))
+  await page.click('button[for="close"]')
+  t.true(await page.$eval('core-dialog', el => el.hasAttribute('hidden')))
+  t.true(await page.$eval('core-dialog + backdrop', el => el.hasAttribute('hidden')))
+  await page.evaluate(() => (document.querySelector('core-dialog').hidden = false))
+  t.false(await page.$eval('core-dialog + backdrop', el => el.hasAttribute('hidden')))
+  await page.evaluate(() => (document.querySelector('core-dialog').hidden = true))
+  t.true(await page.$eval('core-dialog + backdrop', el => el.hasAttribute('hidden')))
+})
 
-function getButton (name) {
-  return document.querySelector(`[data-core-dialog="${name}"]`)
-}
+test('opens and closes nested', withPage, async (t, page) => {
+  await page.setContent(`
+    <button for="dialog-outer">Open</button>
+    <core-dialog id="dialog-outer" hidden>
+      <div>Some content</div>
+      <button type="button" autofocus>Autofocus</button>
+      <button for="dialog-inner">Open inner</button>
+      <core-dialog id="dialog-inner" hidden>
+        <div>Nested content</div>
+        <button for="close">Close</button>
+      </core-dialog>
+      <button for="close">Close</button>
+    </core-dialog>
+  `)
+  await page.click('button[for="dialog-outer"]')
+  await page.click('button[for="dialog-inner"]')
+  t.false(await page.$eval('#dialog-outer + backdrop', el => el.hasAttribute('hidden')))
+  t.false(await page.$eval('#dialog-outer #dialog-inner + backdrop', el => el.hasAttribute('hidden')))
+  await page.click('#dialog-inner button[for="close"]')
+  t.true(await page.$eval('#dialog-inner', el => el.hasAttribute('hidden')))
+  t.true(await page.$eval('#dialog-inner + backdrop', el => el.hasAttribute('hidden')))
+  t.false(await page.$eval('#dialog-outer', el => el.hasAttribute('hidden')))
+  t.false(await page.$eval('#dialog-outer + backdrop', el => el.hasAttribute('hidden')))
+})
 
-// https://github.com/jsdom/jsdom/issues/1890
-function simplePolyfillInsertAdjacentElement () {
-  document.querySelectorAll('*').forEach((el) => {
-    el.insertAdjacentElement = (position, element) => {
-      const next = el.nextElementSibling
-      const wrap = el.parentNode
-      return next ? wrap.insertBefore(element, next) : wrap.appendChild(element)
-    }
-  })
-}
+test('closes nested with esc', withPage, async (t, page) => {
+  await page.setContent(`
+    <button for="dialog-outer">Open</button>
+    <core-dialog id="dialog-outer" hidden>
+      <div>Some content</div>
+      <button type="button" autofocus>Autofocus</button>
+      <button for="dialog-inner">Open inner</button>
+      <core-dialog id="dialog-inner" hidden>
+        <div>Nested content</div>
+        <button for="close">Close</button>
+      </core-dialog>
+      <button for="close">Close</button>
+    </core-dialog>
+  `)
+  await page.click('button[for="dialog-outer"]')
+  await page.click('button[for="dialog-inner"]')
+  await page.keyboard.press('Escape')
+  t.true(await page.$eval('#dialog-inner', el => el.hasAttribute('hidden')))
+  t.false(await page.$eval('#dialog-outer', el => el.hasAttribute('hidden')))
+  await page.keyboard.press('Escape')
+  t.true(await page.$eval('#dialog-outer', el => el.hasAttribute('hidden')))
+})
 
-describe('core-dialog', () => {
-  describe('opening the dialog', () => {
-    it('should set the open attribute when doing coreDialog(dialog, true)', () => {
-      document.body.innerHTML = standardHTML
-      const dialog = document.querySelector('#dialog-0')
+test('respects aria-modal option', withPage, async (t, page) => {
+  await page.setContent(`
+    <button for="dialog">Open</button>
+    <core-dialog id="dialog" aria-modal="false" hidden>
+      <button for="close">Close</button>
+    </core-dialog>
+  `)
+  await page.click('button[for="dialog"]')
+  t.false(await page.$eval('core-dialog', el => el.hasAttribute('hidden')))
+  t.true(await page.$eval('core-dialog + backdrop', el => el.hasAttribute('hidden')))
+})
 
-      simplePolyfillInsertAdjacentElement()
-      coreDialog(dialog, true)
-      expect(dialog.hasAttribute('open')).toBeTruthy()
+test('respects strict option', withPage, async (t, page) => {
+  await page.setContent(`
+    <button for="dialog">Open</button>
+    <core-dialog id="dialog" strict hidden>
+      <button for="close">Close</button>
+    </core-dialog>
+  `)
+  await page.click('button[for="dialog"]')
+  t.false(await page.$eval('core-dialog', el => el.hasAttribute('hidden')))
+  await page.evaluate(() => document.querySelector('core-dialog + backdrop').click())
+  t.false(await page.$eval('core-dialog', el => el.hasAttribute('hidden')))
+})
+
+test('triggers toggle event', withPage, async (t, page) => {
+  await page.setContent(`
+    <button for="dialog">Open</button>
+    <core-dialog id="dialog" hidden>
+      <button for="close">Close</button>
+    </core-dialog>
+  `)
+  await page.evaluate(() => {
+    return new Promise((resolve, reject) => {
+      window.addEventListener('dialog.toggle', resolve)
+      document.querySelector('core-dialog').hidden = false
     })
-    it('should set the open attribute when doing coreDialog(dialog, {open: true})', () => {
-      document.body.innerHTML = standardHTML
-      const dialog = document.querySelector('#dialog-0')
-
-      simplePolyfillInsertAdjacentElement()
-      coreDialog(dialog, { open: true })
-      expect(dialog.hasAttribute('open')).toBeTruthy()
-    })
   })
-  describe('closing the dialog', () => {
-    it('should remove the open attribute when doing core-dialog(dialog, false)', () => {
-      document.body.innerHTML = standardHTML
-      const dialog = document.querySelector('#dialog-0')
-
-      simplePolyfillInsertAdjacentElement()
-      coreDialog(dialog, true)
-      expect(dialog.hasAttribute('open')).toBeTruthy()
-      coreDialog(dialog, false)
-      expect(dialog.hasAttribute('open')).toBeFalsy()
-    })
-    it('should remove the open attribute when doing core-dialog(dialog, {open: false})', () => {
-      document.body.innerHTML = standardHTML
-      const dialog = document.querySelector('#dialog-0')
-
-      simplePolyfillInsertAdjacentElement()
-      coreDialog(dialog, true)
-      expect(dialog.hasAttribute('open')).toBeTruthy()
-      coreDialog(dialog, { open: false })
-      expect(dialog.hasAttribute('open')).toBeFalsy()
-    })
-  })
-
-  it('should allow nested dialogs', () => {
-    document.body.innerHTML = standardHTML
-    const dialogs = Array.from(document.querySelectorAll('dialog'))
-
-    simplePolyfillInsertAdjacentElement()
-    coreDialog(dialogs)
-
-    getButton('dialog-0').click()
-    getButton('dialog-1').click()
-    getButton('dialog-2').click()
-    getButton('dialog-0').click()
-
-    expect(dialogs[0].hasAttribute('open')).toBeTruthy()
-    expect(dialogs[1].hasAttribute('open')).toBeTruthy()
-    expect(dialogs[2].hasAttribute('open')).toBeTruthy()
-    expect(parseInt(dialogs[0].style.zIndex, 10)).toBeGreaterThan(parseInt(dialogs[2].style.zIndex, 10))
-  })
+  t.pass()
 })

@@ -1,84 +1,76 @@
-import { name, version } from './package.json'
-import { IS_ANDROID, IS_IOS, addEvent, dispatchEvent, getUUID, queryAll } from '../utils'
+import { IS_ANDROID, IS_IOS, closest, dispatchEvent, getUUID } from '../utils'
 
-const UUID = `data-${name}-${version}`.replace(/\W+/g, '-') // Strip invalid attribute characters
-const ARIA = IS_ANDROID ? 'data' : 'aria' // Andriod has a bug and reads only label instead of content
-const KEYS = { ESC: 27 }
+export default class CoreToggle extends HTMLElement {
+  static get observedAttributes () { return ['hidden'] }
 
-export default function toggle (toggles, open) {
-  const options = typeof open === 'object' ? open : { open }
-  if (IS_IOS) document.documentElement.style.cursor = 'pointer' // Fix iOS events for closing popups (https://stackoverflow.com/a/16006333/8819615)
+  connectedCallback () {
+    if (IS_IOS) document.documentElement.style.cursor = 'pointer' // Fix iOS events for closing popups (https://stackoverflow.com/a/16006333/8819615)
+    if (!IS_ANDROID) this.setAttribute('aria-labelledby', this.button.id = this.button.id || getUUID()) // Andriod reads only label instead of content
 
-  return queryAll(toggles).map((toggle) => {
-    const content = getContentElement(toggle)
-    const isOpen = toggle.getAttribute('aria-expanded') === 'true'
-    const open = typeof options.open === 'boolean' ? options.open : (options.open === 'toggle' ? !isOpen : isOpen)
-    const popup = String((options.hasOwnProperty('popup') ? options.popup : toggle.getAttribute(UUID)) || false)
-
-    if (options.value) toggle.innerHTML = options.value // Set innerHTML before updating aria-label
-    if (popup !== 'false' && popup !== 'true') toggle.setAttribute('aria-label', `${toggle.textContent}, ${popup}`) // Only update aria-label if popup-mode
-
-    toggle.setAttribute(UUID, popup) // aria-haspopup triggers forms mode in JAWS, therefore store in uuid
-    toggle.setAttribute('aria-controls', content.id = content.id || getUUID())
-    content.setAttribute(`${ARIA}-labelledby`, toggle.id = toggle.id || getUUID())
-    setOpen(toggle, open)
-    return toggle
-  })
-}
-
-function getContentElement (toggle) {
-  return document.getElementById(toggle.getAttribute('aria-controls')) || toggle.nextElementSibling
-}
-
-addEvent(UUID, 'keydown', (event) => {
-  if (event.keyCode !== KEYS.ESC) return
-  for (let el = event.target; el; el = el.parentElement) {
-    const toggle = (el.id && document.querySelector(`[aria-controls="${el.id}"]`)) || el
-
-    if (toggle.getAttribute(UUID) !== 'false' && toggle.getAttribute('aria-expanded') === 'true') {
-      event.preventDefault() // Prevent leaving maximized window in Safari
-      toggle.focus()
-      return setOpen(toggle, false)
+    this.value = this.button.textContent // Set up aria-label
+    this.setAttribute('role', 'group') // Help Edge
+    this.button.setAttribute('aria-expanded', this._open = !this.hidden)
+    this.button.setAttribute('aria-controls', this.id = this.id || getUUID())
+    document.addEventListener('keydown', this, true) // Use capture to enable checking defaultPrevented (from ESC key) in parents
+    document.addEventListener('click', this)
+  }
+  disconnectedCallback () {
+    this._button = null
+    document.removeEventListener('keydown', this, true)
+    document.removeEventListener('click', this)
+  }
+  attributeChangedCallback () {
+    if (this._open === this.hidden) { // this._open comparison ensures actual change
+      this.button.setAttribute('aria-expanded', this._open = !this.hidden)
+      try { this.querySelector('[autofocus]').focus() } catch (err) {}
+      dispatchEvent(this, 'toggle')
     }
   }
-}, true) // Use capture to enable checking defaultPrevented (from ESC key) in parents
-
-addEvent(UUID, 'click', ({ target, defaultPrevented }) => {
-  if (defaultPrevented) return false // Do not toggle if someone run event.preventDefault()
-
-  for (let el = target, item; el; el = el.parentElement) {
-    const toggle = item && el.id && document.querySelector(`[${UUID}][aria-controls="${el.id}"]`)
-    if ((el.nodeName === 'BUTTON' || el.nodeName === 'A') && !el.hasAttribute(UUID)) item = el // interactive element clicked
-    if (toggle) {
-      dispatchEvent(toggle, 'toggle.select', {
-        relatedTarget: getContentElement(toggle),
-        currentTarget: item,
-        value: item.textContent.trim()
-      })
-      break
+  handleEvent (event) {
+    if (event.defaultPrevented) return
+    if (event.type === 'keydown' && event.keyCode === 27) {
+      const isButton = event.target.getAttribute && event.target.getAttribute('aria-expanded') === 'true'
+      const isHiding = isButton ? event.target === this.button : closest(event.target, this.nodeName) === this
+      if (isHiding) {
+        this.hidden = true
+        this.button.focus() // Move focus back to button
+        return event.preventDefault() // Prevent closing maximized Safari and other coreToggles
+      }
+    }
+    if (event.type === 'click') {
+      const btn = closest(event.target, 'a,button')
+      if (btn && !btn.hasAttribute('aria-expanded') && closest(event.target, this.nodeName) === this) dispatchEvent(this, 'toggle.select', btn)
+      else if (btn && btn.getAttribute('aria-controls') === this.id) this.hidden = !this.hidden
+      else if (this.popup && !this.contains(event.target)) this.hidden = true // Click in content or outside
     }
   }
+  get button () {
+    if (this._button && this._button.getAttribute('for') === this.id) return this._button // Speed up
+    return (this._button = this.id && document.querySelector(`[for="${this.id}"]`)) || this.previousElementSibling
+  }
 
-  queryAll(`[${UUID}]`).forEach((toggle) => {
-    const open = toggle.getAttribute('aria-expanded') === 'true'
-    const popup = toggle.getAttribute(UUID) !== 'false'
-    const content = getContentElement(toggle)
+  // aria-haspopup triggers forms mode in JAWS, therefore store as custom attr
+  get popup () { return this.getAttribute('popup') === 'true' || this.getAttribute('popup') || this.hasAttribute('popup') }
+  set popup (val) { this[val === false ? 'removeAttribute' : 'setAttribute']('popup', val) }
 
-    if (toggle.contains(target)) setOpen(toggle, !open) // Click on toggle
-    else if (popup && open) setOpen(toggle, content.contains(target)) // Click in content or outside
-  })
-})
+  // Must set attribute for IE11
+  get hidden () { return this.hasAttribute('hidden') }
+  set hidden (val) { this.toggleAttribute('hidden', val) }
 
-function setOpen (toggle, open) {
-  const content = getContentElement(toggle)
-  const isOpen = toggle.getAttribute('aria-expanded') === 'true'
-  const willOpen = typeof open === 'boolean' ? open : (open === 'toggle' ? !isOpen : isOpen)
-  const isUpdate = isOpen === willOpen || dispatchEvent(toggle, 'toggle', { relatedTarget: content, isOpen, willOpen })
-  const nextOpen = isUpdate ? willOpen : toggle.getAttribute('aria-expanded') === 'true' // dispatchEvent can change attributes
-  const focus = !isOpen && nextOpen && content.querySelector('[autofocus]')
+  // Sets this.button aria-label, so visible button text can be augmentet with intension of button
+  // Example: Button text: "01.02.2019", aria-label: "01.02.2019, Choose date"
+  // Does not updates aria-label if not allready set to something else than this.popup
+  get value () { return this.button.value || this.button.textContent }
+  set value (data = false) {
+    if (!this.button || !this.popup.length) return
+    const button = this.button
+    const popup = (button.getAttribute('aria-label') || `,${this.popup}`).split(',')[1]
+    const label = data.textContent || data || '' // data can be Element, Object or String
 
-  if (focus) setTimeout(() => focus && focus.focus()) // Move focus on next render (if element stil exists)
-
-  toggle.setAttribute('aria-expanded', nextOpen)
-  content[nextOpen ? 'removeAttribute' : 'setAttribute']('hidden', '')
+    if (popup === this.popup) {
+      button.value = data.value || label
+      button[data.innerHTML ? 'innerHTML' : 'textContent'] = data.innerHTML || label
+      button.setAttribute('aria-label', `${button.textContent},${this.popup}`)
+    }
+  }
 }
