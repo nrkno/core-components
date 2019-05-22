@@ -100,7 +100,7 @@ export function elementToReact (elementClass, ...attr) {
       this.ref = (el) => (this.el = el)
       attr.forEach((k) => {
         const on = `on${k.replace(/(^|\.)./g, (m) => m.slice(-1).toUpperCase())}` // input.filter => onInputFilter
-        this[k] = (event) => this.props[on] && this.props[on](event)
+        this[k] = (event) => this.props[on] && closest(event.target, this.el.nodeName) === this.el && this.props[on](event)
       })
     }
     componentDidMount () { attr.forEach((k) => this.props[k] ? (this.el[k] = this.props[k]) : this.el.addEventListener(k, this[k])) }
