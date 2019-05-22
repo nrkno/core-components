@@ -69,7 +69,7 @@ window.customElements.define('core-toggle', CoreToggle)   // Replace 'core-toggl
 
 ---
 
-In React the new markup structure is new the same as VanillaJS, so a change is needed some places:
+In React the logical syntax is now the same as VanillaJS, so a change is needed:
 
 ### JSX old:
 ```html
