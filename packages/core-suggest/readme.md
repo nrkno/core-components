@@ -10,7 +10,10 @@
 <script src="https://unpkg.com/@webcomponents/custom-elements"></script>
 <script src="core-suggest/core-suggest.min.js"></script>
 <script src="core-suggest/core-suggest.jsx.js"></script>
-<style>li button:focus {outline: 3px solid rgb(94, 158, 215)}</style>
+<style>
+li button:focus {outline: 3px solid rgb(94, 158, 215)}
+label {display: block}
+</style>
 demo-->
 
 > `@nrk/core-suggest` enhances `<input>` fields with keyboard accessible functionality for autocomplete suggestions, search results and automatic highlighting.
@@ -20,8 +23,9 @@ demo-->
 
 ```html
 <!--demo-->
-<input type="text" list="my-list" placeholder="Type &quot;C&quot;...">
-<core-suggest hidden id="list">
+<label for="my-input">Search</label>
+<input id="my-input" type="text" placeholder="Type something...">
+<core-suggest hidden>
   <ul>
     <li><button>Chro<b>me</b></button></li>
     <li><button>Firefox</button></li>
@@ -37,7 +41,8 @@ demo-->
 <div id="jsx-input"></div>
 <script type="text/jsx">
   ReactDOM.render(<div>
-    <input type='text' placeholder='Type "C"... (JSX)' />
+    <label for="my-input-jsx">Search JSX</label>
+    <input id='my-input-jsx' type='text' placeholder='Type something...' />
     <CoreSuggest className='my-dropdown' hidden>
       <ul>
         <li><button>Chrome</button></li>
@@ -78,7 +83,8 @@ Always use `coreSuggest.escapeHTML(String)` to safely render data from API or us
 
 
 ```html
-<input type="text">                                     <!-- Must be a textual input element -->
+<input type="text"                                      <!-- Must be a textual input element -->
+       list="{String}">                                 <!-- Optional. Specify id of suggest element -->
 <core-suggest limit="{Number}"                          <!-- Optional. Limit maxium number of result items. Defaults to Infinity -->
               ajax="{String}"                           <!-- Optional. Fetches external data. See event 'suggest.ajax'. Example: 'https://search.com?q={{value}}' -->
               hidden>                                   <!-- Use hidden to toggle visibility -->
@@ -114,8 +120,10 @@ mySuggest.escapeHTML('<span>...</span>')             // Utility function for esc
 ```js
 import CoreSuggest from '@nrk/core-suggest/jsx'
 
-<input type="text" />   // First element must result in a input-tag. Accepts both elements and components
-<CoreSuggest hidden={Boolean}              // Use hidden to toggle visibility
+<input type="text"                         // First element result in an input-tag. Accepts both elements and components
+       list="{String}" />                  // Optional. Specify id of suggest element
+<CoreSuggest id={String}                   // Suggestion list
+             hidden={Boolean}              // Use hidden to toggle visibility
              limit={Number}                // Limit the maximum number of results in list.
              ajax={String|Object}          // Fetches external data. See event 'suggest.ajax'. Example: 'https://search.com?q={{value}}'
              onSuggestFilter={Function}           // See 'suggest.filter' event
@@ -128,6 +136,21 @@ import CoreSuggest from '@nrk/core-suggest/jsx'
     <li><a href="https://www.nrk.no/">NRK.no</a></li> // Actual links are recommended when applicable
   </ul>
 </CoreSuggest>
+```
+
+## Markup
+
+### With list
+
+Putting the input directly before the suggestion list is highly recommended, as this fulfills all accessibility requirements by default. There might be scenarios though, where styling makes this DOM structure impractical. In such cases, give the `<input>` a `list` attribute, and the `<core-suggest>` an `id` with corresponding value. Make sure there is no text between the input and the suggestion list, as this will break the experience for screen reader users:
+
+```html
+<label>
+  <input list="my-list" type="text" placeholder="...">
+</label>
+<core-suggest id="my-list" hidden>
+  ...
+</core-suggest>
 ```
 
 
@@ -206,7 +229,7 @@ All styling in documentation is example only. Both the `<button>` and content el
 
 ### Ajax
 
-When using `@nrk/core-suggest` with the `ajax: https://search.com?q={{value}}` functionality, make sure to implement both a `Searching...` status (while fetching data from the server), and a `No hits` status (if server responds with no results). These status indicators are highly recommended, but not provided by default as the context of use will affect the optimal textual formulation. [See example implementation →](#demo-ajax)
+When using `@nrk/core-suggest` with the `ajax: https://search.com?q={{value}}` functionality, make sure to implement both a `Searching...` status (while fetching data from the server), and a `No hits` status (if server responds with no results). These status indicators are highly recommended, but not provided by default as the context of use will affect the optimal textual formulation. [See example implementation →](#example-ajax)
 
 If you need to alter default headers, request method or post data, use the [`suggest.ajax.beforeSend` event  →](#input-ajax-beforesend)
 
