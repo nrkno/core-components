@@ -12,6 +12,11 @@ if (IS_BROWSER && !window.Element.prototype.toggleAttribute) {
   }
 }
 
+// Mock HTMLElement for Node
+if (!IS_BROWSER && !global.HTMLElement) {
+  global.HTMLElement = class {}
+}
+
 /**
 * addEvent
 * @param {String} nodeName An unique ID of the event to bind - ensurnes single instance
