@@ -6,6 +6,7 @@ export default class CoreProgress extends HTMLElement {
   connectedCallback () {
     this.setAttribute('role', 'img') // Role img makes screen readers happy
     this.setAttribute('aria-label', this.getAttribute('aria-label') || '0%') // Ensure aria-label also without attributes
+    this.type = this.type  // Set default type
     addStyle(this.nodeName, `${this.nodeName}{display:block;fill:none;stroke-width:15}`)
   }
   attributeChangedCallback (name, prev, next) {
