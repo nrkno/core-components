@@ -135,7 +135,7 @@ Putting the toggle button directly before the content is highly recommended, as 
 
 ### Autofocus
 
-If you have form elements inside a `core-toggle`, you can optionally add a `autofocus` attribute to the most prominent form element. This helps the user navigate quickly when toggle is opened.
+If you have form elements inside a `<core-toggle>`, you can optionally add a `autofocus` attribute to the most prominent form element. This helps the user navigate quickly when toggle is opened.
 
 ## Events
 
@@ -167,7 +167,7 @@ document.addEventListener('toggle.select', (event) => {
 
 ## Styling
 
-**Note:** `core-toggle` is `display: inline` by default. Change this by for instance setting `core-tabs:not([hidden]) { display: block | flex | grid }` or similar in your app. Not needed when `position` or `float` is used. All styling in documentation is example only. Both the `<button>` and `core-toggle` element receive attributes reflecting the current toggle state:
+**Note:** `<core-toggle>` is `display: inline` by default. Change this by for instance setting `core-tabs:not([hidden]) { display: block | flex | grid }` or similar in your app. Not needed when `position` or `float` is used. All styling in documentation is example only. Both the `<button>` and `<core-toggle>` element receive attributes reflecting the current toggle state:
 
 ```css
 .my-button {}                         /* Target button in any state */
@@ -265,7 +265,7 @@ Despite having a native [`<details>`](https://developer.mozilla.org/en-US/docs/W
 The [menu role](https://www.w3.org/TR/wai-aria-practices-1.1/examples/menubar/menubar-1/menubar-1.html) is mainly inteded for context menues and toolbars in [application interfaces](https://www.w3.org/TR/wai-aria-1.1/#application), and has quite complex [keyboard navigation](https://www.w3.org/TR/wai-aria-practices-1.1/examples/menubar/menubar-1/menubar-1.html#kbd_label) requirements. As most end users will not expect application behavior in websites and internal web based systems, (implemented) attributes like `aria-controls` and `aria-labelledby` is sufficient for a good user experience.
 
 ### Why does dropdowns not open on hover?
-Both touch devices and screen readers will have trouble properly interacting with hoverable interfaces (unless more complex fallback logic is implemented). To achieve a consistent and accessible interface, `core-toggle` is designed around click interactions.
+Both touch devices and screen readers will have trouble properly interacting with hoverable interfaces (unless more complex fallback logic is implemented). To achieve a consistent and accessible interface, `<core-toggle>` is designed around click interactions.
 
 ### Why is there no group-option to achieve a single open toggle?
 Some expand/collapse interfaces like [accordions](https://www.nngroup.com/articles/accordions-complex-content/) behaves like a group - allowing only one expanded area at the time. This pattern however requires more logic and carefully designed animations to avoid confusion over expected scroll position.
