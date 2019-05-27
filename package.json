@@ -20,7 +20,7 @@
     "test:watch": "ava -w"
   },
   "devDependencies": {
-    "@babel/preset-env": "7.4.4",
+    "@babel/preset-env": "7.4.5",
     "@babel/preset-react": "7.0.0",
     "ava": "1.4.1",
     "esm": "3.2.25",
