@@ -11,16 +11,18 @@ export default class CoreDialog extends HTMLElement {
     this.setAttribute('role', 'dialog')
     this.setAttribute('aria-modal', this.modal)
     this.addEventListener('transitionend', this)
+    this.attributeChangedCallback()
     document.addEventListener('keydown', this)
     document.addEventListener('click', this)
+    if (this._open) this.attributeChangedCallback(true) // Ensure correct setup backdrop
   }
   disconnectedCallback () {
     this.removeEventListener('transitionend', this)
     document.removeEventListener('keydown', this)
     document.removeEventListener('click', this)
   }
-  attributeChangedCallback (name) {
-    if (this._open === this.hidden) { // this._open comparison ensures actual change
+  attributeChangedCallback (force) {
+    if (this._open === this.hidden || force === true) { // this._open comparison ensures actual change
       const opener = document.querySelector(`[${this._opener}]`)
       const active = opener || document.activeElement || document.body
       const zIndex = Math.min(Math.max(...queryAll('body *').map(getZIndex)), 2000000000) // Avoid overflowing z-index. See techjunkie.com/maximum-z-index-value
@@ -28,7 +30,6 @@ export default class CoreDialog extends HTMLElement {
       // Trigger repaint to fix IE11 from not closing dialog
       this.className = this.className // eslint-disable-line
       this.backdrop.hidden = !this.modal || this.hidden
-      this._open = !this.hidden
 
       if (!this.hidden) {
         this.style.zIndex = zIndex + 2
@@ -41,7 +42,7 @@ export default class CoreDialog extends HTMLElement {
         setTimeout(() => opener.focus()) // Move focus after paint (helps iOS)
       }
 
-      dispatchEvent(this, 'dialog.toggle')
+      if (!force) dispatchEvent(this, 'dialog.toggle')
     }
   }
   handleEvent (event) {
