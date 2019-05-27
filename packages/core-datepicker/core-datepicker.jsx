@@ -1,4 +1,7 @@
 import CoreDatepicker from './core-datepicker.js'
-import { elementToReact } from '../utils.js'
+import customElementToReact from '@nrk/custom-element-to-react'
 
-export default elementToReact(CoreDatepicker, 'datepicker.change', 'datepicker.click.day', 'disabled', 'months', 'days')
+export default customElementToReact(CoreDatepicker, {
+  props: ['disabled', 'months', 'days'],
+  customEvents: ['datepicker.change', 'datepicker.click.day']
+})

@@ -1,5 +1,3 @@
-import React from 'react'
-
 export const IS_BROWSER = typeof window !== 'undefined'
 export const IS_ANDROID = IS_BROWSER && /(android)/i.test(navigator.userAgent) // Bad, but needed
 export const IS_IOS = IS_BROWSER && /iPad|iPhone|iPod/.test(String(navigator.platform))
@@ -92,35 +90,6 @@ export function dispatchEvent (element, name, detail = {}) {
   element[ignore] = null // Remove name from dispatching ignore
 
   return result // Follow W3C standard for return value
-}
-
-export function elementToReact (elementClass, ...attr) {
-  const name = elementClass.name || String(elementClass).match(/function ([^(]+)/)[1] // String match for IE11
-  const tag = `${name.replace(/\W+/, '-')}-${getUUID()}`.toLowerCase()
-  if (IS_BROWSER && !window.customElements.get(tag)) window.customElements.define(tag, elementClass)
-
-  return class extends React.Component {
-    constructor (props) {
-      super(props)
-      this.ref = (el) => (this.el = el)
-      attr.forEach((k) => {
-        const on = `on${k.replace(/(^|\.)./g, (m) => m.slice(-1).toUpperCase())}` // input.filter => onInputFilter
-        this[k] = (event) => this.props[on] && closest(event.target, this.el.nodeName) === this.el && this.props[on](event)
-      })
-    }
-    componentDidMount () { attr.forEach((k) => this.props[k] ? (this.el[k] = this.props[k]) : this.el.addEventListener(k, this[k])) }
-    componentDidUpdate (prev) { attr.forEach((k) => prev[k] !== this.props[k] && (this.el[k] = this.props[k])) }
-    componentWillUnmount () { attr.forEach((k) => this.el.removeEventListener(k, this[k])) }
-    render () {
-      // Convert React props to CustomElement props https://github.com/facebook/react/issues/12810
-      return React.createElement(tag, Object.keys(this.props).reduce((props, k) => {
-        if (k === 'className') props.class = this.props[k] // Fixes className for custom elements
-        else if (this.props[k] === true) props[k] = '' // Fixes boolean attributes
-        else if (this.props[k] !== false) props[k] = this.props[k]
-        return props
-      }, { ref: this.ref }))
-    }
-  }
 }
 
 /**

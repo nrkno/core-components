@@ -1,4 +1,6 @@
 import CoreDialog from './core-dialog.js'
-import { elementToReact } from '../utils.js'
+import customElementToReact from '@nrk/custom-element-to-react'
 
-export default elementToReact(CoreDialog, 'dialog.toggle')
+export default customElementToReact(CoreDialog, {
+  customEvents: ['dialog.toggle']
+})
