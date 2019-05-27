@@ -11,7 +11,6 @@ export default class CoreDialog extends HTMLElement {
     this.setAttribute('role', 'dialog')
     this.setAttribute('aria-modal', this.modal)
     this.addEventListener('transitionend', this)
-    this.attributeChangedCallback()
     document.addEventListener('keydown', this)
     document.addEventListener('click', this)
     if (this._open) this.attributeChangedCallback(true) // Ensure correct setup backdrop
