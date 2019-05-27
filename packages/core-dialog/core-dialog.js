@@ -42,7 +42,7 @@ export default class CoreDialog extends HTMLElement {
         setTimeout(() => opener.focus()) // Move focus after paint (helps iOS)
       }
 
-      if (!force) dispatchEvent(this, 'dialog.toggle')
+      if (force !== true) dispatchEvent(this, 'dialog.toggle')
     }
   }
   handleEvent (event) {
