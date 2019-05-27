@@ -29,6 +29,7 @@ export default class CoreDialog extends HTMLElement {
       // Trigger repaint to fix IE11 from not closing dialog
       this.className = this.className // eslint-disable-line
       this.backdrop.hidden = !this.modal || this.hidden
+      this._open = !this.hidden
 
       if (!this.hidden) {
         this.style.zIndex = zIndex + 2
