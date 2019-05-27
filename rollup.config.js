@@ -74,17 +74,4 @@ export default utils.pkgs.reduce((all, path) => {
     external,
     plugins
   })
-}, [
-  {
-    input: 'packages/utils.js', // JS UMD for tests
-    output: {
-      format: 'umd',
-      file: 'packages/utils.min.js',
-      sourcemap: false,
-      name: 'utils',
-      globals
-    },
-    plugins,
-    external
-  }
-])
+}, [])

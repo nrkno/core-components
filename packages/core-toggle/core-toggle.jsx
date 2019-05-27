@@ -1,4 +1,6 @@
 import CoreToggle from './core-toggle.js'
-import { elementToReact } from '../utils.js'
+import customElementToReact from '@nrk/custom-element-to-react'
 
-export default elementToReact(CoreToggle, 'toggle', 'toggle.select')
+export default customElementToReact(CoreToggle, {
+  customEvents: ['toggle', 'toggle.select']
+})

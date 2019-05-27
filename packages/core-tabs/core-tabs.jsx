@@ -1,4 +1,7 @@
 import CoreTabs from './core-tabs.js'
-import { elementToReact } from '../utils.js'
+import customElementToReact from '@nrk/custom-element-to-react'
 
-export default elementToReact(CoreTabs, 'tab', 'tabs.toggle')
+export default customElementToReact(CoreTabs, {
+  props: ['tab'],
+  customEvents: ['tabs.toggle']
+})

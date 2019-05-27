@@ -1,4 +1,6 @@
 import CoreScroll from './core-scroll.js'
-import { elementToReact } from '../utils.js'
+import customElementToReact from '@nrk/custom-element-to-react'
 
-export default elementToReact(CoreScroll, 'scroll.change')
+export default customElementToReact(CoreScroll, {
+  customEvents: ['scroll.change']
+})
