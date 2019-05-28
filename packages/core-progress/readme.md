@@ -139,13 +139,13 @@ import CoreProgress from '@nrk/core-progress/jsx'
 
 ## Events
 
-### progress.change
+### change
 
 Fired when the progress value changes:
 
 
 ```js
-document.addEventListener('progress.change', (event) => {
+document.addEventListener('change', (event) => {
   event.target    // The progress element
 })
 ```

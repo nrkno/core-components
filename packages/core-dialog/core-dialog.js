@@ -13,14 +13,15 @@ export default class CoreDialog extends HTMLElement {
     this.addEventListener('transitionend', this)
     document.addEventListener('keydown', this)
     document.addEventListener('click', this)
+    if (this._open) this.attributeChangedCallback(true) // Ensure correct setup backdrop
   }
   disconnectedCallback () {
     this.removeEventListener('transitionend', this)
     document.removeEventListener('keydown', this)
     document.removeEventListener('click', this)
   }
-  attributeChangedCallback (name) {
-    if (this._open === this.hidden) { // this._open comparison ensures actual change
+  attributeChangedCallback (force) {
+    if (this._open === this.hidden || force === true) { // this._open comparison ensures actual change
       const opener = document.querySelector(`[${this._opener}]`)
       const active = opener || document.activeElement || document.body
       const zIndex = Math.min(Math.max(...queryAll('body *').map(getZIndex)), 2000000000) // Avoid overflowing z-index. See techjunkie.com/maximum-z-index-value
@@ -41,7 +42,7 @@ export default class CoreDialog extends HTMLElement {
         setTimeout(() => opener.focus()) // Move focus after paint (helps iOS)
       }
 
-      dispatchEvent(this, 'dialog.toggle')
+      if (force !== true) dispatchEvent(this, 'dialog.toggle')
     }
   }
   handleEvent (event) {
