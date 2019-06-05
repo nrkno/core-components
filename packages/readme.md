@@ -56,7 +56,7 @@ class MyToggle extends CoreToggle {
     return super.observedAttributes.concat(['foo'])
   }
 
-  connectedCallback() {
+  connectedCallback () {
     super.connectedCallback()
     // Your connect code here...
   }
@@ -71,7 +71,7 @@ class MyToggle extends CoreToggle {
     // Your attribute change code here...
   }
 
-  handleEvent(event) {
+  handleEvent (event) {
     super.handleEvent(event)
     // Your event handler here...
   }

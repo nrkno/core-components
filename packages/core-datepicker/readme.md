@@ -103,14 +103,9 @@ demo-->
   // Update GUI
   document.getElementById('my-datepicker').disabled = (date) => date > Date.now()
 
-  document.addEventListener('datepicker.click.day', function (event) {
-    console.log(event)
-  })
-
   // Update output
   document.addEventListener('datepicker.change', function (event) {
     if (event.target.id !== 'my-datepicker') return
-    console.log(event)
     document.getElementById('my-datepicker-output').value = event.target.date.toLocaleString()
   })
 </script>
@@ -246,7 +241,6 @@ myDatepicker.days = ['Man', 'Tir', ...]      // Set list of custom weekday names
 myDatepicker.disabled = Function|Boolean     // Disable dates. If true disable all dates. Function receives each date, returns a boolean.
 // Methods
 myDatepicker.parse('fri')                    // Utility function for parsing time and dates. Really just @nrk/simple-date-parse
-
 ```
 
 ### React / Preact
@@ -256,8 +250,8 @@ import CoreDatepicker from '@nrk/core-datepicker/jsx'
 
 <CoreDatepicker timestamp={String}                // Optional. Sets date from timestamp
                 months={String}                   // Optional. Comma separated list of custom month names to be used ("Jan,Feb,...")
-                days={String}>                    // Optional. Comma separated list of custom weekday names to be used ("Man,Tir,Ons,...")
-                onDatepickerChange={Function}>    // Optional. See 'datepicker.change'
+                days={String}                     // Optional. Comma separated list of custom weekday names to be used ("Man,Tir,Ons,...")
+                onDatepickerChange={Function}     // Optional. See 'datepicker.change'
                 onDatepickerClickDay={Function}>  // Optional. See 'datepicker.click.day'
   <input type="radio|checkbox|year|month|day|hour|minute|second|timestamp"/> // Same as with vanilla js
   <select></select>                    // Same as with vanilla js
