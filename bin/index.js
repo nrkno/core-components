@@ -1,12 +1,13 @@
-const { execSync } = require('child_process')
-const path = require('path')
-const glob = require('fast-glob')
-const pkg = require('../package.json')
-const fs = require('fs')
+import { execSync } from 'child_process'
+import path from 'path'
+import glob from 'fast-glob'
+import pkg from '../package.json'
+import fs from 'fs'
+
 const args = getProcessArgs()
 const pkgs = getPackagePaths()
 
-module.exports = { args, pkgs, getProcessArgs, getPackageName, getPackagePaths, buildDocs }
+export default { args, pkgs, getProcessArgs, getPackageName, getPackagePaths, buildDocs }
 
 function buildDocs () {
   const readmes = glob.sync(['**/*.md', '!**/node_modules/**'])

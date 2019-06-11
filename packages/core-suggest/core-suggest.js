@@ -1,4 +1,3 @@
-/* globals HTMLElement */
 import { IS_IOS, closest, escapeHTML, dispatchEvent, queryAll } from '../utils'
 
 const KEYS = { ENTER: 13, ESC: 27, PAGEUP: 33, PAGEDOWN: 34, END: 35, HOME: 36, UP: 38, DOWN: 40 }

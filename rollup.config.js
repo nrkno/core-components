@@ -1,11 +1,10 @@
-// using require instead of import to play nicely with travis ci
-const babel = require('rollup-plugin-babel')
-const commonjs = require('rollup-plugin-commonjs')
-const resolve = require('rollup-plugin-node-resolve')
-const serve = require('rollup-plugin-serve')
-const json = require('rollup-plugin-json')
-const { uglify } = require('rollup-plugin-uglify')
-const utils = require('./bin/index.js')
+import babel from 'rollup-plugin-babel'
+import commonjs from 'rollup-plugin-commonjs'
+import resolve from 'rollup-plugin-node-resolve'
+import serve from 'rollup-plugin-serve'
+import json from 'rollup-plugin-json'
+import { uglify } from 'rollup-plugin-uglify'
+import utils from './bin/index.js'
 
 const minify = uglify({ output: { comments: /^!/ } })
 const globals = { 'react-dom': 'ReactDOM', react: 'React' } // Exclude from output
