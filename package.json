@@ -24,7 +24,7 @@
     "@nrk/custom-element-to-react": "1.0.8",
     "ava": "2.0.0",
     "esm": "3.2.25",
-    "fast-glob": "2.2.7",
+    "fast-glob": "3.0.0",
     "puppeteer": "1.17.0",
     "rollup": "1.15.6",
     "rollup-plugin-babel": "4.3.2",
