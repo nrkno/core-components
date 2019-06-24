@@ -15,7 +15,7 @@ const plugins = [
   resolve({ dedupe: external }),
   commonjs(),
   babel({ presets: [['@babel/preset-env', { modules: false }]] }),
-  !process.env.ROLLUP_WATCH || serve('packages')
+  Boolean(process.env.ROLLUP_WATCH) && serve('packages')
 ]
 
 utils.buildDocs()
