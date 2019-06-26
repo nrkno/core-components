@@ -100,6 +100,8 @@ function onMousedown (event) {
 
   DRAG.pageX = event.pageX
   DRAG.pageY = event.pageY
+  DRAG.diffSumX = 0
+  DRAG.diffSumY = 0
   DRAG.animate = DRAG.diffX = DRAG.diffY = 0 // Reset
   DRAG.scrollX = this.scrollLeft
   DRAG.scrollY = this.scrollTop
@@ -114,6 +116,8 @@ function onMousedown (event) {
 function onMousemove (event) {
   DRAG.diffX = DRAG.pageX - (DRAG.pageX = event.pageX)
   DRAG.diffY = DRAG.pageY - (DRAG.pageY = event.pageY)
+  DRAG.diffSumX += DRAG.diffX
+  DRAG.diffSumY += DRAG.diffY
   DRAG.target.scrollLeft = DRAG.scrollX += DRAG.diffX
   DRAG.target.scrollTop = DRAG.scrollY += DRAG.diffY
 
