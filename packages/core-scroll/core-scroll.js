@@ -122,7 +122,7 @@ function onMousemove (event) {
   DRAG.target.scrollTop = DRAG.scrollY += DRAG.diffY
 
   // Prevent links when we know there has been significant movement
-  if (Math.abs(DRAG.scrollX) > 10 || Math.abs(DRAG.scrollY) > 10) {
+  if (Math.abs(DRAG.diffSumX) > 10 || Math.abs(DRAG.diffSumY) > 10) {
     DRAG.target.style.pointerEvents = 'none'
   }
 }
