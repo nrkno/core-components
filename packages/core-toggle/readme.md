@@ -99,6 +99,7 @@ myToggle.button         // Get toggle button element
 myToggle.popup          // Get popup value
 myToggle.hidden         // Get hidden value
 myToggle.value          // Get toggle button text
+
 // Setters
 myToggle.popup = true   // Enable or disable if clicking outside toggle should close it. Provide a string to control the aria-label text on the toggle
 myToggle.hidden = true  // Set hidden attribute

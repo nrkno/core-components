@@ -2,6 +2,7 @@ import { IS_BROWSER, addStyle, closest, dispatchEvent, throttle, getUUID, queryA
 
 const DRAG = {}
 const MOVE = { up: { y: -1, prop: 'top' }, down: { y: 1, prop: 'bottom' }, left: { x: -1 }, right: { x: 1 } }
+const MOVE_SIGNIFICANT = 10
 const NEEDS_MOUSEDOWN = '[contenteditable="true"],input,select,textarea'
 const EVENT_PASSIVE = ((has = false) => {
   try { window.addEventListener('test', null, { get passive () { has = { passive: true } } }) } catch (e) {}
@@ -88,6 +89,8 @@ export default class CoreScoll extends HTMLElement {
     move()
   }
 
+  get items () { return queryAll(this.getAttribute('items') || this.children, this) }
+  set items (val) { this.setAttribute(items, val || '')} // Ensure falsy values becomes ''
   get scrollRight () { return this.scrollWidth - this.clientWidth - this.scrollLeft }
   get scrollBottom () { return this.scrollHeight - this.clientHeight - this.scrollTop }
   get friction () { return Math.min(0.99, this.getAttribute('friction')) || 0.8 } // Avoid friction 1 (infinite)
@@ -100,6 +103,8 @@ function onMousedown (event) {
 
   DRAG.pageX = event.pageX
   DRAG.pageY = event.pageY
+  DRAG.diffSumX = 0
+  DRAG.diffSumY = 0
   DRAG.animate = DRAG.diffX = DRAG.diffY = 0 // Reset
   DRAG.scrollX = this.scrollLeft
   DRAG.scrollY = this.scrollTop
@@ -114,17 +119,19 @@ function onMousedown (event) {
 function onMousemove (event) {
   DRAG.diffX = DRAG.pageX - (DRAG.pageX = event.pageX)
   DRAG.diffY = DRAG.pageY - (DRAG.pageY = event.pageY)
+  DRAG.diffSumX += DRAG.diffX
+  DRAG.diffSumY += DRAG.diffY
   DRAG.target.scrollLeft = DRAG.scrollX += DRAG.diffX
   DRAG.target.scrollTop = DRAG.scrollY += DRAG.diffY
 
   // Prevent links when we know there has been significant movement
-  if (Math.abs(DRAG.scrollX) > 10 || Math.abs(DRAG.scrollY) > 10) {
+  if (Math.max(Math.abs(DRAG.diffSumX), Math.abs(DRAG.diffSumY)) > MOVE_SIGNIFICANT) {
     DRAG.target.style.pointerEvents = 'none'
   }
 }
 
 function onMouseup (event) {
-  const momentum = (DRAG.diffX || DRAG.diffY) ? 20 : 0 // Click-drag-scrollbar will not create momentum
+  const momentum = Math.abs(DRAG.diffX || DRAG.diffY) > MOVE_SIGNIFICANT ? 20 : 0
   document.removeEventListener('mousemove', onMousemove)
   document.removeEventListener('mouseup', onMouseup)
   document.body.style.cursor = ''
@@ -141,18 +148,18 @@ function onMouseup (event) {
   DRAG.target = null // Prevent memory leak
 }
 
-function parsePoint (el, move) {
+function parsePoint (self, move) {
   const point = typeof move === 'object' ? move : { move }
-  if (typeof point.x !== 'number') point.x = el.scrollLeft
-  if (typeof point.y !== 'number') point.y = el.scrollTop
+  if (typeof point.x !== 'number') point.x = self.scrollLeft
+  if (typeof point.y !== 'number') point.y = self.scrollTop
   if ((point.move = MOVE[point.move])) {
     const axis = point.move.x ? 'x' : 'y'
     const start = point.move.x ? 'left' : 'top'
-    const bounds = el.getBoundingClientRect()
-    const scroll = bounds[start] - el[point.move.x ? 'scrollLeft' : 'scrollTop']
+    const bounds = self.getBoundingClientRect()
+    const scroll = bounds[start] - self[point.move.x ? 'scrollLeft' : 'scrollTop']
     const edge = bounds[start] + bounds[point.move.x ? 'width' : 'height'] * point.move[axis]
 
-    queryAll(el.children).every((el) => { // Use .every as this loop stops on return false
+    self.items.every((el) => { // Use .every as this loop stops on return false
       const rect = el.getBoundingClientRect()
       const marg = el.ownerDocument.defaultView.getComputedStyle(el)[`margin-${start}`]
 
@@ -161,7 +168,7 @@ function parsePoint (el, move) {
     })
   }
   return {
-    x: Math.max(0, Math.min(point.x, el.scrollWidth - el.clientWidth)),
-    y: Math.max(0, Math.min(point.y, el.scrollHeight - el.clientHeight))
+    x: Math.max(0, Math.min(point.x, self.scrollWidth - self.clientWidth)),
+    y: Math.max(0, Math.min(point.y, self.scrollHeight - self.clientHeight))
   }
 }

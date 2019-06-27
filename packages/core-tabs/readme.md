@@ -109,6 +109,7 @@ myTabs.tab        // Get active tab
 myTabs.tabs       // Get all tabs
 myTabs.panel      // Get active tabpanel
 myTabs.panels     // Get all tabpanels
+
 // Setters
 myTabs.tab = 0        // Set active tab from index
 myTabs.tab = 'my-tab' // Set active tab from id

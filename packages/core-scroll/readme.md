@@ -17,7 +17,10 @@
 <style>
   .my-wrap { overflow: hidden; white-space: nowrap; height: 100%; border: 1px solid }
   .my-wrap-js { height: 200px }
-  .my-scroll > * { box-sizing: border-box; display: inline-block; vertical-align: top; width: 30%; height: 90px; padding: 10px; border: 1px solid; margin: 10px; transition: 1s }
+  .my-scroll ul { list-style: none; margin: 0; padding: 0 }
+  .my-scroll li,
+  .my-scroll > a,
+  .my-scroll > div { box-sizing: border-box; display: inline-block; vertical-align: top; width: 30%; height: 90px; padding: 10px; border: 1px solid; margin: 10px; transition: 1s }
 </style>
 demo-->
 
@@ -65,6 +68,10 @@ demo-->
 </div>
 ```
 
+<br>
+
+### Example: React
+
 ```html
 <!--demo-->
 <div id="jsx-scroll"></div>
@@ -97,6 +104,37 @@ demo-->
   }
   ReactDOM.render(<MyScroll />, document.getElementById('jsx-scroll'))
 </script>
+```
+
+<br>
+
+### Example: custom child items
+
+`core-scroll` calculates scroll distance based on currently visible direct children. When using substructures like `<ul><li>...` you, must tell `core-scroll` what elements are considered items, by using the `items` attribute/property:
+
+```
+<core-scroll items="li">
+  <ul>
+    <li>List-item 1</li>
+    <li>List-item 2</li>
+    ...
+  </ul>
+</core-scroll>
+```
+
+```html
+<!--demo-->
+<button for="my-scroll-child" value="left" aria-label="Rull til venstre">&larr;</button>
+<button for="my-scroll-child" value="right" aria-label="Rull til høyre">&rarr;</button>
+<div class="my-wrap">
+  <core-scroll id="my-scroll-child" class="my-scroll" items="li">
+    <ul>
+      <li>List-item 1</li><li>List-item 2</li><li>List-item 3</li><li>List-item 4</li>
+      <li>List-item 5</li><li>List-item 6</li><li>List-item 7</li><li>List-item 8</li>
+      <li>List-item 9</li><li>List-item 10</li><li>List-item 11</li><li>List-item 12</li>
+    </ul>
+  </core-scroll>
+</div>
 ```
 
 ## Installation
@@ -145,6 +183,11 @@ myScroll.scrollLeft                   // Amount of pixels remaining in scroll di
 myScroll.scrollRight                  // Amount of pixels remaining in scroll direction right
 myScroll.scrollTop                    // Amount of pixels remaining in scroll direction up
 myScroll.scrollBottom                 // Amount of pixels remaining in scroll direction down
+myScroll.items                        // Get all items
+
+// Setters
+myScroll.items                        // Set to String to specify scroll children (see example above)
+
 // Methods
 myScroll.scroll('left')               // Scroll in specified direction
 myScroll.scroll({x: 0, y: 10})        // Scroll to exact position
@@ -164,6 +207,8 @@ import CoreScroll from '@nrk/core-scroll/jsx'
 ```
 
 ## Events
+
+*Note: Starting a `core-scroll` mousemove inside a iframe, and releasing the mouse outside, will fail to end movement. This is due to `mouseup` not bubbling though iframes. Please avoid iframes.*
 
 ### scroll.change
 
