@@ -113,8 +113,8 @@ function onMousedown (event) {
   document.addEventListener('mouseup', onMouseup)
 }
 
-function isSignificantDrag() {
-  return Math.abs(DRAG.diffSumX) > 10 || Math.abs(DRAG.diffSumY) > 10;
+function isSignificantDrag () {
+  return Math.abs(DRAG.diffSumX) > 10 || Math.abs(DRAG.diffSumY) > 10
 }
 
 function onMousemove (event) {
