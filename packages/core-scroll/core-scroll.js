@@ -113,6 +113,10 @@ function onMousedown (event) {
   document.addEventListener('mouseup', onMouseup)
 }
 
+function isSignificantDrag() {
+  return Math.abs(DRAG.diffSumX) > 10 || Math.abs(DRAG.diffSumY) > 10;
+}
+
 function onMousemove (event) {
   DRAG.diffX = DRAG.pageX - (DRAG.pageX = event.pageX)
   DRAG.diffY = DRAG.pageY - (DRAG.pageY = event.pageY)
@@ -122,7 +126,7 @@ function onMousemove (event) {
   DRAG.target.scrollTop = DRAG.scrollY += DRAG.diffY
 
   // Prevent links when we know there has been significant movement
-  if (Math.abs(DRAG.diffSumX) > 10 || Math.abs(DRAG.diffSumY) > 10) {
+  if (isSignificantDrag()) {
     DRAG.target.style.pointerEvents = 'none'
   }
 }
