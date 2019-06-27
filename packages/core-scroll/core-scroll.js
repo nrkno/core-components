@@ -89,8 +89,8 @@ export default class CoreScoll extends HTMLElement {
     move()
   }
 
-  get items () { return queryAll(this.getAttribute('items') || this.children, this) }
-  set items (val) { this.setAttribute(items, val || '')} // Ensure falsy values becomes ''
+  get items () { return queryAll(this.getAttribute('items') || this.children, this) }
+  set items (val) { this.setAttribute('items', val || '') } // Ensure falsy values becomes ''
   get scrollRight () { return this.scrollWidth - this.clientWidth - this.scrollLeft }
   get scrollBottom () { return this.scrollHeight - this.clientHeight - this.scrollTop }
   get friction () { return Math.min(0.99, this.getAttribute('friction')) || 0.8 } // Avoid friction 1 (infinite)
