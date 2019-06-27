@@ -279,5 +279,8 @@ The `<button>` elements receive `disabled` attributes reflecting the current scr
 .my-scroll-button:not(:disabled) {}   /* Target button in enabled state */
 ```
 
-### NB: Safari bug
+### NB: Safari scrollbar bug
 If you are creating a horizontal layout, you might experience unwanted vertical scrolling in Safari. This happens when children of <code>@nrk/core-scroll</code> have half-pixel height values (due to images/videos/elements with aspect-ratio sizing). Avoid the vertical scrolling by setting  <code>padding-bottom: 1px</code> on the <code>@nrk/core-scroll</code> element.
+
+### NB: iOS 12.2+ bug
+`core-scroll` automatically adds `-webkit-overflow-scrolling: touch` as this is required by iOS to enable momentum scrolling. An unfortunate side effect (introduced in iOS 12.2) is that the scrollable area is rendered on the GPU, which breaks `position: fixed` on child elements. Please place elements with `position: fixed` (i.e. a `<core-dialog>`) outside the markup of `<core-scroll>`.
