@@ -170,8 +170,9 @@ Fired when an item is clicked/selected:
 
 ```js
 document.addEventListener('suggest.select', (event) => {
-  event.target      // The core-suggest element
-  event.detail      // The item clicked/selected
+  event.target        // The core-suggest element
+  event.target.value  // The selected data
+  event.detail        // The selected element
 })
 ```
 
