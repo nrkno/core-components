@@ -67,7 +67,7 @@ demo-->
 ```html
 <!--demo-->
 <label>Radial progress:
-  <span style="width:40px">
+  <span style="display:block;width:40px">
     <core-progress type="radial" class="my-radial" value=".75"></core-progress>
   </span>
 </label>
