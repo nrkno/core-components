@@ -10,15 +10,15 @@ export default class CoreProgress extends HTMLElement {
     addStyle(this.nodeName, `${this.nodeName}{display:block;fill:none;stroke-width:15}`)
   }
   attributeChangedCallback (name, prev, next) {
-    const changeType = this.parentElement && name === 'type' && prev !== next
+    const changeType = this.parentElement && name === 'type' && (next === 'radial') === !this.querySelector('svg')
     const percentage = this.indeterminate ? 100 : this.percentage
 
-    this.setAttribute('aria-label', this.indeterminate || `${this.percentage}%`)
+    this.setAttribute('aria-label', this.indeterminate || `${percentage}%`)
     this.toggleAttribute('indeterminate', this.indeterminate)
 
     if (this.type === 'linear') this.style.width = `${percentage}%`
     if (this.type === 'radial') this.style.strokeDashoffset = Math.round((100 - percentage) * Math.PI)
-    if (changeType) this.innerHTML = next !== 'radial' ? '' : '<svg style="display:block;overflow:hidden;border-radius:100%" width="100%" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" stroke-dashoffset="0"/><circle cx="50" cy="50" r="50" stroke="currentColor" stroke-dasharray="314.159" transform="rotate(-90 50 50)"/></svg>'
+    if (changeType) this.innerHTML = next === 'radial' ? '<svg style="display:block;overflow:hidden;border-radius:100%" width="100%" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" stroke-dashoffset="0"/><circle cx="50" cy="50" r="50" stroke="currentColor" stroke-dasharray="314.159" transform="rotate(-90 50 50)"/></svg>' : ''
     if (name === 'value' && Number(next) !== Number(prev)) dispatchEvent(this, 'change') // Only trigger event on actual change
   }
   get indeterminate () { return isNaN(parseFloat(this.getAttribute('value'))) && this.getAttribute('value') }

@@ -12,7 +12,7 @@
 <script src="core-progress/core-progress.min.js"></script>
 <script src="core-progress/core-progress.jsx.js"></script>
 <style>
-.my-track { background: #ccc; border-radius: 3px; overflow: hidden; font: 700 12px/1 sans-serif }
+.my-track { display: block; background: #ccc; border-radius: 3px; overflow: hidden; font: 700 12px/1 sans-serif }
 .my-track [value] { background: #16f; color: #fff; padding: 3px 6px; transition: 1s }
 .my-track [indeterminate] { animation: indeterminate 2s linear infinite; background: linear-gradient(90deg,#16f 25%, #8bf 50%, #16f 75%) 0/400% }
 .my-radial { color: #16f; stroke: #ccc; transition:stroke-dashoffset 1s }
@@ -27,9 +27,9 @@ demo-->
 <!--demo-->
 <label>
   Progress:
-  <div class="my-track">
+  <span class="my-track">
     <core-progress value=".5"></core-progress>
-  </div>
+  </span>
 </label>
 ```
 
@@ -45,9 +45,9 @@ demo-->
     }
     render () {
       return <label>Progress JSX:
-        <div className="my-track">
+        <span className="my-track">
           <CoreProgress value={this.state.value} max={this.state.max} onProgressChange={(state) => this.setState(state)} />
-        </div>
+        </span>
       </label>
     }
   }
@@ -58,18 +58,18 @@ demo-->
 ```html
 <!--demo-->
 <label>Indeterminate progress:
-  <div class="my-track">
+  <span class="my-track">
     <core-progress value="Loading..." max="100"></core-progress>
-  </div>
+  </span>
 </label>
 ```
 
 ```html
 <!--demo-->
 <label>Radial progress:
-  <div style="width:40px">
+  <span style="width:40px">
     <core-progress type="radial" class="my-radial" value=".75"></core-progress>
-  </div>
+  </span>
 </label>
 ```
 
