@@ -36,10 +36,11 @@ export default class CoreDialog extends HTMLElement {
         this.backdrop.style.zIndex = zIndex + 1
         active.setAttribute(this._opener, '') // Remember opener element
         setFocus(this)
+        setTimeout(() => setFocus(this)) // Move focus after paint (helps iOS and react portals)
       } else if (opener) {
         opener.focus()
         opener.removeAttribute(this._opener)
-        setTimeout(() => opener.focus()) // Move focus after paint (helps iOS)
+        setTimeout(() => opener.focus()) // Move focus after paint (helps iOS and react portals)
       }
 
       if (force !== true) dispatchEvent(this, 'dialog.toggle')
