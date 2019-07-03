@@ -78,6 +78,7 @@ const forEach = (css, self, fn) => [].forEach.call(document.getElementsByTagName
 })
 
 function button (self, el) {
+  el.type = 'button' // Ensure forms are not submitted by datepicker-buttons
   el.disabled = self.disabled(el.value)
 }
 
