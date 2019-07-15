@@ -22,7 +22,7 @@
   "devDependencies": {
     "@babel/preset-env": "7.4.5",
     "@nrk/custom-element-to-react": "1.0.8",
-    "ava": "2.1.0",
+    "ava": "2.2.0",
     "esm": "3.2.25",
     "fast-glob": "3.0.3",
     "puppeteer": "1.18.1",
