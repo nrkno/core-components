@@ -12,11 +12,13 @@ export default class CoreDialog extends HTMLElement {
     document.addEventListener('keydown', this)
     document.addEventListener('click', this)
   }
+
   disconnectedCallback () {
     this.removeEventListener('transitionend', this)
     document.removeEventListener('keydown', this)
     document.removeEventListener('click', this)
   }
+
   attributeChangedCallback (attr, prev, next) {
     if (this._from) { // Only trigger after connectedCallback
       const from = document.querySelector(`[${this._from}]`) || document.activeElement || document.body
@@ -45,6 +47,7 @@ export default class CoreDialog extends HTMLElement {
       if (attr === 'hidden') dispatchEvent(this, 'dialog.toggle')
     }
   }
+
   handleEvent (event) {
     if (event.defaultPrevented) return
     if (event.type === 'transitionend' && event.target === this && !this.hidden) setFocus(this) // Move foucs after transition
@@ -70,24 +73,30 @@ export default class CoreDialog extends HTMLElement {
   }
 
   close () { this.hidden = true }
+
   show () { this.hidden = false }
 
   get open () { return !this.hidden }
+
   set open (val) { this.hidden = !val }
+
   get strict () { return this.hasAttribute('strict') }
+
   set strict (val) { this.toggleAttribute('strict', val) }
 
   // Must set attribute for IE11
   get hidden () { return this.hasAttribute('hidden') }
+
   set hidden (val) { this.toggleAttribute('hidden', val) }
 
   get backdrop () { return getBackdrop(this, this.getAttribute('backdrop')) }
-  set backdrop (val) { this.setAttribute('backdrop', val || 'false') }
+
+  set backdrop (val) { this.setAttribute('backdrop', val || 'false') }
 }
 
 function getBackdrop (el, attr) {
   if (!el.parentNode || attr === 'false') return false
-  if (attr && attr !== 'true') return document.getElementById(attr) || false
+  if (attr && attr !== 'true') return document.getElementById(attr) || false
   const next = el.nextElementSibling
   return next && next.nodeName === 'BACKDROP' ? next : el.insertAdjacentElement('afterend', document.createElement('backdrop'))
 }

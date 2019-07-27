@@ -9,6 +9,7 @@ export default class CoreProgress extends HTMLElement {
     this.type = this.type // Set default type
     addStyle(this.nodeName, `${this.nodeName}{display:block;fill:none;stroke-width:15}`)
   }
+
   attributeChangedCallback (name, prev, next) {
     const changeType = this.parentElement && name === 'type' && (next === 'radial') === !this.querySelector('svg')
     const percentage = this.indeterminate ? 100 : this.percentage
@@ -21,12 +22,20 @@ export default class CoreProgress extends HTMLElement {
     if (changeType) this.innerHTML = next === 'radial' ? '<svg style="display:block;overflow:hidden;border-radius:100%" width="100%" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" stroke-dashoffset="0"/><circle cx="50" cy="50" r="50" stroke="currentColor" stroke-dasharray="314.159" transform="rotate(-90 50 50)"/></svg>' : ''
     if (name === 'value' && Number(next) !== Number(prev)) dispatchEvent(this, 'change') // Only trigger event on actual change
   }
+
   get indeterminate () { return isNaN(parseFloat(this.getAttribute('value'))) && this.getAttribute('value') }
+
   get percentage () { return Math.round(this.value / this.max * 100) || 0 }
+
   get value () { return this.indeterminate || Number(this.getAttribute('value')) }
+
   set value (val) { this.setAttribute('value', val) }
+
   get max () { return Number(this.getAttribute('max')) || 1 }
+
   set max (val) { this.setAttribute('max', val) }
+
   get type () { return this.getAttribute('type') || 'linear' }
+
   set type (val) { this.setAttribute('type', val) }
 }

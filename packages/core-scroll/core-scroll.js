@@ -43,6 +43,7 @@ export default class CoreScoll extends HTMLElement {
     document.addEventListener('click', this)
     setTimeout(() => this.handleEvent()) // Initialize buttons after children is parsed
   }
+
   disconnectedCallback () {
     this._throttledEvent = null // Garbage collection
     this.removeEventListener('mousedown', this)
@@ -52,6 +53,7 @@ export default class CoreScoll extends HTMLElement {
     window.removeEventListener('load', this)
     document.removeEventListener('click', this)
   }
+
   handleEvent (event = {}) {
     if (event.defaultPrevented) return
     if (event.type === 'wheel') DRAG.animate = false // Stop momentum animation onWheel
@@ -72,6 +74,7 @@ export default class CoreScoll extends HTMLElement {
       }
     }
   }
+
   scroll (point) {
     const { x, y } = parsePoint(this, point)
     const uuid = DRAG.animate = getUUID() // Giving the animation an ID to workaround IE timeout issues
@@ -90,10 +93,17 @@ export default class CoreScoll extends HTMLElement {
   }
 
   get items () { return queryAll(this.getAttribute('items') || this.children, this) }
-  set items (val) { this.setAttribute('items', val || '') } // Ensure falsy values becomes ''
+
+  set items (val) { this.setAttribute('items', val || '') }
+
+  // Ensure falsy values becomes ''
   get scrollRight () { return this.scrollWidth - this.clientWidth - this.scrollLeft }
+
   get scrollBottom () { return this.scrollHeight - this.clientHeight - this.scrollTop }
-  get friction () { return Math.min(0.99, this.getAttribute('friction')) || 0.8 } // Avoid friction 1 (infinite)
+
+  get friction () { return Math.min(0.99, this.getAttribute('friction')) || 0.8 }
+
+  // Avoid friction 1 (infinite)
   set friction (val) { this.setAttribute('friction', val) }
 }
 

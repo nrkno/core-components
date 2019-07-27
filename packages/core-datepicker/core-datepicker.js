@@ -17,12 +17,14 @@ export default class CoreDatepicker extends HTMLElement {
     setTimeout(() => this.attributeChangedCallback()) // Render after children is parsed
     addStyle(this.nodeName, `${this.nodeName}{display:block}`) //  default to display block
   }
+
   disconnectedCallback () {
     this._date = this._disabled = null // Garbage collection
     document.removeEventListener('click', this)
     document.removeEventListener('change', this)
     document.removeEventListener('keydown', this)
   }
+
   attributeChangedCallback () {
     if (!this._date) return // Only render after connectedCallback
     if (this.disabled(this.date) && !this.disabled(this._date)) return (this.date = this._date) // Jump back
@@ -33,6 +35,7 @@ export default class CoreDatepicker extends HTMLElement {
     forEach('input', this, input)
     forEach('table', this, table)
   }
+
   handleEvent (event) {
     if (event.defaultPrevented || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || (event.type === 'keydown' && !KEYS[event.keyCode])) return
     if (!this.contains(event.target) && !closest(event.target, `[for="${this.id}"]`)) return
@@ -48,27 +51,43 @@ export default class CoreDatepicker extends HTMLElement {
       event.preventDefault() // Prevent scrolling
     }
   }
+
   diff (val) { return this.parse(val).getTime() - this.timestamp }
+
   parse (val, from) { return parse(val, from || this._date) }
 
   get disabled () { return this._disabled || Function.prototype }
+
   set disabled (fn) {
     this._disabled = typeof fn === 'function' ? (val) => fn(this.parse(val), this) : () => fn // Auto parse dates
     this.attributeChangedCallback() // Re-render
   }
 
   get timestamp () { return String(this._date.getTime()) }
-  get year () { return String(this._date.getFullYear()) } // Stringify for consistency and for truthy '0'
+
+  get year () { return String(this._date.getFullYear()) }
+
+  // Stringify for consistency and for truthy '0'
   get month () { return pad(this._date.getMonth() + 1) }
+
   get day () { return pad(this._date.getDate()) }
+
   get hour () { return pad(this._date.getHours()) }
+
   get minute () { return pad(this._date.getMinutes()) }
+
   get second () { return pad(this._date.getSeconds()) }
+
   get date () { return parse(this.getAttribute('timestamp') || this._date || Date.now()) }
+
   set date (val) { return this.setAttribute('timestamp', this.parse(val).getTime()) }
+
   set months (val) { this.setAttribute('months', [].concat(val).join(',')) }
+
   get months () { return (this.getAttribute('months') || MONTHS).split(/\s*,\s*/) }
+
   set days (val) { this.setAttribute('days', [].concat(val).join(',')) }
+
   get days () { return (this.getAttribute('days') || DAYS).split(/\s*,\s*/) }
 }
 
