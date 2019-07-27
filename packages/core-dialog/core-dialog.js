@@ -3,60 +3,61 @@ import { closest, dispatchEvent, getUUID, queryAll } from '../utils'
 const FOCUSABLE = '[tabindex],a,button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled])'
 
 export default class CoreDialog extends HTMLElement {
-  static get observedAttributes () { return ['hidden'] }
+  static get observedAttributes () { return ['hidden', 'backdrop'] }
 
   connectedCallback () {
-    this._open = !this.hidden // Used to ensures actual change in attributeChangedCallback
-    this._opener = `data-dialog-${getUUID()}` // Used to identify what element opened the dialog
-    this.setAttribute('role', 'dialog')
-    this.setAttribute('aria-modal', this.modal)
+    this._from = `data-dialog-${getUUID()}` // Used to identify what element opened the dialog
+    this.attributeChangedCallback() // Ensure correct setup backdrop
     this.addEventListener('transitionend', this)
     document.addEventListener('keydown', this)
     document.addEventListener('click', this)
-    if (this._open) this.attributeChangedCallback(true) // Ensure correct setup backdrop
   }
   disconnectedCallback () {
     this.removeEventListener('transitionend', this)
     document.removeEventListener('keydown', this)
     document.removeEventListener('click', this)
   }
-  attributeChangedCallback (force) {
-    if (this._open === this.hidden || force === true) { // this._open comparison ensures actual change
-      const opener = document.querySelector(`[${this._opener}]`)
-      const active = opener || document.activeElement || document.body
-      const zIndex = Math.min(Math.max(...queryAll('body *').map(getZIndex)), 2000000000) // Avoid overflowing z-index. See techjunkie.com/maximum-z-index-value
+  attributeChangedCallback (attr, prev, next) {
+    if (this._from) { // Only trigger after connectedCallback
+      const from = document.querySelector(`[${this._from}]`) || document.activeElement || document.body
+      const prevBack = attr === 'backdrop' && getBackdrop(this, prev)
+      const nextBack = this.backdrop
 
-      // Trigger repaint to fix IE11 from not closing dialog
+      // Trigger repaint to fix IE11 from not closing dialog, and allow animating new backdrop
       this.className = this.className // eslint-disable-line
-      this.backdrop.hidden = !this.modal || this.hidden
-      this._open = !this.hidden
+      this.setAttribute('role', 'dialog')
+      this.setAttribute('aria-modal', Boolean(nextBack))
+      if (prevBack) prevBack.setAttribute('hidden', '') // Hide previous backdrop
+      if (nextBack) nextBack.toggleAttribute('hidden', this.hidden)
 
-      if (!this.hidden) {
+      if (this.hidden) {
+        from.removeAttribute(this._from)
+        setTimeout(() => from.focus()) // Move focus after paint (helps iOS and react portals)
+      } else {
+        const below = queryAll('body *').filter((el) => el !== nextBack && !this.contains(el) && isVisible(el))
+        const zIndex = Math.min(Math.max(...below.map(getZIndex)), 2000000000) // Avoid overflowing z-index. See techjunkie.com/maximum-z-index-value
+        if (nextBack) nextBack.style.zIndex = zIndex + 1
+
         this.style.zIndex = zIndex + 2
-        this.backdrop.style.zIndex = zIndex + 1
-        active.setAttribute(this._opener, '') // Remember opener element
-        setFocus(this)
+        from.setAttribute(this._from, '') // Remember last focused element
         setTimeout(() => setFocus(this)) // Move focus after paint (helps iOS and react portals)
-      } else if (opener) {
-        opener.focus()
-        opener.removeAttribute(this._opener)
-        setTimeout(() => opener.focus()) // Move focus after paint (helps iOS and react portals)
       }
-
-      if (force !== true) dispatchEvent(this, 'dialog.toggle')
+      if (attr === 'hidden') dispatchEvent(this, 'dialog.toggle')
     }
   }
   handleEvent (event) {
     if (event.defaultPrevented) return
-    if (event.type === 'transitionend' && event.target === this && !this.hidden) setFocus(this)
+    if (event.type === 'transitionend' && event.target === this && !this.hidden) setFocus(this) // Move foucs after transition
     else if (event.type === 'click') {
-      if (event.target === this.backdrop && !this.strict) return this.close()
-      const button = closest(event.target, `button[for]`)
+      if (event.target === this.backdrop && !this.strict) return this.close() // Click on backdrop
+      const button = closest(event.target, 'button')
       const action = button && button.getAttribute('for')
-      const toggle = action === 'close' ? closest(event.target, this.nodeName) === this : action === this.id
 
-      if (action === this.id) button.setAttribute(this._opener, '') // iOS remember button
-      if (toggle) this.hidden = action === 'close'
+      if (action === 'close' && closest(event.target, this.nodeName) === this) this.close()
+      else if (action === this.id) {
+        button.setAttribute(this._from, '') // iOS remember button
+        this.show()
+      }
     } else if (event.type === 'keydown' && (event.keyCode === 9 || event.keyCode === 27) && !this.hidden) {
       const topDialog = queryAll(`${this.nodeName}:not([hidden])`).sort((a, b) => getZIndex(a) - getZIndex(b)).pop()
       if (topDialog !== this) return // event.target can be <body> when dialog has no focused element
@@ -69,16 +70,10 @@ export default class CoreDialog extends HTMLElement {
   }
 
   close () { this.hidden = true }
-  show () { this.modal = this.hidden = false }
-  showModal () {
-    this.modal = true
-    this.hidden = false
-  }
+  show () { this.hidden = false }
 
   get open () { return !this.hidden }
   set open (val) { this.hidden = !val }
-  get modal () { return this.getAttribute('aria-modal') !== 'false' }
-  set modal (val) { this.setAttribute('aria-modal', Boolean(val)) }
   get strict () { return this.hasAttribute('strict') }
   set strict (val) { this.toggleAttribute('strict', val) }
 
@@ -86,13 +81,15 @@ export default class CoreDialog extends HTMLElement {
   get hidden () { return this.hasAttribute('hidden') }
   set hidden (val) { this.toggleAttribute('hidden', val) }
 
-  get backdrop () {
-    const next = this.nextElementSibling
-    if (next && next.nodeName === 'BACKDROP') return next
-    const back = document.createElement('backdrop')
-    back.hidden = true
-    return this.insertAdjacentElement('afterend', back)
-  }
+  get backdrop () { return getBackdrop(this, this.getAttribute('backdrop')) }
+  set backdrop (val) { this.setAttribute('backdrop', val || 'false') }
+}
+
+function getBackdrop (el, attr) {
+  if (!el.parentNode || attr === 'false') return false
+  if (attr && attr !== 'true') return document.getElementById(attr) || false
+  const next = el.nextElementSibling
+  return next && next.nodeName === 'BACKDROP' ? next : el.insertAdjacentElement('afterend', document.createElement('backdrop'))
 }
 
 function isVisible (el) {

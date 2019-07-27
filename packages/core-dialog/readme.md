@@ -9,9 +9,9 @@
 <script>
   window.React = preactCompat
   window.ReactDOM = preactCompat
-</script> -->
+</script>
+<script src="https://unpkg.com/@webcomponents/custom-elements"></script>-->
 <!--demo
-<script src="https://unpkg.com/@webcomponents/custom-elements"></script>
 <script src="core-dialog/core-dialog.min.js"></script>
 <script src="core-dialog/core-dialog.jsx.js"></script>
 <style>
@@ -30,17 +30,19 @@
     transition: .2s;
   }
 
-  .my-dialog + backdrop {
+  .my-dialog + backdrop,
+  .my-backdrop {
     position: fixed;
     background: rgba(0,0,0,.3);
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    transition: opacity .2s;
+    transition: .2s;
   }
   .my-dialog[hidden],
-  .my-dialog + backdrop[hidden] {
+  .my-dialog + backdrop[hidden],
+  .my-backdrop[hidden] {
     pointer-events: none;
     visibility: hidden;
     display: block;
@@ -53,6 +55,7 @@ demo-->
 
 ```html
 <!--demo-->
+<!-- Normal -->
 <button for="my-dialog">Open dialog</button>
 <core-dialog id="my-dialog" class="my-dialog" aria-label="første dialog tittel" hidden>
   <h1>This is a title</h1>
@@ -61,20 +64,38 @@ demo-->
   <button type="button" autofocus style="visibility: hidden">Should not be focusable</button>
   <button type="button" autofocus>Autofocus</button>
   <button for="close">Close</button>
-  <core-dialog id="my-dialog-nested" class="my-dialog" aria-label="andre dialog tittel" hidden>
+  <core-dialog id="my-dialog-nested" class="my-dialog" aria-label="andre dialog title" hidden>
     <h1>Another dialog, triggered inside the first dialog</h1>
     <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero.</p>
     <button for="close">Close</button>
   </core-dialog>
 </core-dialog>
+
+<!-- Strict -->
 <button for="strict-dialog">Open strict dialog</button>
-<core-dialog id="strict-dialog" class="my-dialog" aria-label="første dialog tittel" hidden strict>
+<core-dialog id="strict-dialog" class="my-dialog" aria-label="strickt dialog title" hidden strict>
   <h1>This is a title</h1>
   <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
   <button type="button">This button does nothing</button>
   <button for="close">Close</button>
 </core-dialog>
-<div id="docs-react-dialog"></div>
+
+<!-- Modal -->
+<button for="modal-dialog">Open modal dialog</button>
+<core-dialog id="modal-dialog" class="my-dialog" aria-label="modal dialog title" hidden backdrop="false">
+  <h1>This is a title</h1>
+  <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
+  <button for="close">Close</button>
+</core-dialog>
+
+<!-- Custom backdrop -->
+<button for="modal-custom">Open dialog with custom backdrop</button>
+<core-dialog id="modal-custom" class="my-dialog" aria-label="modal dialog title" hidden backdrop="back-custom">
+  <h1>This is a title</h1>
+  <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
+  <button for="close">Close</button>
+</core-dialog>
+<div id="back-custom" class="my-backdrop" style="background:rgba(0,0,50,.8)" hidden></div>
 ```
 
 ```html
@@ -82,20 +103,21 @@ demo-->
 <div id="jsx-dialog"></div>
 <div id="jsx-dialog-strict"></div>
 <script type="text/jsx">
+  // document.addEventListener('dialog.toggle', console.log)
   class DialogContainerDemo extends React.Component {
     constructor (props) {
       super(props)
-      this.state = { open: false }
+      this.state = { hidden: true }
       this.toggleDialog = this.toggleDialog.bind(this)
       this.handleToggle = this.handleToggle.bind(this)
     }
 
     toggleDialog () {
-      this.setState({ open: !this.state.open })
+      this.setState({ hidden: !this.state.hidden })
     }
 
     handleToggle (event) {
-      this.setState({ open: event.target.open })
+      this.setState({ hidden: event.target.hidden })
     }
 
     render () {
@@ -104,7 +126,7 @@ demo-->
           <button onClick={this.toggleDialog}>Open dialog jsx</button>
           <CoreDialog
             className="my-dialog"
-            hidden={!this.state.open}
+            hidden={this.state.hidden}
             onDialogToggle={this.handleToggle}
             aria-label="React dialog">
             <h1>Dialog for JSX</h1>
@@ -119,7 +141,7 @@ demo-->
   ReactDOM.render(<DialogContainerDemo />, document.getElementById('jsx-dialog'))
   ReactDOM.render(<div>
     <button for="dialog-jsx">Open strict dialog jsx</button>
-    <CoreDialog hidden id="dialog-jsx" className="my-dialog" aria-label="React dialog" strict>
+    <CoreDialog id="dialog-jsx" className="my-dialog" aria-label="React dialog" hidden strict backdrop>
       <h1>Strict dialog for JSX</h1>
       <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
       <button for="close">Lukk</button>
@@ -154,7 +176,7 @@ Using static registers the custom element with default name automatically:
 <core-dialog id="my-dialog"
              hidden                    <!-- Hide dialog by default -->
              strict                    <!-- Optional. If true, prevents the dialog from closing on ESC-key and on backdrop click -->
-             modal                     <!-- Optional. Set to enable dark backdrop -->
+             backdrop="{false|ID}"     <!-- Optional. false disables backdrop, ID points to backdrop element -->
              aria-label="{String}">    <!-- Optional. Is read by screen readers -->
   <h1>Title of dialog</h1>
   <p>Some content</p>
@@ -169,19 +191,16 @@ window.customElements.define('core-dialog', CoreDialog)   // Using NPM. Replace 
 const myDialog = document.querySelector('core-dialog')
 
 // Getters
-myDialog.open            // True if not hidden
-myDialog.modal           // True if modal
-myDialog.strict          // True if strict
-myDialog.backdrop        // Get backdrop element
+myDialog.hidden         // True if hidden
+myDialog.strict         // True if strict
+myDialog.backdrop       // Get backdrop element (if enabled) (see "Markup" for more info)
 // Setters
-myDialog.open = false    // Set open mode
-myDialog.modal = true    // Set modal mode
-myDialog.strict = false  // Set strict mode
-myDialog.hidden = true   // Close dialog
+myDialog.hidden = false // Open dialog
+myDialog.strict = false // Set strict mode
+myDialog.backdrop = false | true | id | Element // Set to disable/enable backdrop
 // Methods
-myDialog.close()         // Close dialog
-myDialog.show()          // Open dialog
-myDialog.showModal()     // Open dialog as modal
+myDialog.close()        // Close dialog
+myDialog.show()         // Open dialog
 ```
 
 ### React / Preact
@@ -193,7 +212,7 @@ import CoreDialog from '@nrk/core-dialog/jsx'
 <CoreDialog id="my-dialog"
             hidden                            // Hide dialog by default
             strict                            // Optional. If true, prevents the dialog from closing on ESC-key and on backdrop click
-            modal                             // Optional. Set to enable dark backdrop
+            backdrop={false}                  // Optional. Set to disable backdrop
             aria-label={String}               // Optional. Is read by screen readers
             onDialogToggle={Function}>        // Optional. Toggle event handler. See event 'dialog.toggle'
   <h1>My React/Preact dialog</h1>
@@ -217,6 +236,8 @@ content with `<h1 tabindex="-1">Dialog title</h1>`.
 ### Elements order
 
 Though not strictly required, the `<button>` opening a dialog should be placed directly before the `<core-dialog>` itself. This eases the mental model for screen reader users.
+
+## Backdrop
 
 
 ## Events
