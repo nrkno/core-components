@@ -1,4 +1,4 @@
-import { closest, dispatchEvent, getUUID, queryAll } from '../utils'
+import { closest, dispatchEvent, getUUID, toggleAttribute, queryAll } from '../utils'
 
 const FOCUSABLE = '[tabindex],a,button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled])'
 
@@ -24,13 +24,14 @@ export default class CoreDialog extends HTMLElement {
       const from = document.querySelector(`[${this._from}]`) || document.activeElement || document.body
       const prevBack = attr === 'backdrop' && getBackdrop(this, prev)
       const nextBack = this.backdrop
+      console.log(attr, nextBack, this.hidden)
 
       // Trigger repaint to fix IE11 from not closing dialog, and allow animating new backdrop
       this.className = this.className // eslint-disable-line
       this.setAttribute('role', 'dialog')
       this.setAttribute('aria-modal', Boolean(nextBack))
       if (prevBack) prevBack.setAttribute('hidden', '') // Hide previous backdrop
-      if (nextBack) nextBack.toggleAttribute('hidden', this.hidden)
+      if (nextBack) toggleAttribute(nextBack, 'hidden', this.hidden)
 
       if (this.hidden) {
         from.removeAttribute(this._from)
@@ -82,12 +83,12 @@ export default class CoreDialog extends HTMLElement {
 
   get strict () { return this.hasAttribute('strict') }
 
-  set strict (val) { this.toggleAttribute('strict', val) }
+  set strict (val) { toggleAttribute(this, 'strict', val) }
 
   // Must set attribute for IE11
   get hidden () { return this.hasAttribute('hidden') }
 
-  set hidden (val) { this.toggleAttribute('hidden', val) }
+  set hidden (val) { toggleAttribute(this, 'hidden', val) }
 
   get backdrop () { return getBackdrop(this, this.getAttribute('backdrop')) }
 

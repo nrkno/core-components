@@ -9,9 +9,9 @@
 <script>
   window.React = preactCompat
   window.ReactDOM = preactCompat
-</script>
-<script src="https://unpkg.com/@webcomponents/custom-elements"></script>-->
+</script>-->
 <!--demo
+<script src="https://unpkg.com/@webcomponents/custom-elements"></script>
 <script src="core-dialog/core-dialog.min.js"></script>
 <script src="core-dialog/core-dialog.jsx.js"></script>
 <style>

@@ -1,4 +1,4 @@
-import { addStyle, dispatchEvent } from '../utils'
+import { addStyle, dispatchEvent, toggleAttribute } from '../utils'
 
 export default class CoreProgress extends HTMLElement {
   static get observedAttributes () { return ['type', 'value', 'max'] }
@@ -15,7 +15,7 @@ export default class CoreProgress extends HTMLElement {
     const percentage = this.indeterminate ? 100 : this.percentage
 
     this.setAttribute('aria-label', this.indeterminate || `${percentage}%`)
-    this.toggleAttribute('indeterminate', this.indeterminate)
+    toggleAttribute(this, 'indeterminate', this.indeterminate)
 
     if (this.type === 'linear') this.style.width = `${percentage}%`
     if (this.type === 'radial') this.style.strokeDashoffset = Math.round((100 - percentage) * Math.PI)

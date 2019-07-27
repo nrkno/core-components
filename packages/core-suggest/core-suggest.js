@@ -1,4 +1,4 @@
-import { IS_IOS, closest, escapeHTML, dispatchEvent, queryAll } from '../utils'
+import { IS_IOS, closest, escapeHTML, dispatchEvent, toggleAttribute, queryAll } from '../utils'
 
 const KEYS = { ENTER: 13, ESC: 27, PAGEUP: 33, PAGEDOWN: 34, END: 35, HOME: 36, UP: 38, DOWN: 40 }
 const AJAX_DEBOUNCE = 500
@@ -62,13 +62,13 @@ export default class CoreSuggest extends HTMLElement {
   // Must set attribute for IE11
   get hidden () { return this.hasAttribute('hidden') }
 
-  set hidden (val) { this.toggleAttribute('hidden', val) }
+  set hidden (val) { toggleAttribute(this, 'hidden', val) }
 }
 
 function toggleItem (item, show) {
   const li = item.parentElement // JAWS requires hiding parent <li> (if existing)
-  if (li.nodeName === 'LI') li.toggleAttribute('hidden', show)
-  item.toggleAttribute('hidden', show)
+  if (li.nodeName === 'LI') toggleAttribute(li, 'hidden', show)
+  toggleAttribute(item, 'hidden', show)
 }
 
 // This can happen quite frequently so make it fast

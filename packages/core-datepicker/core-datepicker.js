@@ -1,4 +1,4 @@
-import { addStyle, closest, escapeHTML, dispatchEvent, queryAll } from '../utils'
+import { addStyle, closest, escapeHTML, dispatchEvent, toggleAttribute, queryAll } from '../utils'
 import parse from '@nrk/simple-date-parse'
 
 const MASK = { year: '*-m-d', month: 'y-*-d', day: 'y-m-*', hour: '*:m', minute: 'h:*', second: 'h:m:*', timestamp: '*', null: '*' }
@@ -138,7 +138,7 @@ function table (self, table) {
     button.setAttribute(`data-adjacent`, month !== dayMonth)
     button.setAttribute('aria-label', `${dayInMonth}. ${self.months[dayMonth]}`)
     button.setAttribute('aria-current', day.getDate() === today.getDate() && day.getMonth() === today.getMonth() && day.getFullYear() === today.getFullYear() && 'date')
-    button.toggleAttribute('autofocus', isSelected)
+    toggleAttribute(button, 'autofocus', isSelected)
     day.setDate(dayInMonth + 1)
   })
 }

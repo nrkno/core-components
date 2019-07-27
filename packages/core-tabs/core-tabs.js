@@ -1,4 +1,4 @@
-import { IS_ANDROID, dispatchEvent, getUUID, queryAll, closest } from '../utils'
+import { IS_ANDROID, dispatchEvent, getUUID, queryAll, closest, toggleAttribute } from '../utils'
 
 const FROM = IS_ANDROID ? 'data-labelledby' : 'aria-labelledby' // Android has a bug and reads only label instead of content
 const KEYS = { SPACE: 32, END: 35, HOME: 36, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40 }
@@ -74,7 +74,7 @@ export default class CoreTabs extends HTMLElement {
 
       tab.setAttribute('aria-selected', openTab)
       tab.setAttribute('tabindex', Number(openTab) - 1)
-      panel.toggleAttribute('hidden', !openPanel)
+      toggleAttribute(panel, 'hidden', !openPanel)
     })
 
     if (prevIndex !== nextIndex) dispatchEvent(this, 'tabs.toggle')
