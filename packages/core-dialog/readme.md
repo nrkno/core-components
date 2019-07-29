@@ -194,10 +194,12 @@ const myDialog = document.querySelector('core-dialog')
 myDialog.hidden         // True if hidden
 myDialog.strict         // True if strict
 myDialog.backdrop       // Get backdrop element (if enabled) (see "Markup" for more info)
+
 // Setters
 myDialog.hidden = false // Open dialog
 myDialog.strict = false // Set strict mode
-myDialog.backdrop = false | true | id | Element // Set to disable/enable backdrop
+myDialog.backdrop = false | true | id // Set to disable/enable backdrop
+
 // Methods
 myDialog.close()        // Close dialog
 myDialog.show()         // Open dialog
@@ -237,7 +239,13 @@ content with `<h1 tabindex="-1">Dialog title</h1>`.
 
 Though not strictly required, the `<button>` opening a dialog should be placed directly before the `<core-dialog>` itself. This eases the mental model for screen reader users.
 
-## Backdrop
+### Backdrop
+
+`core-dialog` automatically creates a `<backdrop>` element as next adjacent sibling if needed to paint an backdrop. If the `backdrop` attribute is set to an `id` (somehting else than `true|false`), the element with the corresponding ID will be used as backdrop. Note that a backdrop is needed to enable click-outside-to-close. Custom backdrop example:
+```
+<core-dialog backdrop="my-backdrop"></core-dialog>
+<div id="my-backdrop"></div>
+```
 
 
 ## Events
