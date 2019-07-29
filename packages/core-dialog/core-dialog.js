@@ -24,7 +24,6 @@ export default class CoreDialog extends HTMLElement {
       const from = document.querySelector(`[${this._from}]`) || document.activeElement || document.body
       const prevBack = attr === 'backdrop' && getBackdrop(this, prev)
       const nextBack = this.backdrop
-      console.log(attr, nextBack, this.hidden)
 
       // Trigger repaint to fix IE11 from not closing dialog, and allow animating new backdrop
       this.className = this.className // eslint-disable-line
