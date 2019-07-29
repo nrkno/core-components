@@ -73,7 +73,7 @@ demo-->
 
 <!-- Strict -->
 <button for="strict-dialog">Open strict dialog</button>
-<core-dialog id="strict-dialog" class="my-dialog" aria-label="strickt dialog title" hidden strict>
+<core-dialog id="strict-dialog" class="my-dialog" aria-label="strict dialog title" hidden strict>
   <h1>This is a title</h1>
   <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
   <button type="button">This button does nothing</button>
