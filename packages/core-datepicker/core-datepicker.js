@@ -96,11 +96,9 @@ function input (self, el) {
 }
 
 function table (self, table) {
-  if (!table.firstElementChild) {
-    table.innerHTML = `
-    <caption></caption><thead><tr><th>${self.days.map(escapeHTML).join('</th><th>')}</th></tr></thead>
-    <tbody>${Array(7).join(`<tr>${Array(8).join('<td><button type="button"></button></td>')}</tr>`)}</tbody>`
-  }
+  table.innerHTML = `
+  <caption></caption><thead><tr><th>${self.days.map(escapeHTML).join('</th><th>')}</th></tr></thead>
+  <tbody>${Array(7).join(`<tr>${Array(8).join('<td><button type="button"></button></td>')}</tr>`)}</tbody>`
 
   const today = new Date()
   const month = self.date.getMonth()
@@ -126,6 +124,9 @@ function table (self, table) {
 
 function select (self, select) {
   if (!select.firstElementChild) {
+    self._select = select;
+  }
+  if (self._select) {
     select.innerHTML = self.months.map((name, month) =>
       `<option value="y-${month + 1}-d">${escapeHTML(name)}</option>`
     ).join('')
