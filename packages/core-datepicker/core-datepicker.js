@@ -124,7 +124,7 @@ function table (self, table) {
 
 function select (self, select) {
   if (!select.firstElementChild) {
-    self._select = select;
+    self._select = select
   }
   if (self._select) {
     select.innerHTML = self.months.map((name, month) =>
