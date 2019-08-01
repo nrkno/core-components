@@ -111,9 +111,10 @@ export function throttle (callback, ms) {
 
 /**
  * toggleAttribute (Ponyfill for IE and Edge, fixes #299)
- * @param {Element} el  The new throttled function
+ * @link https://developer.mozilla.org/en-US/docs/Web/API/Element/toggleAttribute
+ * @param {Element} el  Single DOM Element
  * @param {String} name The name of the attribute to be toggled
- * @param {Boolean} force Determine whether the attribute should be added or removed
+ * @param {Boolean} force Force attribute to be added or removed regardless of previous state
  */
 export function toggleAttribute (el, name, force = !this.hasAttribute(name)) {
   if (!force === el.hasAttribute(name)) el[force ? 'setAttribute' : 'removeAttribute'](name, '')
