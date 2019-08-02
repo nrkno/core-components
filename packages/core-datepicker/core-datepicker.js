@@ -10,6 +10,7 @@ export default class CoreDatepicker extends HTMLElement {
   static get observedAttributes () { return ['timestamp', 'months', 'days'] }
 
   connectedCallback () {
+    this._selects = this._selects || [];
     this._date = this.date // Store for later comparison and speeding up things
     document.addEventListener('click', this)
     document.addEventListener('change', this)
@@ -19,6 +20,7 @@ export default class CoreDatepicker extends HTMLElement {
   }
   disconnectedCallback () {
     this._date = this._disabled = null // Garbage collection
+    this._selects = [] // Garbage collection
     document.removeEventListener('click', this)
     document.removeEventListener('change', this)
     document.removeEventListener('keydown', this)
@@ -125,7 +127,10 @@ function table (self, table, force) {
 }
 
 function select (self, select, force) {
-  if (!select.firstElementChild || force) {
+  if (!select.firstElementChild) {
+    self._selects = [...self._selects || [], select]
+  }
+  if (!select.firstElementChild || (force && self._selects.indexOf(select) > 0)) {
     select.innerHTML = self.months.map((name, month) =>
       `<option value="y-${month + 1}-d">${escapeHTML(name)}</option>`
     ).join('')
