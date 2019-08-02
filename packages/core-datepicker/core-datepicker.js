@@ -130,7 +130,7 @@ function select (self, select, force) {
   if (!select.firstElementChild) {
     self._selects = [...self._selects || [], select]
   }
-  if (!select.firstElementChild || (force && self._selects.indexOf(select) > 0)) {
+  if (!select.firstElementChild || (force && self._selects.indexOf(select) >= 0)) {
     select.innerHTML = self.months.map((name, month) =>
       `<option value="y-${month + 1}-d">${escapeHTML(name)}</option>`
     ).join('')
