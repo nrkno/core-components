@@ -18,7 +18,7 @@ export default class CoreDatepicker extends HTMLElement {
     addStyle(this.nodeName, `${this.nodeName}{display:block}`) //  default to display block
   }
   disconnectedCallback () {
-    this._date = this._disabled = null // Garbage collection
+    this._date = this._disabled = this._select = null // Garbage collection
     document.removeEventListener('click', this)
     document.removeEventListener('change', this)
     document.removeEventListener('keydown', this)
