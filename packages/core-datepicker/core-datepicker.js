@@ -10,7 +10,7 @@ export default class CoreDatepicker extends HTMLElement {
   static get observedAttributes () { return ['timestamp', 'months', 'days'] }
 
   connectedCallback () {
-    this._selects = this._selects || [];
+    this._selects = this._selects || []
     this._date = this.date // Store for later comparison and speeding up things
     document.addEventListener('click', this)
     document.addEventListener('change', this)
