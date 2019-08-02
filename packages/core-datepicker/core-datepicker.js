@@ -23,15 +23,15 @@ export default class CoreDatepicker extends HTMLElement {
     document.removeEventListener('change', this)
     document.removeEventListener('keydown', this)
   }
-  attributeChangedCallback () {
+  attributeChangedCallback (name) {
     if (!this._date) return // Only render after connectedCallback
     if (this.disabled(this.date) && !this.disabled(this._date)) return (this.date = this._date) // Jump back
     if (this.diff(this.date)) dispatchEvent(this, 'datepicker.change', this._date = this.date)
 
     forEach('button', this, button)
-    forEach('select', this, select)
+    forEach('select', this, select, name === 'months')
     forEach('input', this, input)
-    forEach('table', this, table)
+    forEach('table', this, table, name === 'days')
   }
   handleEvent (event) {
     if (event.defaultPrevented || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || (event.type === 'keydown' && !KEYS[event.keyCode])) return
@@ -73,8 +73,8 @@ export default class CoreDatepicker extends HTMLElement {
 }
 
 const pad = (val) => `0${val}`.slice(-2)
-const forEach = (css, self, fn) => [].forEach.call(document.getElementsByTagName(css), (el) => {
-  if (self.contains(el) || self.id === el.getAttribute(self.external)) fn(self, el, self._date)
+const forEach = (css, self, fn, force) => [].forEach.call(document.getElementsByTagName(css), (el) => {
+  if (self.contains(el) || self.id === el.getAttribute(self.external)) fn(self, el, force)
 })
 
 function button (self, el) {
@@ -95,10 +95,12 @@ function input (self, el) {
   }
 }
 
-function table (self, table) {
-  table.innerHTML = `
-  <caption></caption><thead><tr><th>${self.days.map(escapeHTML).join('</th><th>')}</th></tr></thead>
-  <tbody>${Array(7).join(`<tr>${Array(8).join('<td><button type="button"></button></td>')}</tr>`)}</tbody>`
+function table (self, table, force) {
+  if (!table.firstElementChild || force) {
+    table.innerHTML = `
+    <caption></caption><thead><tr><th>${self.days.map(escapeHTML).join('</th><th>')}</th></tr></thead>
+    <tbody>${Array(7).join(`<tr>${Array(8).join('<td><button type="button"></button></td>')}</tr>`)}</tbody>`
+  }
 
   const today = new Date()
   const month = self.date.getMonth()
@@ -122,11 +124,8 @@ function table (self, table) {
   })
 }
 
-function select (self, select) {
-  if (!select.firstElementChild) {
-    self._select = select
-  }
-  if (self._select) {
+function select (self, select, force) {
+  if (!select.firstElementChild || force) {
     select.innerHTML = self.months.map((name, month) =>
       `<option value="y-${month + 1}-d">${escapeHTML(name)}</option>`
     ).join('')
