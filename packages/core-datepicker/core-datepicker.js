@@ -73,8 +73,8 @@ export default class CoreDatepicker extends HTMLElement {
 }
 
 const pad = (val) => `0${val}`.slice(-2)
-const forEach = (css, self, fn, force) => [].forEach.call(document.getElementsByTagName(css), (el) => {
-  if (self.contains(el) || self.id === el.getAttribute(self.external)) fn(self, el, force)
+const forEach = (css, self, fn, ...args) => [].forEach.call(document.getElementsByTagName(css), (el) => {
+  if (self.contains(el) || self.id === el.getAttribute(self.external)) fn(self, el, ...args)
 })
 
 function button (self, el) {
