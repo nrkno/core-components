@@ -1,4 +1,4 @@
-import { addStyle, closest, escapeHTML, dispatchEvent, queryAll } from '../utils'
+import { addStyle, closest, dispatchEvent, queryAll } from '../utils'
 import parse from '@nrk/simple-date-parse'
 
 const MASK = { year: '*-m-d', month: 'y-*-d', day: 'y-m-*', hour: '*:m', minute: 'h:*', second: 'h:m:*', timestamp: '*', null: '*' }
@@ -10,7 +10,6 @@ export default class CoreDatepicker extends HTMLElement {
   static get observedAttributes () { return ['timestamp', 'months', 'days'] }
 
   connectedCallback () {
-    this._selects = this._selects || [] // Controlled select elements
     this._date = this.date // Store for later comparison and speeding up things
     document.addEventListener('click', this)
     document.addEventListener('change', this)
@@ -18,23 +17,25 @@ export default class CoreDatepicker extends HTMLElement {
     setTimeout(() => this.attributeChangedCallback()) // Render after children is parsed
     addStyle(this.nodeName, `${this.nodeName}{display:block}`) //  default to display block
   }
+
   disconnectedCallback () {
     this._date = this._disabled = null // Garbage collection
-    this._selects = [] // Garbage collection
     document.removeEventListener('click', this)
     document.removeEventListener('change', this)
     document.removeEventListener('keydown', this)
   }
+
   attributeChangedCallback (name) {
     if (!this._date) return // Only render after connectedCallback
     if (this.disabled(this.date) && !this.disabled(this._date)) return (this.date = this._date) // Jump back
     if (this.diff(this.date)) dispatchEvent(this, 'datepicker.change', this._date = this.date)
 
     forEach('button', this, button)
-    forEach('select', this, select, name === 'months')
+    forEach('select', this, select)
     forEach('input', this, input)
-    forEach('table', this, table, name === 'days')
+    forEach('table', this, table)
   }
+
   handleEvent (event) {
     if (event.defaultPrevented || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || (event.type === 'keydown' && !KEYS[event.keyCode])) return
     if (!this.contains(event.target) && !closest(event.target, `[for="${this.id}"]`)) return
@@ -50,36 +51,52 @@ export default class CoreDatepicker extends HTMLElement {
       event.preventDefault() // Prevent scrolling
     }
   }
+
   diff (val) { return this.parse(val).getTime() - this.timestamp }
+
   parse (val, from) { return parse(val, from || this._date) }
 
   get disabled () { return this._disabled || Function.prototype }
+
   set disabled (fn) {
     this._disabled = typeof fn === 'function' ? (val) => fn(this.parse(val), this) : () => fn // Auto parse dates
     this.attributeChangedCallback() // Re-render
   }
 
   get timestamp () { return String(this._date.getTime()) }
+
   get year () { return String(this._date.getFullYear()) } // Stringify for consistency and for truthy '0'
+
   get month () { return pad(this._date.getMonth() + 1) }
+
   get day () { return pad(this._date.getDate()) }
+
   get hour () { return pad(this._date.getHours()) }
+
   get minute () { return pad(this._date.getMinutes()) }
+
   get second () { return pad(this._date.getSeconds()) }
+
   get date () { return parse(this.getAttribute('timestamp') || this._date || Date.now()) }
+
   set date (val) { return this.setAttribute('timestamp', this.parse(val).getTime()) }
+
   set months (val) { this.setAttribute('months', [].concat(val).join(',')) }
+
   get months () { return (this.getAttribute('months') || MONTHS).split(/\s*,\s*/) }
+
   set days (val) { this.setAttribute('days', [].concat(val).join(',')) }
+
   get days () { return (this.getAttribute('days') || DAYS).split(/\s*,\s*/) }
 }
 
 const pad = (val) => `0${val}`.slice(-2)
-const forEach = (css, self, fn, ...args) => [].forEach.call(document.getElementsByTagName(css), (el) => {
-  if (self.contains(el) || self.id === el.getAttribute(self.external)) fn(self, el, ...args)
+const forEach = (css, self, fn) => [].forEach.call(document.getElementsByTagName(css), (el) => {
+  if (self.contains(el) || self.id === el.getAttribute(self.external)) fn(self, el)
 })
 
 function button (self, el) {
+  if (!el.value) return // Skip buttons without a set value
   el.type = 'button' // Ensure forms are not submitted by datepicker-buttons
   el.disabled = self.disabled(el.value)
 }
@@ -97,10 +114,10 @@ function input (self, el) {
   }
 }
 
-function table (self, table, force) {
-  if (!table.firstElementChild || force) {
+function table (self, table) {
+  if (!table.firstElementChild) {
     table.innerHTML = `
-    <caption></caption><thead><tr><th>${self.days.map(escapeHTML).join('</th><th>')}</th></tr></thead>
+    <caption></caption><thead><tr><th>${Array(8).join('</th><th>')}</th></tr></thead>
     <tbody>${Array(7).join(`<tr>${Array(8).join('<td><button type="button"></button></td>')}</tr>`)}</tbody>`
   }
 
@@ -109,6 +126,7 @@ function table (self, table, force) {
   const day = self.parse('y-m-1 mon') // Monday in first week of month
   table.caption.textContent = `${self.months[month]}, ${self.year}`
 
+  queryAll('th', table).forEach((th, day) => (th.textContent = self.days[day]))
   queryAll('button', table).forEach((button) => {
     const isSelected = !self.diff(day)
     const dayInMonth = day.getDate()
@@ -126,17 +144,15 @@ function table (self, table, force) {
   })
 }
 
-function select (self, select, force) {
+function select (self, select) {
   if (!select.firstElementChild) {
-    self._selects = [...self._selects || [], select]
-  }
-  if (!select.firstElementChild || (force && self._selects.indexOf(select) >= 0)) {
     select.innerHTML = self.months.map((name, month) =>
-      `<option value="y-${month + 1}-d">${escapeHTML(name)}</option>`
+      `<option value="y-${month + 1}-d"></option>`
     ).join('')
   }
 
-  queryAll(select.children).forEach((option) => {
+  queryAll(select.children).forEach((option, month) => {
+    option.textContent = self.months[month]
     option.disabled = self.disabled(option.value)
     option.selected = !self.diff(option.value)
   })
