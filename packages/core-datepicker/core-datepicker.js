@@ -117,7 +117,7 @@ function input (self, el) {
 function table (self, table) {
   if (!table.firstElementChild) {
     table.innerHTML = `
-    <caption></caption><thead><tr><th>${Array(8).join('</th><th>')}</th></tr></thead>
+    <caption></caption><thead><tr>${Array(8).join('</th><th>')}</tr></thead>
     <tbody>${Array(7).join(`<tr>${Array(8).join('<td><button type="button"></button></td>')}</tr>`)}</tbody>`
   }
 
@@ -146,13 +146,14 @@ function table (self, table) {
 
 function select (self, select) {
   if (!select.firstElementChild) {
+    select._autofill = true
     select.innerHTML = self.months.map((name, month) =>
       `<option value="y-${month + 1}-d"></option>`
     ).join('')
   }
 
   queryAll(select.children).forEach((option, month) => {
-    option.textContent = self.months[month]
+    if (select._autofill) option.textContent = self.months[month]
     option.disabled = self.disabled(option.value)
     option.selected = !self.diff(option.value)
   })
