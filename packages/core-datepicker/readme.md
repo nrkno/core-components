@@ -119,7 +119,7 @@ demo-->
     constructor (props) {
       super(props)
       this.today = Date.now() - Date.now() % 864e3
-      this.state = { date: new Date(), odd: true }
+      this.state = { date: new Date() }
       this.onNow = this.onNow.bind(this)
       this.onChange = this.onChange.bind(this)
     }
@@ -140,42 +140,6 @@ demo-->
         </CoreToggle>
         <button onClick={this.onNow}>I dag JSX</button>
         <input type="text" readOnly value={this.state.date.toLocaleDateString()} />
-        <br />
-        <button>Choose date JSX</button>
-        <CoreToggle hidden popup className="my-popup">
-          <CoreDatepicker
-            timestamp={this.state.date.getTime()}
-            disabled={(date) => date <= this.today}
-            months={[
-                "January",
-                "February",
-                "March",
-                "April",
-                "May",
-                "June",
-                "July",
-                "August",
-                "September",
-                "October",
-                "November",
-                "December"
-            ]}
-            days={[
-                "Mon",
-                "Tue",
-                "Wed",
-                "Thu",
-                "Fri",
-                "Sat",
-                "Sun"
-            ]}
-            onDatepickerChange={this.onChange}>
-              <button type="button" onClick={() => console.log(this.state) || this.setState({ odd: !this.state.odd })}>Toggle</button>
-              <label>Year<input type="year" /></label>
-              <label>Month<select></select></label>
-              <table></table>
-          </CoreDatepicker>
-        </CoreToggle>
       </div>
     }
   }
