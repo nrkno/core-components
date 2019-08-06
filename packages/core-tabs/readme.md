@@ -91,11 +91,12 @@ Using static registers the custom element with default name automatically:
 <core-tabs>
   <button>Tab 1</button>                  <!-- Tab elements must be <a> or <button>. Do not use <li> -->
   <a href="#">Tab 2</a>
-  <button>Tab 2</button>
+  <button>Tab 3</button>
+  <button for="panel-2">Tab 4</button>    <!-- Point to a specific tabpanel -->
 </core-tabs>
 <div>Tabpanel 1 content</div>             <!-- First tabpanel is the next element sibling of core-tabs -->
-<div hidden>Tabpanel 1 content</div>      <!-- Second tabpanel. Use hidden attribute to prevent FOUC -->
-<div hidden>Tabpanel 1 content</div>      <!-- Third tabpanel.  Use hidden attribute to prevent FOUC -->
+<div hidden>Tabpanel 2 content</div>      <!-- Second tabpanel. Use hidden attribute to prevent FOUC -->
+<div hidden id="panel-2">Tabpanel 3 content</div>      <!-- Third tabpanel. ID used to connect to tab 4 -->
 ```
 
 ```js
@@ -122,7 +123,7 @@ myTabs.tab = myTab    // Set active tab from element
 import CoreTabs from '@nrk/core-tabs/jsx'
 
 <CoreTabs
-  tab={Number|String|Element}   // Optional. Sets active tab from number, id or element
+  for={Number|String}           // Optional. Sets active tab from number or id
   onTabsToggle={Function}>      // Optional. Listen to toggle event
   <button>Tab 1</button>        // Tab elements must be <a> or <button>. Do not use <li>
   <a href="#">Tab 2</a>

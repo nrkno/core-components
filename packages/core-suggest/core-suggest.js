@@ -50,9 +50,9 @@ export default class CoreSuggest extends HTMLElement {
     return (this._input = this.id && document.querySelector(`input[list=${this.id}]`)) || this.previousElementSibling
   }
 
+  // Always return string consistent with .value or .className
   get ajax () { return this.getAttribute('ajax') || '' }
 
-  // Always return string consistent with .value or .className
   set ajax (url) { this.setAttribute('ajax', url) }
 
   get limit () { return Math.max(0, this.getAttribute('limit')) || Infinity }

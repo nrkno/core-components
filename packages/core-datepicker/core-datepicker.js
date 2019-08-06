@@ -1,4 +1,4 @@
-import { addStyle, closest, escapeHTML, dispatchEvent, toggleAttribute, queryAll } from '../utils'
+import { addStyle, closest, dispatchEvent, toggleAttribute, queryAll } from '../utils'
 import parse from '@nrk/simple-date-parse'
 
 const MASK = { year: '*-m-d', month: 'y-*-d', day: 'y-m-*', hour: '*:m', minute: 'h:*', second: 'h:m:*', timestamp: '*', null: '*' }
@@ -65,9 +65,9 @@ export default class CoreDatepicker extends HTMLElement {
 
   get timestamp () { return String(this._date.getTime()) }
 
+  // Stringify for consistency and for truthy '0'
   get year () { return String(this._date.getFullYear()) }
 
-  // Stringify for consistency and for truthy '0'
   get month () { return pad(this._date.getMonth() + 1) }
 
   get day () { return pad(this._date.getDate()) }
@@ -93,10 +93,11 @@ export default class CoreDatepicker extends HTMLElement {
 
 const pad = (val) => `0${val}`.slice(-2)
 const forEach = (css, self, fn) => [].forEach.call(document.getElementsByTagName(css), (el) => {
-  if (self.contains(el) || self.id === el.getAttribute(self.external)) fn(self, el, self._date)
+  if (self.contains(el) || self.id === el.getAttribute(self.external)) fn(self, el)
 })
 
 function button (self, el) {
+  if (!el.value) return // Skip buttons without a set value
   el.type = 'button' // Ensure forms are not submitted by datepicker-buttons
   el.disabled = self.disabled(el.value)
 }
@@ -117,7 +118,7 @@ function input (self, el) {
 function table (self, table) {
   if (!table.firstElementChild) {
     table.innerHTML = `
-    <caption></caption><thead><tr><th>${self.days.map(escapeHTML).join('</th><th>')}</th></tr></thead>
+    <caption></caption><thead><tr>${Array(8).join('</th><th>')}</tr></thead>
     <tbody>${Array(7).join(`<tr>${Array(8).join('<td><button type="button"></button></td>')}</tr>`)}</tbody>`
   }
 
@@ -126,6 +127,7 @@ function table (self, table) {
   const day = self.parse('y-m-1 mon') // Monday in first week of month
   table.caption.textContent = `${self.months[month]}, ${self.year}`
 
+  queryAll('th', table).forEach((th, day) => (th.textContent = self.days[day]))
   queryAll('button', table).forEach((button) => {
     const isSelected = !self.diff(day)
     const dayInMonth = day.getDate()
@@ -145,12 +147,14 @@ function table (self, table) {
 
 function select (self, select) {
   if (!select.firstElementChild) {
+    select._autofill = true
     select.innerHTML = self.months.map((name, month) =>
-      `<option value="y-${month + 1}-d">${escapeHTML(name)}</option>`
+      `<option value="y-${month + 1}-d"></option>`
     ).join('')
   }
 
-  queryAll(select.children).forEach((option) => {
+  queryAll(select.children).forEach((option, month) => {
+    if (select._autofill) option.textContent = self.months[month]
     option.disabled = self.disabled(option.value)
     option.selected = !self.diff(option.value)
   })
