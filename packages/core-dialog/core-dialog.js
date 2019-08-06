@@ -15,11 +15,13 @@ export default class CoreDialog extends HTMLElement {
     document.addEventListener('click', this)
     if (this._open) this.attributeChangedCallback(true) // Ensure correct setup backdrop
   }
+
   disconnectedCallback () {
     this.removeEventListener('transitionend', this)
     document.removeEventListener('keydown', this)
     document.removeEventListener('click', this)
   }
+
   attributeChangedCallback (force) {
     if (this._open === this.hidden || force === true) { // this._open comparison ensures actual change
       const opener = document.querySelector(`[${this._opener}]`)
@@ -46,6 +48,7 @@ export default class CoreDialog extends HTMLElement {
       if (force !== true) dispatchEvent(this, 'dialog.toggle')
     }
   }
+
   handleEvent (event) {
     if (event.defaultPrevented) return
     if (event.type === 'transitionend' && event.target === this && !this.hidden) setFocus(this)
@@ -69,21 +72,29 @@ export default class CoreDialog extends HTMLElement {
   }
 
   close () { this.hidden = true }
+
   show () { this.modal = this.hidden = false }
+
   showModal () {
     this.modal = true
     this.hidden = false
   }
 
   get open () { return !this.hidden }
+
   set open (val) { this.hidden = !val }
+
   get modal () { return this.getAttribute('aria-modal') !== 'false' }
+
   set modal (val) { this.setAttribute('aria-modal', Boolean(val)) }
+
   get strict () { return this.hasAttribute('strict') }
+
   set strict (val) { this.toggleAttribute('strict', val) }
 
   // Must set attribute for IE11
   get hidden () { return this.hasAttribute('hidden') }
+
   set hidden (val) { this.toggleAttribute('hidden', val) }
 
   get backdrop () {

@@ -22,6 +22,7 @@ export default class CoreSuggest extends HTMLElement {
     setTimeout(() => onMutation(this)) // Ensure limit is respected
     if (document.activeElement === this.input) this.hidden = false // Open if active
   }
+
   disconnectedCallback () {
     this._input = this._regex = null
     this._observer.disconnect()
@@ -30,15 +31,18 @@ export default class CoreSuggest extends HTMLElement {
     document.removeEventListener('keydown', this)
     document.removeEventListener('focusin', this)
   }
+
   attributeChangedCallback (name, prev, next) {
     if (this._observer) this.input.setAttribute('aria-expanded', !this.hidden)
   }
+
   handleEvent (event) {
     if (event.ctrlKey || event.altKey || event.metaKey || event.defaultPrevented) return
     if (event.type === 'focusin' || event.type === 'click') onClick(this, event)
     if (event.type === 'keydown') onKey(this, event)
     if (event.type === 'input') onInput(this, event)
   }
+
   escapeHTML (str) { return escapeHTML(str) }
 
   get input () {
@@ -46,14 +50,18 @@ export default class CoreSuggest extends HTMLElement {
     return (this._input = this.id && document.querySelector(`input[list=${this.id}]`)) || this.previousElementSibling
   }
 
-  get ajax () { return this.getAttribute('ajax') || '' } // Always return string consistent with .value or .className
+  // Always return string consistent with .value or .className
+  get ajax () { return this.getAttribute('ajax') || '' }
+
   set ajax (url) { this.setAttribute('ajax', url) }
 
   get limit () { return Math.max(0, this.getAttribute('limit')) || Infinity }
+
   set limit (int) { this.setAttribute('limit', int) }
 
   // Must set attribute for IE11
   get hidden () { return this.hasAttribute('hidden') }
+
   set hidden (val) { this.toggleAttribute('hidden', val) }
 }
 

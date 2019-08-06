@@ -14,11 +14,13 @@ export default class CoreToggle extends HTMLElement {
     document.addEventListener('keydown', this, true) // Use capture to enable checking defaultPrevented (from ESC key) in parents
     document.addEventListener('click', this)
   }
+
   disconnectedCallback () {
     this._button = null
     document.removeEventListener('keydown', this, true)
     document.removeEventListener('click', this)
   }
+
   attributeChangedCallback () {
     if (this._open === this.hidden) { // this._open comparison ensures actual change
       this.button.setAttribute('aria-expanded', this._open = !this.hidden)
@@ -26,6 +28,7 @@ export default class CoreToggle extends HTMLElement {
       dispatchEvent(this, 'toggle')
     }
   }
+
   handleEvent (event) {
     if (event.defaultPrevented) return
     if (event.type === 'keydown' && event.keyCode === 27) {
@@ -44,6 +47,7 @@ export default class CoreToggle extends HTMLElement {
       else if (this.popup && !this.contains(event.target)) this.hidden = true // Click in content or outside
     }
   }
+
   get button () {
     if (this._button && this._button.getAttribute('for') === this.id) return this._button // Speed up
     return (this._button = this.id && document.querySelector(`[for="${this.id}"]`)) || this.previousElementSibling
@@ -51,16 +55,19 @@ export default class CoreToggle extends HTMLElement {
 
   // aria-haspopup triggers forms mode in JAWS, therefore store as custom attr
   get popup () { return this.getAttribute('popup') === 'true' || this.getAttribute('popup') || this.hasAttribute('popup') }
+
   set popup (val) { this[val === false ? 'removeAttribute' : 'setAttribute']('popup', val) }
 
   // Must set attribute for IE11
   get hidden () { return this.hasAttribute('hidden') }
+
   set hidden (val) { this.toggleAttribute('hidden', val) }
 
   // Sets this.button aria-label, so visible button text can be augmentet with intension of button
   // Example: Button text: "01.02.2019", aria-label: "01.02.2019, Choose date"
   // Does not updates aria-label if not allready set to something else than this.popup
   get value () { return this.button.value || this.button.textContent }
+
   set value (data = false) {
     if (!this.button || !this.popup.length) return
     const button = this.button

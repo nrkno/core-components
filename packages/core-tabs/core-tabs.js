@@ -10,6 +10,7 @@ export default class CoreTabs extends HTMLElement {
     this.addEventListener('keydown', this)
     setTimeout(() => this.connectedChildren())
   }
+
   connectedChildren () {
     let next = this
     this.tabs.forEach((tab, index) => {
@@ -23,10 +24,12 @@ export default class CoreTabs extends HTMLElement {
     })
     this.tab = this.tab // Setup open
   }
+
   disconnectedCallback () {
     this.removeEventListener('click', this)
     this.removeEventListener('keydown', this)
   }
+
   handleEvent (event) {
     if (event.defaultPrevented || event.ctrlKey || event.altKey || event.metaKey) return
     if (event.type === 'click') this.tab = closest(event.target, '[role="tab"]')
@@ -49,9 +52,13 @@ export default class CoreTabs extends HTMLElement {
   }
 
   get panels () { return this.tabs.map((tab) => document.getElementById(tab.getAttribute('aria-controls'))) }
+
   get panel () { return this.panels.filter((panel) => !panel.hasAttribute('hidden'))[0] }
+
   get tabs () { return queryAll('button,a', this) }
+
   get tab () { return document.getElementById(this.panel.getAttribute(FROM)) }
+
   set tab (value) {
     if (!value) return
     const panels = this.panels
