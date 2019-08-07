@@ -166,10 +166,17 @@ function onAjax (self) {
 function onAjaxSend (self, ajax) {
   if (!self.input.value) return // Abort if input is empty
   if (dispatchEvent(self, 'suggest.ajax.beforeSend', ajax)) {
+    ajax.onerror = () => dispatchEvent(self, 'suggest.ajax.error', ajax)
     ajax.onload = () => {
-      try { ajax.responseJSON = JSON.parse(ajax.responseText) } catch (err) { ajax.responseJSON = false }
+      if (ajax.status !== 200) return dispatchEvent(self, 'suggest.ajax.error', ajax)
+      try {
+        ajax.responseJSON = JSON.parse(ajax.responseText)
+      } catch (err) {
+        ajax.responseJSON = false
+        const detail = Object.assign({}, ajax, { statusText: err.toString() }) // Don't modify global ajax status text
+        dispatchEvent(self, 'suggest.ajax.error', detail)
+      }
       dispatchEvent(self, 'suggest.ajax', ajax)
-      // onMutation(self)
     }
     ajax.open('GET', self.ajax.replace('{{value}}', window.encodeURIComponent(self.input.value)), true)
     ajax.setRequestHeader('X-Requested-With', 'XMLHttpRequest') // https://en.wikipedia.org/wiki/List_of_HTTP_header_fields#Requested-With
