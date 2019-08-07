@@ -126,7 +126,7 @@ test('triggers ajax error on bad url', withPage, async (t, page) => {
     <core-suggest ajax="https://foo" hidden></core-suggest>
   `)
   await page.evaluate(() => {
-    document.addEventListener('suggest.ajax.error', () => window.dispatched = true)
+    document.addEventListener('suggest.ajax.error', () => (window.dispatched = true))
   })
   await page.type('input', 'abc')
   await page.waitForFunction('window.dispatched === true')
@@ -138,10 +138,10 @@ test('triggers ajax error on bad status', withPage, async (t, page) => {
     <input type="text">
     <core-suggest ajax="http://bad-status" hidden></core-suggest>
   `)
-  await page.setRequestInterception(true);
+  await page.setRequestInterception(true)
   page.on('request', (request) => request.respond({ status: 404 }))
   await page.evaluate(() => {
-    document.addEventListener('suggest.ajax.error', () => window.dispatched = true)
+    document.addEventListener('suggest.ajax.error', () => (window.dispatched = true))
   })
   await page.type('input', 'abc')
   await page.waitForFunction('window.dispatched === true')
@@ -153,10 +153,10 @@ test('triggers ajax error on bad json', withPage, async (t, page) => {
     <input type="text">
     <core-suggest ajax="http://bad-json" hidden></core-suggest>
   `)
-  await page.setRequestInterception(true);
+  await page.setRequestInterception(true)
   page.on('request', (request) => request.respond({ body: 'not json' }))
   await page.evaluate(() => {
-    document.addEventListener('suggest.ajax.error', () => window.dispatched = true)
+    document.addEventListener('suggest.ajax.error', () => (window.dispatched = true))
   })
   await page.type('input', 'abc')
   await page.waitForFunction('window.dispatched === true')
