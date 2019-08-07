@@ -129,6 +129,7 @@ import CoreSuggest from '@nrk/core-suggest/jsx'
              onSuggestFilter={Function}           // See 'suggest.filter' event
              onSuggestSelect={Function}           // See 'suggest.select' event
              onSuggestAjax={Function}             // See 'suggest.ajax' event
+             onSuggestAjaxError={Function}        // See 'suggest.ajax.error' event
              onSuggestAjaxBeforeSend={Function}>  // See 'suggest.ajax.beforeSend' event
   <ul>                    // Next element will be used for items. Accepts both elements and components
     <li><button>Item 1</button></li>                  // Interactive items must be <button> or <a>
@@ -208,6 +209,19 @@ document.addEventListener('suggest.ajax', (event) => {
   event.detail.responseJSON  // The response json. Defaults to false if no valid JSON found
 })
 ```
+
+### suggest.ajax.error
+Fired when the request fails either due to a bad URL, non-200 status or a bad JSON response body:
+
+```js
+document.addEventListener('suggest.ajax.error', (event) => {
+  event.target  // The core-suggest element triggering suggest.ajax event
+  event.detail  // The ajax request
+  event.detail.status       // The response status code
+  event.detail.statusText   // The response status text
+})
+```
+
 
 ## Styling
 All styling in documentation is example only. Both the `<button>` and content element receive attributes reflecting the current toggle state:
