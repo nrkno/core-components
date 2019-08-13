@@ -57,14 +57,14 @@ demo-->
 <!--demo-->
 <!-- Normal -->
 <button for="my-dialog">Open dialog</button>
-<core-dialog id="my-dialog" class="my-dialog" aria-label="første dialog tittel" hidden>
+<core-dialog id="my-dialog" class="my-dialog" aria-label="first dialog title" hidden>
   <h1>This is a title</h1>
   <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
   <button for="my-dialog-nested">Open an additional dialog</button>
   <button type="button" autofocus style="visibility: hidden">Should not be focusable</button>
   <button type="button" autofocus>Autofocus</button>
   <button for="close">Close</button>
-  <core-dialog id="my-dialog-nested" class="my-dialog" aria-label="andre dialog title" hidden>
+  <core-dialog id="my-dialog-nested" class="my-dialog" aria-label="other dialog title" hidden>
     <h1>Another dialog, triggered inside the first dialog</h1>
     <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero.</p>
     <button for="close">Close</button>
@@ -103,7 +103,6 @@ demo-->
 <div id="jsx-dialog"></div>
 <div id="jsx-dialog-strict"></div>
 <script type="text/jsx">
-  // document.addEventListener('dialog.toggle', console.log)
   class DialogContainerDemo extends React.Component {
     constructor (props) {
       super(props)
@@ -248,7 +247,7 @@ Though not strictly required, the `<button>` opening a dialog should be placed d
 
 ### Backdrop
 
-`core-dialog` automatically creates a `<backdrop>` element as next adjacent sibling if needed to paint an backdrop. If the `backdrop` attribute is set to an `id` (somehting else than `true|false`), the element with the corresponding ID will be used as backdrop. Note that a backdrop is needed to enable click-outside-to-close. Custom backdrop example:
+`core-dialog` automatically creates a `<backdrop>` element as next adjacent sibling if needed. If the `backdrop` attribute is set to an `id` (somehting else than `true|false`), the element with the corresponding ID will be used as backdrop. Note that a backdrop is needed to enable click-outside-to-close. Custom backdrop example:
 ```
 <core-dialog backdrop="my-backdrop"></core-dialog>
 <div id="my-backdrop"></div>
