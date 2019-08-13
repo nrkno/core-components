@@ -146,6 +146,13 @@ demo-->
       <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
       <button for="close">Lukk</button>
     </CoreDialog>
+    <br />
+    <button for="dialog-cust">Open no backdrop</button>
+    <CoreDialog id="dialog-cust" className="my-dialog" aria-label="React dialog without backdrop" backdrop={false} hidden>
+      <h1>Strict dialog for JSX</h1>
+      <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
+      <button for="close">Lukk</button>
+    </CoreDialog>
   </div>, document.getElementById('jsx-dialog-strict'))
 </script>
 ```
