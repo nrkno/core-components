@@ -72,7 +72,7 @@ npm install @nrk/core-toggle  # Using NPM
 Using static registers the custom element with default name automatically:
 
 ```html
-<script src="https://static.nrk.no/core-components/major/6/core-toggle/core-toggle.min.js"></script>  <!-- Using static -->
+<script src="https://static.nrk.no/core-components/major/7/core-toggle/core-toggle.min.js"></script>  <!-- Using static -->
 ```
 
 ## Usage

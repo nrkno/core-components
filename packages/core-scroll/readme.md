@@ -149,7 +149,7 @@ npm install @nrk/core-scroll  # Using NPM
 Using static registers the custom element with default name automatically:
 
 ```html
-<script src="https://static.nrk.no/core-components/major/6/core-scroll/core-scroll.min.js"></script>  <!-- Using static -->
+<script src="https://static.nrk.no/core-components/major/7/core-scroll/core-scroll.min.js"></script>  <!-- Using static -->
 ```
 
 ## Usage

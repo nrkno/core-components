@@ -68,7 +68,7 @@ npm install @nrk/core-suggest  # Using NPM
 Using static registers the custom element with default name automatically:
 
 ```html
-<script src="https://static.nrk.no/core-components/major/6/core-suggest/core-suggest.min.js"></script>  <!-- Using static -->
+<script src="https://static.nrk.no/core-components/major/7/core-suggest/core-suggest.min.js"></script>  <!-- Using static -->
 ```
 
 

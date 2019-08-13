@@ -80,7 +80,7 @@ npm install @nrk/core-tabs  # Using NPM
 Using static registers the custom element with default name automatically:
 
 ```html
-<script src="https://static.nrk.no/core-components/major/6/core-tabs/core-tabs.min.js"></script>  <!-- Using static -->
+<script src="https://static.nrk.no/core-components/major/7/core-tabs/core-tabs.min.js"></script>  <!-- Using static -->
 ```
 
 ## Usage
