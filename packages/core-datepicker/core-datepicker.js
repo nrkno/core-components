@@ -1,4 +1,4 @@
-import { addStyle, closest, dispatchEvent, queryAll } from '../utils'
+import { addStyle, closest, dispatchEvent, toggleAttribute, queryAll } from '../utils'
 import parse from '@nrk/simple-date-parse'
 
 const MASK = { year: '*-m-d', month: 'y-*-d', day: 'y-m-*', hour: '*:m', minute: 'h:*', second: 'h:m:*', timestamp: '*', null: '*' }
@@ -65,7 +65,8 @@ export default class CoreDatepicker extends HTMLElement {
 
   get timestamp () { return String(this._date.getTime()) }
 
-  get year () { return String(this._date.getFullYear()) } // Stringify for consistency and for truthy '0'
+  // Stringify for consistency and for truthy '0'
+  get year () { return String(this._date.getFullYear()) }
 
   get month () { return pad(this._date.getMonth() + 1) }
 
@@ -139,7 +140,7 @@ function table (self, table) {
     button.setAttribute(`data-adjacent`, month !== dayMonth)
     button.setAttribute('aria-label', `${dayInMonth}. ${self.months[dayMonth]}`)
     button.setAttribute('aria-current', day.getDate() === today.getDate() && day.getMonth() === today.getMonth() && day.getFullYear() === today.getFullYear() && 'date')
-    button.toggleAttribute('autofocus', isSelected)
+    toggleAttribute(button, 'autofocus', isSelected)
     day.setDate(dayInMonth + 1)
   })
 }

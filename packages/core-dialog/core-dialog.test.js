@@ -92,16 +92,16 @@ test('closes nested with esc', withPage, async (t, page) => {
   t.true(await page.$eval('#dialog-outer', el => el.hasAttribute('hidden')))
 })
 
-test('respects aria-modal option', withPage, async (t, page) => {
+test('respects backdrop false option', withPage, async (t, page) => {
   await page.setContent(`
     <button for="dialog">Open</button>
-    <core-dialog id="dialog" aria-modal="false" hidden>
+    <core-dialog id="dialog" backdrop="false" hidden>
       <button for="close">Close</button>
     </core-dialog>
   `)
   await page.click('button[for="dialog"]')
   t.false(await page.$eval('core-dialog', el => el.hasAttribute('hidden')))
-  t.true(await page.$eval('core-dialog + backdrop', el => el.hasAttribute('hidden')))
+  t.false(await page.$eval('core-dialog', el => Boolean(el.nextElementSibling)))
 })
 
 test('respects strict option', withPage, async (t, page) => {

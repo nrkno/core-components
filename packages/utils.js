@@ -2,14 +2,6 @@ export const IS_BROWSER = typeof window !== 'undefined'
 export const IS_ANDROID = IS_BROWSER && /(android)/i.test(navigator.userAgent) // Bad, but needed
 export const IS_IOS = IS_BROWSER && /iPad|iPhone|iPod/.test(String(navigator.platform))
 
-// Polyfill toggleAttribute for IE
-if (IS_BROWSER && !window.Element.prototype.toggleAttribute) {
-  window.Element.prototype.toggleAttribute = function (name, force = !this.hasAttribute(name)) {
-    if (!force === this.hasAttribute(name)) this[force ? 'setAttribute' : 'removeAttribute'](name, '')
-    return force
-  }
-}
-
 // Mock HTMLElement for Node
 if (!IS_BROWSER && !global.HTMLElement) {
   global.HTMLElement = class {}
@@ -118,8 +110,21 @@ export function throttle (callback, ms) {
 }
 
 /**
+ * toggleAttribute (Ponyfill for IE and Edge, fixes #299)
+ * @link https://developer.mozilla.org/en-US/docs/Web/API/Element/toggleAttribute
+ * @param {Element} el  Single DOM Element
+ * @param {String} name The name of the attribute to be toggled
+ * @param {Boolean} force Force attribute to be added or removed regardless of previous state
+ */
+export function toggleAttribute (el, name, force = !this.hasAttribute(name)) {
+  if (!force === el.hasAttribute(name)) el[force ? 'setAttribute' : 'removeAttribute'](name, '')
+  return force
+}
+
+/**
 * queryAll
 * @param {String|NodeList|Array|Element} elements A CSS selector string, nodeList, element array, or single element
+* @param {Element} context Node to look for elements within
 * @return {Element[]} Array of elements
 */
 export function queryAll (elements, context = document) {

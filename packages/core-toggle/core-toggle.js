@@ -1,4 +1,4 @@
-import { IS_ANDROID, IS_IOS, closest, dispatchEvent, getUUID } from '../utils'
+import { IS_ANDROID, IS_IOS, closest, dispatchEvent, getUUID, toggleAttribute } from '../utils'
 
 export default class CoreToggle extends HTMLElement {
   static get observedAttributes () { return ['hidden'] }
@@ -61,7 +61,7 @@ export default class CoreToggle extends HTMLElement {
   // Must set attribute for IE11
   get hidden () { return this.hasAttribute('hidden') }
 
-  set hidden (val) { this.toggleAttribute('hidden', val) }
+  set hidden (val) { toggleAttribute(this, 'hidden', val) }
 
   // Sets this.button aria-label, so visible button text can be augmentet with intension of button
   // Example: Button text: "01.02.2019", aria-label: "01.02.2019, Choose date"
