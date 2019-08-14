@@ -182,7 +182,7 @@ Using static registers the custom element with default name automatically:
 <core-dialog id="my-dialog"
              hidden                    <!-- Hide dialog by default -->
              strict                    <!-- Optional. If true, prevents the dialog from closing on ESC-key and on backdrop click -->
-             backdrop="{false|ID}"     <!-- Optional. false disables backdrop, ID points to backdrop element -->
+             backdrop="{Boolean|ID}"   <!-- Optional. If true enable backdrop, else disable. Enable custom backdrop by ID -->
              aria-label="{String}">    <!-- Optional. Is read by screen readers -->
   <h1>Title of dialog</h1>
   <p>Some content</p>
@@ -202,9 +202,10 @@ myDialog.strict         // True if strict
 myDialog.backdrop       // Get backdrop element (if enabled) (see "Markup" for more info)
 
 // Setters
-myDialog.hidden = false // Open dialog
-myDialog.strict = false // Set strict mode
-myDialog.backdrop = false | true | id // Set to disable/enable backdrop
+myDialog.hidden = false           // Open dialog
+myDialog.strict = false           // Set strict mode
+myDialog.backdrop = false         // Disable backdrop
+myDialog.backdrop = 'my-backdrop' // Enable custom backdrop by ID
 
 // Methods
 myDialog.close()        // Close dialog
@@ -220,7 +221,7 @@ import CoreDialog from '@nrk/core-dialog/jsx'
 <CoreDialog id="my-dialog"
             hidden                            // Hide dialog by default
             strict                            // Optional. If true, prevents the dialog from closing on ESC-key and on backdrop click
-            backdrop={false}                  // Optional. Set to disable backdrop
+            backdrop={Boolean|ID}             // Optional. If true enable backdrop, else disable. Enable custom backdrop by ID
             aria-label={String}               // Optional. Is read by screen readers
             onDialogToggle={Function}>        // Optional. Toggle event handler. See event 'dialog.toggle'
   <h1>My React/Preact dialog</h1>
@@ -247,7 +248,7 @@ Though not strictly required, the `<button>` opening a dialog should be placed d
 
 ### Backdrop
 
-`core-dialog` automatically creates a `<backdrop>` element as next adjacent sibling if needed. If the `backdrop` attribute is set to an `id` (somehting else than `true|false`), the element with the corresponding ID will be used as backdrop. Note that a backdrop is needed to enable click-outside-to-close. Custom backdrop example:
+`core-dialog` automatically creates a `<backdrop>` element as next adjacent sibling if needed. If the `backdrop` attribute is set to an `id` (something else than `true|false`), the element with the corresponding ID will be used as backdrop. Note that a backdrop is needed to enable click-outside-to-close. Custom backdrop example:
 ```
 <core-dialog backdrop="my-backdrop"></core-dialog>
 <div id="my-backdrop"></div>
