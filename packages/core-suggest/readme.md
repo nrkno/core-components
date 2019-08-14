@@ -212,8 +212,7 @@ document.addEventListener('suggest.ajax', (event) => {
 ```
 
 ### suggest.ajax.error
-Fired when the request fails either due to a bad request (bad URL, non-200 response) or an
-XHR error or a JSON parse error:
+Fired when the request fails either due to a bad request (bad URL, non-200 response), an AJAX error or a JSON parse error. Inspect `xhr.status` and `xhr.statusText` for bad requests and `xhr.responseError` for other errors:
 
 ```js
 document.addEventListener('suggest.ajax.error', (event) => {
@@ -221,7 +220,7 @@ document.addEventListener('suggest.ajax.error', (event) => {
   event.detail  // The XMLHttpRequest object
   event.detail.status         // The response status code
   event.detail.statusText     // The response status text
-  event.detail.error          // The error message for XHR errors/JSON parse errors
+  event.detail.responseError  // The error message for ajax errors/json parse errors
 })
 ```
 
@@ -229,10 +228,10 @@ document.addEventListener('suggest.ajax.error', (event) => {
 // Example
 document.addEventListener('suggest.ajax.error', (event) => {
   const xhr = event.detail
-  if (xhr.status !== 200) {     // Bad request
-    console.log(xhr.statusText) // Log status text
-  } else if (xhr.error) {       // Other error (XHR error/JSON parse error)
-    console.log(xhr.error)      // Log error message
+  if (xhr.status !== 200) {             // Bad request
+    console.log(xhr.statusText)         // Log status text
+  } else if (xhr.responseError) {       // Other error (ajax error/json parse error)
+    console.log(xhr.responseError)      // Log error message
   }
 })
 ```
