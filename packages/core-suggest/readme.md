@@ -182,7 +182,7 @@ Fired before sending debounced ajax requests. If you wish to alter the [XMLHttpR
 
 ```js
 document.addEventListener('suggest.ajax.beforeSend', (event) => {
-  event.target  // The core-suggest element triggering suggest.ajax.beforeSend event
+  event.target  // The core-suggest element
   event.detail  // The XMLHttpRequest object
 })
 ```
@@ -190,11 +190,12 @@ document.addEventListener('suggest.ajax.beforeSend', (event) => {
 ```js
 // Example
 document.addEventListener('suggest.ajax.beforeSend', (event) => {
+  const xhr = event.detail
   event.preventDefault() // Stop default behaviour
-  event.detail.open('POST', 'https://example.com')
-  event.detail.setRequestHeader('Content-Type', 'application/json')
-  event.detail.setRequestHeader('my-custom-header', 'my-custom-value')
-  event.detail.send(JSON.stringify({query: event.target.value}))
+  xhr.open('POST', 'https://example.com')
+  xhr.setRequestHeader('Content-Type', 'application/json')
+  xhr.setRequestHeader('my-custom-header', 'my-custom-value')
+  xhr.send(JSON.stringify({query: event.target.value}))
 })
 ```
 
@@ -203,22 +204,35 @@ Fired when the input field receives data from ajax:
 
 ```js
 document.addEventListener('suggest.ajax', (event) => {
-  event.target  // The core-suggest element triggering suggest.ajax event
-  event.detail  // The ajax request
+  event.target  // The core-suggest element
+  event.detail  // The XMLHttpRequest object
   event.detail.responseText  // The response body text
   event.detail.responseJSON  // The response json. Defaults to false if no valid JSON found
 })
 ```
 
 ### suggest.ajax.error
-Fired when the request fails either due to a bad URL, non-200 status or a bad JSON response body:
+Fired when the request fails either due to a bad request (bad URL, non-200 status code) or a bad JSON response body:
 
 ```js
 document.addEventListener('suggest.ajax.error', (event) => {
-  event.target  // The core-suggest element triggering suggest.ajax event
-  event.detail  // The ajax request
-  event.detail.status       // The response status code
-  event.detail.statusText   // The response status text
+  event.target  // The core-suggest element
+  event.detail  // The XMLHttpRequest object
+  event.detail.status         // The response status code
+  event.detail.statusText     // The response status text
+  event.detail.responseError  // The response status error
+})
+```
+
+```js
+// Example
+document.addEventListener('suggest.ajax.error', (event) => {
+  const xhr = event.detail
+  if (xhr.status !== 200) {
+    // Bad request
+  } else if (xhr.responseError) {
+    // Bad JSON
+  }
 })
 ```
 

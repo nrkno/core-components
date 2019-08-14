@@ -9,6 +9,7 @@ export default class CoreSuggest extends HTMLElement {
   connectedCallback () {
     this._observer = new window.MutationObserver(() => onMutation(this)) // Enhance <a> and <button> markup
     this._observer.observe(this, { subtree: true, childList: true, attributes: true, attributeFilter: ['hidden'] })
+    this._xhr = new window.XMLHttpRequest()
 
     if (IS_IOS) this.input.setAttribute('role', 'combobox') // iOS does not inform about editability if combobox
     this.input.setAttribute('autocomplete', 'off')
@@ -23,7 +24,7 @@ export default class CoreSuggest extends HTMLElement {
     if (document.activeElement === this.input) this.hidden = false // Open if active
   }
   disconnectedCallback () {
-    this._input = this._regex = null
+    this._input = this._regex = this._xhr = null
     this._observer.disconnect()
     document.removeEventListener('click', this)
     document.removeEventListener('input', this)
@@ -156,30 +157,30 @@ function onClick (self, event) {
 
 function onAjax (self) {
   if (!self.ajax) return
-  clearTimeout(onAjax.time) // Clear previous search
-  onAjax.ajax = onAjax.ajax || new window.XMLHttpRequest()
-  onAjax.ajax.abort() // Abort previous request
-  onAjax.time = setTimeout(onAjaxSend, AJAX_DEBOUNCE, self, onAjax.ajax) // Debounce
+  clearTimeout(self._xhrTime) // Clear previous search
+  self._xhr.abort() // Abort previous request
+  self._xhr.responseError = null
+  self._xhrTime = setTimeout(onAjaxSend, AJAX_DEBOUNCE, self) // Debounce
   return true
 }
 
-function onAjaxSend (self, ajax) {
+function onAjaxSend (self) {
   if (!self.input.value) return // Abort if input is empty
-  if (dispatchEvent(self, 'suggest.ajax.beforeSend', ajax)) {
-    ajax.onerror = () => dispatchEvent(self, 'suggest.ajax.error', ajax)
-    ajax.onload = () => {
-      if (ajax.status !== 200) return dispatchEvent(self, 'suggest.ajax.error', ajax)
+  if (dispatchEvent(self, 'suggest.ajax.beforeSend', self._xhr)) {
+    self._xhr.onerror = () => dispatchEvent(self, 'suggest.ajax.error', self._xhr)
+    self._xhr.onload = () => {
+      if (self._xhr.status !== 200) return dispatchEvent(self, 'suggest.ajax.error', self._xhr)
       try {
-        ajax.responseJSON = JSON.parse(ajax.responseText)
+        self._xhr.responseJSON = JSON.parse(self._xhr.responseText)
       } catch (err) {
-        ajax.responseJSON = false
-        const detail = Object.assign({}, ajax, { statusText: err.toString() }) // Don't modify global ajax status text
-        dispatchEvent(self, 'suggest.ajax.error', detail)
+        self._xhr.responseJSON = false
+        self._xhr.responseError = err.toString()
+        dispatchEvent(self, 'suggest.ajax.error', self._xhr)
       }
-      dispatchEvent(self, 'suggest.ajax', ajax)
+      dispatchEvent(self, 'suggest.ajax', self._xhr)
     }
-    ajax.open('GET', self.ajax.replace('{{value}}', window.encodeURIComponent(self.input.value)), true)
-    ajax.setRequestHeader('X-Requested-With', 'XMLHttpRequest') // https://en.wikipedia.org/wiki/List_of_HTTP_header_fields#Requested-With
-    ajax.send()
+    self._xhr.open('GET', self.ajax.replace('{{value}}', window.encodeURIComponent(self.input.value)), true)
+    self._xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest') // https://en.wikipedia.org/wiki/List_of_HTTP_header_fields#Requested-With
+    self._xhr.send()
   }
 }
