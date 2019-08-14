@@ -221,7 +221,7 @@ document.addEventListener('suggest.ajax.error', (event) => {
   event.detail  // The XMLHttpRequest object
   event.detail.status         // The response status code
   event.detail.statusText     // The response status text
-  event.detail.error          // The error message (XHR)
+  event.detail.error          // The error message for XHR errors/JSON parse errors
 })
 ```
 
