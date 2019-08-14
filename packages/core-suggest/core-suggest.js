@@ -159,7 +159,7 @@ function onAjax (self) {
   if (!self.ajax) return
   clearTimeout(self._xhrTime) // Clear previous search
   self._xhr.abort() // Abort previous request
-  self._xhr.responseError = null
+  self._xhr.error = null
   self._xhrTime = setTimeout(onAjaxSend, AJAX_DEBOUNCE, self) // Debounce
   return true
 }
@@ -167,14 +167,17 @@ function onAjax (self) {
 function onAjaxSend (self) {
   if (!self.input.value) return // Abort if input is empty
   if (dispatchEvent(self, 'suggest.ajax.beforeSend', self._xhr)) {
-    self._xhr.onerror = () => dispatchEvent(self, 'suggest.ajax.error', self._xhr)
+    self._xhr.onerror = (error) => {
+      self._xhr.error = error.toString()
+      dispatchEvent(self, 'suggest.ajax.error', self._xhr)
+    }
     self._xhr.onload = () => {
       if (self._xhr.status !== 200) return dispatchEvent(self, 'suggest.ajax.error', self._xhr)
       try {
         self._xhr.responseJSON = JSON.parse(self._xhr.responseText)
-      } catch (err) {
+      } catch (error) {
         self._xhr.responseJSON = false
-        self._xhr.responseError = err.toString()
+        self._xhr.error = error.toString()
         dispatchEvent(self, 'suggest.ajax.error', self._xhr)
       }
       dispatchEvent(self, 'suggest.ajax', self._xhr)
