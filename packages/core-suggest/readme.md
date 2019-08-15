@@ -129,6 +129,7 @@ import CoreSuggest from '@nrk/core-suggest/jsx'
              onSuggestFilter={Function}           // See 'suggest.filter' event
              onSuggestSelect={Function}           // See 'suggest.select' event
              onSuggestAjax={Function}             // See 'suggest.ajax' event
+             onSuggestAjaxError={Function}        // See 'suggest.ajax.error' event
              onSuggestAjaxBeforeSend={Function}>  // See 'suggest.ajax.beforeSend' event
   <ul>                    // Next element will be used for items. Accepts both elements and components
     <li><button>Item 1</button></li>                  // Interactive items must be <button> or <a>
@@ -181,7 +182,7 @@ Fired before sending debounced ajax requests. If you wish to alter the [XMLHttpR
 
 ```js
 document.addEventListener('suggest.ajax.beforeSend', (event) => {
-  event.target  // The core-suggest element triggering suggest.ajax.beforeSend event
+  event.target  // The core-suggest element
   event.detail  // The XMLHttpRequest object
 })
 ```
@@ -189,11 +190,12 @@ document.addEventListener('suggest.ajax.beforeSend', (event) => {
 ```js
 // Example
 document.addEventListener('suggest.ajax.beforeSend', (event) => {
+  const xhr = event.detail
   event.preventDefault() // Stop default behaviour
-  event.detail.open('POST', 'https://example.com')
-  event.detail.setRequestHeader('Content-Type', 'application/json')
-  event.detail.setRequestHeader('my-custom-header', 'my-custom-value')
-  event.detail.send(JSON.stringify({query: event.target.value}))
+  xhr.open('POST', 'https://example.com')
+  xhr.setRequestHeader('Content-Type', 'application/json')
+  xhr.setRequestHeader('my-custom-header', 'my-custom-value')
+  xhr.send(JSON.stringify({query: event.target.value}))
 })
 ```
 
@@ -202,12 +204,38 @@ Fired when the input field receives data from ajax:
 
 ```js
 document.addEventListener('suggest.ajax', (event) => {
-  event.target  // The core-suggest element triggering suggest.ajax event
-  event.detail  // The ajax request
+  event.target  // The core-suggest element
+  event.detail  // The XMLHttpRequest object
   event.detail.responseText  // The response body text
   event.detail.responseJSON  // The response json. Defaults to false if no valid JSON found
 })
 ```
+
+### suggest.ajax.error
+Fired when the request fails either due to a bad request (bad URL, non-200 response), an AJAX error or a JSON parse error. Inspect `xhr.status` and `xhr.statusText` for bad requests and `xhr.responseError` for other errors:
+
+```js
+document.addEventListener('suggest.ajax.error', (event) => {
+  event.target  // The core-suggest element
+  event.detail  // The XMLHttpRequest object
+  event.detail.status         // The response status code
+  event.detail.statusText     // The response status text
+  event.detail.responseError  // The error message for ajax errors/json parse errors
+})
+```
+
+```js
+// Example
+document.addEventListener('suggest.ajax.error', (event) => {
+  const xhr = event.detail
+  if (xhr.status !== 200) {             // Bad request
+    console.log(xhr.statusText)         // Log status text
+  } else if (xhr.responseError) {       // Other error (ajax error/json parse error)
+    console.log(xhr.responseError)      // Log error message
+  }
+})
+```
+
 
 ## Styling
 All styling in documentation is example only. Both the `<button>` and content element receive attributes reflecting the current toggle state:

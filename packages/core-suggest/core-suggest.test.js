@@ -119,3 +119,46 @@ test('filters suggestions from limit option', withPage, async (t, page) => {
   t.false(await page.$eval('li:nth-child(3) button', el => el.hasAttribute('hidden')))
   t.true(await page.$eval('li:nth-child(4) button', el => el.hasAttribute('hidden')))
 })
+
+test('triggers ajax error on bad url', withPage, async (t, page) => {
+  await page.setContent(`
+    <input type="text">
+    <core-suggest ajax="https://foo" hidden></core-suggest>
+  `)
+  await page.evaluate(() => {
+    document.addEventListener('suggest.ajax.error', () => (window.dispatched = true))
+  })
+  await page.type('input', 'abc')
+  await page.waitForFunction('window.dispatched === true')
+  t.pass()
+})
+
+test('triggers ajax error on bad status', withPage, async (t, page) => {
+  await page.setContent(`
+    <input type="text">
+    <core-suggest ajax="http://bad-status" hidden></core-suggest>
+  `)
+  await page.setRequestInterception(true)
+  page.on('request', (request) => request.respond({ status: 404 }))
+  await page.evaluate(() => {
+    document.addEventListener('suggest.ajax.error', () => (window.dispatched = true))
+  })
+  await page.type('input', 'abc')
+  await page.waitForFunction('window.dispatched === true')
+  t.pass()
+})
+
+test('triggers ajax error on bad json', withPage, async (t, page) => {
+  await page.setContent(`
+    <input type="text">
+    <core-suggest ajax="http://bad-json" hidden></core-suggest>
+  `)
+  await page.setRequestInterception(true)
+  page.on('request', (request) => request.respond({ body: 'not json' }))
+  await page.evaluate(() => {
+    document.addEventListener('suggest.ajax.error', () => (window.dispatched = true))
+  })
+  await page.type('input', 'abc')
+  await page.waitForFunction('window.dispatched === true')
+  t.pass()
+})
