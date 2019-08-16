@@ -125,7 +125,7 @@ import CoreSuggest from '@nrk/core-suggest/jsx'
 <CoreSuggest id={String}                   // Suggestion list
              hidden={Boolean}              // Use hidden to toggle visibility
              limit={Number}                // Limit the maximum number of results in list.
-             ajax={String|Object}          // Fetches external data. See event 'suggest.ajax'. Example: 'https://search.com?q={{value}}'
+             ajax={String}                 // Fetches external data. See event 'suggest.ajax'. Example: 'https://search.com?q={{value}}'
              onSuggestFilter={Function}           // See 'suggest.filter' event
              onSuggestSelect={Function}           // See 'suggest.select' event
              onSuggestAjax={Function}             // See 'suggest.ajax' event
