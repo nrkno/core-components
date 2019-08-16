@@ -178,12 +178,12 @@ Using static registers the custom element with default name automatically:
 ### HTML / JavaScript
 
 ```html
-<button for="my-dialog">Open</button>  <!-- Opens dialog with id="my-dialog" -->
+<button for="my-dialog">Open</button>    <!-- Opens dialog with id="my-dialog" -->
 <core-dialog id="my-dialog"
-             hidden                    <!-- Hide dialog by default -->
-             strict                    <!-- Optional. If true, prevents the dialog from closing on ESC-key and on backdrop click -->
-             backdrop="{false|ID}"     <!-- Optional. false disables backdrop, ID points to backdrop element -->
-             aria-label="{String}">    <!-- Optional. Is read by screen readers -->
+             hidden                      <!-- Hide dialog by default -->
+             strict                      <!-- Optional. If set, prevents the dialog from closing on ESC-key and on backdrop click -->
+             backdrop="{Boolean|String}" <!-- Optional. If false, disables backdrop, string ID points to custom backdrop element -->
+             aria-label="{String}">      <!-- Optional. Is read by screen readers -->
   <h1>Title of dialog</h1>
   <p>Some content</p>
   <button for="close">Close dialog</button>   <!-- Closes dialog when for="close" -->
@@ -204,7 +204,7 @@ myDialog.backdrop       // Get backdrop element (if enabled) (see "Markup" for m
 // Setters
 myDialog.hidden = false // Open dialog
 myDialog.strict = false // Set strict mode
-myDialog.backdrop = false | true | id // Set to disable/enable backdrop
+myDialog.backdrop = false | true | 'my-drop' // Set boolean to enable/disable backdrop or string ID to point to custom backdrop element
 
 // Methods
 myDialog.close()        // Close dialog
@@ -219,8 +219,8 @@ import CoreDialog from '@nrk/core-dialog/jsx'
 <button for="my-dialog">Open</button>         // Opens dialog with id="my-dialog"
 <CoreDialog id="my-dialog"
             hidden                            // Hide dialog by default
-            strict                            // Optional. If true, prevents the dialog from closing on ESC-key and on backdrop click
-            backdrop={false}                  // Optional. Set to disable backdrop
+            strict                            // Optional. If set, prevents the dialog from closing on ESC-key and on backdrop click
+            backdrop={Boolean|String}         // Optional. If false, disables backdrop, string ID points to custom backdrop element
             aria-label={String}               // Optional. Is read by screen readers
             onDialogToggle={Function}>        // Optional. Toggle event handler. See event 'dialog.toggle'
   <h1>My React/Preact dialog</h1>
