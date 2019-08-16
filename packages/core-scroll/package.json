@@ -2,7 +2,7 @@
   "name": "@nrk/core-scroll",
   "homepage": "https://static.nrk.no/core-components/latest/",
   "author": "NRK <opensource@nrk.no> (https://www.nrk.no/)",
-  "version": "4.1.0",
+  "version": "4.1.1",
   "license": "MIT",
   "main": "core-scroll.cjs.js",
   "repository": {
