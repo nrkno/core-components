@@ -11,6 +11,7 @@
   "scripts": {
     "build": "rollup --config",
     "install": "node -r esm bin/index.js --install",
+    "outdated": "node -r esm bin/index.js --outdated",
     "publish:patch": "node -r esm bin/index.js --publish=patch",
     "publish:minor": "node -r esm bin/index.js --publish=minor",
     "publish:major": "node -r esm bin/index.js --publish=major",
@@ -21,7 +22,7 @@
   },
   "devDependencies": {
     "@babel/preset-env": "7.5.5",
-    "@nrk/custom-element-to-react": "1.0.8",
+    "@nrk/custom-element-to-react": "1.1.0",
     "ava": "2.2.0",
     "esm": "3.2.25",
     "fast-glob": "3.0.4",
