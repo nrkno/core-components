@@ -40,7 +40,6 @@ function getPackagePaths () {
 if (args.outdated) {
   pkgs.forEach((path) => {
     console.log(`Checking ${getPackageName(path)}`)
-    console.log(path);
     try { execSync('npm outdated', { cwd: path, stdio: 'inherit' }) } catch (_) {}
     console.log('')
   })
