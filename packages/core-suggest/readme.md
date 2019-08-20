@@ -16,7 +16,9 @@ label {display: block}
 </style>
 demo-->
 
-> `@nrk/core-suggest` enhances `<input>` fields with keyboard accessible functionality for autocomplete suggestions, search results and automatic highlighting.
+> `@nrk/core-suggest` enhances an input, providing keyboard accessible functionality for autocompletion,
+> search results and smart select box abilities and automatic highlighting. Results can be with fetched directly from markup
+> or from a custom endpoint with AJAX.
 
 
 ## Example
@@ -108,9 +110,9 @@ mySuggest.limit      // Get limit
 mySuggest.hidden     // Get hidden
 mySuggest.input      // Get input for suggest
 // Setters
-mySuggest.ajax = "https://search.com?q={{value}}"    // Set ajax endpoint URL for fetching external data
+mySuggest.ajax = "https://search.com?q={{value}}"    // Set ajax endpoint URL for fetching external data.
 mySuggest.limit = 5                                  // Set limit for results
-mySuggest.hidden = false                             // Set hidde value
+mySuggest.hidden = false                             // Set hidden value
 // Methods
 mySuggest.escapeHTML('<span>...</span>')             // Utility function for escaping HTML string
 ```
