@@ -210,6 +210,7 @@ const config = {
     path.resolve(__dirname, '..', 'packages/**/core-tabs.test.js'),
     path.resolve(__dirname, '..', 'packages/**/core-suggest.test.js'),
     path.resolve(__dirname, '..', 'packages/**/core-scroll.test.js'),
+    path.resolve(__dirname, '..', 'packages/**/core-progress.test.js'),
   ],
   // seleniumAddress: 'http://hub-cloud.browserstack.com/wd/hub',
   seleniumAddress: 'http://localhost:4444/wd/hub',
