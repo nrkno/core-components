@@ -136,8 +136,8 @@ describe('core-tabs', () => {
       })
       document.querySelector('core-tabs').tab = 1
     })
-    await expect(browser.isElementPresent($('i'))).toBe(true)
-    await expect($('i').getText()).toBe('tab-2')
+    await expect(browser.isElementPresent($('i'))).toEqual(true)
+    await expect($('i').getText()).toEqual('tab-2')
     await expect(browser.executeScript(() => document.querySelector('core-tabs').tab.id)).toEqual('tab-2')
   })
 })

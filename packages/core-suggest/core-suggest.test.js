@@ -84,7 +84,7 @@ describe('core-suggest', () => {
         </ul>
       </core-suggest>
     `)
-    await expect($$('button').map((el) => el.getAttribute('type'))).toEqual(['button', 'button', 'button'])
+    await $$('button').each((el) => expect(el.getAttribute('type')).toEqual('button'))
   })
 
   it('sets up and parses limit option', async () => {

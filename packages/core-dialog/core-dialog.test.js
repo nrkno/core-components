@@ -123,6 +123,6 @@ describe('core-dialog', () => {
       document.addEventListener('dialog.toggle', () => (document.body.appendChild(document.createElement('i'))))
       document.querySelector('core-dialog').hidden = false
     })
-    await expect(browser.isElementPresent($('i'))).toBe(true)
+    await expect(browser.isElementPresent($('i'))).toEqual(true)
   })
 })

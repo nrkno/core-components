@@ -136,7 +136,7 @@ describe('core-toggle', () => {
       document.addEventListener('toggle', () => (document.body.appendChild(document.createElement('i'))))
       document.querySelector('core-toggle').hidden = false
     })
-    await expect(browser.isElementPresent($('i'))).toBe(true)
+    await expect(browser.isElementPresent($('i'))).toEqual(true)
   })
 
   it('triggers select event', async () => {
@@ -154,7 +154,7 @@ describe('core-toggle', () => {
       toggle.hidden = false
       toggle.children[0].click()
     })
-    await expect(browser.isElementPresent($('i'))).toBe(true)
-    await expect($('i').getText()).toBe('my-item')
+    await expect(browser.isElementPresent($('i'))).toEqual(true)
+    await expect($('i').getText()).toEqual('my-item')
   })
 })

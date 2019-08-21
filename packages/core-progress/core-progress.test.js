@@ -68,7 +68,7 @@ describe('core-progress', () => {
       document.addEventListener('change', () => (document.body.appendChild(document.createElement('i'))))
       document.querySelector('core-progress').max = 2
     })
-    await expect(browser.isElementPresent($('i'))).toBe(false)
+    await expect(browser.isElementPresent($('i'))).toEqual(false)
   })
 
   it('triggers change event on value', async () => {
@@ -79,7 +79,7 @@ describe('core-progress', () => {
       document.addEventListener('change', () => (document.body.appendChild(document.createElement('i'))))
       document.querySelector('core-progress').value = 2
     })
-    await expect(browser.isElementPresent($('i'))).toBe(true)
+    await expect(browser.isElementPresent($('i'))).toEqual(true)
   })
 
   it('triggers change event on indeterminate value', async () => {
@@ -90,6 +90,6 @@ describe('core-progress', () => {
       document.addEventListener('change', () => (document.body.appendChild(document.createElement('i'))))
       document.querySelector('core-progress').value = 'Loading...'
     })
-    await expect(browser.isElementPresent($('i'))).toBe(true)
+    await expect(browser.isElementPresent($('i'))).toEqual(true)
   })
 })

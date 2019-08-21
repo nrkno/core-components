@@ -212,6 +212,7 @@ const config = {
     path.resolve(__dirname, '..', 'packages/**/core-scroll.test.js'),
     path.resolve(__dirname, '..', 'packages/**/core-progress.test.js'),
     path.resolve(__dirname, '..', 'packages/**/core-dialog.test.js'),
+    path.resolve(__dirname, '..', 'packages/**/core-datepicker.test.js'),
   ],
   // seleniumAddress: 'http://hub-cloud.browserstack.com/wd/hub', // To run tests remotely
   seleniumAddress: 'http://localhost:4444/wd/hub',                // For run locally. Start with 'npm run test:driver'
