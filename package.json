@@ -18,21 +18,19 @@
     "start": "rollup --config --watch",
     "static-publish": "npm run build && static-publish --directory=packages --account=nrk-core --latest --major",
     "test:driver": "webdriver-manger start",
-    "test:new": "node -r esm node_modules/.bin/protractor bin/protractor.js",
-    "test:old": "npm run build && ava -v && standard -v",
-    "test:watch": "ava -w"
+    "test:new": "node -r esm node_modules/.bin/protractor bin/protractor.js && standard -v",
+    "test": "echo TODO",
+    "test:watch": "echo TODO"
   },
   "devDependencies": {
     "@babel/preset-env": "7.5.5",
     "@nrk/custom-element-to-react": "1.1.0",
-    "ava": "2.3.0",
     "dotenv": "^8.1.0",
     "esm": "3.2.25",
     "fast-glob": "3.0.4",
     "jasmine-ajax": "^4.0.0",
     "jasmine-reporters": "^2.3.2",
     "protractor": "^5.4.2",
-    "puppeteer": "1.19.0",
     "rollup": "1.19.4",
     "rollup-plugin-babel": "4.3.3",
     "rollup-plugin-commonjs": "10.0.2",
@@ -41,11 +39,6 @@
     "rollup-plugin-serve": "1.0.1",
     "rollup-plugin-uglify": "6.0.2",
     "standard": "13.1.0"
-  },
-  "ava": {
-    "require": [
-      "esm"
-    ]
   },
   "standard": {
     "globals": [
