@@ -133,7 +133,7 @@ describe('core-toggle', () => {
       <core-toggle hidden></core-toggle>
     `)
     await browser.executeScript(() => {
-      window.addEventListener('toggle', () => document.body.appendChild(document.createElement('i')))
+      document.addEventListener('toggle', () => (document.body.appendChild(document.createElement('i'))))
       document.querySelector('core-toggle').hidden = false
     })
     await expect(browser.isElementPresent($('i'))).toBe(true)
@@ -147,11 +147,9 @@ describe('core-toggle', () => {
       </core-toggle>
     `)
     await browser.executeScript(() => {
-      window.addEventListener('toggle.select', ({ detail }) => {
+      document.addEventListener('toggle.select', ({ detail }) => {
         document.body.appendChild(Object.assign(document.createElement('i'), { textContent: detail.id }))
       })
-    })
-    await browser.executeScript(() => {
       const toggle = document.querySelector('core-toggle')
       toggle.hidden = false
       toggle.children[0].click()

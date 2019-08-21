@@ -17,8 +17,9 @@
     "publish:major": "node -r esm bin/index.js --publish=major",
     "start": "rollup --config --watch",
     "static-publish": "npm run build && static-publish --directory=packages --account=nrk-core --latest --major",
-    "newtest": "node -r esm node_modules/.bin/protractor bin/protractor.js",
-    "oldtest": "npm run build && ava -v && standard -v",
+    "test:driver": "webdriver-manger start",
+    "test:new": "node -r esm node_modules/.bin/protractor bin/protractor.js",
+    "test:old": "npm run build && ava -v && standard -v",
     "test:watch": "ava -w"
   },
   "devDependencies": {

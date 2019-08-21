@@ -65,12 +65,10 @@ describe('core-progress', () => {
       <core-progress></core-progress>
     `)
     await browser.executeScript(() => {
-      document.addEventListener('change', () => {
-        document.body.appendChild(document.createElement('i'))
-      })
+      document.addEventListener('change', () => (document.body.appendChild(document.createElement('i'))))
+      document.querySelector('core-progress').max = 2
     })
-    await browser.executeScript(() => (document.querySelector('core-progress').max = 2))
-    await browser.wait(ExpectedConditions.not(ExpectedConditions.presenceOf($('i'))))
+    await expect(browser.isElementPresent($('i'))).toBe(false)
   })
 
   it('triggers change event on value', async () => {
@@ -78,12 +76,10 @@ describe('core-progress', () => {
       <core-progress></core-progress>
     `)
     await browser.executeScript(() => {
-      document.addEventListener('change', () => {
-        document.body.appendChild(document.createElement('i'))
-      })
+      document.addEventListener('change', () => (document.body.appendChild(document.createElement('i'))))
+      document.querySelector('core-progress').value = 2
     })
-    await browser.executeScript(() => (document.querySelector('core-progress').value = 2))
-    await browser.wait(ExpectedConditions.presenceOf($('i')))
+    await expect(browser.isElementPresent($('i'))).toBe(true)
   })
 
   it('triggers change event on indeterminate value', async () => {
@@ -91,11 +87,9 @@ describe('core-progress', () => {
       <core-progress></core-progress>
     `)
     await browser.executeScript(() => {
-      document.addEventListener('change', () => {
-        document.body.appendChild(document.createElement('i'))
-      })
+      document.addEventListener('change', () => (document.body.appendChild(document.createElement('i'))))
+      document.querySelector('core-progress').value = 'Loading...'
     })
-    await browser.executeScript(() => (document.querySelector('core-progress').value = 'Loading...'))
-    await browser.wait(ExpectedConditions.presenceOf($('i')))
+    await expect(browser.isElementPresent($('i'))).toBe(true)
   })
 })

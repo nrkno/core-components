@@ -211,9 +211,10 @@ const config = {
     path.resolve(__dirname, '..', 'packages/**/core-suggest.test.js'),
     path.resolve(__dirname, '..', 'packages/**/core-scroll.test.js'),
     path.resolve(__dirname, '..', 'packages/**/core-progress.test.js'),
+    path.resolve(__dirname, '..', 'packages/**/core-dialog.test.js'),
   ],
-  // seleniumAddress: 'http://hub-cloud.browserstack.com/wd/hub',
-  seleniumAddress: 'http://localhost:4444/wd/hub',
+  // seleniumAddress: 'http://hub-cloud.browserstack.com/wd/hub', // To run tests remotely
+  seleniumAddress: 'http://localhost:4444/wd/hub',                // For run locally. Start with 'npm run test:driver'
   SELENIUM_PROMISE_MANAGER: false,
   jasmineNodeOpts: {
     defaultTimeoutInterval: 10000,
