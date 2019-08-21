@@ -172,5 +172,4 @@ describe('core-suggest', () => {
   //   await page.waitForFunction('window.dispatched === true')
   //   t.pass()
   // })
-
 })

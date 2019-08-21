@@ -28,6 +28,7 @@
     "dotenv": "^8.1.0",
     "esm": "3.2.25",
     "fast-glob": "3.0.4",
+    "jasmine-ajax": "^4.0.0",
     "jasmine-reporters": "^2.3.2",
     "protractor": "^5.4.2",
     "puppeteer": "1.19.0",
