@@ -205,17 +205,9 @@ const timestamp = new Date().toLocaleString()
 
 const config = {
   framework: 'jasmine',
-  specs: [
-    path.resolve(__dirname, '..', 'packages/**/core-toggle.test.js'),
-    path.resolve(__dirname, '..', 'packages/**/core-tabs.test.js'),
-    path.resolve(__dirname, '..', 'packages/**/core-suggest.test.js'),
-    path.resolve(__dirname, '..', 'packages/**/core-scroll.test.js'),
-    path.resolve(__dirname, '..', 'packages/**/core-progress.test.js'),
-    path.resolve(__dirname, '..', 'packages/**/core-dialog.test.js'),
-    path.resolve(__dirname, '..', 'packages/**/core-datepicker.test.js'),
-  ],
-  // seleniumAddress: 'http://hub-cloud.browserstack.com/wd/hub', // To run tests remotely
-  seleniumAddress: 'http://localhost:4444/wd/hub',                // For run locally. Start with 'npm run test:driver'
+  specs: [path.resolve(__dirname, '..', 'packages/*/*.test.js')],
+  seleniumAddress: 'http://hub-cloud.browserstack.com/wd/hub', // To run tests remotely
+  // seleniumAddress: 'http://localhost:4444/wd/hub',                // For run locally. Start with 'npm run test:driver'
   SELENIUM_PROMISE_MANAGER: false,
   jasmineNodeOpts: {
     defaultTimeoutInterval: 10000,
