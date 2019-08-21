@@ -131,15 +131,13 @@ describe('core-tabs', () => {
     `)
     await browser.wait(ExpectedConditions.presenceOf($('core-tabs [role="tab"]')))
     await browser.executeScript(() => {
-      window.addEventListener('tabs.toggle', ({ target }) => {
+      document.addEventListener('tabs.toggle', ({ target }) => {
         document.body.appendChild(Object.assign(document.createElement('i'), { textContent: target.tab.id }))
       })
     })
-    await browser.executeScript(() => {
-      document.querySelector('core-tabs').tab = 1
-    })
+    await browser.executeScript(() => (document.querySelector('core-tabs').tab = 1))
     await expect(browser.isElementPresent($('i'))).toBe(true)
     await expect($('i').getText()).toBe('tab-2')
-    await expect(browser.executeScript(() => (document.querySelector('core-tabs').tab.id))).toEqual('tab-2')
+    await expect(browser.executeScript(() => document.querySelector('core-tabs').tab.id)).toEqual('tab-2')
   })
 })
