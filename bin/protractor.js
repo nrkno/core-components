@@ -205,7 +205,10 @@ const timestamp = new Date().toLocaleString()
 
 const config = {
   framework: 'jasmine',
-  specs: [path.resolve(__dirname, '..', 'packages/**/core-toggle.test.js')],
+  specs: [
+    path.resolve(__dirname, '..', 'packages/**/core-toggle.test.js'),
+    path.resolve(__dirname, '..', 'packages/**/core-tabs.test.js')
+  ],
   // seleniumAddress: 'http://hub-cloud.browserstack.com/wd/hub',
   seleniumAddress: 'http://localhost:4444/wd/hub',
   SELENIUM_PROMISE_MANAGER: false,
