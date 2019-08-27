@@ -57,11 +57,11 @@ const capabilities = [
   //   os_version: '10'
   // },
   {
-    browserName: 'firefox',
-    // os: 'Windows',
-    // os_version: '7',
-    // browser_version: '44.0'
-  },
+    browserName: 'Firefox',
+    os: 'Windows',
+    os_version: '7',
+    browser_version: '44.0'
+  }
   // {
   //   browserName: 'Firefox',
   //   os: 'Windows',
@@ -207,11 +207,11 @@ const config = {
   framework: 'jasmine',
   specs: [path.resolve(__dirname, '..', 'packages/*/*.test.js')],
   seleniumAddress: 'http://hub-cloud.browserstack.com/wd/hub', // To run tests remotely
-  // seleniumAddress: 'http://localhost:4444/wd/hub',                // For run locally. Start with 'npm run test:driver'
+  // seleniumAddress: 'http://localhost:4444/wd/hub', // For run locally. Start with 'npm run test:driver'
   SELENIUM_PROMISE_MANAGER: false,
   jasmineNodeOpts: {
-    defaultTimeoutInterval: 10000,
-    print: () => {}   // Disable dot reporter
+    defaultTimeoutInterval: 30000,
+    print: () => {} // Disable dot reporter
   },
   logLevel: 'INFO',
   multiCapabilities: capabilities.map((capability) => {
@@ -232,7 +232,6 @@ const config = {
     console.log(`Test ${timestamp} finished`)
   }
 }
-
 
 exports.config = config
 

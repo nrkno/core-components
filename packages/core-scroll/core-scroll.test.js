@@ -4,7 +4,6 @@ import path from 'path'
 const coreScroll = fs.readFileSync(path.resolve(__dirname, 'core-scroll.min.js'), 'utf-8')
 
 describe('core-scroll', () => {
-
   beforeEach(async () => {
     await browser.refresh()
     await browser.executeScript(coreScroll)

@@ -4,7 +4,6 @@ import path from 'path'
 const coreDatepicker = fs.readFileSync(path.resolve(__dirname, 'core-datepicker.min.js'), 'utf-8')
 
 describe('core-datepicker', () => {
-
   beforeEach(async () => {
     await browser.refresh()
     await browser.executeScript(coreDatepicker)

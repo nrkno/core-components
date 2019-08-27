@@ -4,7 +4,6 @@ import path from 'path'
 const coreDialog = fs.readFileSync(path.resolve(__dirname, 'core-dialog.min.js'), 'utf-8')
 
 describe('core-dialog', () => {
-
   beforeEach(async () => {
     await browser.refresh()
     await browser.executeScript(coreDialog)

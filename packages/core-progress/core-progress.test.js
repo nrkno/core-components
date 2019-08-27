@@ -4,7 +4,6 @@ import path from 'path'
 const coreProgress = fs.readFileSync(path.resolve(__dirname, 'core-progress.min.js'), 'utf-8')
 
 describe('core-progress', () => {
-
   beforeEach(async () => {
     await browser.refresh()
     await browser.executeScript(coreProgress)

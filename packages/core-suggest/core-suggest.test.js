@@ -4,7 +4,6 @@ import path from 'path'
 const coreSuggest = fs.readFileSync(path.resolve(__dirname, 'core-suggest.min.js'), 'utf-8')
 
 describe('core-suggest', () => {
-
   beforeEach(async () => {
     await browser.refresh()
     await browser.executeScript(coreSuggest)
@@ -93,13 +92,13 @@ describe('core-suggest', () => {
       <core-suggest hidden></core-suggest>`
     )
     await expect($('core-suggest').getAttribute('limit')).toEqual('Infinity')
-    await browser.executeScript(() => (document.querySelector('core-suggest').limit = 2 ))
+    await browser.executeScript(() => (document.querySelector('core-suggest').limit = 2))
     await expect($('core-suggest').getAttribute('limit')).toEqual('2')
-    await browser.executeScript(() => (document.querySelector('core-suggest').limit = -2 ))
+    await browser.executeScript(() => (document.querySelector('core-suggest').limit = -2))
     await expect($('core-suggest').getAttribute('limit')).toEqual('Infinity')
-    await browser.executeScript(() => (document.querySelector('core-suggest').limit = null ))
+    await browser.executeScript(() => (document.querySelector('core-suggest').limit = null))
     await expect($('core-suggest').getAttribute('limit')).toEqual('Infinity')
-    await browser.executeScript(() => (document.querySelector('core-suggest').limit = undefined ))
+    await browser.executeScript(() => (document.querySelector('core-suggest').limit = undefined))
     await expect($('core-suggest').getAttribute('limit')).toEqual('Infinity')
   })
 
@@ -119,7 +118,7 @@ describe('core-suggest', () => {
     await expect($('li:nth-child(2) button').getAttribute('hidden')).toEqual(null)
     await expect($('li:nth-child(3) button').getAttribute('hidden')).toEqual('true')
     await expect($('li:nth-child(4) button').getAttribute('hidden')).toEqual('true')
-    await browser.executeScript(() => (document.querySelector('core-suggest').limit = 3 ))
+    await browser.executeScript(() => (document.querySelector('core-suggest').limit = 3))
     await $('input').sendKeys('s')
     await expect($('li:nth-child(1) button').getAttribute('hidden')).toEqual(null)
     await expect($('li:nth-child(2) button').getAttribute('hidden')).toEqual(null)

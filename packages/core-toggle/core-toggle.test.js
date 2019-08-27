@@ -4,7 +4,6 @@ import path from 'path'
 const coreToggle = fs.readFileSync(path.resolve(__dirname, 'core-toggle.min.js'), 'utf-8')
 
 describe('core-toggle', () => {
-
   beforeEach(async () => {
     await browser.refresh()
     await browser.executeScript(coreToggle)
