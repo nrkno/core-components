@@ -108,12 +108,12 @@ const capabilities = !isLocal ? [
   //   os: 'Windows',
   //   browser_version: '10'
   // },
-  {
-    browserName: 'IE',
-    browser_version: '11',
-    os: 'Windows',
-    os_version: '10'
-  }
+  // {
+  //   browserName: 'IE',
+  //   browser_version: '11',
+  //   os: 'Windows',
+  //   os_version: '10'
+  // },
   // {
   //   browserName: 'IE',
   //   os: 'Windows',
