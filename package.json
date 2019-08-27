@@ -18,7 +18,7 @@
     "start": "rollup --config --watch",
     "static-publish": "npm run build && static-publish --directory=packages --account=nrk-core --latest --major",
     "test": "npm run build && webdriver-manager update && node -r esm node_modules/.bin/protractor bin/test.js && standard -v",
-    "test-remote": "export NODE_ENV=test-remote npm run build && node -r esm node_modules/.bin/protractor bin/test.js && standard -v"
+    "test-remote": "export NODE_ENV=test-remote; npm run build && node -r esm node_modules/.bin/protractor bin/test.js && standard -v"
   },
   "devDependencies": {
     "@babel/core": "^7.5.5",
