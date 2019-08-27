@@ -18,11 +18,9 @@ describe('core-scroll', () => {
         <div>This is overflowing content</div>
       </core-scroll>
     `)
-    const style = await browser.executeScript(() => document.querySelector('core-scroll').style)
-    await expect(style.overflow).toEqual('scroll')
-    await expect(style.webkitOverflowScrolling).toEqual('touch')
-    await expect(style.maxHeight).toEqual('calc(100% + 0px)')
-    await expect(style.marginRight).toEqual('0px')
-    await expect(style.marginBottom).toEqual('0px')
+    await expect($('core-scroll').getCssValue('overflow')).toEqual('scroll')
+    await expect($('core-scroll').getCssValue('max-height')).toEqual('100%')
+    await expect($('core-scroll').getCssValue('margin-right')).toEqual('0px')
+    await expect($('core-scroll').getCssValue('margin-bottom')).toEqual('0px')
   })
 })

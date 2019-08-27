@@ -18,7 +18,8 @@
     "start": "rollup --config --watch",
     "static-publish": "npm run build && static-publish --directory=packages --account=nrk-core --latest --major",
     "pretest": "webdriver-manager update",
-    "test": "npm run build && node -r esm node_modules/.bin/protractor bin/test.js && standard -v"
+    "test": "node -r esm node_modules/.bin/protractor bin/test.js && standard -v",
+    "test-remote": "NODE_ENV=production node -r esm node_modules/.bin/protractor bin/test.js && standard -v"
   },
   "devDependencies": {
     "@babel/core": "^7.5.5",
@@ -29,7 +30,7 @@
     "esm": "3.2.25",
     "fast-glob": "3.0.4",
     "jasmine-ajax": "^4.0.0",
-    "jasmine-reporters": "^2.3.2",
+    "jasmine-spec-reporter": "^4.2.1",
     "protractor": "^5.4.2",
     "rollup": "1.19.4",
     "rollup-plugin-babel": "4.3.3",
