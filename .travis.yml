@@ -3,3 +3,5 @@ node_js:
   - "10"
 env:
   - NODE_ENV=test-remote
+script:
+  - npm run test-remote
