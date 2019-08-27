@@ -27,7 +27,6 @@
     "@nrk/custom-element-to-react": "1.1.0",
     "@webcomponents/custom-elements": "^1.2.4",
     "dotenv": "^8.1.0",
-    "esm": "3.2.25",
     "fast-glob": "3.0.4",
     "jasmine-ajax": "^4.0.0",
     "jasmine-spec-reporter": "^4.2.1",
@@ -58,5 +57,8 @@
       "afterAll",
       "ExpectedConditions"
     ]
+  },
+  "dependencies": {
+    "esm": "^3.2.25"
   }
 }
