@@ -4,6 +4,8 @@ import reporters from 'jasmine-reporters'
 
 console.log('NODE_ENV::::', process.env.NODE_ENV || 'NOT SET')
 
+// prod / test
+
 const capabilities = [
   // chrome: {
   //   browserName: 'Chrome',
@@ -62,10 +64,22 @@ const capabilities = [
     browserName: 'Firefox',
     os: 'Windows',
     os_version: '7',
-    browser_version: '44.0'
+    browser_version: '44.0',
+    tags: {
+      polyfill: true
+    }
   },
+  // {
+  //   browserName: 'firefox',
+  //   os: 'OS X',
+  //   browser_version: '68.0.2',
+  //   tags: {
+  //     polyfill: true
+  //   }
+  // },
   {
-    browserName: 'chrome'
+    browserName: 'chrome',
+    tags: {}
   }
   // {
   //   browserName: 'Firefox',
@@ -219,14 +233,17 @@ const config = {
     print: () => {} // Disable dot reporter
   },
   logLevel: 'INFO',
-  multiCapabilities: capabilities.map((capability) => {
+  multiCapabilities: capabilities.map((cap) => {
     return {
       'browserstack.user': process.env.BROWSERSTACK_USER,
       'browserstack.key': process.env.BROWSERSTACK_KEY,
       project: 'core-components',
       build: timestamp,
-      name: capability.browserName,
-      ...capability
+      name: [
+        cap.browserName.replace(/./, (m) => m.toUpperCase()),
+        cap.browser_version ? parseInt(cap.browser_version) : ''
+      ].join(''),
+      ...cap
     }
   }),
   onPrepare: () => {
@@ -235,11 +252,6 @@ const config = {
   },
   onComplete: () => {
     console.log(`Test ${timestamp} finished`)
-  },
-  params: {
-    oldBrowsers: [
-      'Firefox'
-    ]
   }
 }
 

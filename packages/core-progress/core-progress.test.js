@@ -6,10 +6,9 @@ const customElements = fs.readFileSync(require.resolve('@webcomponents/custom-el
 
 describe('core-progress', () => {
   beforeEach(async () => {
-    const capability = await browser.getCapabilities()
-    const shouldPolyfill = browser.params.oldBrowsers.includes(capability.get('browserName'))
+    const capabilities = (await browser.getProcessedConfig()).capabilities
     await browser.refresh()
-    await browser.executeScript(shouldPolyfill ? customElements : '')
+    await browser.executeScript(capabilities.tags.polyfill ? customElements : '')
     await browser.executeScript(coreProgress)
   })
 
