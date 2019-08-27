@@ -65,24 +65,24 @@ const capabilities = isLocal ? [
     browserName: 'chrome'
   }
 ] : [
-  {
-    browserName: 'Chrome',
-    os: 'Windows',
-    os_version: '10',
-    browser_version: '37'
-  },
-  {
-    browserName: 'Chrome',
-    os: 'Windows',
-    os_version: '10',
-    browser_version: '46'
-  }
   // {
   //   browserName: 'Chrome',
   //   os: 'Windows',
   //   os_version: '10',
-  //   browser_version: '57',
+  //   browser_version: '37'
   // },
+  // {
+  //   browserName: 'Chrome',
+  //   os: 'Windows',
+  //   os_version: '10',
+  //   browser_version: '46'
+  // }
+  {
+    browserName: 'Chrome',
+    browser_version: '57',
+    os: 'Windows',
+    os_version: '10'
+  }
   // {
   //   browserName: 'Edge',
   //   browser_version: '18.0',
