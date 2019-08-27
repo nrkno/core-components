@@ -8,7 +8,7 @@ describe('core-progress', () => {
   beforeEach(async () => {
     const capabilities = (await browser.getProcessedConfig()).capabilities
     await browser.refresh()
-    await browser.executeScript(capabilities.tags.polyfill ? customElements : '')
+    await browser.executeScript(capabilities.polyfill ? customElements : '')
     await browser.executeScript(coreProgress)
   })
 

@@ -2,264 +2,219 @@ import path from 'path'
 import dotenv from 'dotenv'
 import reporters from 'jasmine-reporters'
 
-console.log('NODE_ENV::::', process.env.NODE_ENV || 'NOT SET')
+dotenv.config()
+const isLocal = process.env.NODE_ENV === 'test'
+const testName = new Date().toLocaleString()
 
-// prod / test
+function config () {
+  return {
+    framework: 'jasmine',
+    specs: [path.resolve(__dirname, '..', 'packages/core-progress/*.test.js')],
+    seleniumAddress: 'http://hub-cloud.browserstack.com/wd/hub',
+    directConnect: isLocal,
+    SELENIUM_PROMISE_MANAGER: false,
+    jasmineNodeOpts: {
+      defaultTimeoutInterval: 30000,
+      print: () => {} // Disable dot reporter
+    },
+    logLevel: 'INFO',
+    multiCapabilities: capabilities.map((cap) => {
+      return {
+        'browserstack.user': process.env.BROWSERSTACK_USER,
+        'browserstack.key': process.env.BROWSERSTACK_KEY,
+        project: 'core-components',
+        build: testName,
+        name: [
+          cap.browserName.replace(/./, (m) => m.toUpperCase()),
+          cap.browser_version ? parseInt(cap.browser_version) : ''
+        ].join(' '),
+        ...cap
+      }
+    }),
+    onPrepare: () => {
+      jasmine.getEnv().addReporter(new reporters.TapReporter())
+      browser.waitForAngularEnabled(false)
+    },
+    onComplete: () => {
+      console.log(`Test ${testName} finished`)
+    }
+  }
+}
 
-const capabilities = [
-  // chrome: {
-  //   browserName: 'Chrome',
-  //   browser_version: '72.0',
-  //   os: 'Windows',
-  //   os_version: '10',
-  // },
-  // chrome37: {
-  //   browserName: 'Chrome',
-  //   os: 'Windows',
-  //   os_version: '10',
-  //   browser_version: '37',
-  // },
-  // chrome46: {
-  //   browserName: 'Chrome',
-  //   os: 'Windows',
-  //   os_version: '10',
-  //   browser_version: '46',
-  // },
-  // chrome57: {
-  //   browserName: 'Chrome',
-  //   os: 'Windows',
-  //   os_version: '10',
-  //   browser_version: '57',
-  // },
-  // edge: {
-  //   browserName: 'Edge',
-  //   os: 'Windows',
-  //   os_version: '10'
-  // },
-  // edge17: {
-  //   browserName: 'Edge',
-  //   browser_version: '17.0',
-  //   os: 'Windows',
-  //   os_version: '10'
-  // },
-  // edge18: {
-  //   browserName: 'Edge',
-  //   browser_version: '18.0',
-  //   os: 'Windows',
-  //   os_version: '10'
-  // },
-  // edge13: {
-  //   browserName: 'Edge',
-  //   os: 'Windows',
-  //   os_version: '10',
-  //   browser_version: '13.0',
-  //   resolution: '1024x768'
-  // },
-  // firefox: {
-  //   browserName: 'Firefox',
-  //   os: 'Windows',
-  //   os_version: '10'
-  // },
+const capabilities = isLocal ? [{ browserName: 'chrome' }] : [
+  {
+    browserName: 'Chrome',
+    os: 'Windows',
+    os_version: '10',
+    browser_version: '37',
+  },
+  {
+    browserName: 'Chrome',
+    os: 'Windows',
+    os_version: '10',
+    browser_version: '46',
+  },
+  {
+    browserName: 'Chrome',
+    os: 'Windows',
+    os_version: '10',
+    browser_version: '57',
+  },
+  {
+    browserName: 'Edge',
+    browser_version: '18.0',
+    os: 'Windows',
+    os_version: '10'
+  },
+  {
+    browserName: 'Edge',
+    browser_version: '17.0',
+    os: 'Windows',
+    os_version: '10'
+  },
+  {
+    browserName: 'Edge',
+    os: 'Windows',
+    os_version: '10',
+    browser_version: '15.0',
+    resolution: '1024x768'
+  },
+  {
+    browserName: 'Firefox',
+    os: 'Windows',
+    os_version: '10'
+  },
+  {
+    browserName: 'Firefox',
+    os: 'Windows',
+    os_version: '10',
+    browser_version: '52.0'
+  },
   {
     browserName: 'Firefox',
     os: 'Windows',
     os_version: '7',
-    browser_version: '44.0',
-    tags: {
-      polyfill: true
-    }
+    browser_version: '44.0'
   },
-  // {
-  //   browserName: 'firefox',
-  //   os: 'OS X',
-  //   browser_version: '68.0.2',
-  //   tags: {
-  //     polyfill: true
-  //   }
-  // },
   {
-    browserName: 'chrome',
-    tags: {}
+    browserName: 'IE',
+    os: 'Windows',
+    browser_version: '10'
+  },
+  {
+    browserName: 'IE',
+    browser_version: '11',
+    os: 'Windows',
+    os_version: '10'
+  },
+  {
+    browserName: 'IE',
+    os: 'Windows',
+    os_version: '7',
+    browser_version: '11'
+  },
+  {
+    browserName: 'Opera',
+    os: 'Windows',
+    os_version: 'XP',
+    browser_version: '12.16',
+    resolution: '1024x768'
+  },
+  {
+    browserName: 'Safari',
+    os: 'OS X',
+    os_version: 'High Sierra'
+  },
+  {
+    browserName: 'Safari',
+    os: 'OS X',
+    os_version: 'Mavericks',
+    browser_version: '7.1',
+    resolution: '1024x768'
+  },
+  {
+    browserName: 'Safari',
+    os: 'OS X',
+    os_version: 'Yosemite',
+    browser_version: '8.0',
+    resolution: '1024x768'
+  },
+  {
+    browserName: 'Safari',
+    os: 'OS X',
+    os_version: 'El Capitan',
+    browser_version: '9.1',
+    resolution: '1024x768'
+  },
+  {
+    browserName: 'Safari',
+    os: 'OS X',
+    os_version: 'Sierra',
+    browser_version: '10.0',
+    resolution: '1024x768'
   }
   // {
-  //   browserName: 'Firefox',
-  //   os: 'Windows',
-  //   os_version: '10',
-  //   browser_version: '52.0'
-  // },
-  // {
-  //   browserName: 'IE',
-  //   os: 'Windows',
-  //   browser_version: '10'
-  // },
-  // {
-  //   browserName: 'IE',
-  //   browser_version: '11',
-  //   os: 'Windows',
-  //   os_version: '10'
-  // }
-  // },
-  // ie11win7: {
-  //   browserName: 'IE',
-  //   os: 'Windows',
-  //   os_version: '7',
-  //   browser_version: '11'
-  // },
-  // ipad: {
-  //   browserName: 'iPad',
-  //   platform: 'MAC',
-  //   device: 'iPad Pro',
+  //   device: 'iPad Pro 9.7 2016',
   //   real_mobile: 'true',
-  //   nativeWebTap: 'true'
+  //   nativeWebTap: 'true',
   // },
-  // iphone8: {
-  //   browserName: 'iPhone',
-  //   platform: 'MAC',
+  // {
   //   device: 'iPhone 8',
+  //   os: 'iOS',
+  //   os_version: '11',
   //   real_mobile: 'true',
-  //   nativeWebTap: 'true'
+  //   nativeWebTap: 'true',
   // },
-  // iphoneSE: {
-  //   browserName: 'iPhone',
-  //   os_version: '11.2',
-  //   platform: 'MAC',
+  // {
+  //   device: 'iPhone 8',
+  //   os: 'iOS',
+  //   os_version: '12',
+  //   real_mobile: 'true',
+  //   nativeWebTap: 'true',
+  // },
+  // {
+  //   os_version: '11',
   //   device: 'iPhone SE',
   //   real_mobile: 'true',
-  //   nativeWebTap: 'true'
+  //   nativeWebTap: 'true',
   // },
-  // iphoneX: {
-  //   browserName: 'iPhone',
-  //   platform: 'MAC',
+  // {
   //   device: 'iPhone X',
+  //   os_version: '11',
   //   real_mobile: 'true',
-  //   nativeWebTap: 'true'
+  //   nativeWebTap: 'true',
   // },
-  // iphoneXS: {
-  //   browserName: 'iPhone',
-  //   platform: 'MAC',
+  // {
   //   device: 'iPhone XS',
   //   os_version: '12',
   //   real_mobile: 'true',
-  //   nativeWebTap: 'true'
+  //   nativeWebTap: 'true',
   // },
-  // operaXp: {
-  //   browserName: 'Opera',
-  //   os: 'Windows',
-  //   os_version: 'XP',
-  //   browser_version: '12.16',
-  //   resolution: '1024x768'
-  // },
-  // pixel3: {
-  //   browserName: 'Chrome',
+  // {
   //   os_version: '9.0',
-  //   platform: 'ANDROID',
   //   device: 'Google Pixel 3',
-  //   real_mobile: 'true'
+  //   real_mobile: 'true',
   // },
-  // safari: {
-  //   browserName: 'Safari',
-  //   os: 'OS X',
-  //   os_version: 'High Sierra'
-  // },
-  // safari7: {
-  //   browserName: 'Safari',
-  //   os: 'OS X',
-  //   os_version: 'Mavericks',
-  //   browser_version: '7.1',
-  //   resolution: '1024x768'
-  // },
-  // safari8: {
-  //   browserName: 'Safari',
-  //   os: 'OS X',
-  //   os_version: 'Yosemite',
-  //   browser_version: '8.0',
-  //   resolution: '1024x768'
-  // },
-  // safari9: {
-  //   browserName: 'Safari',
-  //   os: 'OS X',
-  //   os_version: 'El Capitan',
-  //   browser_version: '9.1',
-  //   resolution: '1024x768'
-  // },
-  // safari10: {
-  //   browserName: 'Safari',
-  //   os: 'OS X',
-  //   os_version: 'Sierra',
-  //   browser_version: '10.0',
-  //   resolution: '1024x768'
-  // },
-  // samsungGalaxy9: {
+  // {
   //   os_version: '8.0',
-  //   platform: 'ANDROID',
-  //   browserName: 'Chrome',
   //   device: 'Samsung Galaxy S9',
-  //   real_mobile: 'true'
+  //   real_mobile: 'true',
   // },
-  // samsungGalaxyNote4: {
-  //   os_version: '6.0',
-  //   platform: 'ANDROID',
-  //   browserName: 'Chrome',
-  //   device: 'Samsung Galaxy Note 4',
-  //   real_mobile: 'true'
-  // },
-  // samsungGalaxyNote8: {
+  // {
   //   os_version: '7.1',
-  //   platform: 'ANDROID',
-  //   browserName: 'Chrome',
   //   device: 'Samsung Galaxy Note 8',
-  //   real_mobile: 'true'
+  //   real_mobile: 'true',
   // },
-  // samsungGalaxyS8: {
+  // {
   //   os_version: '7.0',
-  //   platform: 'ANDROID',
-  //   browserName: 'Chrome',
   //   device: 'Samsung Galaxy S8',
-  //   real_mobile: 'true'
+  //   real_mobile: 'true',
+  // },
+  // {
+  //   os_version: '6.0',
+  //   device: 'Samsung Galaxy Note 4',
+  //   real_mobile: 'true',
   // }
 ]
 
-dotenv.config()
-const timestamp = new Date().toLocaleString()
-
-const config = {
-  framework: 'jasmine',
-  specs: [path.resolve(__dirname, '..', 'packages/core-progress/*.test.js')],
-  seleniumAddress: 'http://hub-cloud.browserstack.com/wd/hub', // To run tests remotely
-  // seleniumAddress: 'http://localhost:4444/wd/hub', // For run locally. Start with 'npm run test:driver'
-  SELENIUM_PROMISE_MANAGER: false,
-  jasmineNodeOpts: {
-    defaultTimeoutInterval: 30000,
-    print: () => {} // Disable dot reporter
-  },
-  logLevel: 'INFO',
-  multiCapabilities: capabilities.map((cap) => {
-    return {
-      'browserstack.user': process.env.BROWSERSTACK_USER,
-      'browserstack.key': process.env.BROWSERSTACK_KEY,
-      project: 'core-components',
-      build: timestamp,
-      name: [
-        cap.browserName.replace(/./, (m) => m.toUpperCase()),
-        cap.browser_version ? parseInt(cap.browser_version) : ''
-      ].join(''),
-      ...cap
-    }
-  }),
-  onPrepare: () => {
-    jasmine.getEnv().addReporter(new reporters.TapReporter())
-    browser.waitForAngularEnabled(false)
-  },
-  onComplete: () => {
-    console.log(`Test ${timestamp} finished`)
-  }
-}
-
-exports.config = config
-
-// https://github.com/angular/protractor/blob/master/lib/config.ts
-
-// https://jasmine.github.io/tutorials/custom_reporter
-
-// lifecycle hooks: https://stackoverflow.com/a/54556530/8819615
-// setup bs-local https://stackoverflow.com/a/25538163/8819615
+exports.config = config()
