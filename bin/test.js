@@ -2,6 +2,8 @@ import path from 'path'
 import dotenv from 'dotenv'
 import reporters from 'jasmine-reporters'
 
+console.log('NODE_ENV::::', process.env.NODE_ENV || 'NOT SET')
+
 const capabilities = [
   // chrome: {
   //   browserName: 'Chrome',
@@ -61,6 +63,9 @@ const capabilities = [
     os: 'Windows',
     os_version: '7',
     browser_version: '44.0'
+  },
+  {
+    browserName: 'chrome'
   }
   // {
   //   browserName: 'Firefox',
@@ -205,7 +210,7 @@ const timestamp = new Date().toLocaleString()
 
 const config = {
   framework: 'jasmine',
-  specs: [path.resolve(__dirname, '..', 'packages/*/*.test.js')],
+  specs: [path.resolve(__dirname, '..', 'packages/core-progress/*.test.js')],
   seleniumAddress: 'http://hub-cloud.browserstack.com/wd/hub', // To run tests remotely
   // seleniumAddress: 'http://localhost:4444/wd/hub', // For run locally. Start with 'npm run test:driver'
   SELENIUM_PROMISE_MANAGER: false,
@@ -230,6 +235,11 @@ const config = {
   },
   onComplete: () => {
     console.log(`Test ${timestamp} finished`)
+  },
+  params: {
+    oldBrowsers: [
+      'Firefox'
+    ]
   }
 }
 

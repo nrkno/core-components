@@ -2,10 +2,14 @@ import fs from 'fs'
 import path from 'path'
 
 const coreProgress = fs.readFileSync(path.resolve(__dirname, 'core-progress.min.js'), 'utf-8')
+const customElements = fs.readFileSync(require.resolve('@webcomponents/custom-elements'), 'utf-8')
 
 describe('core-progress', () => {
   beforeEach(async () => {
+    const capability = await browser.getCapabilities()
+    const shouldPolyfill = browser.params.oldBrowsers.includes(capability.get('browserName'))
     await browser.refresh()
+    await browser.executeScript(shouldPolyfill ? customElements : '')
     await browser.executeScript(coreProgress)
   })
 
