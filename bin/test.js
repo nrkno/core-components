@@ -1,9 +1,12 @@
 import path from 'path'
 import dotenv from 'dotenv'
+import request from 'request'
 import { SpecReporter } from 'jasmine-spec-reporter'
 
 dotenv.config()
 const isLocal = process.env.NODE_ENV === 'test'
+const user = process.env.BROWSERSTACK_USER
+const key = process.env.BROWSERSTACK_KEY
 const testName = new Date().toLocaleString()
 
 function config () {
@@ -20,8 +23,11 @@ function config () {
     logLevel: 'INFO',
     multiCapabilities: capabilities.map((cap) => {
       return {
-        'browserstack.user': process.env.BROWSERSTACK_USER,
-        'browserstack.key': process.env.BROWSERSTACK_KEY,
+        'browserstack.user': user,
+        'browserstack.key': key,
+        'browserstack.debug': false, // Capture screenshots for visual logs
+        'browserstack.video': false, // Capture video of tests
+        'browserstack.console': 'errors', // Capture console logs
         project: 'core-components',
         build: testName,
         name: [
@@ -40,8 +46,13 @@ function config () {
       }))
       browser.waitForAngularEnabled(false)
     },
-    onComplete: () => {
-      console.log(`Test ${testName} finished`)
+    onComplete: async (passed) => {
+      const session = await browser.getSession()
+      request({
+        uri: `https://${user}:${key}@api.browserstack.com/automate/sessions/${session.id_}.json`,
+        method: 'PUT',
+        form: { status: passed ? 'passed' : 'failed' }
+      })
     }
   }
 }
@@ -54,19 +65,17 @@ const capabilities = isLocal ? [
     browserName: 'chrome'
   }
 ] : [
-  // {
-  //   browserName: 'Chrome',
-  //   os: 'Windows',
-  //   os_version: '10',
-  //   browser_version: '37',
-  //   polyfill: true
-  // },
   {
     browserName: 'Chrome',
     os: 'Windows',
     os_version: '10',
-    browser_version: '46',
-    polyfill: true
+    browser_version: '37'
+  },
+  {
+    browserName: 'Chrome',
+    os: 'Windows',
+    os_version: '10',
+    browser_version: '46'
   }
   // {
   //   browserName: 'Chrome',

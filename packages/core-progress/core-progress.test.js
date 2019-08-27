@@ -6,9 +6,8 @@ const customElements = fs.readFileSync(require.resolve('@webcomponents/custom-el
 
 describe('core-progress', () => {
   beforeEach(async () => {
-    const capabilities = (await browser.getProcessedConfig()).capabilities
     await browser.refresh()
-    await browser.executeScript(capabilities.polyfill ? customElements : '')
+    await browser.executeScript(customElements)
     await browser.executeScript(coreProgress)
   })
 

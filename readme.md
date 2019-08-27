@@ -76,9 +76,9 @@ Save it in the root directory. Now you can either run the tests locally:
 ```sh
 npm test
 ```
-or remotely against all browsers:
+or remotely against all targeted browsers:
 
-```
+```sh
 npm run test-remote
 ```
 

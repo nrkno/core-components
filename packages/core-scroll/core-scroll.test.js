@@ -6,9 +6,8 @@ const customElements = fs.readFileSync(require.resolve('@webcomponents/custom-el
 
 describe('core-scroll', () => {
   beforeEach(async () => {
-    const capabilities = (await browser.getProcessedConfig()).capabilities
     await browser.refresh()
-    await browser.executeScript(capabilities.polyfill ? customElements : '')
+    await browser.executeScript(customElements)
     await browser.executeScript(coreScroll)
   })
 

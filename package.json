@@ -31,6 +31,7 @@
     "jasmine-ajax": "^4.0.0",
     "jasmine-spec-reporter": "^4.2.1",
     "protractor": "^5.4.2",
+    "request": "^2.88.0",
     "rollup": "1.19.4",
     "rollup-plugin-babel": "4.3.3",
     "rollup-plugin-commonjs": "10.0.2",
