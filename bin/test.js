@@ -46,7 +46,14 @@ function config () {
   }
 }
 
-const capabilities = !isLocal ? [
+const capabilities = isLocal ? [
+  {
+    browserName: 'firefox'
+  },
+  {
+    browserName: 'chrome'
+  }
+] : [
   // {
   //   browserName: 'Chrome',
   //   os: 'Windows',
@@ -60,7 +67,7 @@ const capabilities = !isLocal ? [
     os_version: '10',
     browser_version: '46',
     polyfill: true
-  },
+  }
   // {
   //   browserName: 'Chrome',
   //   os: 'Windows',
@@ -222,13 +229,6 @@ const capabilities = !isLocal ? [
   //   device: 'Samsung Galaxy Note 4',
   //   real_mobile: 'true',
   // }
-] : [
-  {
-    browserName: 'firefox'
-  },
-  {
-    browserName: 'chrome'
-  }
 ]
 
 exports.config = config()

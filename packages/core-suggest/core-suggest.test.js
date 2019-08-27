@@ -2,10 +2,13 @@ import fs from 'fs'
 import path from 'path'
 
 const coreSuggest = fs.readFileSync(path.resolve(__dirname, 'core-suggest.min.js'), 'utf-8')
+const customElements = fs.readFileSync(require.resolve('@webcomponents/custom-elements'), 'utf-8')
 
 describe('core-suggest', () => {
   beforeEach(async () => {
+    const capabilities = (await browser.getProcessedConfig()).capabilities
     await browser.refresh()
+    await browser.executeScript(capabilities.polyfill ? customElements : '')
     await browser.executeScript(coreSuggest)
   })
 

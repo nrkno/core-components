@@ -61,6 +61,27 @@ npm install # Installs dependencies for all packages
 npm start # Your browser will open documentation with hot reloading
 ```
 
+
+## Testing
+
+Before running tests you need a `.env` file providing credentials to Browserstack:
+
+```sh
+BROWSERSTACK_USER=...
+BROWSERSTACK_KEY=...
+```
+
+Save it in the root directory. Now you can either run the tests locally:
+
+```sh
+npm test
+```
+or remotely against all browsers:
+
+```
+npm run test-remote
+```
+
 ## Building and committing
 After having applied changes, remember to build before pushing the changes upstream.
 
