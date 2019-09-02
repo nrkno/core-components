@@ -16,7 +16,7 @@ async function withPage (t, run) {
 }
 
 test('sets up properties', withPage, async (t, page) => {
-  await page.setContent(`<core-progress></core-progress>`)
+  await page.setContent('<core-progress></core-progress>')
   t.is(await page.$eval('core-progress', el => el.type), 'linear')
   t.is(await page.$eval('core-progress', el => el.value), 0)
   t.is(await page.$eval('core-progress', el => el.getAttribute('role')), 'img')
@@ -24,7 +24,7 @@ test('sets up properties', withPage, async (t, page) => {
 })
 
 test('updates label from value', withPage, async (t, page) => {
-  await page.setContent(`<core-progress value="0.2"></core-progress>`)
+  await page.setContent('<core-progress value="0.2"></core-progress>')
   t.is(await page.$eval('core-progress', el => el.getAttribute('aria-label')), '20%')
   await page.evaluate(() => (document.querySelector('core-progress').value = 0))
   t.is(await page.$eval('core-progress', el => el.getAttribute('aria-label')), '0%')
@@ -33,7 +33,7 @@ test('updates label from value', withPage, async (t, page) => {
 })
 
 test('updates label from value as radial', withPage, async (t, page) => {
-  await page.setContent(`<core-progress value="0.2" type="radial"></core-progress>`)
+  await page.setContent('<core-progress value="0.2" type="radial"></core-progress>')
   t.is(await page.$eval('core-progress', el => el.getAttribute('aria-label')), '20%')
   await page.evaluate(() => (document.querySelector('core-progress').value = 0))
   t.is(await page.$eval('core-progress', el => el.getAttribute('aria-label')), '0%')
@@ -42,12 +42,12 @@ test('updates label from value as radial', withPage, async (t, page) => {
 })
 
 test('updates label from indeterminate value', withPage, async (t, page) => {
-  await page.setContent(`<core-progress value="Loading..."></core-progress>`)
+  await page.setContent('<core-progress value="Loading..."></core-progress>')
   t.is(await page.$eval('core-progress', el => el.getAttribute('aria-label')), 'Loading...')
 })
 
 test('calculates percentage from max', withPage, async (t, page) => {
-  await page.setContent(`<core-progress value="0.5"></core-progress>`)
+  await page.setContent('<core-progress value="0.5"></core-progress>')
   t.is(await page.$eval('core-progress', el => el.getAttribute('aria-label')), '50%')
   await page.evaluate(() => (document.querySelector('core-progress').max = 10))
   t.is(await page.$eval('core-progress', el => el.getAttribute('aria-label')), '5%')
@@ -56,7 +56,7 @@ test('calculates percentage from max', withPage, async (t, page) => {
 })
 
 test('does not trigger change event on max', withPage, async (t, page) => {
-  await page.setContent(`<core-progress></core-progress>`)
+  await page.setContent('<core-progress></core-progress>')
   await page.evaluate(() => {
     return new Promise((resolve, reject) => {
       window.addEventListener('change', reject)
@@ -68,7 +68,7 @@ test('does not trigger change event on max', withPage, async (t, page) => {
 })
 
 test('triggers change event on value', withPage, async (t, page) => {
-  await page.setContent(`<core-progress></core-progress>`)
+  await page.setContent('<core-progress></core-progress>')
   await page.evaluate(() => {
     return new Promise((resolve, reject) => {
       window.addEventListener('change', resolve)
@@ -79,7 +79,7 @@ test('triggers change event on value', withPage, async (t, page) => {
 })
 
 test('triggers change event on indeterminate value', withPage, async (t, page) => {
-  await page.setContent(`<core-progress></core-progress>`)
+  await page.setContent('<core-progress></core-progress>')
   await page.evaluate(() => {
     return new Promise((resolve, reject) => {
       window.addEventListener('change', resolve)

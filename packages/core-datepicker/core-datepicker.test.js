@@ -109,7 +109,7 @@ test('populates empty table', withPage, async (t, page) => {
   for (let i = 1; i <= 7; i++) {
     t.is(await page.$eval(`core-datepicker thead tr th:nth-child(${i})`, el => el.textContent), days[i - 1])
   }
-  t.is(await page.$$eval(`core-datepicker table td button[data-adjacent="false"]`, els => els.length), 31)
+  t.is(await page.$$eval('core-datepicker table td button[data-adjacent="false"]', els => els.length), 31)
   t.is(await page.$eval('core-datepicker button[autofocus]', el => el.textContent), '1')
 })
 

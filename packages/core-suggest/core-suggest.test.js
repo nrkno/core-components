@@ -16,21 +16,21 @@ async function withPage (t, run) {
 }
 
 test('sets up properties', withPage, async (t, page) => {
-  await page.setContent(`<input type="text"><core-suggest hidden></core-suggest>`)
+  await page.setContent('<input type="text"><core-suggest hidden></core-suggest>')
   t.is(await page.$eval('input', el => el.getAttribute('aria-autocomplete')), 'list')
   t.is(await page.$eval('input', el => el.getAttribute('autocomplete')), 'off')
   t.is(await page.$eval('input', el => el.getAttribute('aria-expanded')), 'false')
 })
 
 test('opens suggestions on input focus', withPage, async (t, page) => {
-  await page.setContent(`<input type="text"><core-suggest hidden></core-suggest>`)
+  await page.setContent('<input type="text"><core-suggest hidden></core-suggest>')
   await page.click('input')
   t.is(await page.$eval('input', el => el.getAttribute('aria-expanded')), 'true')
   t.false(await page.$eval('core-suggest', el => el.hasAttribute('hidden')))
 })
 
 test('closes suggestions on click outside', withPage, async (t, page) => {
-  await page.setContent(`<input type="text"><core-suggest hidden></core-suggest>`)
+  await page.setContent('<input type="text"><core-suggest hidden></core-suggest>')
   await page.click('input')
   t.false(await page.$eval('core-suggest', el => el.hasAttribute('hidden')))
   await page.click('body')
@@ -84,7 +84,7 @@ test('sets type="button" on all suggestion buttons', withPage, async (t, page) =
 })
 
 test('sets up and parses limit option', withPage, async (t, page) => {
-  await page.setContent(`<input type="text"><core-suggest hidden></core-suggest>`)
+  await page.setContent('<input type="text"><core-suggest hidden></core-suggest>')
   t.is(await page.$eval('core-suggest', el => el.limit), Infinity)
   await page.$eval('core-suggest', el => { el.limit = 2 })
   t.is(await page.$eval('core-suggest', el => el.limit), 2)
