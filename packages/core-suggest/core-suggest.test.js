@@ -1,8 +1,10 @@
 import fs from 'fs'
 import path from 'path'
+import http from 'http'
 
 const coreSuggest = fs.readFileSync(path.resolve(__dirname, 'core-suggest.min.js'), 'utf-8')
 const customElements = fs.readFileSync(require.resolve('@webcomponents/custom-elements'), 'utf-8')
+const HTTP_HEADERS = { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'X-Requested-With' }
 
 describe('core-suggest', () => {
   beforeEach(async () => {
@@ -128,49 +130,82 @@ describe('core-suggest', () => {
     await expect($('li:nth-child(4) button').getAttribute('hidden')).toEqual('true')
   })
 
-  it('triggers ajax error on bad url', async () => {
+  it('triggers ajax event on input ', async () => {
+    const server = http.createServer((request, response) => {
+      response.writeHead(200, HTTP_HEADERS)
+      response.end('{"results": []}')
+    })
+    server.listen(1111)
     await browser.executeScript((html) => (document.body.innerHTML = html), `
       <input type="text">
-      <core-suggest ajax="https://foo" hidden></core-suggest>
+      <core-suggest ajax="http://localhost:1111" hidden></core-suggest>
     `)
     await browser.executeScript(() => {
-      document.addEventListener('suggest.ajax.error', () => {
-        document.body.appendChild(document.createElement('i'))
+      document.addEventListener('suggest.ajax', (event) => {
+        document.body.appendChild(Object.assign(document.createElement('i'), { textContent: event.detail.responseText }))
       })
     })
     await $('input').sendKeys('abc')
     await browser.wait(ExpectedConditions.presenceOf($('i')))
+    await expect($('i').getText()).toEqual('{"results": []}')
+    server.close()
   })
 
-  // TODO intercept requests -> jasmine-ajax?
+  it('triggers ajax error event on bad url', async () => {
+    await browser.executeScript((html) => (document.body.innerHTML = html), `
+      <input type="text">
+      <core-suggest ajax="http://foo" hidden></core-suggest>
+    `)
+    await browser.executeScript(() => {
+      document.addEventListener('suggest.ajax.error', (event) => {
+        document.body.appendChild(Object.assign(document.createElement('i'), { textContent: event.detail.responseError }))
+      })
+    })
+    await $('input').sendKeys('abc')
+    await browser.wait(ExpectedConditions.presenceOf($('i')))
+    await expect($('i').getText()).toEqual('Error: Network request failed')
+  })
 
-  // it('triggers ajax error on bad status', async () => {
-  //   await browser.executeScript((html) => (document.body.innerHTML = html), `
-  //     <input type="text">
-  //     <core-suggest ajax="http://bad-status" hidden></core-suggest>
-  //   `)
-  //   await page.setRequestInterception(true)
-  //   page.on('request', (request) => request.respond({ status: 404 }))
-  //   await page.evaluate(() => {
-  //     document.addEventListener('suggest.ajax.error', () => (window.dispatched = true))
-  //   })
-  //   await $('input').sendKeys('abc')
-  //   await page.waitForFunction('window.dispatched === true')
-  //   t.pass()
-  // })
-  //
-  // it('triggers ajax error on bad json', async () => {
-  //   await browser.executeScript((html) => (document.body.innerHTML = html), `
-  //     <input type="text">
-  //     <core-suggest ajax="http://bad-json" hidden></core-suggest>
-  //   `)
-  //   await page.setRequestInterception(true)
-  //   page.on('request', (request) => request.respond({ body: 'not json' }))
-  //   await page.evaluate(() => {
-  //     document.addEventListener('suggest.ajax.error', () => (window.dispatched = true))
-  //   })
-  //   await $('input').sendKeys('abc')
-  //   await page.waitForFunction('window.dispatched === true')
-  //   t.pass()
-  // })
+  it('triggers ajax error event on bad response status', async () => {
+    const server = http.createServer((request, response) => {
+      if (request.method === 'OPTIONS') response.writeHead(200, HTTP_HEADERS)
+      else response.writeHead(500, HTTP_HEADERS)
+      response.end('')
+    })
+    server.listen(2222)
+    await browser.executeScript((html) => (document.body.innerHTML = html), `
+      <input type="text">
+      <core-suggest ajax="http://localhost:2222" hidden></core-suggest>
+    `)
+    await browser.executeScript(() => {
+      document.addEventListener('suggest.ajax.error', (event) => {
+        document.body.appendChild(Object.assign(document.createElement('i'), { textContent: event.detail.status }))
+      })
+    })
+    await $('input').sendKeys('abc')
+    await browser.wait(ExpectedConditions.presenceOf($('i')))
+    await expect($('i').getText()).toEqual('500')
+    server.close()
+  })
+
+  it('triggers ajax error event on bad json', async () => {
+    const server = http.createServer((req, response) => {
+      response.writeHead(200, HTTP_HEADERS)
+      response.end('{"boom"!}')
+    })
+    server.listen(3333)
+    await browser.executeScript((html) => (document.body.innerHTML = html), `
+      <input type="text">
+      <core-suggest ajax="http://localhost:3333" hidden></core-suggest>
+    `)
+    await browser.executeScript(() => {
+      document.addEventListener('suggest.ajax.error', (event) => {
+        document.body.appendChild(Object.assign(document.createElement('i'), { textContent: event.detail.responseError }))
+      })
+    })
+    await $('input').sendKeys('abc')
+    await browser.wait(ExpectedConditions.presenceOf($('i')))
+    await expect($('i').getText()).toEqual('SyntaxError: Unexpected token ! in JSON at position 7')
+    server.close()
+  })
 })

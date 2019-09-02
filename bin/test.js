@@ -17,7 +17,7 @@ function config () {
     directConnect: isLocal,
     SELENIUM_PROMISE_MANAGER: false,
     jasmineNodeOpts: {
-      defaultTimeoutInterval: 30000,
+      defaultTimeoutInterval: 5000,
       print: () => {} // Disable dot reporter
     },
     logLevel: 'INFO',
@@ -59,10 +59,10 @@ function config () {
 
 const capabilities = isLocal ? [
   {
-    browserName: 'firefox'
-  },
-  {
-    browserName: 'chrome'
+    browserName: 'chrome',
+    chromeOptions: {
+      args: ['--headless', '--window-size=800x600']
+    }
   }
 ] : [
   // {
