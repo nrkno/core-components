@@ -17,9 +17,11 @@ function config () {
     directConnect: isLocal,
     SELENIUM_PROMISE_MANAGER: false,
     jasmineNodeOpts: {
-      defaultTimeoutInterval: 5000,
+      defaultTimeoutInterval: 2 * 60 * 1000,
       print: () => {} // Disable dot reporter
     },
+    allScriptsTimeout: 30000,
+    getPageTimeout: 30000,
     logLevel: 'INFO',
     multiCapabilities: capabilities.map((cap) => {
       return {
