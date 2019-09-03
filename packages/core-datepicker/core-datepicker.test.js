@@ -12,7 +12,7 @@ describe('core-datepicker', () => {
   })
 
   it('sets up properties', async () => {
-    const date = new Date('2019-04-30T10:44:56')
+    const date = new Date('2019-04-30T10:44:56+02:00')
     await browser.executeScript((html) => (document.body.innerHTML = html), `
       <core-datepicker timestamp="${date.getTime()}"></core-datepicker>
     `)
@@ -29,7 +29,7 @@ describe('core-datepicker', () => {
   })
 
   it('sets input values from timestamp', async () => {
-    const date = new Date('2019-04-30T10:44:56')
+    const date = new Date('2019-04-30T10:44:56+02:00')
     await browser.executeScript((html) => (document.body.innerHTML = html), `
       <core-datepicker timestamp="${date.getTime()}">
         <input type="year">
@@ -95,7 +95,7 @@ describe('core-datepicker', () => {
   })
 
   it('populates empty table', async () => {
-    const date = new Date('2018-01-01')
+    const date = new Date('2018-01-01T24:00:00+02:00')
     await browser.executeScript((html) => (document.body.innerHTML = html), `
       <core-datepicker timestamp="${date.getTime()}">
         <table></table>
@@ -107,7 +107,7 @@ describe('core-datepicker', () => {
     for (let i = 1; i <= 7; i++) {
       await expect($(`core-datepicker thead tr th:nth-child(${i})`).getText()).toEqual(days[i - 1])
     }
-    await expect($$(`core-datepicker table td button[data-adjacent="false"]`).count()).toEqual(31)
+    await expect($$('core-datepicker table td button[data-adjacent="false"]').count()).toEqual(31)
     await expect($('core-datepicker button[autofocus]').getText()).toEqual('1')
   })
 
@@ -124,7 +124,7 @@ describe('core-datepicker', () => {
   })
 
   it('changes date on day clicked', async () => {
-    const date = new Date('2018-01-01')
+    const date = new Date('2018-01-01T24:00:00+02:00')
     await browser.executeScript((html) => (document.body.innerHTML = html), `
       <core-datepicker timestamp="${date.getTime()}">
         <table></table>
@@ -165,13 +165,13 @@ describe('core-datepicker', () => {
   })
 
   it('disables elements from function', async () => {
-    const date = new Date('2018-01-01')
+    const date = new Date('2018-01-01T24:00:00+02:00')
     await browser.executeScript((html) => (document.body.innerHTML = html), `
       <core-datepicker timestamp="${date.getTime()}">
         <table></table>
       </core-datepicker>
     `)
-    await browser.executeScript(() => (document.querySelector('core-datepicker').disabled = (date) => date > new Date('2018-01-01')))
+    await browser.executeScript(() => (document.querySelector('core-datepicker').disabled = (date) => date > new Date('2018-01-01T24:00:00+02:00')))
     await browser.wait(ExpectedConditions.presenceOf($('core-datepicker table button')))
     await expect($('core-datepicker tbody tr:nth-child(1) td:nth-child(1) button').getAttribute('disabled')).toEqual(null)
     await $$('core-datepicker tbody tr:nth-child(2) button').each((el) => expect(el.getAttribute('disabled')).toEqual('true'))
@@ -180,8 +180,8 @@ describe('core-datepicker', () => {
   })
 
   it('triggers change event', async () => {
-    const date = new Date('2018-01-01')
-    const expected = new Date('2018-01-02')
+    const date = new Date('2018-01-01T24:00:00+02:00')
+    const expected = new Date('2018-01-02T24:00:00+02:00')
     await browser.executeScript((html) => (document.body.innerHTML = html), `
       <core-datepicker timestamp="${date.getTime()}"></core-datepicker>
     `)
@@ -189,14 +189,14 @@ describe('core-datepicker', () => {
       document.addEventListener('datepicker.change', ({ detail }) => {
         document.body.appendChild(Object.assign(document.createElement('i'), { textContent: detail.getTime() }))
       })
-      document.querySelector('core-datepicker').date = new Date('2018-01-02')
+      document.querySelector('core-datepicker').date = new Date('2018-01-02T24:00:00+02:00')
     })
     await expect(browser.isElementPresent($('i'))).toEqual(true)
     await expect($('i').getText()).toEqual(String(expected.getTime()))
   })
 
   it('triggers click day event', async () => {
-    const date = new Date('2018-01-01')
+    const date = new Date('2018-01-01T24:00:00+02:00')
     await browser.executeScript((html) => (document.body.innerHTML = html), `
       <core-datepicker timestamp="${date.getTime()}">
         <table></table>

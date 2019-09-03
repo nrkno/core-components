@@ -137,7 +137,7 @@ function table (self, table) {
     button.value = `${day.getFullYear()}-${dayMonth + 1}-${dayInMonth}`
     button.disabled = self.disabled(day)
     button.tabIndex = isSelected - 1
-    button.setAttribute(`data-adjacent`, month !== dayMonth)
+    button.setAttribute('data-adjacent', month !== dayMonth)
     button.setAttribute('aria-label', `${dayInMonth}. ${self.months[dayMonth]}`)
     button.setAttribute('aria-current', day.getDate() === today.getDate() && day.getMonth() === today.getMonth() && day.getFullYear() === today.getFullYear() && 'date')
     toggleAttribute(button, 'autofocus', isSelected)

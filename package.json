@@ -26,6 +26,7 @@
     "@babel/preset-env": "7.5.5",
     "@nrk/custom-element-to-react": "1.1.0",
     "@webcomponents/custom-elements": "^1.2.4",
+    "browserstack-local": "^1.4.2",
     "dotenv": "^8.1.0",
     "esm": "3.2.25",
     "fast-glob": "3.0.4",

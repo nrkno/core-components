@@ -2,12 +2,16 @@ import path from 'path'
 import dotenv from 'dotenv'
 import request from 'request'
 import { SpecReporter } from 'jasmine-spec-reporter'
+import browserstack from 'browserstack-local'
+import { getUUID } from '../packages/utils'
 
 dotenv.config()
 const isLocal = process.env.NODE_ENV === 'test'
 const user = process.env.BROWSERSTACK_USER
 const key = process.env.BROWSERSTACK_KEY
 const testName = new Date().toLocaleString()
+const localIdentifier = getUUID()
+const bsLocal = new browserstack.Local()
 
 function config () {
   return {
@@ -30,6 +34,7 @@ function config () {
         'browserstack.debug': false, // Capture screenshots for visual logs
         'browserstack.video': false, // Capture video of tests
         'browserstack.console': 'errors', // Capture console logs
+        'browserstack.localIdentifier': localIdentifier,
         project: 'core-components',
         build: testName,
         name: [
@@ -39,6 +44,23 @@ function config () {
         ...cap
       }
     }),
+    beforeLaunch: async () => {
+      await new Promise((resolve, reject) => {
+        bsLocal.start({ key, localIdentifier, forceLocal: true }, (error) => {
+          if (error) return reject(Error('BrowserStack Local error: ' + error))
+          console.log('BrowserStack Local started')
+          resolve()
+        })
+      })
+    },
+    afterLaunch: async () => {
+      await new Promise((resolve) => {
+        bsLocal.stop(() => {
+          console.log('BrowserStack Local stopped')
+          resolve()
+        })
+      })
+    },
     onPrepare: () => {
       jasmine.getEnv().addReporter(new SpecReporter({
         displayFailuresSummary: true,
@@ -66,6 +88,9 @@ const capabilities = isLocal ? [
       args: ['--headless', '--window-size=800x600']
     }
   }
+  // {
+  //   browserName: 'firefox'
+  // }
 ] : [
   // {
   //   browserName: 'Chrome',

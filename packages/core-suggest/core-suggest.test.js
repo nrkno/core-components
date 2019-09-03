@@ -135,10 +135,10 @@ describe('core-suggest', () => {
       response.writeHead(200, HTTP_HEADERS)
       response.end('{"results": []}')
     })
-    server.listen(1111)
+    server.listen(9000)
     await browser.executeScript((html) => (document.body.innerHTML = html), `
       <input type="text">
-      <core-suggest ajax="http://localhost:1111" hidden></core-suggest>
+      <core-suggest ajax="http://localhost:9000" hidden></core-suggest>
     `)
     await browser.executeScript(() => {
       document.addEventListener('suggest.ajax', (event) => {
@@ -172,10 +172,10 @@ describe('core-suggest', () => {
       else response.writeHead(500, HTTP_HEADERS)
       response.end('')
     })
-    server.listen(2222)
+    server.listen(9001)
     await browser.executeScript((html) => (document.body.innerHTML = html), `
       <input type="text">
-      <core-suggest ajax="http://localhost:2222" hidden></core-suggest>
+      <core-suggest ajax="http://localhost:9001" hidden></core-suggest>
     `)
     await browser.executeScript(() => {
       document.addEventListener('suggest.ajax.error', (event) => {
@@ -193,10 +193,10 @@ describe('core-suggest', () => {
       response.writeHead(200, HTTP_HEADERS)
       response.end('{"boom"!}')
     })
-    server.listen(3333)
+    server.listen(9002)
     await browser.executeScript((html) => (document.body.innerHTML = html), `
       <input type="text">
-      <core-suggest ajax="http://localhost:3333" hidden></core-suggest>
+      <core-suggest ajax="http://localhost:9002" hidden></core-suggest>
     `)
     await browser.executeScript(() => {
       document.addEventListener('suggest.ajax.error', (event) => {
@@ -205,7 +205,7 @@ describe('core-suggest', () => {
     })
     await $('input').sendKeys('abc')
     await browser.wait(ExpectedConditions.presenceOf($('i')))
-    await expect($('i').getText()).toEqual('SyntaxError: Unexpected token ! in JSON at position 7')
+    await expect((await $('i').getText()).match(/^SyntaxError/)).toBeTruthy()
     server.close()
   })
 })
