@@ -16,7 +16,7 @@ const bsLocal = new browserstack.Local()
 function config () {
   return {
     framework: 'jasmine',
-    specs: [path.resolve(__dirname, '..', 'packages/*datepicker/*.test.js')],
+    specs: [path.resolve(__dirname, '..', 'packages/*/*.test.js')],
     seleniumAddress: 'http://hub-cloud.browserstack.com/wd/hub',
     directConnect: isLocal,
     SELENIUM_PROMISE_MANAGER: false,

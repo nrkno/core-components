@@ -139,7 +139,6 @@ describe('core-datepicker', () => {
         </core-datepicker>
       `
     })
-    console.log(await browser.executeScript(() => document.querySelector('core-datepicker').outerHTML));
     await browser.wait(ExpectedConditions.presenceOf($('core-datepicker table button')))
     await expect($('core-datepicker button[autofocus]').getText()).toEqual('1')
     await $('core-datepicker tbody tr:nth-child(2) td:nth-child(5) button').click()

@@ -12,14 +12,16 @@ describe('core-scroll', () => {
   })
 
   it('sets up properties', async () => {
-    await browser.executeScript((html) => (document.body.innerHTML = html), `
-      <button for="scroller" value="down">Down</button>
-      <core-scroll id="scroller">
-        <div>This is overflowing content</div>
-        <div>This is overflowing content</div>
-        <div>This is overflowing content</div>
-      </core-scroll>
-    `)
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <button for="scroller" value="down">Down</button>
+        <core-scroll id="scroller">
+          <div>This is overflowing content</div>
+          <div>This is overflowing content</div>
+          <div>This is overflowing content</div>
+        </core-scroll>
+      `
+    })
     await expect($('core-scroll').getCssValue('overflow')).toEqual('scroll')
     await expect($('core-scroll').getCssValue('max-height')).toEqual('100%')
     await expect($('core-scroll').getCssValue('margin-right')).toEqual('0px')

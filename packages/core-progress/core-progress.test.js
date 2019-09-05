@@ -12,9 +12,11 @@ describe('core-progress', () => {
   })
 
   it('sets up properties', async () => {
-    await browser.executeScript((html) => (document.body.innerHTML = html), `
-      <core-progress></core-progress>
-    `)
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <core-progress></core-progress>
+      `
+    })
     await expect($('core-progress').getAttribute('type')).toEqual('linear')
     await expect($('core-progress').getAttribute('value')).toEqual('0')
     await expect($('core-progress').getAttribute('role')).toEqual('img')
@@ -22,9 +24,11 @@ describe('core-progress', () => {
   })
 
   it('updates label from value', async () => {
-    await browser.executeScript((html) => (document.body.innerHTML = html), `
-      <core-progress value="0.2"></core-progress>
-    `)
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <core-progress value="0.2"></core-progress>
+      `
+    })
     await expect($('core-progress').getAttribute('aria-label')).toEqual('20%')
     await browser.executeScript(() => (document.querySelector('core-progress').value = 0))
     await expect($('core-progress').getAttribute('aria-label')).toEqual('0%')
@@ -33,9 +37,11 @@ describe('core-progress', () => {
   })
 
   it('updates label from value as radial', async () => {
-    await browser.executeScript((html) => (document.body.innerHTML = html), `
-      <core-progress value="0.2" type="radial"></core-progress>
-    `)
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <core-progress value="0.2" type="radial"></core-progress>
+      `
+    })
     await expect($('core-progress').getAttribute('aria-label')).toEqual('20%')
     await browser.executeScript(() => (document.querySelector('core-progress').value = 0))
     await expect($('core-progress').getAttribute('aria-label')).toEqual('0%')
@@ -44,16 +50,20 @@ describe('core-progress', () => {
   })
 
   it('updates label from indeterminate value', async () => {
-    await browser.executeScript((html) => (document.body.innerHTML = html), `
-      <core-progress value="Loading..."></core-progress>
-    `)
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <core-progress value="Loading..."></core-progress>
+      `
+    })
     await expect($('core-progress').getAttribute('aria-label')).toEqual('Loading...')
   })
 
   it('calculates percentage relative to max', async () => {
-    await browser.executeScript((html) => (document.body.innerHTML = html), `
-      <core-progress value="0.5"></core-progress>
-    `)
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <core-progress value="0.5"></core-progress>
+      `
+    })
     await expect($('core-progress').getAttribute('aria-label')).toEqual('50%')
     await browser.executeScript(() => (document.querySelector('core-progress').max = 10))
     await expect($('core-progress').getAttribute('aria-label')).toEqual('5%')
@@ -62,10 +72,10 @@ describe('core-progress', () => {
   })
 
   it('does not trigger change event on max', async () => {
-    await browser.executeScript((html) => (document.body.innerHTML = html), `
-      <core-progress></core-progress>
-    `)
     await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <core-progress></core-progress>
+      `
       document.addEventListener('change', () => (document.body.appendChild(document.createElement('i'))))
       document.querySelector('core-progress').max = 2
     })
@@ -73,10 +83,10 @@ describe('core-progress', () => {
   })
 
   it('triggers change event on value', async () => {
-    await browser.executeScript((html) => (document.body.innerHTML = html), `
-      <core-progress></core-progress>
-    `)
     await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <core-progress></core-progress>
+      `
       document.addEventListener('change', () => (document.body.appendChild(document.createElement('i'))))
       document.querySelector('core-progress').value = 2
     })
@@ -84,10 +94,10 @@ describe('core-progress', () => {
   })
 
   it('triggers change event on indeterminate value', async () => {
-    await browser.executeScript((html) => (document.body.innerHTML = html), `
-      <core-progress></core-progress>
-    `)
     await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <core-progress></core-progress>
+      `
       document.addEventListener('change', () => (document.body.appendChild(document.createElement('i'))))
       document.querySelector('core-progress').value = 'Loading...'
     })
