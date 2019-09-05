@@ -94,19 +94,25 @@ const capabilities = isLocal ? [
 ] : [
   // {
   //   browserName: 'Chrome',
+  //   browser_version: '37'
   //   os: 'Windows',
   //   os_version: '10',
-  //   browser_version: '37'
   // },
   // {
   //   browserName: 'Chrome',
+  //   browser_version: '46'
   //   os: 'Windows',
   //   os_version: '10',
-  //   browser_version: '46'
   // }
   {
     browserName: 'Chrome',
     browser_version: '57',
+    os: 'Windows',
+    os_version: '10'
+  },
+  {
+    browserName: 'Edge',
+    browser_version: '15.0',
     os: 'Windows',
     os_version: '10'
   }
@@ -123,33 +129,26 @@ const capabilities = isLocal ? [
   //   os_version: '10'
   // },
   // {
-  //   browserName: 'Edge',
-  //   os: 'Windows',
-  //   os_version: '10',
-  //   browser_version: '15.0',
-  //   resolution: '1024x768'
-  // },
-  // {
   //   browserName: 'Firefox',
   //   os: 'Windows',
   //   os_version: '10'
   // },
   // {
   //   browserName: 'Firefox',
+  //   browser_version: '52.0'
   //   os: 'Windows',
   //   os_version: '10',
-  //   browser_version: '52.0'
   // },
   // {
   //   browserName: 'Firefox',
+  //   browser_version: '44.0'
   //   os: 'Windows',
   //   os_version: '7',
-  //   browser_version: '44.0'
   // },
   // {
   //   browserName: 'IE',
-  //   os: 'Windows',
   //   browser_version: '10'
+  //   os: 'Windows',
   // },
   // {
   //   browserName: 'IE',
@@ -159,9 +158,9 @@ const capabilities = isLocal ? [
   // },
   // {
   //   browserName: 'IE',
+  //   browser_version: '11'
   //   os: 'Windows',
   //   os_version: '7',
-  //   browser_version: '11'
   // },
   // {
   //   browserName: 'Opera',
@@ -177,30 +176,30 @@ const capabilities = isLocal ? [
   // },
   // {
   //   browserName: 'Safari',
+  //   browser_version: '7.1',
   //   os: 'OS X',
   //   os_version: 'Mavericks',
-  //   browser_version: '7.1',
   //   resolution: '1024x768'
   // },
   // {
   //   browserName: 'Safari',
+  //   browser_version: '8.0',
   //   os: 'OS X',
   //   os_version: 'Yosemite',
-  //   browser_version: '8.0',
   //   resolution: '1024x768'
   // },
   // {
   //   browserName: 'Safari',
+  //   browser_version: '9.1',
   //   os: 'OS X',
   //   os_version: 'El Capitan',
-  //   browser_version: '9.1',
   //   resolution: '1024x768'
   // },
   // {
   //   browserName: 'Safari',
+  //   browser_version: '10.0',
   //   os: 'OS X',
   //   os_version: 'Sierra',
-  //   browser_version: '10.0',
   //   resolution: '1024x768'
   // },
   // {
