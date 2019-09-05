@@ -109,13 +109,13 @@ const capabilities = isLocal ? [
     browser_version: '57',
     os: 'Windows',
     os_version: '10'
-  },
-  {
-    browserName: 'Edge',
-    browser_version: '15.0',
-    os: 'Windows',
-    os_version: '10'
   }
+  // {
+  //   browserName: 'Edge',
+  //   browser_version: '15.0',
+  //   os: 'Windows',
+  //   os_version: '10'
+  // }
   // {
   //   browserName: 'Edge',
   //   browser_version: '18.0',
