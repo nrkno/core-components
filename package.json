@@ -21,7 +21,7 @@
     "test:watch": "ava -w"
   },
   "devDependencies": {
-    "@babel/preset-env": "7.5.5",
+    "@babel/preset-env": "7.6.0",
     "@nrk/custom-element-to-react": "1.1.0",
     "ava": "2.3.0",
     "esm": "3.2.25",
