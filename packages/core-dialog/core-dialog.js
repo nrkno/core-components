@@ -1,4 +1,4 @@
-import { closest, dispatchEvent, getUUID, toggleAttribute, queryAll } from '../utils'
+import { closest, dispatchEvent, toggleAttribute, queryAll } from '../utils'
 
 const FOCUSABLE = '[tabindex],a,button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled])'
 
@@ -6,7 +6,7 @@ export default class CoreDialog extends HTMLElement {
   static get observedAttributes () { return ['hidden', 'backdrop'] }
 
   connectedCallback () {
-    this._from = `data-dialog-${getUUID()}` // Used to identify what element opened the dialog
+    this._focus = true // Used to check if connectedCallback has run
     this.attributeChangedCallback() // Ensure correct setup backdrop
     this.addEventListener('transitionend', this)
     document.addEventListener('keydown', this)
@@ -14,14 +14,15 @@ export default class CoreDialog extends HTMLElement {
   }
 
   disconnectedCallback () {
+    reFocus(this._foucs) // Try moving focus back to <button>
+    this._focus = null // Garbage collection
     this.removeEventListener('transitionend', this)
     document.removeEventListener('keydown', this)
     document.removeEventListener('click', this)
   }
 
   attributeChangedCallback (attr, prev, next) {
-    if (this._from) { // Only trigger after connectedCallback
-      const from = document.querySelector(`[${this._from}]`) || document.activeElement || document.body
+    if (this._focus) { // Only trigger after connectedCallback
       const prevBack = attr === 'backdrop' && getBackdrop(this, prev)
       const nextBack = this.backdrop
 
@@ -32,19 +33,19 @@ export default class CoreDialog extends HTMLElement {
       if (prevBack) prevBack.setAttribute('hidden', '') // Hide previous backdrop
       if (nextBack) toggleAttribute(nextBack, 'hidden', this.hidden)
 
-      if (this.hidden) {
-        from.removeAttribute(this._from)
-        setTimeout(() => from.focus()) // Move focus after paint (helps iOS and react portals)
-      } else {
+      if (this.hidden) reFocus(this._focus)
+      else {
         const below = queryAll('body *').filter((el) => el !== nextBack && !this.contains(el) && isVisible(el))
-        const zIndex = Math.min(Math.max(...below.map(getZIndex)), 2000000000) // Avoid overflowing z-index. See techjunkie.com/maximum-z-index-value
-        if (nextBack) nextBack.style.zIndex = zIndex + 1
+        const zIndex = Math.min(Math.max(1, ...below.map(getZIndex)), 2000000000) // Avoid overflowing z-index. See techjunkie.com/maximum-z-index-value
 
+        if (nextBack) nextBack.style.zIndex = zIndex + 1
         this.style.zIndex = zIndex + 2
-        from.setAttribute(this._from, '') // Remember last focused element
+        this._focus = document.activeElement || document.body // Remember last focused element
         setTimeout(() => setFocus(this)) // Move focus after paint (helps iOS and react portals)
       }
-      if (attr === 'hidden') dispatchEvent(this, 'dialog.toggle')
+
+      // React might re-mount the DOM, so make sure prev and next did actually change
+      if (attr === 'hidden' && next !== prev) dispatchEvent(this, 'dialog.toggle')
     }
   }
 
@@ -110,6 +111,12 @@ function getZIndex (element) {
     zIndex += Number(window.getComputedStyle(el).getPropertyValue('z-index')) || 0
   }
   return zIndex
+}
+
+function reFocus (el) {
+  setTimeout(() => { // Move focus after paint (helps iOS and react portals)
+    try { el.focus() } catch (err) {} // Element might have been removed
+  })
 }
 
 function setFocus (el) {

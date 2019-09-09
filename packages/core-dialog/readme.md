@@ -109,6 +109,8 @@ demo-->
       this.state = { hidden: true }
       this.toggleDialog = this.toggleDialog.bind(this)
       this.handleToggle = this.handleToggle.bind(this)
+      document.getElementById('jsx-dialog').addEventListener('dialog.toggle', console.log)
+      document.addEventListener('keydown', (e) => e.keyCode === 68 && this.setState({ remove: true }))
     }
 
     toggleDialog () {
