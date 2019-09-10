@@ -110,7 +110,7 @@ test('populates empty table', withPage, async (t, page) => {
     t.is(await page.$eval(`core-datepicker thead tr th:nth-child(${i})`, el => el.textContent), days[i - 1])
   }
   t.is(await page.$$eval('core-datepicker table td button[data-adjacent="false"]', els => els.length), 31)
-  t.is(await page.$eval('core-datepicker button[autofocus]', el => el.textContent), '1')
+  t.is(await page.$eval('core-datepicker button[data-selected]', el => el.textContent), '1')
 })
 
 test('marks today\'s date in table', withPage, async (t, page) => {
@@ -133,9 +133,9 @@ test('changes date on day clicked', withPage, async (t, page) => {
     </core-datepicker>
   `)
   await page.waitFor('core-datepicker table button')
-  t.is(await page.$eval('core-datepicker button[autofocus]', el => el.textContent), '1')
+  t.is(await page.$eval('core-datepicker button[data-selected]', el => el.textContent), '1')
   await page.click('core-datepicker tbody tr:nth-child(2) td:nth-child(5) button')
-  t.is(await page.$eval('core-datepicker button[autofocus]', el => el.textContent), '12')
+  t.is(await page.$eval('core-datepicker button[data-selected]', el => el.textContent), '12')
 })
 
 test('changes month names', withPage, async (t, page) => {
