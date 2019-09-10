@@ -47,7 +47,7 @@ export default class CoreDatepicker extends HTMLElement {
       if (button && table) dispatchEvent(this, 'datepicker.click.day')
     } else if (event.type === 'keydown' && closest(event.target, 'table')) {
       this.date = KEYS[event.keyCode]
-      this.querySelector('[autofocus]').focus()
+      this.querySelector('[data-selected]').focus()
       event.preventDefault() // Prevent scrolling
     }
   }
@@ -140,7 +140,7 @@ function table (self, table) {
     button.setAttribute('data-adjacent', month !== dayMonth)
     button.setAttribute('aria-label', `${dayInMonth}. ${self.months[dayMonth]}`)
     button.setAttribute('aria-current', day.getDate() === today.getDate() && day.getMonth() === today.getMonth() && day.getFullYear() === today.getFullYear() && 'date')
-    toggleAttribute(button, 'autofocus', isSelected)
+    toggleAttribute(button, 'data-selected', isSelected)
     day.setDate(dayInMonth + 1)
   })
 }
