@@ -1,4 +1,4 @@
-name: core-analytics
+name: core-components
 
 on:
   pull_request:
