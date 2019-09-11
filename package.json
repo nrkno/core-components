@@ -2,7 +2,7 @@
   "name": "@nrk/core-components",
   "homepage": "https://static.nrk.no/core-components/latest/",
   "author": "NRK <opensource@nrk.no> (https://www.nrk.no/)",
-  "version": "7.1.1",
+  "version": "7.1.2",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -23,24 +23,24 @@
   },
   "devDependencies": {
     "@babel/core": "^7.5.5",
-    "@babel/preset-env": "7.5.5",
+    "@babel/preset-env": "^7.6.0",
     "@nrk/custom-element-to-react": "1.1.0",
     "@webcomponents/custom-elements": "^1.2.4",
     "browserstack-local": "^1.4.2",
     "dotenv": "^8.1.0",
     "esm": "3.2.25",
-    "fast-glob": "3.0.4",
+    "fast-glob": "^3.0.4",
     "jasmine-spec-reporter": "^4.2.1",
     "protractor": "^5.4.2",
     "request": "^2.88.0",
-    "rollup": "1.20.3",
-    "rollup-plugin-babel": "4.3.3",
-    "rollup-plugin-commonjs": "10.1.0",
-    "rollup-plugin-json": "4.0.0",
-    "rollup-plugin-node-resolve": "5.2.0",
-    "rollup-plugin-serve": "1.0.1",
-    "rollup-plugin-uglify": "6.0.3",
-    "standard": "14.1.0"
+    "rollup": "^1.21.0",
+    "rollup-plugin-babel": "^4.3.3",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-json": "^4.0.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-serve": "^1.0.1",
+    "rollup-plugin-uglify": "^6.0.3",
+    "standard": "^14.1.0"
   },
   "standard": {
     "globals": [
