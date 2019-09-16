@@ -157,13 +157,11 @@ describe('core-suggest', () => {
         <input type="text">
         <core-suggest ajax="http://localhost:9000" hidden></core-suggest>
       `
-      document.addEventListener('suggest.ajax', (event) => {
-        document.body.appendChild(Object.assign(document.createElement('i'), { textContent: event.detail.responseText }))
-      })
+      document.addEventListener('suggest.ajax', (event) => (window.responseText = event.detail.responseText))
     })
     await $('input').sendKeys('abc')
-    await browser.wait(ExpectedConditions.presenceOf($('i')))
-    await expect($('i').getText()).toEqual('{"results": []}')
+    const text = await browser.wait(() => browser.executeScript(() => window.responseText))
+    await expect(text).toEqual('{"results": []}')
     server.close()
   })
 
@@ -173,13 +171,11 @@ describe('core-suggest', () => {
         <input type="text">
         <core-suggest ajax="http://foo" hidden></core-suggest>
       `
-      document.addEventListener('suggest.ajax.error', (event) => {
-        document.body.appendChild(Object.assign(document.createElement('i'), { textContent: event.detail.responseError }))
-      })
+      document.addEventListener('suggest.ajax.error', (event) => (window.responseError = event.detail.responseError))
     })
     await $('input').sendKeys('abc')
-    await browser.wait(ExpectedConditions.presenceOf($('i')))
-    await expect($('i').getText()).toEqual('Error: Network request failed')
+    const error = await browser.wait(() => browser.executeScript(() => window.responseError))
+    await expect(error).toEqual('Error: Network request failed')
   })
 
   it('triggers ajax error event on bad response status', async () => {
@@ -194,13 +190,11 @@ describe('core-suggest', () => {
         <input type="text">
         <core-suggest ajax="http://localhost:9001" hidden></core-suggest>
       `
-      document.addEventListener('suggest.ajax.error', (event) => {
-        document.body.appendChild(Object.assign(document.createElement('i'), { textContent: event.detail.status }))
-      })
+      document.addEventListener('suggest.ajax.error', (event) => (window.status = event.detail.status))
     })
     await $('input').sendKeys('abc')
-    await browser.wait(ExpectedConditions.presenceOf($('i')))
-    await expect($('i').getText()).toEqual('500')
+    const status = await browser.wait(() => browser.executeScript(() => window.status))
+    await expect(status).toEqual('500')
     server.close()
   })
 
@@ -215,13 +209,11 @@ describe('core-suggest', () => {
         <input type="text">
         <core-suggest ajax="http://localhost:9002" hidden></core-suggest>
       `
-      document.addEventListener('suggest.ajax.error', (event) => {
-        document.body.appendChild(Object.assign(document.createElement('i'), { textContent: event.detail.responseError }))
-      })
+      document.addEventListener('suggest.ajax.error', (event) => (window.responseError = event.detail.responseError))
     })
     await $('input').sendKeys('abc')
-    await browser.wait(ExpectedConditions.presenceOf($('i')))
-    await expect((await $('i').getText()).match(/^SyntaxError/)).toBeTruthy()
+    const error = await browser.wait(() => browser.executeScript(() => window.responseError))
+    await expect(error.match(/^SyntaxError/)).toBeTruthy()
     server.close()
   })
 })

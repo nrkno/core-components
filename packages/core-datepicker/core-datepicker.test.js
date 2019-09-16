@@ -199,13 +199,10 @@ describe('core-datepicker', () => {
         <core-datepicker timestamp="${new Date('2019-01-01T12:00:00Z').getTime()}">
         </core-datepicker>
       `
-      document.addEventListener('datepicker.change', ({ detail }) => {
-        document.body.appendChild(Object.assign(document.createElement('i'), { textContent: detail.getTime() }))
-      })
+      document.addEventListener('datepicker.change', (event) => (window.time = event.detail.getTime()))
       document.querySelector('core-datepicker').date = new Date('2019-01-02T12:00:00Z')
     })
-    await expect(browser.isElementPresent($('i'))).toEqual(true)
-    await expect($('i').getText()).toEqual(browser.executeScript(() => String(new Date('2019-01-02T12:00:00Z').getTime())))
+    await expect(browser.executeScript(() => window.time)).toEqual(browser.executeScript(() => new Date('2019-01-02T12:00:00Z').getTime()))
   })
 
   it('triggers click day event', async () => {
@@ -218,9 +215,9 @@ describe('core-datepicker', () => {
     })
     await browser.wait(ExpectedConditions.presenceOf($('core-datepicker table button')))
     await browser.executeScript(() => {
-      document.addEventListener('datepicker.click.day', () => (document.body.appendChild(document.createElement('i'))))
+      document.addEventListener('datepicker.click.day', () => (window.triggered = true))
       document.querySelector('core-datepicker button').click()
     })
-    await expect(browser.isElementPresent($('i'))).toEqual(true)
+    await expect(browser.executeScript(() => window.triggered)).toEqual(true)
   })
 })

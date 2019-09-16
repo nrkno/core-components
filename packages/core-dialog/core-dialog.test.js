@@ -133,9 +133,9 @@ describe('core-dialog', () => {
           <button for="close">Close</button>
         </core-dialog>
       `
-      document.addEventListener('dialog.toggle', () => (document.body.appendChild(document.createElement('i'))))
+      document.addEventListener('dialog.toggle', () => (window.triggered = true))
       document.querySelector('core-dialog').hidden = false
     })
-    await expect(browser.isElementPresent($('i'))).toEqual(true)
+    await expect(browser.executeScript(() => window.triggered)).toEqual(true)
   })
 })

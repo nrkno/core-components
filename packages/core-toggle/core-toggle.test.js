@@ -85,7 +85,7 @@ describe('core-toggle', () => {
     await expect($('button#outer + core-toggle').getAttribute('hidden')).toEqual('true')
   })
 
-  it('closes on outside click with popup', async () => {
+  it('closes popup on click outside', async () => {
     await browser.executeScript(() => {
       document.body.innerHTML = `
         <button>Toggle</button>
@@ -152,10 +152,11 @@ describe('core-toggle', () => {
         <button>Toggle</button>
         <core-toggle hidden></core-toggle>
       `
-      document.addEventListener('toggle', () => (document.body.appendChild(document.createElement('i'))))
+      document.addEventListener('toggle', () => (window.triggered = true))
       document.querySelector('core-toggle').hidden = false
     })
-    await expect(browser.isElementPresent($('i'))).toEqual(true)
+    const triggered = await browser.executeScript(() => window.triggered)
+    await expect(triggered).toEqual(true)
   })
 
   it('triggers select event', async () => {
@@ -168,14 +169,12 @@ describe('core-toggle', () => {
       `
     })
     await browser.executeScript(() => {
-      document.addEventListener('toggle.select', ({ detail }) => {
-        document.body.appendChild(Object.assign(document.createElement('i'), { textContent: detail.id }))
-      })
+      document.addEventListener('toggle.select', (event) => (window.itemId = event.detail.id))
       const toggle = document.querySelector('core-toggle')
       toggle.hidden = false
       toggle.children[0].click()
     })
-    await expect(browser.isElementPresent($('i'))).toEqual(true)
-    await expect($('i').getText()).toEqual('my-item')
+    const itemId = await browser.wait(() => browser.executeScript(() => window.itemId))
+    await expect(itemId).toEqual('my-item')
   })
 })
