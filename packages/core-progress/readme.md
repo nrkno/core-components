@@ -9,6 +9,7 @@
   window.ReactDOM = preactCompat
 </script> -->
 <!--demo
+<script src="https://unpkg.com/@webcomponents/custom-elements"></script>
 <script src="core-progress/core-progress.min.js"></script>
 <script src="core-progress/core-progress.jsx.js"></script>
 <style>

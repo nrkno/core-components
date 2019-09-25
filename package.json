@@ -11,39 +11,53 @@
   "scripts": {
     "build": "rollup --config",
     "install": "node -r esm bin/index.js --install",
+    "postinstall": "webdriver-manager update",
     "outdated": "node -r esm bin/index.js --outdated",
     "publish:patch": "node -r esm bin/index.js --publish=patch",
     "publish:minor": "node -r esm bin/index.js --publish=minor",
     "publish:major": "node -r esm bin/index.js --publish=major",
     "start": "rollup --config --watch",
     "static-publish": "npm run build && static-publish --directory=packages --account=nrk-core --latest --major",
-    "test": "npm run build && ava -v && standard -v",
-    "test:watch": "ava -w"
+    "test": "npm run build && node -r esm node_modules/.bin/protractor bin/test.js && standard -v",
+    "test-remote": "export NODE_ENV=test-remote; npm run build && node -r esm node_modules/.bin/protractor bin/test.js && standard -v"
   },
   "devDependencies": {
-    "@babel/preset-env": "7.6.0",
+    "@babel/core": "^7.5.5",
+    "@babel/preset-env": "^7.6.0",
     "@nrk/custom-element-to-react": "1.1.0",
-    "ava": "2.4.0",
+    "@webcomponents/custom-elements": "^1.2.4",
+    "browserstack-local": "^1.4.2",
+    "dotenv": "^8.1.0",
     "esm": "3.2.25",
-    "fast-glob": "3.0.4",
-    "puppeteer": "1.20.0",
-    "rollup": "1.21.4",
-    "rollup-plugin-babel": "4.3.3",
-    "rollup-plugin-commonjs": "10.1.0",
-    "rollup-plugin-json": "4.0.0",
-    "rollup-plugin-node-resolve": "5.2.0",
-    "rollup-plugin-serve": "1.0.1",
-    "rollup-plugin-uglify": "6.0.3",
-    "standard": "14.3.1"
-  },
-  "ava": {
-    "require": [
-      "esm"
-    ]
+    "fast-glob": "^3.0.4",
+    "jasmine-spec-reporter": "^4.2.1",
+    "protractor": "^5.4.2",
+    "request": "^2.88.0",
+    "rollup": "^1.21.3",
+    "rollup-plugin-babel": "^4.3.3",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-json": "^4.0.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-serve": "^1.0.1",
+    "rollup-plugin-uglify": "^6.0.3",
+    "standard": "^14.3.1"
   },
   "standard": {
     "globals": [
-      "HTMLElement"
+      "HTMLElement",
+      "protractor",
+      "jasmine",
+      "describe",
+      "it",
+      "expect",
+      "browser",
+      "$",
+      "$$",
+      "beforeEach",
+      "beforeAll",
+      "afterEach",
+      "afterAll",
+      "ExpectedConditions"
     ]
   }
 }

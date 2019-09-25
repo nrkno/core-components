@@ -175,8 +175,8 @@ function onAjax (self) {
 function onAjaxSend (self) {
   if (!self.input.value) return // Abort if input is empty
   if (dispatchEvent(self, 'suggest.ajax.beforeSend', self._xhr)) {
-    self._xhr.onerror = (error) => {
-      self._xhr.responseError = error.toString()
+    self._xhr.onerror = () => {
+      self._xhr.responseError = 'Error: Network request failed'
       dispatchEvent(self, 'suggest.ajax.error', self._xhr)
     }
     self._xhr.onload = () => {

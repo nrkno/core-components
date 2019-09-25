@@ -1,4 +1,4 @@
-# @nrk/core-components [![Build Status](https://travis-ci.com/nrkno/core-components.svg?branch=master)](https://travis-ci.com/nrkno/core-components)
+# @nrk/core-components
 
 > A kit of lightweight, unstyled and accessible [Javascript](https://stackoverflow.com/questions/20435653/what-is-vanillajs) and [React](https://reactjs.org/) / [Preact](https://github.com/developit/preact-compat) components.
 It provides effortless and flexible usage, while under the hood enhancing markup and functionality for best best user experience across all major browsers and screen readers.
@@ -59,6 +59,27 @@ git clone git@github.com:nrkno/core-components.git
 cd core-components
 npm install # Installs dependencies for all packages
 npm start # Your browser will open documentation with hot reloading
+```
+
+
+## Testing
+
+Before running tests you need a `.env` file providing credentials to Browserstack:
+
+```sh
+BROWSERSTACK_USER=...
+BROWSERSTACK_KEY=...
+```
+
+Save it in the root directory. Now you can either run the tests locally:
+
+```sh
+npm test
+```
+or remotely against all targeted browsers:
+
+```sh
+npm run test-remote
 ```
 
 ## Building and committing

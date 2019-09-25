@@ -1,90 +1,106 @@
-import test from 'ava'
+import fs from 'fs'
 import path from 'path'
-import puppeteer from 'puppeteer'
 
-async function withPage (t, run) {
-  const browser = await puppeteer.launch()
-  const page = await browser.newPage()
-  page.on('console', msg => console.log(msg._text))
-  await page.addScriptTag({ path: path.join(__dirname, 'core-progress.min.js') })
-  try {
-    await run(t, page)
-  } finally {
-    await page.close()
-    await browser.close()
-  }
-}
+const coreProgress = fs.readFileSync(path.resolve(__dirname, 'core-progress.min.js'), 'utf-8')
+const customElements = fs.readFileSync(require.resolve('@webcomponents/custom-elements'), 'utf-8')
 
-test('sets up properties', withPage, async (t, page) => {
-  await page.setContent('<core-progress></core-progress>')
-  t.is(await page.$eval('core-progress', el => el.type), 'linear')
-  t.is(await page.$eval('core-progress', el => el.value), 0)
-  t.is(await page.$eval('core-progress', el => el.getAttribute('role')), 'img')
-  t.is(await page.$eval('core-progress', el => el.getAttribute('aria-label')), '0%')
-})
-
-test('updates label from value', withPage, async (t, page) => {
-  await page.setContent('<core-progress value="0.2"></core-progress>')
-  t.is(await page.$eval('core-progress', el => el.getAttribute('aria-label')), '20%')
-  await page.evaluate(() => (document.querySelector('core-progress').value = 0))
-  t.is(await page.$eval('core-progress', el => el.getAttribute('aria-label')), '0%')
-  await page.evaluate(() => (document.querySelector('core-progress').value = 1))
-  t.is(await page.$eval('core-progress', el => el.getAttribute('aria-label')), '100%')
-})
-
-test('updates label from value as radial', withPage, async (t, page) => {
-  await page.setContent('<core-progress value="0.2" type="radial"></core-progress>')
-  t.is(await page.$eval('core-progress', el => el.getAttribute('aria-label')), '20%')
-  await page.evaluate(() => (document.querySelector('core-progress').value = 0))
-  t.is(await page.$eval('core-progress', el => el.getAttribute('aria-label')), '0%')
-  await page.evaluate(() => (document.querySelector('core-progress').value = 1))
-  t.is(await page.$eval('core-progress', el => el.getAttribute('aria-label')), '100%')
-})
-
-test('updates label from indeterminate value', withPage, async (t, page) => {
-  await page.setContent('<core-progress value="Loading..."></core-progress>')
-  t.is(await page.$eval('core-progress', el => el.getAttribute('aria-label')), 'Loading...')
-})
-
-test('calculates percentage from max', withPage, async (t, page) => {
-  await page.setContent('<core-progress value="0.5"></core-progress>')
-  t.is(await page.$eval('core-progress', el => el.getAttribute('aria-label')), '50%')
-  await page.evaluate(() => (document.querySelector('core-progress').max = 10))
-  t.is(await page.$eval('core-progress', el => el.getAttribute('aria-label')), '5%')
-  await page.evaluate(() => (document.querySelector('core-progress').max = 100))
-  t.is(await page.$eval('core-progress', el => el.getAttribute('aria-label')), '1%')
-})
-
-test('does not trigger change event on max', withPage, async (t, page) => {
-  await page.setContent('<core-progress></core-progress>')
-  await page.evaluate(() => {
-    return new Promise((resolve, reject) => {
-      window.addEventListener('change', reject)
-      document.querySelector('core-progress').max = 2
-      setTimeout(resolve)
-    })
+describe('core-progress', () => {
+  beforeEach(async () => {
+    await browser.refresh()
+    await browser.executeScript(customElements)
+    await browser.executeScript(coreProgress)
   })
-  t.pass()
-})
 
-test('triggers change event on value', withPage, async (t, page) => {
-  await page.setContent('<core-progress></core-progress>')
-  await page.evaluate(() => {
-    return new Promise((resolve, reject) => {
-      window.addEventListener('change', resolve)
+  it('sets up properties', async () => {
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <core-progress></core-progress>
+      `
+    })
+    await expect($('core-progress').getAttribute('type')).toEqual('linear')
+    await expect($('core-progress').getAttribute('value')).toEqual('0')
+    await expect($('core-progress').getAttribute('role')).toEqual('img')
+    await expect($('core-progress').getAttribute('aria-label')).toEqual('0%')
+  })
+
+  it('updates label from value', async () => {
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <core-progress value="0.2"></core-progress>
+      `
+    })
+    await expect($('core-progress').getAttribute('aria-label')).toEqual('20%')
+    await browser.executeScript(() => (document.querySelector('core-progress').value = 0))
+    await expect($('core-progress').getAttribute('aria-label')).toEqual('0%')
+    await browser.executeScript(() => (document.querySelector('core-progress').value = 1))
+    await expect($('core-progress').getAttribute('aria-label')).toEqual('100%')
+  })
+
+  it('updates label from value as radial', async () => {
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <core-progress value="0.2" type="radial"></core-progress>
+      `
+    })
+    await expect($('core-progress').getAttribute('aria-label')).toEqual('20%')
+    await browser.executeScript(() => (document.querySelector('core-progress').value = 0))
+    await expect($('core-progress').getAttribute('aria-label')).toEqual('0%')
+    await browser.executeScript(() => (document.querySelector('core-progress').value = 1))
+    await expect($('core-progress').getAttribute('aria-label')).toEqual('100%')
+  })
+
+  it('updates label from indeterminate value', async () => {
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <core-progress value="Loading..."></core-progress>
+      `
+    })
+    await expect($('core-progress').getAttribute('aria-label')).toEqual('Loading...')
+  })
+
+  it('calculates percentage relative to max', async () => {
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <core-progress value="0.5"></core-progress>
+      `
+    })
+    await expect($('core-progress').getAttribute('aria-label')).toEqual('50%')
+    await browser.executeScript(() => (document.querySelector('core-progress').max = 10))
+    await expect($('core-progress').getAttribute('aria-label')).toEqual('5%')
+    await browser.executeScript(() => (document.querySelector('core-progress').max = 100))
+    await expect($('core-progress').getAttribute('aria-label')).toEqual('1%')
+  })
+
+  it('does not trigger change event on max', async () => {
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <core-progress></core-progress>
+      `
+      document.addEventListener('change', () => (window.triggered = true))
+      document.querySelector('core-progress').max = 2
+    })
+    await expect(browser.executeScript(() => window.triggered)).toBeFalsy()
+  })
+
+  it('triggers change event on value', async () => {
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <core-progress></core-progress>
+      `
+      document.addEventListener('change', () => (window.triggered = true))
       document.querySelector('core-progress').value = 2
     })
+    await expect(browser.executeScript(() => window.triggered)).toEqual(true)
   })
-  t.pass()
-})
 
-test('triggers change event on indeterminate value', withPage, async (t, page) => {
-  await page.setContent('<core-progress></core-progress>')
-  await page.evaluate(() => {
-    return new Promise((resolve, reject) => {
-      window.addEventListener('change', resolve)
+  it('triggers change event on indeterminate value', async () => {
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <core-progress></core-progress>
+      `
+      document.addEventListener('change', () => (window.triggered = true))
       document.querySelector('core-progress').value = 'Loading...'
     })
+    await expect(browser.executeScript(() => window.triggered)).toEqual(true)
   })
-  t.pass()
 })

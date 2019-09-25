@@ -1,167 +1,180 @@
-import test from 'ava'
+import fs from 'fs'
 import path from 'path'
-import puppeteer from 'puppeteer'
 
-async function withPage (t, run) {
-  const browser = await puppeteer.launch()
-  const page = await browser.newPage()
-  page.on('console', msg => console.log(msg._text))
-  await page.addScriptTag({ path: path.join(__dirname, 'core-toggle.min.js') })
-  try {
-    await run(t, page)
-  } finally {
-    await page.close()
-    await browser.close()
-  }
-}
+const coreToggle = fs.readFileSync(path.resolve(__dirname, 'core-toggle.min.js'), 'utf-8')
+const customElements = fs.readFileSync(require.resolve('@webcomponents/custom-elements'), 'utf-8')
 
-test('sets up all properties', withPage, async (t, page) => {
-  await page.setContent(`
-    <button>Toggle</button>
-    <core-toggle hidden></core-toggle>
-  `)
-  t.is(await page.$eval('button', el => el.getAttribute('aria-expanded')), 'false')
-  t.true(await page.$eval('button', el => el.getAttribute('aria-controls') === document.querySelector('core-toggle').id))
-  t.true(await page.$eval('core-toggle', el => el.hasAttribute('hidden')))
-  t.true(await page.$eval('core-toggle', el => el.getAttribute('aria-labelledby') === document.querySelector('button').id))
-})
+describe('core-toggle', () => {
+  beforeEach(async () => {
+    await browser.refresh()
+    await browser.executeScript(customElements)
+    await browser.executeScript(coreToggle)
+  })
 
-test('opens and closes toggle', withPage, async (t, page) => {
-  await page.setContent(`
-    <button>Toggle</button>
-    <core-toggle hidden></core-toggle>
-  `)
-  await page.click('button')
-  t.is(await page.$eval('button', el => el.getAttribute('aria-expanded')), 'true')
-  await page.click('button')
-  t.is(await page.$eval('button', el => el.getAttribute('aria-expanded')), 'false')
-  await page.click('button')
-  t.is(await page.$eval('button', el => el.getAttribute('aria-expanded')), 'true')
-  await page.click('button')
-  t.is(await page.$eval('button', el => el.getAttribute('aria-expanded')), 'false')
-})
+  it('sets up all properties', async () => {
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <button>Toggle</button>
+        <core-toggle hidden></core-toggle>
+      `
+    })
+    await expect($('button').getAttribute('aria-expanded')).toEqual('false')
+    await expect($('button').getAttribute('aria-controls')).toEqual($('core-toggle').getAttribute('id'))
+    await expect($('core-toggle').getAttribute('hidden')).toEqual('true')
+    await expect($('core-toggle').getAttribute('aria-labelledby')).toEqual($('button').getAttribute('id'))
+  })
 
-test('opens and closes nested toggle', withPage, async (t, page) => {
-  await page.setContent(`
-    <button id="outer">Toggle outer</button>
-    <core-toggle hidden>
-      <button id="inner">Toggle inner</button>
-      <core-toggle hidden>
-        <div>Inner content</div>
-      </core-toggle>
-    </core-toggle>
-  `)
-  await page.click('button#outer')
-  await page.click('button#inner')
-  t.false(await page.$eval('button#outer + core-toggle', el => el.hasAttribute('hidden')))
-  t.false(await page.$eval('button#outer + core-toggle', el => el.hasAttribute('hidden')))
-  await page.click('button#inner')
-  t.true(await page.$eval('button#inner + core-toggle', el => el.hasAttribute('hidden')))
-  t.false(await page.$eval('button#outer + core-toggle', el => el.hasAttribute('hidden')))
-  await page.click('button#outer')
-  t.true(await page.$eval('button#outer + core-toggle', el => el.hasAttribute('hidden')))
-})
+  it('opens and closes toggle', async () => {
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <button>Toggle</button>
+        <core-toggle hidden></core-toggle>
+      `
+    })
+    await $('button').click()
+    await expect($('button').getAttribute('aria-expanded')).toEqual('true')
+    await expect($('core-toggle').getAttribute('hidden')).toEqual(null)
+    await $('button').click()
+    await expect($('button').getAttribute('aria-expanded')).toEqual('false')
+    await expect($('core-toggle').getAttribute('hidden')).toEqual('true')
+  })
 
-test('closes nested toggle with esc', withPage, async (t, page) => {
-  await page.setContent(`
-    <button id="outer">Toggle outer</button>
-    <core-toggle hidden>
-      <button id="inner">Toggle inner</button>
-      <core-toggle hidden>
-        <div>Inner content</div>
-      </core-toggle>
-    </core-toggle>
-  `)
-  await page.click('button#outer')
-  await page.click('button#inner')
-  t.false(await page.$eval('button#outer + core-toggle', el => el.hasAttribute('hidden')))
-  t.false(await page.$eval('button#outer + core-toggle', el => el.hasAttribute('hidden')))
-  await page.keyboard.press('Escape')
-  t.true(await page.$eval('button#inner + core-toggle', el => el.hasAttribute('hidden')))
-  t.false(await page.$eval('button#outer + core-toggle', el => el.hasAttribute('hidden')))
-  await page.keyboard.press('Escape')
-  t.true(await page.$eval('button#outer + core-toggle', el => el.hasAttribute('hidden')))
-})
+  it('opens and closes nested toggle', async () => {
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <button id="outer">Toggle outer</button>
+        <core-toggle hidden>
+          <button id="inner">Toggle inner</button>
+          <core-toggle hidden>
+            <div>Inner content</div>
+          </core-toggle>
+        </core-toggle>
+      `
+    })
+    await $('button#outer').click()
+    await $('button#inner').click()
+    await expect($('button#outer + core-toggle').getAttribute('hidden')).toEqual(null)
+    await expect($('button#outer + core-toggle').getAttribute('hidden')).toEqual(null)
+    await $('button#inner').click()
+    await expect($('button#inner + core-toggle').getAttribute('hidden')).toEqual('true')
+    await expect($('button#outer + core-toggle').getAttribute('hidden')).toEqual(null)
+    await $('button#outer').click()
+    await expect($('button#outer + core-toggle').getAttribute('hidden')).toEqual('true')
+  })
 
-test('closes on outside click with popup', withPage, async (t, page) => {
-  await page.setContent(`
-    <button>Toggle</button>
-    <core-toggle popup hidden></core-toggle>
-  `)
-  await page.click('button')
-  t.false(await page.$eval('core-toggle', el => el.hasAttribute('hidden')))
-  await page.click('body')
-  t.true(await page.$eval('core-toggle', el => el.hasAttribute('hidden')))
-})
+  it('closes nested toggle with esc', async () => {
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <button id="outer">Toggle outer</button>
+        <core-toggle hidden>
+          <button id="inner">Toggle inner</button>
+          <core-toggle hidden>
+            <div>Inner content</div>
+          </core-toggle>
+        </core-toggle>
+      `
+    })
+    await $('button#outer').click()
+    await $('button#inner').click()
+    await expect($('button#outer + core-toggle').getAttribute('hidden')).toEqual(null)
+    await expect($('button#outer + core-toggle').getAttribute('hidden')).toEqual(null)
+    await $('button#inner').sendKeys(protractor.Key.ESCAPE)
+    await expect($('button#inner + core-toggle').getAttribute('hidden')).toEqual('true')
+    await expect($('button#outer + core-toggle').getAttribute('hidden')).toEqual(null)
+    await $('button#inner').sendKeys(protractor.Key.ESCAPE)
+    await expect($('button#outer + core-toggle').getAttribute('hidden')).toEqual('true')
+  })
 
-test('respects "for" attribute', withPage, async (t, page) => {
-  await page.setContent(`
-    <div><button for="content">Toggle</button></div>
-    <core-toggle id="content" hidden></core-toggle>
-  `)
-  t.true(await page.$eval('core-toggle', el => el.button.getAttribute('for') === el.id))
-  t.true(await page.$eval('core-toggle', el => el.button.getAttribute('aria-controls') === el.id))
-})
+  it('closes popup on click outside', async () => {
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <button>Toggle</button>
+        <core-toggle popup hidden></core-toggle>
+      `
+    })
+    await $('button').click()
+    await expect($('core-toggle').getAttribute('hidden')).toEqual(null)
+    await $('body').click()
+    await expect($('core-toggle').getAttribute('hidden')).toEqual('true')
+  })
 
-test('respects exisiting aria-label with popup and value', withPage, async (t, page) => {
-  await page.setContent(`
-    <button aria-label="Label">Toggle</button>
-    <core-toggle popup="Another label" hidden></core-toggle>
-  `)
-  await page.$eval('core-toggle', el => (el.value = 'Button text'))
-  t.is(await page.$eval('button', el => el.textContent), await page.$eval('core-toggle', el => el.value))
-  t.is(await page.$eval('button', el => el.getAttribute('aria-label')), 'Label')
-})
+  it('respects "for" attribute', async () => {
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <div><button for="content">Toggle</button></div>
+        <core-toggle id="content" hidden></core-toggle>
+      `
+    })
+    await expect($('button').getAttribute('for')).toEqual($('core-toggle').getAttribute('id'))
+    await expect($('button').getAttribute('aria-controls')).toEqual($('core-toggle').getAttribute('id'))
+  })
 
-test('sets aria-label with popup attr and value', withPage, async (t, page) => {
-  await page.setContent(`
-    <button>Toggle</button>
-    <core-toggle popup="Some label" hidden></core-toggle>
-  `)
-  await page.$eval('core-toggle', el => (el.value = 'Button text'))
-  t.is(await page.$eval('button', el => el.textContent), await page.$eval('core-toggle', el => el.value))
-  t.is(await page.$eval('button', el => el.getAttribute('aria-label')), 'Button text,Some label')
-})
+  it('respects exisiting aria-label with popup and value', async () => {
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <button aria-label="Label">Toggle</button>
+        <core-toggle popup="Another label" hidden></core-toggle>
+      `
+    })
+    await browser.executeScript((el) => (el.value = 'Button text'), $('core-toggle'))
+    await expect($('button').getText()).toEqual($('core-toggle').getAttribute('value'))
+    await expect($('button').getAttribute('aria-label')).toEqual('Label')
+  })
 
-test('sets aria-label with popup prop and value', withPage, async (t, page) => {
-  await page.setContent(`
-    <button>Toggle</button>
-    <core-toggle hidden></core-toggle>
-  `)
-  await page.$eval('core-toggle', el => (el.popup = 'Some label'))
-  await page.$eval('core-toggle', el => (el.value = 'Button text'))
-  t.is(await page.$eval('button', el => el.textContent), await page.$eval('core-toggle', el => el.value))
-  t.is(await page.$eval('button', el => el.getAttribute('aria-label')), 'Button text,Some label')
-})
+  it('sets aria-label with popup attr and value', async () => {
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <button>Toggle</button>
+        <core-toggle popup="Some label" hidden></core-toggle>
+      `
+    })
+    await browser.executeScript((el) => (el.value = 'Button text'), $('core-toggle'))
+    await expect($('button').getText()).toEqual($('core-toggle').getAttribute('value'))
+    await expect($('button').getAttribute('aria-label')).toEqual('Button text,Some label')
+  })
 
-test('triggers toggle event', withPage, async (t, page) => {
-  await page.setContent(`
-    <button>Toggle</button>
-    <core-toggle hidden></core-toggle>
-  `)
-  await page.evaluate(() => {
-    return new Promise((resolve, reject) => {
-      window.addEventListener('toggle', resolve)
+  it('sets aria-label with popup prop and value', async () => {
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <button>Toggle</button>
+        <core-toggle hidden></core-toggle>
+      `
+    })
+    await browser.executeScript((el) => (el.popup = 'Some label'), $('core-toggle'))
+    await browser.executeScript((el) => (el.value = 'Button text'), $('core-toggle'))
+    await expect($('button').getText()).toEqual($('core-toggle').getAttribute('value'))
+    await expect($('button').getAttribute('aria-label')).toEqual('Button text,Some label')
+  })
+
+  it('triggers toggle event', async () => {
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <button>Toggle</button>
+        <core-toggle hidden></core-toggle>
+      `
+      document.addEventListener('toggle', () => (window.triggered = true))
       document.querySelector('core-toggle').hidden = false
     })
+    const triggered = await browser.executeScript(() => window.triggered)
+    await expect(triggered).toEqual(true)
   })
-  t.pass()
-})
 
-test('triggers select event', withPage, async (t, page) => {
-  await page.setContent(`
-    <button>Toggle</button>
-    <core-toggle hidden>
-      <button id="item">Select me</button>
-    </core-toggle>
-  `)
-  const selected = await page.evaluate(() => {
-    return new Promise((resolve, reject) => {
-      window.addEventListener('toggle.select', ({ detail }) => resolve(detail.id))
+  it('triggers select event', async () => {
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <button>Toggle</button>
+        <core-toggle hidden>
+          <button id="my-item">Select me</button>
+        </core-toggle>
+      `
+    })
+    await browser.executeScript(() => {
+      document.addEventListener('toggle.select', (event) => (window.itemId = event.detail.id))
       const toggle = document.querySelector('core-toggle')
       toggle.hidden = false
       toggle.children[0].click()
     })
+    const itemId = await browser.wait(() => browser.executeScript(() => window.itemId))
+    await expect(itemId).toEqual('my-item')
   })
-  t.is(selected, 'item')
 })

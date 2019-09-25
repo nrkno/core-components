@@ -10,6 +10,7 @@
   window.ReactDOM = preactCompat
 </script> -->
 <!--demo
+<script src="https://unpkg.com/@webcomponents/custom-elements"></script>
 <script src="core-tabs/core-tabs.min.js"></script>
 <script src="core-tabs/core-tabs.jsx.js"></script>
 <style>

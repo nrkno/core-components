@@ -1,134 +1,141 @@
-import test from 'ava'
+import fs from 'fs'
 import path from 'path'
-import puppeteer from 'puppeteer'
 
-async function withPage (t, run) {
-  const browser = await puppeteer.launch()
-  const page = await browser.newPage()
-  page.on('console', msg => console.log(msg._text))
-  await page.addScriptTag({ path: path.join(__dirname, 'core-dialog.min.js') })
-  try {
-    await run(t, page)
-  } finally {
-    await page.close()
-    await browser.close()
-  }
-}
+const coreDialog = fs.readFileSync(path.resolve(__dirname, 'core-dialog.min.js'), 'utf-8')
+const customElements = fs.readFileSync(require.resolve('@webcomponents/custom-elements'), 'utf-8')
 
-test('sets up properties', withPage, async (t, page) => {
-  await page.setContent(`
-    <button for="dialog-1">Open</button>
-    <core-dialog id="dialog-1" hidden></core-dialog>
-  `)
-  t.is(await page.$eval('core-dialog', el => el.getAttribute('role')), 'dialog')
-  t.is(await page.$eval('core-dialog', el => el.getAttribute('aria-modal')), 'true')
-})
+describe('core-dialog', () => {
+  beforeEach(async () => {
+    await browser.refresh()
+    await browser.executeScript(customElements)
+    await browser.executeScript(coreDialog)
+  })
 
-test('opens and closes', withPage, async (t, page) => {
-  await page.setContent(`
-    <button for="dialog">Open</button>
-    <core-dialog id="dialog" hidden>
-      <div>Some content</div>
-      <button for="close">Close</button>
-    </core-dialog>
-  `)
-  await page.click('button[for="dialog"]')
-  t.false(await page.$eval('core-dialog', el => el.hasAttribute('hidden')))
-  t.false(await page.$eval('core-dialog + backdrop', el => el.hasAttribute('hidden')))
-  await page.click('button[for="close"]')
-  t.true(await page.$eval('core-dialog', el => el.hasAttribute('hidden')))
-  t.true(await page.$eval('core-dialog + backdrop', el => el.hasAttribute('hidden')))
-  await page.evaluate(() => (document.querySelector('core-dialog').hidden = false))
-  t.false(await page.$eval('core-dialog + backdrop', el => el.hasAttribute('hidden')))
-  await page.evaluate(() => (document.querySelector('core-dialog').hidden = true))
-  t.true(await page.$eval('core-dialog + backdrop', el => el.hasAttribute('hidden')))
-})
+  it('sets up properties', async () => {
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <button for="dialog-1">Open</button>
+        <core-dialog id="dialog-1" hidden></core-dialog>
+      `
+    })
+    await expect($('core-dialog').getAttribute('role')).toEqual('dialog')
+    await expect($('core-dialog').getAttribute('aria-modal')).toEqual('true')
+  })
 
-test('opens and closes nested', withPage, async (t, page) => {
-  await page.setContent(`
-    <button for="dialog-outer">Open</button>
-    <core-dialog id="dialog-outer" hidden>
-      <div>Some content</div>
-      <button type="button" autofocus>Autofocus</button>
-      <button for="dialog-inner">Open inner</button>
-      <core-dialog id="dialog-inner" hidden>
-        <div>Nested content</div>
-        <button for="close">Close</button>
-      </core-dialog>
-      <button for="close">Close</button>
-    </core-dialog>
-  `)
-  await page.click('button[for="dialog-outer"]')
-  await page.click('button[for="dialog-inner"]')
-  t.false(await page.$eval('#dialog-outer + backdrop', el => el.hasAttribute('hidden')))
-  t.false(await page.$eval('#dialog-outer #dialog-inner + backdrop', el => el.hasAttribute('hidden')))
-  await page.click('#dialog-inner button[for="close"]')
-  t.true(await page.$eval('#dialog-inner', el => el.hasAttribute('hidden')))
-  t.true(await page.$eval('#dialog-inner + backdrop', el => el.hasAttribute('hidden')))
-  t.false(await page.$eval('#dialog-outer', el => el.hasAttribute('hidden')))
-  t.false(await page.$eval('#dialog-outer + backdrop', el => el.hasAttribute('hidden')))
-})
+  it('opens and closes', async () => {
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <button for="dialog">Open</button>
+        <core-dialog id="dialog" hidden>
+          <div>Some content</div>
+          <button for="close">Close</button>
+        </core-dialog>
+      `
+    })
+    await $('button[for="dialog"]').click()
+    await expect($('core-dialog').getAttribute('hidden')).toEqual(null)
+    await expect($('core-dialog + backdrop').getAttribute('hidden')).toEqual(null)
+    await $('button[for="close"]').click()
+    await expect($('core-dialog').getAttribute('hidden')).toEqual('true')
+    await expect($('core-dialog + backdrop').getAttribute('hidden')).toEqual('true')
+    await browser.executeScript(() => (document.querySelector('core-dialog').hidden = false))
+    await expect($('core-dialog + backdrop').getAttribute('hidden')).toEqual(null)
+    await browser.executeScript(() => (document.querySelector('core-dialog').hidden = true))
+    await expect($('core-dialog + backdrop').getAttribute('hidden')).toEqual('true')
+  })
 
-test('closes nested with esc', withPage, async (t, page) => {
-  await page.setContent(`
-    <button for="dialog-outer">Open</button>
-    <core-dialog id="dialog-outer" hidden>
-      <div>Some content</div>
-      <button type="button" autofocus>Autofocus</button>
-      <button for="dialog-inner">Open inner</button>
-      <core-dialog id="dialog-inner" hidden>
-        <div>Nested content</div>
-        <button for="close">Close</button>
-      </core-dialog>
-      <button for="close">Close</button>
-    </core-dialog>
-  `)
-  await page.click('button[for="dialog-outer"]')
-  await page.click('button[for="dialog-inner"]')
-  await page.keyboard.press('Escape')
-  t.true(await page.$eval('#dialog-inner', el => el.hasAttribute('hidden')))
-  t.false(await page.$eval('#dialog-outer', el => el.hasAttribute('hidden')))
-  await page.keyboard.press('Escape')
-  t.true(await page.$eval('#dialog-outer', el => el.hasAttribute('hidden')))
-})
+  it('opens and closes nested', async () => {
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <button for="dialog-outer">Open</button>
+        <core-dialog id="dialog-outer" hidden>
+          <div>Some content</div>
+          <button type="button" autofocus>Autofocus</button>
+          <button for="dialog-inner">Open inner</button>
+          <core-dialog id="dialog-inner" hidden>
+            <div>Nested content</div>
+            <button for="close">Close</button>
+          </core-dialog>
+          <button for="close">Close</button>
+        </core-dialog>
+      `
+    })
+    await $('button[for="dialog-outer"]').click()
+    await $('button[for="dialog-inner"]').click()
+    await expect($('#dialog-outer + backdrop').getAttribute('hidden')).toEqual(null)
+    await expect($('#dialog-outer #dialog-inner + backdrop').getAttribute('hidden')).toEqual(null)
+    await $('#dialog-inner button[for="close"]').click()
+    await expect($('#dialog-inner').getAttribute('hidden')).toEqual('true')
+    await expect($('#dialog-inner + backdrop').getAttribute('hidden')).toEqual('true')
+    await expect($('#dialog-outer').getAttribute('hidden')).toEqual(null)
+    await expect($('#dialog-outer + backdrop').getAttribute('hidden')).toEqual(null)
+  })
 
-test('respects backdrop false option', withPage, async (t, page) => {
-  await page.setContent(`
-    <button for="dialog">Open</button>
-    <core-dialog id="dialog" backdrop="false" hidden>
-      <button for="close">Close</button>
-    </core-dialog>
-  `)
-  await page.click('button[for="dialog"]')
-  t.false(await page.$eval('core-dialog', el => el.hasAttribute('hidden')))
-  t.false(await page.$eval('core-dialog', el => Boolean(el.nextElementSibling)))
-})
+  it('closes nested with esc', async () => {
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <button for="dialog-outer">Open</button>
+        <core-dialog id="dialog-outer" hidden>
+          <div>Some content</div>
+          <button type="button" autofocus>Autofocus</button>
+          <button for="dialog-inner">Open inner</button>
+          <core-dialog id="dialog-inner" hidden>
+            <div>Nested content</div>
+            <button for="close">Close</button>
+          </core-dialog>
+          <button for="close">Close</button>
+        </core-dialog>
+      `
+    })
+    await $('button[for="dialog-outer"]').click()
+    await $('button[for="dialog-inner"]').click()
+    await $('body').sendKeys(protractor.Key.ESCAPE)
+    await expect($('#dialog-inner').getAttribute('hidden')).toEqual('true')
+    await expect($('#dialog-outer').getAttribute('hidden')).toEqual(null)
+    await $('body').sendKeys(protractor.Key.ESCAPE)
+    await expect($('#dialog-outer').getAttribute('hidden')).toEqual('true')
+  })
 
-test('respects strict option', withPage, async (t, page) => {
-  await page.setContent(`
-    <button for="dialog">Open</button>
-    <core-dialog id="dialog" strict hidden>
-      <button for="close">Close</button>
-    </core-dialog>
-  `)
-  await page.click('button[for="dialog"]')
-  t.false(await page.$eval('core-dialog', el => el.hasAttribute('hidden')))
-  await page.evaluate(() => document.querySelector('core-dialog + backdrop').click())
-  t.false(await page.$eval('core-dialog', el => el.hasAttribute('hidden')))
-})
+  it('respects backdrop false option', async () => {
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <button for="dialog">Open</button>
+        <core-dialog id="dialog" backdrop="false" hidden>
+          <button for="close">Close</button>
+        </core-dialog>
+      `
+    })
+    await $('button[for="dialog"]').click()
+    await expect($('core-dialog').getAttribute('hidden')).toEqual(null)
+    await expect(browser.executeScript(() => Boolean(document.querySelector('core-dialog').nextElementSibling))).toEqual(false)
+  })
 
-test('triggers toggle event', withPage, async (t, page) => {
-  await page.setContent(`
-    <button for="dialog">Open</button>
-    <core-dialog id="dialog" hidden>
-      <button for="close">Close</button>
-    </core-dialog>
-  `)
-  await page.evaluate(() => {
-    return new Promise((resolve, reject) => {
-      window.addEventListener('dialog.toggle', resolve)
+  it('respects strict option', async () => {
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <button for="dialog">Open</button>
+        <core-dialog id="dialog" strict hidden>
+          <button for="close">Close</button>
+        </core-dialog>
+      `
+    })
+    await $('button[for="dialog"]').click()
+    await expect($('core-dialog').getAttribute('hidden')).toEqual(null)
+    await browser.executeScript(() => document.querySelector('core-dialog + backdrop').click())
+    await expect($('core-dialog').getAttribute('hidden')).toEqual(null)
+  })
+
+  it('triggers toggle event', async () => {
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <button for="dialog">Open</button>
+        <core-dialog id="dialog" hidden>
+          <button for="close">Close</button>
+        </core-dialog>
+      `
+      document.addEventListener('dialog.toggle', () => (window.triggered = true))
       document.querySelector('core-dialog').hidden = false
     })
+    await expect(browser.executeScript(() => window.triggered)).toEqual(true)
   })
-  t.pass()
 })
