@@ -13,7 +13,7 @@ const EVENT_PASSIVE = ((has = false) => {
 const requestJumps = IS_BROWSER && window.matchMedia && window.matchMedia('(prefers-reduced-motion)').matches
 const requestFrame = IS_BROWSER && (window.requestAnimationFrame || window.setTimeout)
 
-export default class CoreScoll extends HTMLElement {
+export default class CoreScroll extends HTMLElement {
   connectedCallback () {
     // Hide scrollbar in WebKit and default to display block
     addStyle(this.nodeName, `
