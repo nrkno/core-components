@@ -1,3 +1,5 @@
+import './fast-selenium'
+
 import path from 'path'
 import dotenv from 'dotenv'
 import request from 'request'
