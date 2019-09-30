@@ -1,7 +1,6 @@
 import fs from 'fs'
 import path from 'path'
 
-const promise = fs.readFileSync(require.resolve('bluebird/js/browser/bluebird.core.min.js'), 'utf-8')
 const coreDatepicker = fs.readFileSync(path.resolve(__dirname, 'core-datepicker.min.js'), 'utf-8')
 const customElements = fs.readFileSync(require.resolve('@webcomponents/custom-elements'), 'utf-8')
 const pad = (val) => `0${val}`.slice(-2)
@@ -9,15 +8,8 @@ const pad = (val) => `0${val}`.slice(-2)
 describe('core-datepicker', () => {
   beforeEach(async () => {
     await browser.refresh()
-    await browser.executeScript(promise)
     await browser.executeScript(customElements)
     await browser.executeScript(coreDatepicker)
-    await browser.executeAsyncScript(function () {
-      var done = arguments[arguments.length - 1]
-      customElements.whenDefined('core-datepicker').then(function () {
-        done(true)
-      })
-    })
   })
 
   it('sets up properties', async () => {
