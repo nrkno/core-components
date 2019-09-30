@@ -99,7 +99,7 @@ describe('core-suggest', () => {
         </core-suggest>
       `
     })
-    await expect($$('button[type="button"]').count()).toEqual(3);
+    await expect($$('button[type="button"]').count()).toEqual(3)
   })
 
   it('sets up and parses limit option', async () => {

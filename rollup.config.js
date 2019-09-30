@@ -39,7 +39,7 @@ export default utils.pkgs.reduce((all, path) => {
       json(),
       resolve({ preferBuiltins: true }),
       commonjs(),
-      babel({ presets: [['@babel/preset-env', { modules: false }]] }),
+      babel({ presets: [['@babel/preset-env', { modules: false }]] })
     ]
   }, {
     input: `${path}/${file}.js`, // JS CJS
