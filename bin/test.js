@@ -1,3 +1,4 @@
+import 'regenerator-runtime/runtime'
 import './fast-selenium'
 
 import path from 'path'
@@ -18,7 +19,7 @@ const bsLocal = new browserstack.Local()
 function config () {
   return {
     framework: 'jasmine',
-    specs: [path.resolve(__dirname, '..', 'packages/*/*.test.js')],
+    specs: [path.resolve(__dirname, '..', 'packages/*/*.test.cjs.js')],
     seleniumAddress: 'http://hub-cloud.browserstack.com/wd/hub',
     directConnect: isLocal,
     SELENIUM_PROMISE_MANAGER: false,
@@ -111,7 +112,7 @@ const capabilities = isLocal ? [
     browser_version: '57',
     os: 'Windows',
     os_version: '10'
-  }
+  },
   // {
   //   browserName: 'Edge',
   //   browser_version: '15.0',
@@ -152,12 +153,12 @@ const capabilities = isLocal ? [
   //   browser_version: '10'
   //   os: 'Windows',
   // },
-  // {
-  //   browserName: 'IE',
-  //   browser_version: '11',
-  //   os: 'Windows',
-  //   os_version: '10'
-  // },
+  {
+    browserName: 'IE',
+    browser_version: '11',
+    os: 'Windows',
+    os_version: '10'
+  }
   // {
   //   browserName: 'IE',
   //   browser_version: '11'
