@@ -242,7 +242,7 @@ document.addEventListener('scroll.click', (event) => {
 document.addEventListener('scroll', (event) => {
   event.target        // NB: Can be any scrolling element since this is a native event
 
-  // Example check if the event.target is the correct @nrk/core-scoll
+  // Example check if the event.target is the correct @nrk/core-scroll
   if (event.target.id === 'ID-OF-MY-CORE-SCROLL-HERE') {
     // Do Something
   }
