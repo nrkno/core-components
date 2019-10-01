@@ -109,12 +109,12 @@ const capabilities = isLocal ? [
   //   os: 'Windows',
   //   os_version: '10',
   // }
-  // {
-  //   browserName: 'Chrome',
-  //   browser_version: '57',
-  //   os: 'Windows',
-  //   os_version: '10'
-  // },
+  {
+    browserName: 'Chrome',
+    browser_version: '57',
+    os: 'Windows',
+    os_version: '10'
+  },
   // {
   //   browserName: 'Edge',
   //   browser_version: '15.0',
@@ -150,12 +150,12 @@ const capabilities = isLocal ? [
   //   os: 'Windows',
   //   os_version: '7'
   // },
-  // {
-  //   browserName: 'IE',
-  //   browser_version: '11',
-  //   os: 'Windows',
-  //   os_version: '10'
-  // },
+  {
+    browserName: 'IE',
+    browser_version: '11',
+    os: 'Windows',
+    os_version: '10'
+  },
   {
     browserName: 'IE',
     browser_version: '11',

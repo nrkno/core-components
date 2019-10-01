@@ -151,7 +151,7 @@ describe('core-suggest', () => {
       response.writeHead(200, HTTP_HEADERS)
       response.end('{"results": []}')
     })
-    const listener = server.listen(9000)
+    const listener = server.listen()
     await browser.executeScript((port) => {
       document.body.innerHTML = `
         <input type="text">
