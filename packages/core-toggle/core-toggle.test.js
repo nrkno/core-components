@@ -19,9 +19,11 @@ describe('core-toggle', () => {
       `
     })
     await expect($('button').getAttribute('aria-expanded')).toEqual('false')
-    await expect($('button').getAttribute('aria-controls')).toEqual($('core-toggle').getAttribute('id'))
+    const toggleId = await $('core-toggle').getAttribute('id')
+    await expect($('button').getAttribute('aria-controls')).toEqual(toggleId)
     await expect($('core-toggle').getAttribute('hidden')).toEqual('true')
-    await expect($('core-toggle').getAttribute('aria-labelledby')).toEqual($('button').getAttribute('id'))
+    const buttonId = await $('button').getAttribute('id')
+    await expect($('core-toggle').getAttribute('aria-labelledby')).toEqual(buttonId)
   })
 
   it('opens and closes toggle', async () => {
@@ -105,8 +107,9 @@ describe('core-toggle', () => {
         <core-toggle id="content" hidden></core-toggle>
       `
     })
-    await expect($('button').getAttribute('for')).toEqual($('core-toggle').getAttribute('id'))
-    await expect($('button').getAttribute('aria-controls')).toEqual($('core-toggle').getAttribute('id'))
+    const toggleId = await $('core-toggle').getAttribute('id')
+    await expect($('button').getAttribute('for')).toEqual(toggleId)
+    await expect($('button').getAttribute('aria-controls')).toEqual(toggleId)
   })
 
   it('respects exisiting aria-label with popup and value', async () => {
@@ -116,8 +119,9 @@ describe('core-toggle', () => {
         <core-toggle popup="Another label" hidden></core-toggle>
       `
     })
-    await browser.executeScript((el) => (el.value = 'Button text'), $('core-toggle'))
-    await expect($('button').getText()).toEqual($('core-toggle').getAttribute('value'))
+    await browser.executeScript(() => (document.querySelector('core-toggle').value = 'Button text'))
+    const toggleValue = await $('core-toggle').getAttribute('value')
+    await expect($('button').getText()).toEqual(toggleValue)
     await expect($('button').getAttribute('aria-label')).toEqual('Label')
   })
 
@@ -128,8 +132,9 @@ describe('core-toggle', () => {
         <core-toggle popup="Some label" hidden></core-toggle>
       `
     })
-    await browser.executeScript((el) => (el.value = 'Button text'), $('core-toggle'))
-    await expect($('button').getText()).toEqual($('core-toggle').getAttribute('value'))
+    await browser.executeScript(() => (document.querySelector('core-toggle').value = 'Button text'))
+    const toggleValue = await $('core-toggle').getAttribute('value')
+    await expect($('button').getText()).toEqual(toggleValue)
     await expect($('button').getAttribute('aria-label')).toEqual('Button text,Some label')
   })
 
@@ -140,9 +145,10 @@ describe('core-toggle', () => {
         <core-toggle hidden></core-toggle>
       `
     })
-    await browser.executeScript((el) => (el.popup = 'Some label'), $('core-toggle'))
-    await browser.executeScript((el) => (el.value = 'Button text'), $('core-toggle'))
-    await expect($('button').getText()).toEqual($('core-toggle').getAttribute('value'))
+    await browser.executeScript(() => (document.querySelector('core-toggle').popup = 'Some label'))
+    await browser.executeScript(() => (document.querySelector('core-toggle').value = 'Button text'))
+    const toggleValue = await $('core-toggle').getAttribute('value')
+    await expect($('button').getText()).toEqual(toggleValue)
     await expect($('button').getAttribute('aria-label')).toEqual('Button text,Some label')
   })
 

@@ -99,7 +99,7 @@ describe('core-suggest', () => {
         </core-suggest>
       `
     })
-    await $$('button').each((el) => expect(el.getAttribute('type')).toEqual('button'))
+    await expect($$('button[type="button"]').count()).toEqual(3)
   })
 
   it('sets up and parses limit option', async () => {
@@ -143,7 +143,7 @@ describe('core-suggest', () => {
     await expect($('li:nth-child(1) button').getAttribute('hidden')).toEqual(null)
     await expect($('li:nth-child(2) button').getAttribute('hidden')).toEqual(null)
     await expect($('li:nth-child(3) button').getAttribute('hidden')).toEqual(null)
-    await expect($('li:nth-child(4) button').getAttribute('hidden')).toEqual('true')
+    await expect($('button[aria-label="Suggest 4, 4 av 3"]').getAttribute('hidden')).toEqual('true')
   })
 
   it('triggers ajax event on input ', async () => {
@@ -151,14 +151,14 @@ describe('core-suggest', () => {
       response.writeHead(200, HTTP_HEADERS)
       response.end('{"results": []}')
     })
-    server.listen(9000)
-    await browser.executeScript(() => {
+    const listener = server.listen()
+    await browser.executeScript((port) => {
       document.body.innerHTML = `
         <input type="text">
-        <core-suggest ajax="http://localhost:9000" hidden></core-suggest>
+        <core-suggest ajax="http://localhost:${port}" hidden></core-suggest>
       `
       document.addEventListener('suggest.ajax', (event) => (window.responseText = event.detail.responseText))
-    })
+    }, listener.address().port)
     await $('input').sendKeys('abc')
     const text = await browser.wait(() => browser.executeScript(() => window.responseText))
     await expect(text).toEqual('{"results": []}')
@@ -184,16 +184,16 @@ describe('core-suggest', () => {
       else response.writeHead(500, HTTP_HEADERS)
       response.end('')
     })
-    server.listen(9001)
-    await browser.executeScript(() => {
+    const listener = server.listen()
+    await browser.executeScript((port) => {
       document.body.innerHTML = `
         <input type="text">
-        <core-suggest ajax="http://localhost:9001" hidden></core-suggest>
+        <core-suggest ajax="http://bs-local.com:${port}" hidden></core-suggest>
       `
-      document.addEventListener('suggest.ajax.error', (event) => (window.status = event.detail.status))
-    })
+      document.addEventListener('suggest.ajax.error', (event) => (window.ajaxCode = String(event.detail.status)))
+    }, listener.address().port)
     await $('input').sendKeys('abc')
-    const status = await browser.wait(() => browser.executeScript(() => window.status))
+    const status = await browser.wait(() => browser.executeScript('return window.ajaxCode'))
     await expect(status).toEqual('500')
     server.close()
   })
@@ -203,14 +203,14 @@ describe('core-suggest', () => {
       response.writeHead(200, HTTP_HEADERS)
       response.end('{"boom"!}')
     })
-    server.listen(9002)
-    await browser.executeScript(() => {
+    const listener = server.listen()
+    await browser.executeScript((port) => {
       document.body.innerHTML = `
         <input type="text">
-        <core-suggest ajax="http://localhost:9002" hidden></core-suggest>
+        <core-suggest ajax="http://localhost:${port}" hidden></core-suggest>
       `
       document.addEventListener('suggest.ajax.error', (event) => (window.responseError = event.detail.responseError))
-    })
+    }, listener.address().port)
     await $('input').sendKeys('abc')
     const error = await browser.wait(() => browser.executeScript(() => window.responseError))
     await expect(error.match(/^SyntaxError/)).toBeTruthy()

@@ -95,7 +95,7 @@ function onMutation (self) {
 
   if (needle) {
     const range = document.createRange()
-    const iterator = document.createNodeIterator(self, window.NodeFilter.SHOW_TEXT)
+    const iterator = document.createNodeIterator(self, window.NodeFilter.SHOW_TEXT, null, false)
     const haystack = self.textContent.toLowerCase()
     const length = needle.length
     const hits = []

@@ -15,13 +15,14 @@ describe('core-datepicker', () => {
   it('sets up properties', async () => {
     await browser.executeScript(() => {
       document.body.innerHTML = `
-        <core-datepicker timestamp="${new Date('2019-04-30T12:44:56Z').getTime()}"> </core-datepicker>
+        <core-datepicker timestamp="${new Date('2019-04-30T12:44:56Z').getTime()}"></core-datepicker>
       `
     })
     await expect($('core-datepicker').getAttribute('year')).toEqual('2019')
     await expect($('core-datepicker').getAttribute('month')).toEqual('04')
     await expect($('core-datepicker').getAttribute('day')).toEqual('30')
-    await expect($('core-datepicker').getAttribute('hour')).toEqual(pad(String(await browser.executeScript(() => new Date('2019-04-30T12:44:56Z').getHours()))))
+    const hour = await browser.executeScript(() => new Date('2019-04-30T12:44:56Z').getHours())
+    await expect($('core-datepicker').getAttribute('hour')).toEqual(pad(String(hour)))
     await expect($('core-datepicker').getAttribute('minute')).toEqual('44')
     await expect($('core-datepicker').getAttribute('second')).toEqual('56')
     await expect(browser.executeScript(() => document.querySelector('core-datepicker').days.join(','))).toEqual('man,tirs,ons,tors,fre,lør,søn')
@@ -43,15 +44,22 @@ describe('core-datepicker', () => {
         </core-datepicker>
       `
     })
-    await $$('core-datepicker input').each(el => expect(el.getAttribute('type')).toEqual('number'))
-    await $$('core-datepicker input').each(el => expect(el.getAttribute('data-type')).toBeTruthy())
     await expect($('core-datepicker input[data-type="year"]').getAttribute('value')).toEqual('2019')
+    await expect($('core-datepicker input[data-type="year"]').getAttribute('type')).toEqual('number')
     await expect($('core-datepicker input[data-type="month"]').getAttribute('value')).toEqual('04')
+    await expect($('core-datepicker input[data-type="month"]').getAttribute('type')).toEqual('number')
     await expect($('core-datepicker input[data-type="day"]').getAttribute('value')).toEqual('30')
-    await expect($('core-datepicker input[data-type="hour"]').getAttribute('value')).toEqual(pad(String(await browser.executeScript(() => new Date('2019-04-30T10:44:56Z').getHours()))))
+    await expect($('core-datepicker input[data-type="day"]').getAttribute('type')).toEqual('number')
+    const hours = await browser.executeScript(() => new Date('2019-04-30T10:44:56Z').getHours())
+    await expect($('core-datepicker input[data-type="hour"]').getAttribute('value')).toEqual(pad(String(hours)))
+    await expect($('core-datepicker input[data-type="hour"]').getAttribute('type')).toEqual('number')
     await expect($('core-datepicker input[data-type="minute"]').getAttribute('value')).toEqual('44')
+    await expect($('core-datepicker input[data-type="minute"]').getAttribute('type')).toEqual('number')
     await expect($('core-datepicker input[data-type="second"]').getAttribute('value')).toEqual('56')
-    await expect($('core-datepicker input[data-type="timestamp"]').getAttribute('value')).toEqual($('core-datepicker').getAttribute('timestamp'))
+    await expect($('core-datepicker input[data-type="second"]').getAttribute('type')).toEqual('number')
+    const timestamp = await $('core-datepicker').getAttribute('timestamp')
+    await expect($('core-datepicker input[data-type="timestamp"]').getAttribute('value')).toEqual(timestamp)
+    await expect($('core-datepicker input[data-type="timestamp"]').getAttribute('type')).toEqual('number')
   })
 
   it('populates empty select with months', async () => {
@@ -126,9 +134,11 @@ describe('core-datepicker', () => {
         </core-datepicker>
       `
     })
+
     await browser.wait(ExpectedConditions.presenceOf($('core-datepicker table button')))
     await expect($('core-datepicker button[aria-current="date"]').isPresent()).toEqual(true)
-    await expect($('core-datepicker button[aria-current="date"]').getText()).toEqual(browser.executeScript(() => String(new Date().getDate())))
+    const browserDate = await browser.executeScript('return new Date().getDate()')
+    await expect($('core-datepicker button[aria-current="date"]').getText()).toEqual(String(browserDate))
   })
 
   it('changes date on day clicked', async () => {
@@ -185,12 +195,18 @@ describe('core-datepicker', () => {
         </core-datepicker>
       `
     })
-    await browser.executeScript(() => (document.querySelector('core-datepicker').disabled = (date) => date > new Date('2019-01-01T12:00:00Z')))
+    await browser.executeScript(function () {
+      document.querySelector('core-datepicker').disabled = function (date) {
+        return date > new Date('2019-01-01T12:00:00Z')
+      }
+    })
     await browser.wait(ExpectedConditions.presenceOf($('core-datepicker table button')))
     await expect($('core-datepicker tbody tr:nth-child(1) td:nth-child(1) button').getAttribute('disabled')).toEqual(null)
-    await $$('core-datepicker tbody tr:nth-child(2) button').each((el) => expect(el.getAttribute('disabled')).toEqual('true'))
-    await $$('core-datepicker tbody tr:nth-child(3) button').each((el) => expect(el.getAttribute('disabled')).toEqual('true'))
-    await $$('core-datepicker tbody tr:nth-child(4) button').each((el) => expect(el.getAttribute('disabled')).toEqual('true'))
+    // before the date
+    await expect($('button:not(disabled)[value="2018-12-31"]').isPresent()).toBeTruthy()
+    await expect($('button:not(disabled)[value="2019-1-1"]').isPresent()).toBeTruthy()
+    // after
+    await expect($('button:disabled[value="2019-1-2"]').isPresent()).toBeTruthy()
   })
 
   it('triggers change event', async () => {
@@ -202,7 +218,8 @@ describe('core-datepicker', () => {
       document.addEventListener('datepicker.change', (event) => (window.time = event.detail.getTime()))
       document.querySelector('core-datepicker').date = new Date('2019-01-02T12:00:00Z')
     })
-    await expect(browser.executeScript(() => window.time)).toEqual(browser.executeScript(() => new Date('2019-01-02T12:00:00Z').getTime()))
+    const time = await browser.executeScript(() => new Date('2019-01-02T12:00:00Z').getTime())
+    await expect(browser.executeScript(() => window.time)).toEqual(time)
   })
 
   it('triggers click day event', async () => {

@@ -1,8 +1,10 @@
-import './fast-selenium'
-
+import 'regenerator-runtime/runtime'
 import path from 'path'
+import http from 'http'
+import https from 'https'
 import dotenv from 'dotenv'
 import request from 'request'
+import { execSync } from 'child_process'
 import { SpecReporter } from 'jasmine-spec-reporter'
 import browserstack from 'browserstack-local'
 import { getUUID } from '../packages/utils'
@@ -11,14 +13,16 @@ dotenv.config()
 const isLocal = process.env.NODE_ENV === 'test'
 const user = process.env.BROWSERSTACK_USER
 const key = process.env.BROWSERSTACK_KEY
-const testName = new Date().toLocaleString()
 const localIdentifier = getUUID()
 const bsLocal = new browserstack.Local()
+const branch = execSync('git rev-parse --abbrev-ref HEAD').toString()
+const identifier = `${branch} ${new Date().toLocaleString()}`
+const specs = path.resolve(process.cwd(), `packages/*/*.test.${isLocal ? '' : 'cjs.'}js`)
 
 function config () {
   return {
     framework: 'jasmine',
-    specs: [path.resolve(__dirname, '..', 'packages/*/*.test.js')],
+    specs: [specs],
     seleniumAddress: 'http://hub-cloud.browserstack.com/wd/hub',
     directConnect: isLocal,
     SELENIUM_PROMISE_MANAGER: false,
@@ -38,7 +42,7 @@ function config () {
         'browserstack.console': 'errors', // Capture console logs
         'browserstack.localIdentifier': localIdentifier,
         project: 'core-components',
-        build: testName,
+        build: identifier,
         name: [
           cap.browserName.replace(/./, (m) => m.toUpperCase()),
           cap.browser_version ? parseInt(cap.browser_version) : ''
@@ -50,16 +54,15 @@ function config () {
       await new Promise((resolve, reject) => {
         bsLocal.start({ key, localIdentifier, forceLocal: true }, (error) => {
           if (error) return reject(Error('BrowserStack Local error: ' + error))
-          console.log('BrowserStack Local started')
-          resolve()
+          resolve(console.log('BrowserStack Local started'))
         })
       })
     },
     afterLaunch: async () => {
-      await new Promise((resolve) => {
-        bsLocal.stop(() => {
-          console.log('BrowserStack Local stopped')
-          resolve()
+      await new Promise((resolve, reject) => {
+        bsLocal.stop((error) => {
+          if (error) return reject(Error('BrowserStack Local error: ' + error))
+          resolve(console.log('BrowserStack Local stopped'))
         })
       })
     },
@@ -111,7 +114,7 @@ const capabilities = isLocal ? [
     browser_version: '57',
     os: 'Windows',
     os_version: '10'
-  }
+  },
   // {
   //   browserName: 'Edge',
   //   browser_version: '15.0',
@@ -137,33 +140,28 @@ const capabilities = isLocal ? [
   // },
   // {
   //   browserName: 'Firefox',
-  //   browser_version: '52.0'
-  //   os: 'Windows',
-  //   os_version: '10',
-  // },
-  // {
-  //   browserName: 'Firefox',
-  //   browser_version: '44.0'
-  //   os: 'Windows',
-  //   os_version: '7',
-  // },
-  // {
-  //   browserName: 'IE',
-  //   browser_version: '10'
-  //   os: 'Windows',
-  // },
-  // {
-  //   browserName: 'IE',
-  //   browser_version: '11',
+  //   browser_version: '52.0',
   //   os: 'Windows',
   //   os_version: '10'
   // },
   // {
-  //   browserName: 'IE',
-  //   browser_version: '11'
+  //   browserName: 'Firefox',
+  //   browser_version: '44.0',
   //   os: 'Windows',
-  //   os_version: '7',
+  //   os_version: '7'
   // },
+  {
+    browserName: 'IE',
+    browser_version: '11',
+    os: 'Windows',
+    os_version: '10'
+  },
+  {
+    browserName: 'IE',
+    browser_version: '11',
+    os: 'Windows',
+    os_version: '7'
+  }
   // {
   //   browserName: 'Opera',
   //   os: 'Windows',
@@ -268,4 +266,41 @@ const capabilities = isLocal ? [
   // }
 ]
 
+// https://www.browserstack.com/automate/node#add-on
+// https://github.com/browserstack/fast-selenium-scripts/blob/master/node/fast-selenium.js
+function faster () {
+  const keepAliveTimeout = 30 * 1000
+  // eslint-disable-next-line
+  if (http.globalAgent && http.globalAgent.hasOwnProperty('keepAlive')) {
+    http.globalAgent.keepAlive = true
+    https.globalAgent.keepAlive = true
+    http.globalAgent.keepAliveMsecs = keepAliveTimeout
+    https.globalAgent.keepAliveMsecs = keepAliveTimeout
+  } else {
+    const agent = new http.Agent({
+      keepAlive: true,
+      keepAliveMsecs: keepAliveTimeout
+    })
+
+    const secureAgent = new https.Agent({
+      keepAlive: true,
+      keepAliveMsecs: keepAliveTimeout
+    })
+
+    const httpRequest = http.request
+    const httpsRequest = https.request
+
+    http.request = (options, callback) => {
+      if (options.protocol === 'https:') {
+        options.agent = secureAgent
+        return httpsRequest(options, callback)
+      } else {
+        options.agent = agent
+        return httpRequest(options, callback)
+      }
+    }
+  }
+}
+
+faster()
 exports.config = config()

@@ -23,8 +23,5 @@ describe('core-scroll', () => {
       `
     })
     await expect($('core-scroll').getCssValue('overflow')).toEqual('scroll')
-    await expect($('core-scroll').getCssValue('max-height')).toEqual('100%')
-    await expect($('core-scroll').getCssValue('margin-right')).toEqual('0px')
-    await expect($('core-scroll').getCssValue('margin-bottom')).toEqual('0px')
   })
 })
