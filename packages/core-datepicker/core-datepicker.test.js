@@ -15,14 +15,14 @@ describe('core-datepicker', () => {
   it('sets up properties', async () => {
     await browser.executeScript(() => {
       document.body.innerHTML = `
-        <core-datepicker timestamp="${new Date('2019-04-30T12:44:56Z').getTime()}"> </core-datepicker>
+        <core-datepicker timestamp="${new Date('2019-04-30T12:44:56Z').getTime()}"></core-datepicker>
       `
     })
     await expect($('core-datepicker').getAttribute('year')).toEqual('2019')
     await expect($('core-datepicker').getAttribute('month')).toEqual('04')
     await expect($('core-datepicker').getAttribute('day')).toEqual('30')
-    const browserHours = await browser.executeScript('return new Date("2019-04-30T12:44:56Z").getHours()')
-    await expect($('core-datepicker').getAttribute('hour')).toEqual(pad(String(browserHours)))
+    const hour = await browser.executeScript(() => new Date('2019-04-30T12:44:56Z').getHours())
+    await expect($('core-datepicker').getAttribute('hour')).toEqual(pad(String(hour)))
     await expect($('core-datepicker').getAttribute('minute')).toEqual('44')
     await expect($('core-datepicker').getAttribute('second')).toEqual('56')
     await expect(browser.executeScript(() => document.querySelector('core-datepicker').days.join(','))).toEqual('man,tirs,ons,tors,fre,lør,søn')
@@ -50,8 +50,8 @@ describe('core-datepicker', () => {
     await expect($('core-datepicker input[data-type="month"]').getAttribute('type')).toEqual('number')
     await expect($('core-datepicker input[data-type="day"]').getAttribute('value')).toEqual('30')
     await expect($('core-datepicker input[data-type="day"]').getAttribute('type')).toEqual('number')
-    const browserDate = await browser.executeScript(() => new Date('2019-04-30T10:44:56Z').getHours())
-    await expect($('core-datepicker input[data-type="hour"]').getAttribute('value')).toEqual(pad(String(browserDate)))
+    const hours = await browser.executeScript(() => new Date('2019-04-30T10:44:56Z').getHours())
+    await expect($('core-datepicker input[data-type="hour"]').getAttribute('value')).toEqual(pad(String(hours)))
     await expect($('core-datepicker input[data-type="hour"]').getAttribute('type')).toEqual('number')
     await expect($('core-datepicker input[data-type="minute"]').getAttribute('value')).toEqual('44')
     await expect($('core-datepicker input[data-type="minute"]').getAttribute('type')).toEqual('number')

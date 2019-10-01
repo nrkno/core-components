@@ -27,7 +27,7 @@ export default utils.pkgs.reduce((all, path) => {
   const jsx = name.replace(/./, (m) => m.toUpperCase())
 
   return all.concat({
-    input: `${path}/${file}.test.js`, // JS CJS
+    input: `${path}/${file}.test.js`, // JS CJS (used for testing)
     output: {
       format: 'cjs',
       file: `${path}/${file}.test.cjs.js`,
