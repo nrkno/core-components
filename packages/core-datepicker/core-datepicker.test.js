@@ -1,5 +1,6 @@
 import fs from 'fs'
 import path from 'path'
+import { prop, attr } from '../test-utils'
 
 const coreDatepicker = fs.readFileSync(path.resolve(__dirname, 'core-datepicker.min.js'), 'utf-8')
 const customElements = fs.readFileSync(require.resolve('@webcomponents/custom-elements'), 'utf-8')
@@ -15,19 +16,19 @@ describe('core-datepicker', () => {
   it('sets up properties', async () => {
     await browser.executeScript(() => {
       document.body.innerHTML = `
-        <core-datepicker timestamp="${new Date('2019-04-30T12:44:56Z').getTime()}"></core-datepicker>
+        <core-datepicker timestamp="${new Date('2019-04-30T12:44:56Z').getTime()}">
+        </core-datepicker>
       `
     })
-    await expect($('core-datepicker').getAttribute('year')).toEqual('2019')
-    await expect($('core-datepicker').getAttribute('month')).toEqual('04')
-    await expect($('core-datepicker').getAttribute('day')).toEqual('30')
+    await expect(prop('core-datepicker', 'year')).toEqual('2019')
+    await expect(prop('core-datepicker', 'month')).toEqual('04')
+    await expect(prop('core-datepicker', 'day')).toEqual('30')
     const hour = await browser.executeScript(() => new Date('2019-04-30T12:44:56Z').getHours())
-    await expect($('core-datepicker').getAttribute('hour')).toEqual(pad(String(hour)))
-    await expect($('core-datepicker').getAttribute('minute')).toEqual('44')
-    await expect($('core-datepicker').getAttribute('second')).toEqual('56')
-    await expect(browser.executeScript(() => document.querySelector('core-datepicker').days.join(','))).toEqual('man,tirs,ons,tors,fre,lør,søn')
-    await expect(browser.executeScript(() => document.querySelector('core-datepicker').months.join(',')))
-      .toEqual('januar,februar,mars,april,mai,juni,juli,august,september,oktober,november,desember')
+    await expect(prop('core-datepicker', 'hour')).toEqual(pad(String(hour)))
+    await expect(prop('core-datepicker', 'minute')).toEqual('44')
+    await expect(prop('core-datepicker', 'second')).toEqual('56')
+    await expect(prop('core-datepicker', 'days')).toEqual('man,tirs,ons,tors,fre,lør,søn')
+    await expect(prop('core-datepicker', 'months')).toEqual('januar,februar,mars,april,mai,juni,juli,august,september,oktober,november,desember')
   })
 
   it('sets input values from timestamp', async () => {
@@ -44,22 +45,22 @@ describe('core-datepicker', () => {
         </core-datepicker>
       `
     })
-    await expect($('core-datepicker input[data-type="year"]').getAttribute('value')).toEqual('2019')
-    await expect($('core-datepicker input[data-type="year"]').getAttribute('type')).toEqual('number')
-    await expect($('core-datepicker input[data-type="month"]').getAttribute('value')).toEqual('04')
-    await expect($('core-datepicker input[data-type="month"]').getAttribute('type')).toEqual('number')
-    await expect($('core-datepicker input[data-type="day"]').getAttribute('value')).toEqual('30')
-    await expect($('core-datepicker input[data-type="day"]').getAttribute('type')).toEqual('number')
+    await expect(prop('input[data-type="year"]', 'value')).toEqual('2019')
+    await expect(prop('input[data-type="year"]', 'type')).toEqual('number')
+    await expect(prop('input[data-type="month"]', 'value')).toEqual('04')
+    await expect(prop('input[data-type="month"]', 'type')).toEqual('number')
+    await expect(prop('input[data-type="day"]', 'value')).toEqual('30')
+    await expect(prop('input[data-type="day"]', 'type')).toEqual('number')
     const hours = await browser.executeScript(() => new Date('2019-04-30T10:44:56Z').getHours())
-    await expect($('core-datepicker input[data-type="hour"]').getAttribute('value')).toEqual(pad(String(hours)))
-    await expect($('core-datepicker input[data-type="hour"]').getAttribute('type')).toEqual('number')
-    await expect($('core-datepicker input[data-type="minute"]').getAttribute('value')).toEqual('44')
-    await expect($('core-datepicker input[data-type="minute"]').getAttribute('type')).toEqual('number')
-    await expect($('core-datepicker input[data-type="second"]').getAttribute('value')).toEqual('56')
-    await expect($('core-datepicker input[data-type="second"]').getAttribute('type')).toEqual('number')
-    const timestamp = await $('core-datepicker').getAttribute('timestamp')
-    await expect($('core-datepicker input[data-type="timestamp"]').getAttribute('value')).toEqual(timestamp)
-    await expect($('core-datepicker input[data-type="timestamp"]').getAttribute('type')).toEqual('number')
+    await expect(prop('input[data-type="hour"]', 'value')).toEqual(pad(String(hours)))
+    await expect(prop('input[data-type="hour"]', 'type')).toEqual('number')
+    await expect(prop('input[data-type="minute"]', 'value')).toEqual('44')
+    await expect(prop('input[data-type="minute"]', 'type')).toEqual('number')
+    await expect(prop('input[data-type="second"]', 'value')).toEqual('56')
+    await expect(prop('input[data-type="second"]', 'type')).toEqual('number')
+    const timestamp = await prop('core-datepicker', 'timestamp')
+    await expect(prop('input[data-type="timestamp"]', 'value')).toEqual(timestamp)
+    await expect(prop('input[data-type="timestamp"]', 'type')).toEqual('number')
   })
 
   it('populates empty select with months', async () => {
@@ -71,22 +72,22 @@ describe('core-datepicker', () => {
       `
     })
     await browser.wait(ExpectedConditions.presenceOf($('core-datepicker select option')))
-    await expect(browser.executeScript(() => document.querySelector('core-datepicker select').childElementCount)).toEqual(12)
+    await expect(prop('core-datepicker select', 'childElementCount')).toEqual('12')
     for (let i = 1; i <= 12; i++) {
-      await expect($(`core-datepicker option:nth-child(${i})`).getAttribute('value')).toEqual(`y-${i}-d`)
+      await expect(prop(`option:nth-child(${i})`, 'value')).toEqual(`y-${i}-d`)
     }
-    await expect($('core-datepicker option:nth-child(1)').getText()).toEqual('januar')
-    await expect($('core-datepicker option:nth-child(2)').getText()).toEqual('februar')
-    await expect($('core-datepicker option:nth-child(3)').getText()).toEqual('mars')
-    await expect($('core-datepicker option:nth-child(4)').getText()).toEqual('april')
-    await expect($('core-datepicker option:nth-child(5)').getText()).toEqual('mai')
-    await expect($('core-datepicker option:nth-child(6)').getText()).toEqual('juni')
-    await expect($('core-datepicker option:nth-child(7)').getText()).toEqual('juli')
-    await expect($('core-datepicker option:nth-child(8)').getText()).toEqual('august')
-    await expect($('core-datepicker option:nth-child(9)').getText()).toEqual('september')
-    await expect($('core-datepicker option:nth-child(10)').getText()).toEqual('oktober')
-    await expect($('core-datepicker option:nth-child(11)').getText()).toEqual('november')
-    await expect($('core-datepicker option:nth-child(12)').getText()).toEqual('desember')
+    await expect(prop('option:nth-child(1)', 'textContent')).toEqual('januar')
+    await expect(prop('option:nth-child(2)', 'textContent')).toEqual('februar')
+    await expect(prop('option:nth-child(3)', 'textContent')).toEqual('mars')
+    await expect(prop('option:nth-child(4)', 'textContent')).toEqual('april')
+    await expect(prop('option:nth-child(5)', 'textContent')).toEqual('mai')
+    await expect(prop('option:nth-child(6)', 'textContent')).toEqual('juni')
+    await expect(prop('option:nth-child(7)', 'textContent')).toEqual('juli')
+    await expect(prop('option:nth-child(8)', 'textContent')).toEqual('august')
+    await expect(prop('option:nth-child(9)', 'textContent')).toEqual('september')
+    await expect(prop('option:nth-child(10)', 'textContent')).toEqual('oktober')
+    await expect(prop('option:nth-child(11)', 'textContent')).toEqual('november')
+    await expect(prop('option:nth-child(12)', 'textContent')).toEqual('desember')
   })
 
   it('re-uses custom select', async () => {
@@ -102,10 +103,10 @@ describe('core-datepicker', () => {
         </core-datepicker>
       `
     })
-    await expect(browser.executeScript(() => document.querySelector('core-datepicker select').childElementCount)).toEqual(4)
-    await expect($('core-datepicker option:nth-child(1)').getAttribute('value')).toEqual('---')
-    await expect($('core-datepicker option:nth-child(2)').getAttribute('value')).toEqual('2016-m-d')
-    await expect($('core-datepicker option:nth-child(3)').getAttribute('value')).toEqual('19yy-1-1')
+    await expect(prop('select', 'childElementCount')).toEqual('4')
+    await expect(prop('option:nth-child(1)', 'value')).toEqual('---')
+    await expect(prop('option:nth-child(2)', 'value')).toEqual('2016-m-d')
+    await expect(prop('option:nth-child(3)', 'value')).toEqual('19yy-1-1')
   })
 
   it('populates empty table', async () => {
@@ -117,13 +118,13 @@ describe('core-datepicker', () => {
       `
     })
     await browser.wait(ExpectedConditions.presenceOf($('core-datepicker table button')))
-    const days = await browser.executeScript(() => document.querySelector('core-datepicker').days)
+    const days = (await prop('core-datepicker', 'days')).split(',')
     await expect(days.length).toEqual(7)
     for (let i = 1; i <= 7; i++) {
-      await expect($(`core-datepicker thead tr th:nth-child(${i})`).getText()).toEqual(days[i - 1])
+      await expect(prop(`thead tr th:nth-child(${i})`, 'textContent')).toEqual(days[i - 1])
     }
-    await expect($$('core-datepicker table td button[data-adjacent="false"]').count()).toEqual(31)
-    await expect($('core-datepicker button[autofocus]').getText()).toEqual('1')
+    await expect($$('table td button[data-adjacent="false"]').count()).toEqual(31)
+    await expect(prop('button[autofocus]', 'textContent')).toEqual('1')
   })
 
   it('marks today\'s date in table', async () => {
@@ -136,9 +137,9 @@ describe('core-datepicker', () => {
     })
 
     await browser.wait(ExpectedConditions.presenceOf($('core-datepicker table button')))
-    await expect($('core-datepicker button[aria-current="date"]').isPresent()).toEqual(true)
-    const browserDate = await browser.executeScript('return new Date().getDate()')
-    await expect($('core-datepicker button[aria-current="date"]').getText()).toEqual(String(browserDate))
+    await expect($('button[aria-current="date"]').isPresent()).toEqual(true)
+    const browserDate = await browser.executeScript(() => new Date().getDate())
+    await expect(prop('button[aria-current="date"]', 'textContent')).toEqual(String(browserDate))
   })
 
   it('changes date on day clicked', async () => {
@@ -150,9 +151,9 @@ describe('core-datepicker', () => {
       `
     })
     await browser.wait(ExpectedConditions.presenceOf($('core-datepicker table button')))
-    await expect($('core-datepicker button[autofocus]').getText()).toEqual('1')
-    await $('core-datepicker tbody tr:nth-child(2) td:nth-child(5) button').click()
-    await expect($('core-datepicker button[autofocus]').getText()).toEqual('11')
+    await expect(prop('button[autofocus]', 'textContent')).toEqual('1')
+    await $('tbody tr:nth-child(2) td:nth-child(5) button').click()
+    await expect(prop('button[autofocus]', 'textContent')).toEqual('11')
   })
 
   it('changes month names', async () => {
@@ -165,9 +166,9 @@ describe('core-datepicker', () => {
       `
     }, months)
     await browser.wait(ExpectedConditions.presenceOf($('core-datepicker select option')))
-    await expect(browser.executeScript(() => document.querySelector('core-datepicker select').childElementCount)).toEqual(12)
+    await expect(prop('select', 'childElementCount')).toEqual('12')
     for (let i = 1; i <= 12; i++) {
-      await expect($(`core-datepicker option:nth-child(${i})`).getText()).toEqual(months[i - 1])
+      await expect(prop(`option:nth-child(${i})`, 'textContent')).toEqual(months[i - 1])
     }
   })
 
@@ -181,9 +182,9 @@ describe('core-datepicker', () => {
       `
     }, days)
     await browser.wait(ExpectedConditions.presenceOf($('core-datepicker table thead')))
-    await expect(browser.executeScript(() => document.querySelector('core-datepicker table thead tr').childElementCount)).toEqual(7)
+    await expect(prop('table thead tr', 'childElementCount')).toEqual('7')
     for (let i = 1; i <= 7; i++) {
-      await expect($(`core-datepicker thead tr th:nth-child(${i})`).getText()).toEqual(days[i - 1])
+      await expect(prop(`thead tr th:nth-child(${i})`, 'textContent')).toEqual(days[i - 1])
     }
   })
 
@@ -194,14 +195,12 @@ describe('core-datepicker', () => {
           <table></table>
         </core-datepicker>
       `
-    })
-    await browser.executeScript(function () {
-      document.querySelector('core-datepicker').disabled = function (date) {
+      document.querySelector('core-datepicker').disabled = (date) => {
         return date > new Date('2019-01-01T12:00:00Z')
       }
     })
     await browser.wait(ExpectedConditions.presenceOf($('core-datepicker table button')))
-    await expect($('core-datepicker tbody tr:nth-child(1) td:nth-child(1) button').getAttribute('disabled')).toEqual(null)
+    await expect(attr('tbody tr:nth-child(1) td:nth-child(1) button', 'disabled')).toMatch(/(null|false)/i)
     // before the date
     await expect($('button:not(disabled)[value="2018-12-31"]').isPresent()).toBeTruthy()
     await expect($('button:not(disabled)[value="2019-1-1"]').isPresent()).toBeTruthy()

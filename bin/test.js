@@ -3,8 +3,7 @@ import path from 'path'
 import http from 'http'
 import https from 'https'
 import dotenv from 'dotenv'
-import request from 'request'
-import { execSync } from 'child_process'
+import axios from 'axios'
 import { SpecReporter } from 'jasmine-spec-reporter'
 import browserstack from 'browserstack-local'
 import { getUUID } from '../packages/utils'
@@ -15,8 +14,7 @@ const user = process.env.BROWSERSTACK_USER
 const key = process.env.BROWSERSTACK_KEY
 const localIdentifier = getUUID()
 const bsLocal = new browserstack.Local()
-const branch = execSync('git rev-parse --abbrev-ref HEAD').toString()
-const identifier = `${branch} ${new Date().toLocaleString()}`
+const identifier = new Date().toLocaleString()
 const specs = path.resolve(process.cwd(), `packages/*/*.test.${isLocal ? '' : 'cjs.'}js`)
 
 function config () {
@@ -41,10 +39,11 @@ function config () {
         'browserstack.video': false, // Capture video of tests
         'browserstack.console': 'errors', // Capture console logs
         'browserstack.localIdentifier': localIdentifier,
+        'browserstack.sendKeys': true,
         project: 'core-components',
         build: identifier,
         name: [
-          cap.browserName.replace(/./, (m) => m.toUpperCase()),
+          (cap.browserName || cap.device).replace(/./, (m) => m.toUpperCase()),
           cap.browser_version ? parseInt(cap.browser_version) : ''
         ].join(' '),
         ...cap
@@ -67,20 +66,23 @@ function config () {
       })
     },
     onPrepare: () => {
-      jasmine.getEnv().addReporter(new SpecReporter({
-        displayFailuresSummary: true,
-        displayFailuredSpec: true,
-        displaySuiteNumber: true,
-        displaySpecDuration: true
+      const env = jasmine.getEnv()
+      env.addReporter(new SpecReporter({
+        spec: {
+          displaySuccessful: true,
+          displayFailed: true,
+          displayStacktrace: true,
+          displayErrorMessages: true
+        },
+        summary: false
       }))
       browser.waitForAngularEnabled(false)
     },
     onComplete: async (passed) => {
+      if (isLocal) return
       const session = await browser.getSession()
-      request({
-        uri: `https://${user}:${key}@api.browserstack.com/automate/sessions/${session.id_}.json`,
-        method: 'PUT',
-        form: { status: passed ? 'passed' : 'failed' }
+      return axios.put(`https://${user}:${key}@api.browserstack.com/automate/sessions/${session.id_}.json`, {
+        status: passed ? 'passed' : 'failed'
       })
     }
   }
@@ -93,63 +95,37 @@ const capabilities = isLocal ? [
       args: ['--headless', '--window-size=800x600']
     }
   }
-  // {
-  //   browserName: 'firefox'
-  // }
 ] : [
-  // {
-  //   browserName: 'Chrome',
-  //   browser_version: '37'
-  //   os: 'Windows',
-  //   os_version: '10',
-  // },
-  // {
-  //   browserName: 'Chrome',
-  //   browser_version: '46'
-  //   os: 'Windows',
-  //   os_version: '10',
-  // }
+  {
+    browserName: 'Chrome',
+    browser_version: '46',
+    os: 'Windows',
+    os_version: '10',
+  },
   {
     browserName: 'Chrome',
     browser_version: '57',
     os: 'Windows',
     os_version: '10'
   },
-  // {
-  //   browserName: 'Edge',
-  //   browser_version: '15.0',
-  //   os: 'Windows',
-  //   os_version: '10'
-  // }
-  // {
-  //   browserName: 'Edge',
-  //   browser_version: '18.0',
-  //   os: 'Windows',
-  //   os_version: '10'
-  // },
-  // {
-  //   browserName: 'Edge',
-  //   browser_version: '17.0',
-  //   os: 'Windows',
-  //   os_version: '10'
-  // },
-  // {
-  //   browserName: 'Firefox',
-  //   os: 'Windows',
-  //   os_version: '10'
-  // },
-  // {
-  //   browserName: 'Firefox',
-  //   browser_version: '52.0',
-  //   os: 'Windows',
-  //   os_version: '10'
-  // },
-  // {
-  //   browserName: 'Firefox',
-  //   browser_version: '44.0',
-  //   os: 'Windows',
-  //   os_version: '7'
-  // },
+  {
+    browserName: 'Edge',
+    browser_version: '15.0',
+    os: 'Windows',
+    os_version: '10'
+  },
+  {
+    browserName: 'Edge',
+    browser_version: '17.0',
+    os: 'Windows',
+    os_version: '10'
+  },
+  {
+    browserName: 'Edge',
+    browser_version: '18.0',
+    os: 'Windows',
+    os_version: '10'
+  },
   {
     browserName: 'IE',
     browser_version: '11',
@@ -161,7 +137,19 @@ const capabilities = isLocal ? [
     browser_version: '11',
     os: 'Windows',
     os_version: '7'
-  }
+  },
+  // {
+  //   browserName: 'Firefox',
+  //   browser_version: '60',
+  //   os: 'Windows',
+  //   os_version: '10'
+  // },
+  // {
+  //   browserName: 'Firefox',
+  //   browser_version: '44.0',
+  //   os: 'Windows',
+  //   os_version: '7'
+  // },
   // {
   //   browserName: 'Opera',
   //   os: 'Windows',
@@ -188,13 +176,13 @@ const capabilities = isLocal ? [
   //   os_version: 'Yosemite',
   //   resolution: '1024x768'
   // },
-  // {
-  //   browserName: 'Safari',
-  //   browser_version: '9.1',
-  //   os: 'OS X',
-  //   os_version: 'El Capitan',
-  //   resolution: '1024x768'
-  // },
+  {
+    browserName: 'Safari',
+    browser_version: '9.1',
+    os: 'OS X',
+    os_version: 'El Capitan',
+    resolution: '1024x768'
+  },
   // {
   //   browserName: 'Safari',
   //   browser_version: '10.0',

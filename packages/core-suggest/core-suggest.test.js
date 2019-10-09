@@ -1,6 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import http from 'http'
+import { prop, attr } from '../test-utils'
 
 const coreSuggest = fs.readFileSync(path.resolve(__dirname, 'core-suggest.min.js'), 'utf-8')
 const customElements = fs.readFileSync(require.resolve('@webcomponents/custom-elements'), 'utf-8')
@@ -20,9 +21,9 @@ describe('core-suggest', () => {
         <core-suggest hidden></core-suggest>
       `
     })
-    await expect($('input').getAttribute('aria-autocomplete')).toEqual('list')
-    await expect($('input').getAttribute('autocomplete')).toEqual('off')
-    await expect($('input').getAttribute('aria-expanded')).toEqual('false')
+    await expect(attr('input', 'aria-autocomplete')).toEqual('list')
+    await expect(attr('input', 'autocomplete')).toEqual('off')
+    await expect(attr('input', 'aria-expanded')).toEqual('false')
   })
 
   it('opens suggestions on input focus', async () => {
@@ -33,8 +34,8 @@ describe('core-suggest', () => {
       `
     })
     await $('input').click()
-    await expect($('input').getAttribute('aria-expanded')).toEqual('true')
-    await expect($('core-suggest').getAttribute('hidden')).toEqual(null)
+    await expect(attr('input', 'aria-expanded')).toMatch(/true/i)
+    await expect(prop('core-suggest', 'hidden')).toMatch(/(null|false)/i)
   })
 
   it('closes suggestions on click outside', async () => {
@@ -45,9 +46,9 @@ describe('core-suggest', () => {
       `
     })
     await $('input').click()
-    await expect($('core-suggest').getAttribute('hidden')).toEqual(null)
+    await expect(prop('core-suggest', 'hidden')).toMatch(/(null|false)/i)
     await $('body').click()
-    await expect($('core-suggest').getAttribute('hidden')).toEqual('true')
+    await expect(prop('core-suggest', 'hidden')).toMatch(/true/i)
   })
 
   it('sets input value to selected suggestion', async () => {
@@ -64,7 +65,7 @@ describe('core-suggest', () => {
     })
     await $('input').click()
     await $('button#two').click()
-    await expect($('input').getAttribute('value')).toEqual('Suggest 2')
+    await expect(prop('input', 'value')).toEqual('Suggest 2')
   })
 
   it('filters suggestions from input value', async () => {
@@ -73,17 +74,17 @@ describe('core-suggest', () => {
         <input type="text">
         <core-suggest hidden>
           <ul>
-            <li><button>Suggest 1</button></li>
-            <li><button>Suggest 2</button></li>
-            <li><button>Suggest 3</button></li>
+            <li><button id="one">Suggest 1</button></li>
+            <li><button id="two">Suggest 2</button></li>
+            <li><button id="three">Suggest 3</button></li>
           </ul>
         </core-suggest>
       `
     })
     await $('input').sendKeys('2')
-    await expect($('li:nth-child(1) button').getAttribute('hidden')).toEqual('true')
-    await expect($('li:nth-child(2) button').getAttribute('hidden')).toEqual(null)
-    await expect($('li:nth-child(3) button').getAttribute('hidden')).toEqual('true')
+    await expect(prop('button#one', 'hidden')).toMatch(/true/i)
+    await expect(prop('button#two', 'hidden')).toMatch(/(null|false)/i)
+    await expect(prop('button#three', 'hidden')).toMatch(/true/i)
   })
 
   it('sets type="button" on all suggestion buttons', async () => {
@@ -92,14 +93,16 @@ describe('core-suggest', () => {
         <input type="text">
         <core-suggest hidden>
           <ul>
-            <li><button>Suggest 1</button></li>
-            <li><button>Suggest 2</button></li>
-            <li><button>Suggest 3</button></li>
+            <li><button id="one">Suggest 1</button></li>
+            <li><button id="two">Suggest 2</button></li>
+            <li><button id="three">Suggest 3</button></li>
           </ul>
         </core-suggest>
       `
     })
-    await expect($$('button[type="button"]').count()).toEqual(3)
+    await expect(attr('button#one', 'type')).toEqual('button')
+    await expect(attr('button#two', 'type')).toEqual('button')
+    await expect(attr('button#three', 'type')).toEqual('button')
   })
 
   it('sets up and parses limit option', async () => {
@@ -109,15 +112,15 @@ describe('core-suggest', () => {
         <core-suggest hidden></core-suggest>
       `
     })
-    await expect($('core-suggest').getAttribute('limit')).toEqual('Infinity')
+    await expect(prop('core-suggest', 'limit')).toMatch(/inf(inity)?/i)
     await browser.executeScript(() => (document.querySelector('core-suggest').limit = 2))
-    await expect($('core-suggest').getAttribute('limit')).toEqual('2')
+    await expect(prop('core-suggest', 'limit')).toEqual('2')
     await browser.executeScript(() => (document.querySelector('core-suggest').limit = -2))
-    await expect($('core-suggest').getAttribute('limit')).toEqual('Infinity')
+    await expect(prop('core-suggest', 'limit')).toMatch(/inf(inity)?/i)
     await browser.executeScript(() => (document.querySelector('core-suggest').limit = null))
-    await expect($('core-suggest').getAttribute('limit')).toEqual('Infinity')
+    await expect(prop('core-suggest', 'limit')).toMatch(/inf(inity)?/i)
     await browser.executeScript(() => (document.querySelector('core-suggest').limit = undefined))
-    await expect($('core-suggest').getAttribute('limit')).toEqual('Infinity')
+    await expect(prop('core-suggest', 'limit')).toMatch(/inf(inity)?/i)
   })
 
   it('filters suggestions from limit option', async () => {
@@ -126,24 +129,25 @@ describe('core-suggest', () => {
         <input type="text">
         <core-suggest limit="2" hidden>
           <ul>
-            <li><button>Suggest 1</button></li>
-            <li><button>Suggest 2</button></li>
-            <li><button>Suggest 3</button></li>
-            <li><button>Suggest 4</button></li>
+            <li><button id="one">Suggest 1</button></li>
+            <li><button id="two">Suggest 2</button></li>
+            <li><button id="three">Suggest 3</button></li>
+            <li><button id="four">Suggest 4</button></li>
           </ul>
         </core-suggest>
       `
     })
-    await expect($('li:nth-child(1) button').getAttribute('hidden')).toEqual(null)
-    await expect($('li:nth-child(2) button').getAttribute('hidden')).toEqual(null)
-    await expect($('li:nth-child(3) button').getAttribute('hidden')).toEqual('true')
-    await expect($('li:nth-child(4) button').getAttribute('hidden')).toEqual('true')
+    await expect(prop('button#one', 'hidden')).toMatch(/(null|false)/i)
+    await expect(prop('button#two', 'hidden')).toMatch(/(null|false)/i)
+    await expect(prop('button#three', 'hidden')).toMatch(/true/i)
+    await expect(prop('button#four', 'hidden')).toMatch(/true/i)
     await browser.executeScript(() => (document.querySelector('core-suggest').limit = 3))
     await $('input').sendKeys('s')
-    await expect($('li:nth-child(1) button').getAttribute('hidden')).toEqual(null)
-    await expect($('li:nth-child(2) button').getAttribute('hidden')).toEqual(null)
-    await expect($('li:nth-child(3) button').getAttribute('hidden')).toEqual(null)
-    await expect($('button[aria-label="Suggest 4, 4 av 3"]').getAttribute('hidden')).toEqual('true')
+    await expect(prop('button#one', 'hidden')).toMatch(/(null|false)/i)
+    await expect(prop('button#two', 'hidden')).toMatch(/(null|false)/i)
+    await expect(prop('button#three', 'hidden')).toMatch(/(null|false)/i)
+    await expect(prop('button#four', 'hidden')).toMatch(/true/i)
+    await expect(prop('button[aria-label="Suggest 4, 4 av 3"]', 'hidden')).toMatch(/true/i)
   })
 
   it('triggers ajax event on input ', async () => {
@@ -155,7 +159,7 @@ describe('core-suggest', () => {
     await browser.executeScript((port) => {
       document.body.innerHTML = `
         <input type="text">
-        <core-suggest ajax="http://localhost:${port}" hidden></core-suggest>
+        <core-suggest ajax="http://bs-local.com:${port}" hidden></core-suggest>
       `
       document.addEventListener('suggest.ajax', (event) => (window.responseText = event.detail.responseText))
     }, listener.address().port)
@@ -171,7 +175,9 @@ describe('core-suggest', () => {
         <input type="text">
         <core-suggest ajax="http://foo" hidden></core-suggest>
       `
-      document.addEventListener('suggest.ajax.error', (event) => (window.responseError = event.detail.responseError))
+      document.addEventListener('suggest.ajax.error', (event) => {
+        window.responseError = event.detail.responseError
+      })
     })
     await $('input').sendKeys('abc')
     const error = await browser.wait(() => browser.executeScript(() => window.responseError))
@@ -190,10 +196,12 @@ describe('core-suggest', () => {
         <input type="text">
         <core-suggest ajax="http://bs-local.com:${port}" hidden></core-suggest>
       `
-      document.addEventListener('suggest.ajax.error', (event) => (window.ajaxCode = String(event.detail.status)))
+      document.addEventListener('suggest.ajax.error', (event) => {
+        window.ajaxCode = String(event.detail.status)
+      })
     }, listener.address().port)
     await $('input').sendKeys('abc')
-    const status = await browser.wait(() => browser.executeScript('return window.ajaxCode'))
+    const status = await browser.wait(() => browser.executeScript(() => window.ajaxCode))
     await expect(status).toEqual('500')
     server.close()
   })
@@ -207,9 +215,11 @@ describe('core-suggest', () => {
     await browser.executeScript((port) => {
       document.body.innerHTML = `
         <input type="text">
-        <core-suggest ajax="http://localhost:${port}" hidden></core-suggest>
+        <core-suggest ajax="http://bs-local.com:${port}" hidden></core-suggest>
       `
-      document.addEventListener('suggest.ajax.error', (event) => (window.responseError = event.detail.responseError))
+      document.addEventListener('suggest.ajax.error', (event) => {
+        window.responseError = event.detail.responseError
+      })
     }, listener.address().port)
     await $('input').sendKeys('abc')
     const error = await browser.wait(() => browser.executeScript(() => window.responseError))
