@@ -138,50 +138,29 @@ const capabilities = isLocal ? [
     os: 'Windows',
     os_version: '7'
   },
-  // {
-  //   browserName: 'Firefox',
-  //   browser_version: '60',
-  //   os: 'Windows',
-  //   os_version: '10'
-  // },
-  // {
-  //   browserName: 'Firefox',
-  //   browser_version: '44.0',
-  //   os: 'Windows',
-  //   os_version: '7'
-  // },
-  // {
-  //   browserName: 'Opera',
-  //   os: 'Windows',
-  //   os_version: 'XP',
-  //   browser_version: '12.16',
-  //   resolution: '1024x768'
-  // },
+  {
+    browserName: 'Firefox',
+    browser_version: '69',
+    os: 'Windows',
+    os_version: '10'
+  },
+  {
+    browserName: 'Firefox',
+    browser_version: '64',
+    os: 'Windows',
+    os_version: '10'
+  },
   // {
   //   browserName: 'Safari',
+  //   browser_version: '10.1',
   //   os: 'OS X',
-  //   os_version: 'High Sierra'
-  // },
-  // {
-  //   browserName: 'Safari',
-  //   browser_version: '7.1',
-  //   os: 'OS X',
-  //   os_version: 'Mavericks',
-  //   resolution: '1024x768'
-  // },
-  // {
-  //   browserName: 'Safari',
-  //   browser_version: '8.0',
-  //   os: 'OS X',
-  //   os_version: 'Yosemite',
-  //   resolution: '1024x768'
+  //   os_version: 'Sierra'
   // },
   {
     browserName: 'Safari',
     browser_version: '9.1',
     os: 'OS X',
-    os_version: 'El Capitan',
-    resolution: '1024x768'
+    os_version: 'El Capitan'
   }
   // {
   //   browserName: 'Safari',

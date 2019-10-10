@@ -51,7 +51,7 @@ Best practices and styling tips is not a pure functionality concern, and therefo
 
 ## Browser support
 
-* Browsers: Internet Explorer 11+, Edge 15+, Safari 9+, Firefox?, Chrome 46, Opera?
+* Browsers: Internet Explorer 11+, Edge 15+, Safari 9+, Firefox 64+, Chrome 46, Opera
 * Screen readers: MacOS/iOS: VoiceOver, Android: TalkBack, Windows: JAWS/NVDA
 
 For Internet Explorer and older Edge browsers you need a [polyfill](https://github.com/webcomponents/custom-elements) for the custom elements spec.
