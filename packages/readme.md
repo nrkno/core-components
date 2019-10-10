@@ -41,6 +41,21 @@ window.customElements.define('core-datepicker', CoreDatepicker)   // Register el
 ```
 Remember to read the documentation on each component for more usage, details and examples.
 
+## Motivation
+
+Despite [well documented accessibility specifications](https://www.w3.org/TR/wai-aria-practices-1.1/), best practice simply becomes unusable in several screen readers and browsers due to implementation differences. `@nrk/core-components` aims to provide the best possible good user experience regardless of browser, screen reader and other existing javascript.
+
+HTML form elements are accessible by nature, and have quite compatible and well documented native APIs.
+Best practices and styling tips is not a pure functionality concern, and therefore not covered by core-components, for now.
+
+
+## Browser support
+
+* Browsers: Internet Explorer 11+, Edge 15+, Safari 9+, Firefox 64+, Chrome 46, Opera
+* Screen readers: MacOS/iOS: VoiceOver, Android: TalkBack, Windows: JAWS/NVDA
+
+For Internet Explorer and older Edge browsers you need a [polyfill](https://github.com/webcomponents/custom-elements) for the custom elements spec.
+
 
 ## Extending
 
@@ -84,17 +99,7 @@ window.customElements.define('my-toggle', MyToggle)
 Note that these functions are optional to extend if your component doesn't require
 it in its lifecycle. Read more about [using custom elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements) on MDN.
 
-## Browser support
-
-* Browsers: IE/Edge 11+ ([with polyfill](https://github.com/webcomponents/custom-elements)), Safari, Firefox, Chrome, Opera
-* Screen readers: MacOS/iOS: VoiceOver, Android: TalkBack , Windows: JAWS/NVDA
-
-## Motivation
-Despite [well documented accessibility specifications](https://www.w3.org/TR/wai-aria-practices-1.1/), best practice simply becomes unusable in several screen readers and browsers due to implementation differences. `@nrk/core-components` aims to provide the best possible good user experience regardless of browser, screen reader and other existing javascript.
-
-HTML form elements are accessible by nature, and have quite compatible and well documented native APIs.
-Best practices and styling tips is not a pure functionality concern, and therefore not covered by core-components, for now.
 
 ## Testing
 
-Due to the [lack of support for custom elements in jsdom](https://github.com/jsdom/jsdom/issues/1030) you need to use a headless browser environment like [puppeteer](https://github.com/GoogleChrome/puppeteer) to write your unit tests involving core components. Alternatively, it may be possible to [patch the default jsdom environment](https://github.com/jsdom/jsdom/issues/1030#issuecomment-486974452) to support custom elements. For an example on how to do it with puppeteer, see [our unit tests](https://github.com/nrkno/core-components/blob/master/packages/core-datepicker/core-datepicker.test.js).
+Due to the [lack of support for custom elements in jsdom](https://github.com/jsdom/jsdom/issues/1030) you need to use a headless browser environment like [puppeteer](https://github.com/GoogleChrome/puppeteer) or [protractor](https://www.protractortest.org/) to write your unit tests involving core components. For an example on how to do it with protractor, see [our unit tests](https://github.com/nrkno/core-components/blob/master/packages/core-datepicker/core-datepicker.test.js).

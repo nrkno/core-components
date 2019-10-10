@@ -1,5 +1,6 @@
 import fs from 'fs'
 import path from 'path'
+import { prop, attr } from '../test-utils'
 
 const coreDialog = fs.readFileSync(path.resolve(__dirname, 'core-dialog.min.js'), 'utf-8')
 const customElements = fs.readFileSync(require.resolve('@webcomponents/custom-elements'), 'utf-8')
@@ -18,8 +19,8 @@ describe('core-dialog', () => {
         <core-dialog id="dialog-1" hidden></core-dialog>
       `
     })
-    await expect($('core-dialog').getAttribute('role')).toEqual('dialog')
-    await expect($('core-dialog').getAttribute('aria-modal')).toEqual('true')
+    await expect(attr('core-dialog', 'role')).toEqual('dialog')
+    await expect(attr('core-dialog', 'aria-modal')).toMatch(/true/i)
   })
 
   it('opens and closes', async () => {
@@ -33,15 +34,15 @@ describe('core-dialog', () => {
       `
     })
     await $('button[for="dialog"]').click()
-    await expect($('core-dialog').getAttribute('hidden')).toEqual(null)
-    await expect($('core-dialog + backdrop').getAttribute('hidden')).toEqual(null)
+    await expect(prop('core-dialog', 'hidden')).toMatch(/(null|false)/i)
+    await expect(prop('core-dialog + backdrop', 'hidden')).toMatch(/(null|false)/i)
     await $('button[for="close"]').click()
-    await expect($('core-dialog').getAttribute('hidden')).toEqual('true')
-    await expect($('core-dialog + backdrop').getAttribute('hidden')).toEqual('true')
+    await expect(prop('core-dialog', 'hidden')).toMatch(/true/i)
+    await expect(prop('core-dialog + backdrop', 'hidden')).toMatch(/true/i)
     await browser.executeScript(() => (document.querySelector('core-dialog').hidden = false))
-    await expect($('core-dialog + backdrop').getAttribute('hidden')).toEqual(null)
+    await expect(prop('core-dialog + backdrop', 'hidden')).toMatch(/(null|false)/i)
     await browser.executeScript(() => (document.querySelector('core-dialog').hidden = true))
-    await expect($('core-dialog + backdrop').getAttribute('hidden')).toEqual('true')
+    await expect(prop('core-dialog + backdrop', 'hidden')).toMatch(/true/i)
   })
 
   it('opens and closes nested', async () => {
@@ -62,16 +63,16 @@ describe('core-dialog', () => {
     })
     await $('button[for="dialog-outer"]').click()
     await $('button[for="dialog-inner"]').click()
-    await expect($('#dialog-outer + backdrop').getAttribute('hidden')).toEqual(null)
-    await expect($('#dialog-outer #dialog-inner + backdrop').getAttribute('hidden')).toEqual(null)
+    await expect(prop('#dialog-outer + backdrop', 'hidden')).toMatch(/(null|false)/i)
+    await expect(prop('#dialog-outer #dialog-inner + backdrop', 'hidden')).toMatch(/(null|false)/i)
     await $('#dialog-inner button[for="close"]').click()
-    await expect($('#dialog-inner').getAttribute('hidden')).toEqual('true')
-    await expect($('#dialog-inner + backdrop').getAttribute('hidden')).toEqual('true')
-    await expect($('#dialog-outer').getAttribute('hidden')).toEqual(null)
-    await expect($('#dialog-outer + backdrop').getAttribute('hidden')).toEqual(null)
+    await expect(prop('#dialog-inner', 'hidden')).toMatch(/true/i)
+    await expect(prop('#dialog-inner + backdrop', 'hidden')).toMatch(/true/i)
+    await expect(prop('#dialog-outer', 'hidden')).toMatch(/(null|false)/i)
+    await expect(prop('#dialog-outer + backdrop', 'hidden')).toMatch(/(null|false)/i)
   })
 
-  it('closes nested with esc', async () => {
+  it('closes nested with pressed esc', async () => {
     await browser.executeScript(() => {
       document.body.innerHTML = `
         <button for="dialog-outer">Open</button>
@@ -89,11 +90,11 @@ describe('core-dialog', () => {
     })
     await $('button[for="dialog-outer"]').click()
     await $('button[for="dialog-inner"]').click()
-    await $('body').sendKeys(protractor.Key.ESCAPE)
-    await expect($('#dialog-inner').getAttribute('hidden')).toEqual('true')
-    await expect($('#dialog-outer').getAttribute('hidden')).toEqual(null)
-    await $('body').sendKeys(protractor.Key.ESCAPE)
-    await expect($('#dialog-outer').getAttribute('hidden')).toEqual('true')
+    await $('button[for="dialog-outer"]').sendKeys(protractor.Key.ESCAPE)
+    await expect(prop('#dialog-inner', 'hidden')).toMatch(/true/i)
+    await expect(prop('#dialog-outer', 'hidden')).toMatch(/(null|false)/i)
+    await $('button[for="dialog-outer"]').sendKeys(protractor.Key.ESCAPE)
+    await expect(prop('#dialog-outer', 'hidden')).toMatch(/true/i)
   })
 
   it('respects backdrop false option', async () => {
@@ -106,8 +107,8 @@ describe('core-dialog', () => {
       `
     })
     await $('button[for="dialog"]').click()
-    await expect($('core-dialog').getAttribute('hidden')).toEqual(null)
-    await expect(browser.executeScript(() => Boolean(document.querySelector('core-dialog').nextElementSibling))).toEqual(false)
+    await expect(prop('core-dialog', 'hidden')).toMatch(/(null|false)/i)
+    await expect(prop('core-dialog', 'nextElementSibling')).toMatch(/(null|false)/i)
   })
 
   it('respects strict option', async () => {
@@ -120,9 +121,9 @@ describe('core-dialog', () => {
       `
     })
     await $('button[for="dialog"]').click()
-    await expect($('core-dialog').getAttribute('hidden')).toEqual(null)
+    await expect(prop('core-dialog', 'hidden')).toMatch(/(null|false)/i)
     await browser.executeScript(() => document.querySelector('core-dialog + backdrop').click())
-    await expect($('core-dialog').getAttribute('hidden')).toEqual(null)
+    await expect(prop('core-dialog', 'hidden')).toMatch(/(null|false)/i)
   })
 
   it('triggers toggle event', async () => {

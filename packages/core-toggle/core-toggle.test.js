@@ -1,5 +1,6 @@
 import fs from 'fs'
 import path from 'path'
+import { prop, attr } from '../test-utils'
 
 const coreToggle = fs.readFileSync(path.resolve(__dirname, 'core-toggle.min.js'), 'utf-8')
 const customElements = fs.readFileSync(require.resolve('@webcomponents/custom-elements'), 'utf-8')
@@ -18,12 +19,12 @@ describe('core-toggle', () => {
         <core-toggle hidden></core-toggle>
       `
     })
-    await expect($('button').getAttribute('aria-expanded')).toEqual('false')
-    const toggleId = await $('core-toggle').getAttribute('id')
-    await expect($('button').getAttribute('aria-controls')).toEqual(toggleId)
-    await expect($('core-toggle').getAttribute('hidden')).toEqual('true')
-    const buttonId = await $('button').getAttribute('id')
-    await expect($('core-toggle').getAttribute('aria-labelledby')).toEqual(buttonId)
+    await expect(attr('button', 'aria-expanded')).toMatch(/null|false/)
+    const toggleId = await attr('core-toggle', 'id')
+    await expect(attr('button', 'aria-controls')).toEqual(toggleId)
+    await expect(prop('core-toggle', 'hidden')).toMatch(/true/i)
+    const buttonId = await attr('button', 'id')
+    await expect(attr('core-toggle', 'aria-labelledby')).toEqual(buttonId)
   })
 
   it('opens and closes toggle', async () => {
@@ -34,11 +35,11 @@ describe('core-toggle', () => {
       `
     })
     await $('button').click()
-    await expect($('button').getAttribute('aria-expanded')).toEqual('true')
-    await expect($('core-toggle').getAttribute('hidden')).toEqual(null)
+    await expect(attr('button', 'aria-expanded')).toMatch(/true/i)
+    await expect(prop('core-toggle', 'hidden')).toMatch(/(null|false)/i)
     await $('button').click()
-    await expect($('button').getAttribute('aria-expanded')).toEqual('false')
-    await expect($('core-toggle').getAttribute('hidden')).toEqual('true')
+    await expect(attr('button', 'aria-expanded')).toEqual('false')
+    await expect(prop('core-toggle', 'hidden')).toMatch(/true/i)
   })
 
   it('opens and closes nested toggle', async () => {
@@ -55,13 +56,13 @@ describe('core-toggle', () => {
     })
     await $('button#outer').click()
     await $('button#inner').click()
-    await expect($('button#outer + core-toggle').getAttribute('hidden')).toEqual(null)
-    await expect($('button#outer + core-toggle').getAttribute('hidden')).toEqual(null)
+    await expect(prop('button#outer + core-toggle', 'hidden')).toMatch(/(null|false)/i)
+    await expect(prop('button#outer + core-toggle', 'hidden')).toMatch(/(null|false)/i)
     await $('button#inner').click()
-    await expect($('button#inner + core-toggle').getAttribute('hidden')).toEqual('true')
-    await expect($('button#outer + core-toggle').getAttribute('hidden')).toEqual(null)
+    await expect(prop('button#inner + core-toggle', 'hidden')).toMatch(/true/i)
+    await expect(prop('button#outer + core-toggle', 'hidden')).toMatch(/(null|false)/i)
     await $('button#outer').click()
-    await expect($('button#outer + core-toggle').getAttribute('hidden')).toEqual('true')
+    await expect(prop('button#outer + core-toggle', 'hidden')).toMatch(/true/i)
   })
 
   it('closes nested toggle with esc', async () => {
@@ -78,13 +79,13 @@ describe('core-toggle', () => {
     })
     await $('button#outer').click()
     await $('button#inner').click()
-    await expect($('button#outer + core-toggle').getAttribute('hidden')).toEqual(null)
-    await expect($('button#outer + core-toggle').getAttribute('hidden')).toEqual(null)
+    await expect(prop('button#outer + core-toggle', 'hidden')).toMatch(/(null|false)/i)
+    await expect(prop('button#outer + core-toggle', 'hidden')).toMatch(/(null|false)/i)
     await $('button#inner').sendKeys(protractor.Key.ESCAPE)
-    await expect($('button#inner + core-toggle').getAttribute('hidden')).toEqual('true')
-    await expect($('button#outer + core-toggle').getAttribute('hidden')).toEqual(null)
+    await expect(prop('button#inner + core-toggle', 'hidden')).toMatch(/true/i)
+    await expect(prop('button#outer + core-toggle', 'hidden')).toMatch(/(null|false)/i)
     await $('button#inner').sendKeys(protractor.Key.ESCAPE)
-    await expect($('button#outer + core-toggle').getAttribute('hidden')).toEqual('true')
+    await expect(prop('button#outer + core-toggle', 'hidden')).toMatch(/true/i)
   })
 
   it('closes popup on click outside', async () => {
@@ -95,9 +96,9 @@ describe('core-toggle', () => {
       `
     })
     await $('button').click()
-    await expect($('core-toggle').getAttribute('hidden')).toEqual(null)
+    await expect(prop('core-toggle', 'hidden')).toMatch(/(null|false)/i)
     await $('body').click()
-    await expect($('core-toggle').getAttribute('hidden')).toEqual('true')
+    await expect(prop('core-toggle', 'hidden')).toMatch(/true/i)
   })
 
   it('respects "for" attribute', async () => {
@@ -107,9 +108,9 @@ describe('core-toggle', () => {
         <core-toggle id="content" hidden></core-toggle>
       `
     })
-    const toggleId = await $('core-toggle').getAttribute('id')
-    await expect($('button').getAttribute('for')).toEqual(toggleId)
-    await expect($('button').getAttribute('aria-controls')).toEqual(toggleId)
+    const toggleId = await attr('core-toggle', 'id')
+    await expect(attr('button', 'for')).toEqual(toggleId)
+    await expect(attr('button', 'aria-controls')).toEqual(toggleId)
   })
 
   it('respects exisiting aria-label with popup and value', async () => {
@@ -120,9 +121,9 @@ describe('core-toggle', () => {
       `
     })
     await browser.executeScript(() => (document.querySelector('core-toggle').value = 'Button text'))
-    const toggleValue = await $('core-toggle').getAttribute('value')
-    await expect($('button').getText()).toEqual(toggleValue)
-    await expect($('button').getAttribute('aria-label')).toEqual('Label')
+    const toggleValue = await prop('core-toggle', 'value')
+    await expect(prop('button', 'textContent')).toEqual(toggleValue)
+    await expect(attr('button', 'aria-label')).toEqual('Label')
   })
 
   it('sets aria-label with popup attr and value', async () => {
@@ -133,9 +134,9 @@ describe('core-toggle', () => {
       `
     })
     await browser.executeScript(() => (document.querySelector('core-toggle').value = 'Button text'))
-    const toggleValue = await $('core-toggle').getAttribute('value')
-    await expect($('button').getText()).toEqual(toggleValue)
-    await expect($('button').getAttribute('aria-label')).toEqual('Button text,Some label')
+    const toggleValue = await prop('core-toggle', 'value')
+    await expect(prop('button', 'textContent')).toEqual(toggleValue)
+    await expect(attr('button', 'aria-label')).toEqual('Button text,Some label')
   })
 
   it('sets aria-label with popup prop and value', async () => {
@@ -147,9 +148,9 @@ describe('core-toggle', () => {
     })
     await browser.executeScript(() => (document.querySelector('core-toggle').popup = 'Some label'))
     await browser.executeScript(() => (document.querySelector('core-toggle').value = 'Button text'))
-    const toggleValue = await $('core-toggle').getAttribute('value')
-    await expect($('button').getText()).toEqual(toggleValue)
-    await expect($('button').getAttribute('aria-label')).toEqual('Button text,Some label')
+    const toggleValue = await prop('core-toggle', 'value')
+    await expect(prop('button', 'textContent')).toEqual(toggleValue)
+    await expect(attr('button', 'aria-label')).toEqual('Button text,Some label')
   })
 
   it('triggers toggle event', async () => {
