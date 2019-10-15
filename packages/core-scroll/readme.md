@@ -152,6 +152,9 @@ Using static registers the custom element with default name automatically:
 <script src="https://static.nrk.no/core-components/major/7/core-scroll/core-scroll.min.js"></script>  <!-- Using static -->
 ```
 
+Remember to [polyfill](https://github.com/webcomponents/polyfills#custom-elements) custom elements if needed.
+
+
 ## Usage
 
 Buttons can control a `core-scroll` by targeting its ID and specifying a direction. The `disabled` attribute is automatically added/removed to controller buttons when there is no more pixels to scroll in specified direction. Important: `core-scroll` manipulates styling to hide scrollbars, [see how to work with margin and height &rarr;](#styling)

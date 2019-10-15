@@ -5,6 +5,9 @@
 
 ## Getting started
 
+All components are implemented as custom elements, so you may need to [polyfill](https://github.com/webcomponents/polyfills#custom-elements) custom elements before using them. Also, make
+sure your browser is [supported](#browser-support).
+
 ### Installation
 
 The recommended way to install a core component is using NPM.
@@ -26,7 +29,7 @@ potentially resulting in name conflicts later on:
 ### Usage
 
 After installation, import your component and register it a custom element before using it in
-your markup. Registering is also done automatically for React components:
+your markup:
 
 
 ```js
@@ -34,6 +37,8 @@ import CoreDatepicker from '@nrk/core-datepicker'                 // Using NPM. 
 import CoreDatepicker from '@nrk/core-datepicker/jsx'             // Using NPM. React/Preact. Automatically registers itself
 window.customElements.define('core-datepicker', CoreDatepicker)   // Register element. Replace 'core-datepicker' with your own tag name
 ```
+
+Registering is done automatically for React components:
 
 ```html
 <core-datepicker days="Man,Tir,Ons,Tor,Fre,Lør,Søn">...</core-datepicker>   <!-- VanillaJS HTML -->
@@ -54,7 +59,7 @@ Best practices and styling tips is not a pure functionality concern, and therefo
 * Browsers: Internet Explorer 11+, Edge 15+, Safari 9+, Firefox 64+, Chrome 46, Opera
 * Screen readers: MacOS/iOS: VoiceOver, Android: TalkBack, Windows: JAWS/NVDA
 
-For Internet Explorer and older Edge browsers you need a [polyfill](https://github.com/webcomponents/custom-elements) for the custom elements spec.
+For Internet Explorer and older Edge browsers you need a [polyfill](https://github.com/webcomponents/polyfills#custom-elements) for the custom elements spec.
 
 
 ## Extending

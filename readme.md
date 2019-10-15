@@ -7,50 +7,6 @@ It provides effortless and flexible usage, while under the hood enhancing markup
 https://static.nrk.no/core-components/latest/
 
 
-## Installation
-
-
-### Using NPM
-
-Using NPM provides own element namespace and extensibility. Recommended:
-
-```bash
-npm install @nrk/core-dialog
-```
-
-### Using static
-
-Using static registers the custom element with its default tag name automatically:
-
-```html
-<script src="https://static.nrk.no/core-components/major/7/core-dialog/core-dialog.min.js"></script>
-```
-
-
-## Usage
-
-### HTML / JavaScript
-
-```html
-<core-dialog modal hidden>...</core-dialog>
-```
-
-```js
-import CoreDialog from '@nrk/core-dialog'                 // Using NPM
-window.customElements.define('core-dialog', CoreDialog)   // Using NPM
-```
-
-### React / Preact
-
-```js
-import CoreDialog from '@nrk/core-dialog/jsx'
-
-<CoreDialog modal hidden>...</CoreDialog>
-```
-
-For more info, refer to the [documentation](https://static.nrk.no/core-components/latest/).
-
-
 ## Local development
 First clone `@nrk/core-components` and install its dependencies:
 

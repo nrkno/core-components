@@ -84,6 +84,10 @@ Using static registers the custom element with default name automatically:
 <script src="https://static.nrk.no/core-components/major/7/core-tabs/core-tabs.min.js"></script>  <!-- Using static -->
 ```
 
+Remember to [polyfill](https://github.com/webcomponents/polyfills#custom-elements) custom elements if needed.
+
+
+
 ## Usage
 
 ### HTML / JavaScript
