@@ -54,7 +54,7 @@ export const closest = (() => {
     // IE jumps to shadow SVG DOM on clicking an SVG defined by <use>.
     // If so, jump back to <use> element and traverse real DOM
     if (el.correspondingUseElement) el = el.correspondingUseElement
-    for (;el ; el = el.parentElement) if (match.call(el, css)) return el
+    for (;el; el = el.parentElement) if (match.call(el, css)) return el
     return null
   }
 })()
