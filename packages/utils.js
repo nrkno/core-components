@@ -51,6 +51,9 @@ export const closest = (() => {
   const proto = typeof window === 'undefined' ? {} : window.Element.prototype
   const match = proto.matches || proto.msMatchesSelector || proto.webkitMatchesSelector
   return proto.closest ? (el, css) => el.closest(css) : (el, css) => {
+    // IE jumps to shadow SVG DOM on clicking an SVG defined by <use>.
+    // If so, jump back to <use> element and traverse real DOM
+    if (el.correspondingUseElement) el = el.correspondingUseElement
     for (;el; el = el.parentElement) if (match.call(el, css)) return el
     return null
   }
