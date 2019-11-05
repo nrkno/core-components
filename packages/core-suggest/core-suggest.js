@@ -11,7 +11,6 @@ export default class CoreSuggest extends HTMLElement {
     this._observer = new window.MutationObserver(() => onMutation(this)) // Enhance <a> and <button> markup
     this._observer.observe(this, { subtree: true, childList: true, attributes: true, attributeFilter: ['hidden'] })
 
-
     // Observe input.value through input[value]
     this._inputObserver = new window.MutationObserver(() => {
       onMutation(this)
@@ -27,7 +26,7 @@ export default class CoreSuggest extends HTMLElement {
     const superGet = Object.getOwnPropertyDescriptor(superProps, 'value').get
     Object.defineProperty(input, 'value', {
       set (val) {
-        input.setAttribute('value', val)        // Update DOM attribute to trigger observer
+        input.setAttribute('value', val) // Update DOM attribute to trigger observer
         return superSet.apply(input, arguments) // Update IDL property as normal
       },
       get () { return superGet.apply(input, arguments) }
