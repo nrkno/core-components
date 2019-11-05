@@ -7,9 +7,31 @@ export default class CoreSuggest extends HTMLElement {
   static get observedAttributes () { return ['hidden'] }
 
   connectedCallback () {
+    this._xhr = new window.XMLHttpRequest()
     this._observer = new window.MutationObserver(() => onMutation(this)) // Enhance <a> and <button> markup
     this._observer.observe(this, { subtree: true, childList: true, attributes: true, attributeFilter: ['hidden'] })
-    this._xhr = new window.XMLHttpRequest()
+
+
+    // Observe input.value through input[value]
+    this._inputObserver = new window.MutationObserver(() => {
+      onMutation(this)
+      dispatchEvent(this.input, 'input')
+    })
+    this._inputObserver.observe(this.input, { attributes: true, attributeFilter: ['value'] })
+
+    // Hook into input.value = ''
+    // https://stackoverflow.com/a/55737231/8819615
+    const input = this.input
+    const superProps = Object.getPrototypeOf(input)
+    const superSet = Object.getOwnPropertyDescriptor(superProps, 'value').set
+    const superGet = Object.getOwnPropertyDescriptor(superProps, 'value').get
+    Object.defineProperty(input, 'value', {
+      set (val) {
+        input.setAttribute('value', val)        // Update DOM attribute to trigger observer
+        return superSet.apply(input, arguments) // Update IDL property as normal
+      },
+      get () { return superGet.apply(input, arguments) }
+    })
 
     if (IS_IOS) this.input.setAttribute('role', 'combobox') // iOS does not inform about editability if combobox
     this.input.setAttribute('autocomplete', 'off')
@@ -27,6 +49,7 @@ export default class CoreSuggest extends HTMLElement {
   disconnectedCallback () {
     this._input = this._regex = this._xhr = null
     this._observer.disconnect()
+    this._inputObserver.disconnect()
     document.removeEventListener('click', this)
     document.removeEventListener('input', this)
     document.removeEventListener('keydown', this)
