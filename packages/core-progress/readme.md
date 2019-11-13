@@ -135,6 +135,8 @@ import CoreProgress from '@nrk/core-progress/jsx'
                 value={Number|String}           // Optional. Default 0. Value of progress relative to max. If string, indeterminate is set to true
                 max={Number}                    // Optional. Default 1. Maximum value. Progress percentage is calculated relative to this
                 indeterminate={Boolean}         // Optional. Set indeterminate value
+                ref={(comp) => {}}              // Optional. Get reference to React component
+                forwardRef={(el) => {}}         // Optional. Get reference to underlying DOM custom element
                 onProgressChange={Function} />  // Optional. Progress change event handler
 </div>
 ```

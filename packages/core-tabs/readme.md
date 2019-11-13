@@ -127,15 +127,16 @@ myTabs.tab = myTab    // Set active tab from element
 ```js
 import CoreTabs from '@nrk/core-tabs/jsx'
 
-<CoreTabs
-  for={Number|String}           // Optional. Sets active tab from number or id
-  onTabsToggle={Function}>      // Optional. Listen to toggle event
-  <button>Tab 1</button>        // Tab elements must be <a> or <button>. Do not use <li>
+<CoreTabs for={Number|String}           // Optional. Sets active tab from number or id
+          ref={(comp) => {}}            // Optional. Get reference to React component
+          forwardRef={(el) => {}}       // Optional. Get reference to underlying DOM custom element
+          onTabsToggle={Function}>      // Optional. Listen to toggle event
+  <button>Tab 1</button>                // Tab elements must be <a> or <button>. Do not use <li>
   <a href="#">Tab 2</a>
 </CoreTabs>
-<div>Tabpanel 1 content</div>             // First tabpanel is the next element sibling of CoreTabs
-<div hidden>Tabpanel 1 content</div>      // Second tabpanel. Use hidden attribute to prevent FOUC
-<div hidden>Tabpanel 1 content</div>      // Third tabpanel.  Use hidden attribute to prevent FOUC
+<div>Tabpanel 1 content</div>           // First tabpanel is the next element sibling of CoreTabs
+<div hidden>Tabpanel 1 content</div>    // Second tabpanel. Use hidden attribute to prevent FOUC
+<div hidden>Tabpanel 1 content</div>    // Third tabpanel.  Use hidden attribute to prevent FOUC
 ```
 
 

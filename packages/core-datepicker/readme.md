@@ -253,6 +253,8 @@ import CoreDatepicker from '@nrk/core-datepicker/jsx'
 <CoreDatepicker timestamp={String}                // Optional. Sets date from timestamp
                 months={String}                   // Optional. Comma separated list of custom month names to be used ("Jan,Feb,...")
                 days={String}                     // Optional. Comma separated list of custom weekday names to be used ("Man,Tir,Ons,...")
+                ref={(comp) => {}}                // Optional. Get reference to React component
+                forwardRef={(el) => {}}           // Optional. Get reference to underlying DOM custom element
                 onDatepickerChange={Function}     // Optional. See 'datepicker.change'
                 onDatepickerClickDay={Function}>  // Optional. See 'datepicker.click.day'
   <input type="radio|checkbox|year|month|day|hour|minute|second|timestamp"/> // Same as with vanilla js

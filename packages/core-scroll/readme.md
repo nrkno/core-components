@@ -202,6 +202,8 @@ myScroll.scroll({x: 0, move: 'down'}) // Scroll with position and direction
 import CoreScroll from '@nrk/core-scroll/jsx'
 
 <CoreScroll friction={Number}         // Optional. Default 0.8. Controls scroll speed
+            ref={(comp) => {}}        // Optional. Get reference to React component
+            forwardRef={(el) => {}}   // Optional. Get reference to underlying DOM custom element
             onScrollChange={Function} // Optional. Scroll change event handler
             onScrollClick={Function}> // Optional. Scroll click event handler
   {/* elements */}

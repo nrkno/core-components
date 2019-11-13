@@ -224,6 +224,8 @@ import CoreDialog from '@nrk/core-dialog/jsx'
             strict                            // Optional. If set, prevents the dialog from closing on ESC-key and on backdrop click
             backdrop={Boolean|String}         // Optional. If false, disables backdrop, string ID points to custom backdrop element
             aria-label={String}               // Optional. Is read by screen readers
+            ref={(comp) => {}}                // Optional. Get reference to React component
+            forwardRef={(el) => {}}           // Optional. Get reference to underlying DOM custom element
             onDialogToggle={Function}>        // Optional. Toggle event handler. See event 'dialog.toggle'
   <h1>My React/Preact dialog</h1>
   <p>Some content</p>

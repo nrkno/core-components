@@ -130,6 +130,8 @@ import CoreSuggest from '@nrk/core-suggest/jsx'
              hidden={Boolean}              // Use hidden to toggle visibility
              limit={Number}                // Limit the maximum number of results in list.
              ajax={String}                 // Fetches external data. See event 'suggest.ajax'. Example: 'https://search.com?q={{value}}'
+             ref={(comp) => {}}                   // Optional. Get reference to React component
+             forwardRef={(el) => {}}              // Optional. Get reference to underlying DOM custom element
              onSuggestFilter={Function}           // See 'suggest.filter' event
              onSuggestSelect={Function}           // See 'suggest.select' event
              onSuggestAjax={Function}             // See 'suggest.ajax' event

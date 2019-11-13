@@ -117,6 +117,8 @@ import CoreToggle from '@nrk/core-toggle/jsx'
 <CoreToggle
   hidden                         // Set hidden attribute to prevent FOUC
   popup={Boolean|String}         // Optional. Defaults to false. Enable or disable if clicking outside toggle should close it. Provide a string to control the aria-label text on the toggle
+  ref={(comp) => {}}             // Optional. Get reference to React component
+  forwardRef={(el) => {}}        // Optional. Get reference to underlying DOM custom element
   onToggle={Function}            // Optional. Toggle event listener. See event 'toggle'
   onToggleSelect={Function}>     // Optional. Toggle select event listener. See event 'toggle.select'
   <button>Use with JSX</button>  // First element must result in a <button>. Accepts both elements and components
