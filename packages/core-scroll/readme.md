@@ -82,10 +82,10 @@ demo-->
       this.state = {}
       this.onScroll = this.onScroll.bind(this)
     }
-    onScroll ({target}) {
+     onScroll ({target}) {
       this.setState({
-        left: target.scrollLeft && (() => target.scroll('left')),
-        right: target.scrollRight && (() => target.scroll('right'))
+        left: target.scrollLeft ? () => target.scroll('left') : null,
+        right: target.scrollRight ? () => target.scroll('right') : null
       })
     }
     render () {
