@@ -24,7 +24,7 @@
   "devDependencies": {
     "@babel/core": "^7.7.2",
     "@babel/preset-env": "^7.7.1",
-    "@nrk/custom-element-to-react": "1.1.0",
+    "@nrk/custom-element-to-react": "^1.1.1",
     "@webcomponents/custom-elements": "^1.3.1",
     "axios": "^0.19.0",
     "browserstack-local": "^1.4.2",
@@ -34,7 +34,7 @@
     "jasmine-spec-reporter": "^4.2.1",
     "protractor": "^5.4.2",
     "regenerator-runtime": "^0.13.3",
-    "rollup": "^1.27.0",
+    "rollup": "^1.27.2",
     "rollup-plugin-babel": "^4.3.3",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-json": "^4.0.0",
