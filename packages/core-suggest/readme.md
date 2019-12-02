@@ -201,7 +201,7 @@ document.addEventListener('suggest.ajax.beforeSend', (event) => {
   xhr.open('POST', 'https://example.com')
   xhr.setRequestHeader('Content-Type', 'application/json')
   xhr.setRequestHeader('my-custom-header', 'my-custom-value')
-  xhr.send(JSON.stringify({query: event.target.value}))
+  xhr.send(JSON.stringify({query: event.target.input.value}))
 })
 ```
 
