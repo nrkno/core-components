@@ -30,7 +30,7 @@
     "browserstack-local": "^1.4.2",
     "dotenv": "^8.2.0",
     "esm": "3.2.25",
-    "fast-glob": "^3.1.0",
+    "fast-glob": "^3.1.1",
     "jasmine-spec-reporter": "^4.2.1",
     "protractor": "^5.4.2",
     "regenerator-runtime": "^0.13.3",
