@@ -101,7 +101,10 @@ demo-->
 <input type="text" id="my-datepicker-output">
 <script>
   // Update GUI
-  document.getElementById('my-datepicker').disabled = (date) => date > Date.now()
+  document.getElementById('my-datepicker').disabled = (date) => {
+    var oneWeekFromNow = (new Date()).setDate(new Date().getDate() + 7)
+    return date > oneWeekFromNow
+  }
 
   // Update output
   document.addEventListener('datepicker.change', function (event) {
