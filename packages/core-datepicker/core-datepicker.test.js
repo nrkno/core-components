@@ -236,4 +236,62 @@ describe('core-datepicker', () => {
     })
     await expect(browser.executeScript(() => window.triggered)).toEqual(true)
   })
+  it('has month enabled if one day is disabled', async () => {
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <core-datepicker timestamp="${new Date('2019-05-06').getTime()}">
+          <div class="date-picker__period">
+            <label class="date-picker__label" for="date-picker__year">År:</label>
+            <input id="date-picker__year" type="year" />
+          </div>
+
+          <div class="date-picker__period">
+            <label class="date-picker__label" for="date-picker__month"
+              >Måned:</label
+            >
+            <select id="date-picker__month"></select>
+          </div>
+
+          <div class="date-picker__period">
+            <table></table>
+          </div>
+        </core-datepicker>
+
+      `
+      const disabledDate = new Date('2019-09-06')
+
+      document.querySelector('core-datepicker').disabled = (date) => {
+        return date.valueOf() === disabledDate.valueOf()
+      }
+    })
+    await expect(prop('option[value="y-9-d"]', 'disabled')).toEqual('false')
+  })
+  it('has month disabled if all days are disabled', async () => {
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <core-datepicker timestamp="${new Date('2019-05-06').getTime()}">
+          <div class="date-picker__period">
+            <label class="date-picker__label" for="date-picker__year">År:</label>
+            <input id="date-picker__year" type="year" />
+          </div>
+
+          <div class="date-picker__period">
+            <label class="date-picker__label" for="date-picker__month"
+              >Måned:</label
+            >
+            <select id="date-picker__month"></select>
+          </div>
+
+          <div class="date-picker__period">
+            <table></table>
+          </div>
+        </core-datepicker>
+
+      `
+      document.querySelector('core-datepicker').disabled = (date) => {
+        return date.getMonth() === 8
+      }
+    })
+    await expect(prop('option[value="y-9-d"]', 'disabled')).toEqual('true')
+  })
 })

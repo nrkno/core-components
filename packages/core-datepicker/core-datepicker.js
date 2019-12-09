@@ -155,7 +155,22 @@ function select (self, select) {
 
   queryAll(select.children).forEach((option, month) => {
     if (select._autofill) option.textContent = self.months[month]
-    option.disabled = self.disabled(option.value)
+    option.disabled = isMonthDisabled(self.parse(option.value), self.disabled.bind(self))
     option.selected = !self.diff(option.value)
   })
+}
+
+function daysInMonth (dateInMonth) {
+  const date = new Date(dateInMonth)
+  date.setDate(1)
+  const month = date.getMonth()
+  const days = []
+  while (date.getMonth() === month) {
+    days.push(new Date(date))
+    date.setDate(date.getDate() + 1)
+  }
+  return days
+}
+function isMonthDisabled (dateInMonth, isDayDisabled) {
+  return daysInMonth(dateInMonth).map(isDayDisabled).reduce((a, b) => a && b)
 }
