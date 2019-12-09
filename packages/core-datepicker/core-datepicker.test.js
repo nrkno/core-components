@@ -352,4 +352,51 @@ describe('core-datepicker', () => {
     await $('button[tabindex="0"]').click()
     await expect(browser.executeScript(() => window.datepickerChange)).toEqual(true)
   })
+
+  it('has month enabled if one day is disabled', async () => {
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+      <core-datepicker date="${new Date('2019-05-06').getTime()}">
+        <select></select>
+      </core-datepicker>
+      `
+      const disabledDate = new Date('2019-09-06')
+
+      document.querySelector('core-datepicker').disabled = (date) => {
+        return date.valueOf() === disabledDate.valueOf()
+      }
+    })
+    await expect(prop('option[value="y-9-d"]', 'disabled')).toEqual('false')
+  })
+
+  it('has month disabled if all days are disabled', async () => {
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <core-datepicker date="${new Date('2019-05-06').getTime()}">
+          <select></select>
+        </core-datepicker>
+      `
+      document.querySelector('core-datepicker').disabled = (date) => {
+        return date.getMonth() === 8
+      }
+    })
+    await expect(prop('option[value="y-9-d"]', 'disabled')).toEqual('true')
+  })
+
+  it('selects first available date in month', async () => {
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <core-datepicker date="${new Date('2019-12-09T00:00:00.00Z').getTime()}">
+          <select></select>
+          <input type="timestamp">
+        </core-datepicker>
+      `
+      document.querySelector('core-datepicker').disabled = (date) => {
+        return date.getMonth() === 10 && !(date < new Date('2019-11-06') && date > new Date('2019-11-03'))
+      }
+    })
+    await $('option[value="y-11-d"]').click()
+    const browserDate = await browser.executeScript(() => new Date('2019-11-04T00:00:00.00Z').getTime())
+    await expect(prop('input[data-type="timestamp"]', 'value')).toEqual(String(browserDate))
+  })
 })
