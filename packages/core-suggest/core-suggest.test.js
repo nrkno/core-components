@@ -159,8 +159,9 @@ describe('core-suggest', () => {
     })
     let expanded = false
     const expandedCallback = (event) => { expanded = event.detail.expanded }
-
-    await browser.executeScript(() => (document.querySelector('core-suggest').addEventListener('suggest.expanded', expandedCallback)))
+    await browser.executeScript((expandedCallback) => {
+      document.querySelector('core-suggest').addEventListener('suggest.expanded', expandedCallback)
+    }, expandedCallback)
     await $('input').click()
     await expect(expanded).toMatch(/true/i)
     await $('body').click()
