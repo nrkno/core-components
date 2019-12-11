@@ -132,6 +132,7 @@ import CoreSuggest from '@nrk/core-suggest/jsx'
              ajax={String}                 // Fetches external data. See event 'suggest.ajax'. Example: 'https://search.com?q={{value}}'
              ref={(comp) => {}}                   // Optional. Get reference to React component
              forwardRef={(el) => {}}              // Optional. Get reference to underlying DOM custom element
+             onSuggestExpanded={Function}         // See 'suggest.expanded' event
              onSuggestFilter={Function}           // See 'suggest.filter' event
              onSuggestSelect={Function}           // See 'suggest.select' event
              onSuggestAjax={Function}             // See 'suggest.ajax' event
@@ -162,6 +163,16 @@ Putting the input directly before the suggestion list is highly recommended, as 
 
 
 ## Events
+
+### suggest.expanded
+Fired when the element is expanded or collapsed:
+
+```js
+document.addEventListener('suggest.expanded', (event) => {
+  event.target,         // The core-suggest element
+  event.detail.expanded // Is the element expanded (boolean)
+})
+```
 
 ### suggest.filter
 Fired before a default filtering occurs:
