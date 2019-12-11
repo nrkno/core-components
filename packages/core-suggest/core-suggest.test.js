@@ -150,6 +150,23 @@ describe('core-suggest', () => {
     await expect(prop('button[aria-label="Suggest 4, 4 av 3"]', 'hidden')).toMatch(/true/i)
   })
 
+  it('emits expanded event when expanded', async () => {
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <input type="text">
+        <core-suggest hidden></core-suggest>
+      `
+    })
+    let expanded = false
+    const expandedCallback = (event) => { expanded = event.detail.expanded }
+
+    await browser.executeScript(() => (document.querySelector('core-suggest').addEventListener('suggest.expanded', expandedCallback)))
+    await $('input').click()
+    await expect(expanded).toMatch(/true/i)
+    await $('body').click()
+    await expect(expanded).toMatch(/false/i)
+  })
+
   it('triggers ajax event on input ', async () => {
     const server = http.createServer((request, response) => {
       response.writeHead(200, HTTP_HEADERS)

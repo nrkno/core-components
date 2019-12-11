@@ -34,7 +34,10 @@ export default class CoreSuggest extends HTMLElement {
   }
 
   attributeChangedCallback (name, prev, next) {
-    if (this._observer) this.input.setAttribute('aria-expanded', !this.hidden)
+    if (this._observer) {
+      this.input.setAttribute('aria-expanded', !this.hidden)
+      dispatchEvent(this, 'suggest.expanded', { expanded: !this.hidden })
+    }
   }
 
   handleEvent (event) {
