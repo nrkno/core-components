@@ -1,5 +1,5 @@
 name: core-components
-on: nothing
+on: push
 jobs:
   test:
     runs-on: ubuntu-latest
