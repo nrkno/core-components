@@ -275,7 +275,7 @@ If you need to alter default headers, request method or post data, use the [`sug
 
 ## Example: Ajax
 
-Ajax requests can be stopped by calling `event.preventDefault()` on `'suggest.filter'`. Remember to always escape html and debounce requests when fetching data from external sources. The http request sent by `@nrk/core-suggest` will have header `X-Requested-With: XMLHttpRequest` for easier [server side detection and CSRF prevention](https://www.owasp.org/index.php/Cross-Site_Request_Forgery_%28CSRF%29_Prevention_Cheat_Sheet#Protecting_REST_Services:_Use_of_Custom_Request_Headers).
+Ajax requests can be stopped by calling `event.preventDefault()` on `'suggest.filter'`. Remember to always escape html and debounce requests when fetching data from external sources. The http request sent by `@nrk/core-suggest` will have header `X-Requested-With: XMLHttpRequest` for easier [server side detection and CSRF prevention](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html).
 
 ```html
 <!--demo-->
