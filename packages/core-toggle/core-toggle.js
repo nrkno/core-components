@@ -8,7 +8,7 @@ export default class CoreToggle extends HTMLElement {
     if (!IS_ANDROID) this.setAttribute('aria-labelledby', this.button.id = this.button.id || getUUID()) // Andriod reads only label instead of content
 
     this.value = this.button.textContent // Set up aria-label
-    this.setAttribute('role', 'group') // Help Edge
+    this.setAttribute('role', this.attributes.role ? this.attributes.role.value : 'group') // Help Edge
     this.button.setAttribute('aria-expanded', this._open = !this.hidden)
     this.button.setAttribute('aria-controls', this.id = this.id || getUUID())
     document.addEventListener('keydown', this, true) // Use capture to enable checking defaultPrevented (from ESC key) in parents
