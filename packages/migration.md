@@ -29,7 +29,7 @@ First step is to upgrade the version number to the latest major.
 npm install @nrk/core-toggle@3  # Using NPM.
 ```
 
-### With static, use the `major/6` version in the URL:
+### With static, use the `/major/7` version in the URL:
 
 ```html
 <script src="https://static.nrk.no/core-components/major/7/core-toggle/core-toggle.min.js"></script>  <!-- Using static -->
