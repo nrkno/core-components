@@ -16,7 +16,7 @@ export default class CoreDialog extends HTMLElement {
 
   disconnectedCallback () {
     reFocus(this._focus) // Try moving focus back to <button>
-    if (this._autoBackdrop) this._autoBackdrop.remove() // Remove generated backdrop element
+    if (this._autoBackdrop) this._autoBackdrop.parentNode.removeChild(this._autoBackdrop) // Remove generated backdrop element
     this._focus = this._autoBackdrop = null // Garbage collection
     this.removeEventListener('transitionend', this)
     document.removeEventListener('keydown', this)
