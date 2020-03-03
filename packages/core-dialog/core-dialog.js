@@ -7,6 +7,7 @@ export default class CoreDialog extends HTMLElement {
 
   connectedCallback () {
     this._focus = true // Used to check if connectedCallback has run
+    this._autoBackdrop = null
     this.attributeChangedCallback() // Ensure correct setup backdrop
     this.addEventListener('transitionend', this)
     document.addEventListener('keydown', this)
@@ -14,8 +15,9 @@ export default class CoreDialog extends HTMLElement {
   }
 
   disconnectedCallback () {
-    reFocus(this._foucs) // Try moving focus back to <button>
-    this._focus = null // Garbage collection
+    reFocus(this._focus) // Try moving focus back to <button>
+    if (this._autoBackdrop) this._autoBackdrop.remove() // Remove generated backdrop element
+    this._focus = this._autoBackdrop = null // Garbage collection
     this.removeEventListener('transitionend', this)
     document.removeEventListener('keydown', this)
     document.removeEventListener('click', this)
@@ -51,7 +53,7 @@ export default class CoreDialog extends HTMLElement {
 
   handleEvent (event) {
     if (event.defaultPrevented) return
-    if (event.type === 'transitionend' && event.target === this && !this.hidden) setFocus(this) // Move foucs after transition
+    if (event.type === 'transitionend' && event.target === this && !this.hidden) setFocus(this) // Move focus after transition
     else if (event.type === 'click') {
       if (event.target === this.backdrop && !this.strict) return this.close() // Click on backdrop
       const button = closest(event.target, 'button')
@@ -96,10 +98,12 @@ export default class CoreDialog extends HTMLElement {
 }
 
 function getBackdrop (el, attr) {
+  const next = el.nextElementSibling
   if (!el.parentNode || attr === 'false') return false
   if (attr && attr !== 'true') return document.getElementById(attr) || false
-  const next = el.nextElementSibling
-  return next && next.nodeName === 'BACKDROP' ? next : el.insertAdjacentElement('afterend', document.createElement('backdrop'))
+  if (next && next.nodeName === 'BACKDROP') return next
+  el._autoBackdrop = document.createElement('backdrop')
+  return el.insertAdjacentElement('afterend', el._autoBackdrop)
 }
 
 function isVisible (el) {
