@@ -134,10 +134,23 @@ Putting the toggle button directly before the content is highly recommended, as 
 
 ```html
 <div>
-  <button for="my-toggle">Toggle VanillaJS</button>
+  <button for="my-toggle">Toggle</button>
 </div>
-<core-toggle id="my-toggle" hidden>Content</core-toggle>
+<core-toggle id="my-toggle" hidden>...</core-toggle>
 ```
+
+### Popup and button HTML
+
+Using the `popup` attribute in conjunction with embedded HTML in your toggle button (an SVG icon for instance) will only preserve text when updating the value/label for the button. To preserve the embedded HTML, put the actual button text inside a `<span>`:
+
+```html
+<button>
+  <span>Toggle</span>
+  <svg style="width:1.5em; height:1.5em" aria-hidden="true"><use xlink:href="#nrk-heart"></use></svg>
+</button>
+<core-toggle popup="..." hidden>...</core-toggle>
+```
+
 
 ### Autofocus
 
@@ -173,7 +186,7 @@ document.addEventListener('toggle.select', (event) => {
 
 ## Styling
 
-**Note:** `<core-toggle>` is `display: inline` by default. Change this by for instance setting `core-tabs:not([hidden]) { display: block | flex | grid }` or similar in your app. Not needed when `position` or `float` is used. All styling in documentation is example only. Both the `<button>` and `<core-toggle>` element receive attributes reflecting the current toggle state:
+**Note:** `<core-toggle>` is `display: inline` by default. Change this by for instance setting `core-toggle:not([hidden]) { display: block | flex | grid }` or similar in your app. Not needed when `position` or `float` is used. All styling in documentation is example only. Both the `<button>` and `<core-toggle>` element receive attributes reflecting the current toggle state:
 
 ```css
 .my-button {}                         /* Target button in any state */
