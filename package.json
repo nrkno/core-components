@@ -33,7 +33,7 @@
     "fast-glob": "^3.2.2",
     "jasmine-spec-reporter": "^4.2.1",
     "protractor": "^5.4.3",
-    "regenerator-runtime": "^0.13.3",
+    "regenerator-runtime": "^0.13.5",
     "rollup": "^1.32.1",
     "rollup-plugin-babel": "^4.3.3",
     "rollup-plugin-commonjs": "^10.1.0",
