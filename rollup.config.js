@@ -9,7 +9,7 @@ import utils from './bin/index.js'
 const minify = uglify({ output: { comments: /^!/ } })
 const globals = { 'react-dom': 'ReactDOM', react: 'React' } // Exclude from output
 const external = Object.keys(globals)
-const treeshake = { pureExternalModules: true } // Strip React require
+const treeshake = { moduleSideEffects: 'no-external' } // Strip React require
 const plugins = [
   json(),
   resolve({ dedupe: external }),
