@@ -31,7 +31,7 @@
     "dotenv": "^8.2.0",
     "esm": "3.2.25",
     "fast-glob": "^3.2.2",
-    "jasmine-spec-reporter": "^4.2.1",
+    "jasmine-spec-reporter": "^5.0.0",
     "protractor": "^5.4.3",
     "regenerator-runtime": "^0.13.5",
     "rollup": "^2.1.0",
