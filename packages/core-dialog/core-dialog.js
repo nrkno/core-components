@@ -35,13 +35,15 @@ export default class CoreDialog extends HTMLElement {
       if (prevBack) prevBack.setAttribute('hidden', '') // Hide previous backdrop
       if (nextBack) toggleAttribute(nextBack, 'hidden', this.hidden)
 
-      if (this.hidden) reFocus(this._focus)
-      else {
-        const below = queryAll('body *').filter((el) => el !== nextBack && !this.contains(el) && isVisible(el))
-        const zIndex = Math.min(Math.max(1, ...below.map(getZIndex)), 2000000000) // Avoid overflowing z-index. See techjunkie.com/maximum-z-index-value
-
-        if (nextBack) nextBack.style.zIndex = zIndex + 1
-        this.style.zIndex = zIndex + 2
+      if (this.hidden) {
+        reFocus(this._focus)
+      } else {
+        if (!this.style.zIndex) { // Place this dialog over uppermost dialog if not manually controlled
+          const below = queryAll(this.nodeName).filter((el) => el !== nextBack && !this.contains(el) && isVisible(el))
+          const zIndex = Math.min(Math.max(1, ...below.map(getZIndex)), 2000000000) // Avoid overflowing z-index. See techjunkie.com/maximum-z-index-value
+          if (nextBack) nextBack.style.zIndex = zIndex + 1
+          this.style.zIndex = zIndex + 2
+        }
         this._focus = document.activeElement || document.body // Remember last focused element
         setTimeout(() => setFocus(this)) // Move focus after paint (helps iOS and react portals)
       }

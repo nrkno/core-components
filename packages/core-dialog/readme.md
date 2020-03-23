@@ -205,8 +205,9 @@ myDialog.backdrop       // Get backdrop element (if enabled) (see "Markup" for m
 
 // Setters
 myDialog.hidden = false // Open dialog
-myDialog.strict = false // Set strict mode
+myDialog.strict = false // Set strict mode. If set, prevents the dialog from closing on ESC-key and on backdrop click
 myDialog.backdrop = false | true | 'my-drop' // Set boolean to enable/disable backdrop or string ID to point to custom backdrop element
+myDialog.style.zIndex = '9' // Set z-index manually. If unset, z-index is automatically set for both dialog and backdrop element. Default unset.
 
 // Methods
 myDialog.close()        // Close dialog
@@ -247,12 +248,22 @@ content with `<h1 tabindex="-1">Dialog title</h1>`.
 
 ### Elements order
 
-Though not strictly required, the `<button>` opening a dialog should be placed directly before the `<core-dialog>` itself. This eases the mental model for screen reader users.
+Though not strictly required, the `<button>` opening a dialog should be placed directly before the `<core-dialog>` itself. This eases the mental model for screen reader users. Othewise, use `<button for="my-dialog-id"></button>`.
+
+### Stacking
+
+To manually control z-index of dialogs and backdrops, simply set `dialog.style.zIndex` to some number (and `backdrop.style.zIndex` if applicable). The dialog will not try to place itself automatically over the topmost dialog this way and you are responsible for stacking order.
+
+```html
+<core-dialog style="z-index: 100" hidden>...</core-dialog>
+<backdrop style="z-index: 90" hidden>...</backdrop>
+```
 
 ### Backdrop
 
-`core-dialog` automatically creates a `<backdrop>` element as next adjacent sibling if needed. If the `backdrop` attribute is set to an `id` (somehting else than `true|false`), the element with the corresponding ID will be used as backdrop. Note that a backdrop is needed to enable click-outside-to-close. Custom backdrop example:
-```
+`core-dialog` automatically creates a `<backdrop>` element as next adjacent sibling if needed. If the `backdrop` attribute is set to an `id` (something else than `true|false`), the element with the corresponding ID will be used as backdrop. Note that a backdrop is needed to enable click-outside-to-close. Custom backdrop example:
+
+```html
 <core-dialog backdrop="my-backdrop"></core-dialog>
 <div id="my-backdrop"></div>
 ```
