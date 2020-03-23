@@ -77,8 +77,8 @@ export default class CoreToggle extends HTMLElement {
     if (popup === this.popup) {
       const target = button.querySelector('span') || button // Use span to preserve embedded HTML and SVG
       button.value = data.value || label
-      button.setAttribute('aria-label', `${button.textContent},${this.popup}`)
       target[data.innerHTML ? 'innerHTML' : 'textContent'] = data.innerHTML || label
+      button.setAttribute('aria-label', `${button.textContent},${this.popup}`)
     }
   }
 }

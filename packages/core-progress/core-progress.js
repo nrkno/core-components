@@ -1,3 +1,5 @@
+/* eslint no-self-assign: 0 */
+
 import { addStyle, dispatchEvent, toggleAttribute } from '../utils'
 
 export default class CoreProgress extends HTMLElement {

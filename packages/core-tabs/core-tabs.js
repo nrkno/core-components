@@ -1,3 +1,5 @@
+/* eslint no-self-assign: 0 */
+
 import { IS_ANDROID, dispatchEvent, getUUID, queryAll, closest, toggleAttribute } from '../utils'
 
 const FROM = IS_ANDROID ? 'data-labelledby' : 'aria-labelledby' // Android has a bug and reads only label instead of content
