@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",
-    "@babel/preset-env": "^7.8.7",
+    "@babel/preset-env": "^7.9.0",
     "@nrk/custom-element-to-react": "^1.1.1",
     "@webcomponents/custom-elements": "^1.4.0",
     "axios": "^0.19.2",
