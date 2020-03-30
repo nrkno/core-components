@@ -250,15 +250,6 @@ content with `<h1 tabindex="-1">Dialog title</h1>`.
 
 Though not strictly required, the `<button>` opening a dialog should be placed directly before the `<core-dialog>` itself. This eases the mental model for screen reader users. Othewise, use `<button for="my-dialog-id"></button>`.
 
-### Stacking
-
-To manually control z-index of dialogs and backdrops, simply set `dialog.style.zIndex` to some number (and `backdrop.style.zIndex` if applicable). The dialog will not try to place itself automatically over the topmost dialog this way and you are responsible for stacking order.
-
-```html
-<core-dialog style="z-index: 100" hidden>...</core-dialog>
-<backdrop style="z-index: 90" hidden>...</backdrop>
-```
-
 ### Backdrop
 
 `core-dialog` automatically creates a `<backdrop>` element as next adjacent sibling if needed. If the `backdrop` attribute is set to an `id` (something else than `true|false`), the element with the corresponding ID will be used as backdrop. Note that a backdrop is needed to enable click-outside-to-close. Custom backdrop example:
@@ -268,6 +259,26 @@ To manually control z-index of dialogs and backdrops, simply set `dialog.style.z
 <div id="my-backdrop"></div>
 ```
 
+## Stacking
+
+To manually control z-index of dialogs (and their corresponding backdrop element, set z-index from either HTML, CSS or JS. When set, the dialog will not try to place itself automatically over the topmost dialog and you are responsible for stacking order.
+
+For example:
+
+```html
+<style>
+  .my-dialog { z-index: 100 }
+  .my-backdrop { z-index: 90 }
+</style>
+
+<script>
+  myDialog.style.zIndex = 100
+  myBackdrop.style.zIndex = 90
+</script>
+
+<core-dialog style="z-index: 100" hidden>...</core-dialog>
+<backdrop style="z-index: 90" hidden>...</backdrop>
+```
 
 ## Events
 
