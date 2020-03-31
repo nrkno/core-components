@@ -35,17 +35,19 @@ export default class CoreDialog extends HTMLElement {
       if (prevBack) prevBack.setAttribute('hidden', '') // Hide previous backdrop
       if (nextBack) toggleAttribute(nextBack, 'hidden', this.hidden)
 
-      if (this.hidden) reFocus(this._focus)
-      else {
-        const below = queryAll('body *').filter((el) => el !== nextBack && !this.contains(el) && isVisible(el))
-        const zIndex = Math.min(Math.max(1, ...below.map(getZIndex)), 2000000000) // Avoid overflowing z-index. See techjunkie.com/maximum-z-index-value
-
-        if (nextBack) nextBack.style.zIndex = zIndex + 1
-        this.style.zIndex = zIndex + 2
+      if (this.hidden) {
+        reFocus(this._focus)
+      } else {
+        let zIndex = window.getComputedStyle(this).getPropertyValue('z-index')
+        if (zIndex === 'auto' && this.style.zIndex === '') { // Place this dialog over uppermost dialog if not controlled in CSS or JS
+          const below = queryAll(this.nodeName).filter((el) => el !== nextBack && !this.contains(el) && isVisible(el))
+          zIndex = Math.min(Math.max(1, ...below.map(getZIndex)), 2000000000) // Avoid overflowing z-index. See techjunkie.com/maximum-z-index-value
+          if (nextBack) nextBack.style.zIndex = zIndex + 1
+          this.style.zIndex = zIndex + 2
+        }
         this._focus = document.activeElement || document.body // Remember last focused element
         setTimeout(() => setFocus(this)) // Move focus after paint (helps iOS and react portals)
       }
-
       // React might re-mount the DOM, so make sure prev and next did actually change
       if (attr === 'hidden' && next !== prev) dispatchEvent(this, 'dialog.toggle')
     }
@@ -61,7 +63,6 @@ export default class CoreDialog extends HTMLElement {
 
       if (action === 'close' && closest(event.target, this.nodeName) === this) this.close()
       else if (action === this.id) {
-        button.setAttribute(this._from, '') // iOS remember button
         this.show()
       }
     } else if (event.type === 'keydown' && (event.keyCode === 9 || event.keyCode === 27) && !this.hidden) {
