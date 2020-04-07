@@ -109,6 +109,7 @@ export default class CoreScroll extends HTMLElement {
 
 function onMousedown (event) {
   if (closest(event.target, NEEDS_MOUSEDOWN)) return
+  if (event.button !== 0) return // Only react to left clicking
   event.preventDefault() // Prevent text selection and enable nesting
 
   DRAG.pageX = event.pageX
