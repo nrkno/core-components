@@ -39,7 +39,7 @@ export default class CoreDialog extends HTMLElement {
         reFocus(this._focus)
       } else {
         let zIndex = window.getComputedStyle(this).getPropertyValue('z-index')
-        if (zIndex === 'auto' && this.style.zIndex === '') { // Place this dialog over uppermost dialog if not controlled in CSS or JS
+        if ((zIndex === 'auto' || zIndex === '0') && this.style.zIndex === '') { // Place this dialog over uppermost dialog if not controlled in CSS or JS
           const below = queryAll(this.nodeName).filter((el) => el !== nextBack && !this.contains(el) && isVisible(el))
           zIndex = Math.min(Math.max(1, ...below.map(getZIndex)), 2000000000) // Avoid overflowing z-index. See techjunkie.com/maximum-z-index-value
           if (nextBack) nextBack.style.zIndex = zIndex + 1
