@@ -27,7 +27,6 @@
     "@nrk/custom-element-to-react": "^1.1.1",
     "@webcomponents/custom-elements": "^1.4.1",
     "axios": "^0.19.2",
-    "browserstack-local": "^1.4.5",
     "dotenv": "^8.2.0",
     "esm": "3.2.25",
     "fast-glob": "^3.2.2",

@@ -5,7 +5,6 @@ import https from 'https'
 import dotenv from 'dotenv'
 import axios from 'axios'
 import { SpecReporter } from 'jasmine-spec-reporter'
-import browserstack from 'browserstack-local'
 import { getUUID } from '../packages/utils'
 
 dotenv.config()
@@ -13,7 +12,6 @@ const isLocal = process.env.NODE_ENV === 'test'
 const user = process.env.SMARTBEAR_USER
 const key = process.env.SMARTBEAR_AUTHKEY
 const localIdentifier = getUUID()
-const bsLocal = new browserstack.Local()
 const identifier = new Date().toLocaleString()
 const specs = path.resolve(process.cwd(), `packages/*/*.test.${isLocal ? '' : 'cjs.'}js`)
 
@@ -51,18 +49,18 @@ function config () {
     }),
     beforeLaunch: async () => {
       await new Promise((resolve, reject) => {
-        bsLocal.start({ key, localIdentifier, forceLocal: true }, (error) => {
-          if (error) return reject(Error('BrowserStack Local error: ' + error))
-          resolve(console.log('BrowserStack Local started'))
-        })
+        // bsLocal.start({ key, localIdentifier, forceLocal: true }, (error) => {
+        //   if (error) return reject(Error('BrowserStack Local error: ' + error))
+        //   resolve(console.log('BrowserStack Local started'))
+        // })
       })
     },
     afterLaunch: async () => {
       await new Promise((resolve, reject) => {
-        bsLocal.stop((error) => {
-          if (error) return reject(Error('BrowserStack Local error: ' + error))
-          resolve(console.log('BrowserStack Local stopped'))
-        })
+        // bsLocal.stop((error) => {
+        //   if (error) return reject(Error('BrowserStack Local error: ' + error))
+        //   resolve(console.log('BrowserStack Local stopped'))
+        // })
       })
     },
     onPrepare: () => {
