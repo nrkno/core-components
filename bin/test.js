@@ -10,8 +10,8 @@ import { getUUID } from '../packages/utils'
 
 dotenv.config()
 const isLocal = process.env.NODE_ENV === 'test'
-const user = process.env.BROWSERSTACK_USER
-const key = process.env.BROWSERSTACK_KEY
+const user = process.env.SMARTBEAR_USER
+const key = process.env.SMARTBEAR_AUTHKEY
 const localIdentifier = getUUID()
 const bsLocal = new browserstack.Local()
 const identifier = new Date().toLocaleString()
@@ -21,7 +21,7 @@ function config () {
   return {
     framework: 'jasmine',
     specs: [specs],
-    seleniumAddress: 'http://hub-cloud.browserstack.com/wd/hub',
+    seleniumAddress: `http://${user}:${key}@hub.crossbrowsertesting.com:80/wd/hub`,
     directConnect: isLocal,
     SELENIUM_PROMISE_MANAGER: false,
     jasmineNodeOpts: {
@@ -33,13 +33,13 @@ function config () {
     logLevel: 'INFO',
     multiCapabilities: capabilities.map((cap) => {
       return {
-        'browserstack.user': user,
-        'browserstack.key': key,
-        'browserstack.debug': false, // Capture screenshots for visual logs
-        'browserstack.video': false, // Capture video of tests
-        'browserstack.console': 'errors', // Capture console logs
-        'browserstack.localIdentifier': localIdentifier,
-        'browserstack.sendKeys': true,
+        'cbt.user': user,
+        'cbt.key': key,
+        'cbt.debug': false, // Capture screenshots for visual logs
+        'cbt.record_video': false, // Capture video of tests
+        'cbt.console': 'errors', // Capture console logs
+        'cbt.localIdentifier': localIdentifier,
+        'cbt.sendKeys': true,
         project: 'core-components',
         build: identifier,
         name: [
