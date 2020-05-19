@@ -20,7 +20,8 @@
     "static-publish": "npm run build && static-publish --directory=packages --account=nrk-core --latest --major",
     "test": "npm run build && node -r esm node_modules/.bin/protractor bin/test.js && standard -v",
     "test-remote": "export NODE_ENV=test-remote; npm run build && node -r esm node_modules/.bin/protractor bin/test.js && standard -v",
-    "lint": "standard -v"
+    "lint": "standard -v",
+    "test:cbt": "export NODE_ENV=test-remote; node -r esm node_modules/.bin/protractor bin/test.js && standard -v"
   },
   "devDependencies": {
     "@babel/core": "7.15.0",

@@ -3,23 +3,33 @@ import path from 'path'
 import http from 'http'
 import https from 'https'
 import dotenv from 'dotenv'
-import axios from 'axios'
 import { SpecReporter } from 'jasmine-spec-reporter'
 import { getUUID } from '../packages/utils'
 
 dotenv.config()
 const isLocal = process.env.NODE_ENV === 'test'
-const user = process.env.SMARTBEAR_USER
-const key = process.env.SMARTBEAR_AUTHKEY
+const username = process.env.SMARTBEAR_USER
+const authKey = process.env.SMARTBEAR_AUTHKEY
 const localIdentifier = getUUID()
 const identifier = new Date().toLocaleString()
 const specs = path.resolve(process.cwd(), `packages/*/*.test.${isLocal ? '' : 'cjs.'}js`)
+const commonCapabilities = {
+  username,
+  password: authKey,
+
+  record_video: true,
+  record_network: false,
+
+  build: 'core-components tests'
+}
 
 function config () {
+  console.log('isLocal?', isLocal)
+  console.log('capabilities:', capabilities)
   return {
     framework: 'jasmine',
     specs: [specs],
-    seleniumAddress: `http://${user}:${key}@hub.crossbrowsertesting.com:80/wd/hub`,
+    seleniumAddress: `http://${username}:${authKey}@hub.crossbrowsertesting.com:80/wd/hub`,
     directConnect: isLocal,
     SELENIUM_PROMISE_MANAGER: false,
     jasmineNodeOpts: {
@@ -31,8 +41,8 @@ function config () {
     logLevel: 'INFO',
     multiCapabilities: capabilities.map((cap) => {
       return {
-        'cbt.user': user,
-        'cbt.key': key,
+        'cbt.user': username,
+        'cbt.key': authKey,
         'cbt.debug': false, // Capture screenshots for visual logs
         'cbt.record_video': false, // Capture video of tests
         'cbt.console': 'errors', // Capture console logs
@@ -77,88 +87,274 @@ function config () {
       browser.waitForAngularEnabled(false)
     },
     onComplete: async (passed) => {
-      if (isLocal) return
-      const session = await browser.getSession()
-      return axios.put(`https://${user}:${key}@api.browserstack.com/automate/sessions/${session.id_}.json`, {
-        status: passed ? 'passed' : 'failed'
-      })
+      // if (isLocal) return
+      // const session = await browser.getSession()
+      // return axios.put(`https://${username}:${authKey}@api.browserstack.com/automate/sessions/${session.id_}.json`, {
+      //   status: passed ? 'passed' : 'failed'
+      // })
     }
   }
 }
 
+// const capabilities = isLocal
+//   ? [{
+//       browserName: 'chrome',
+//       chromeOptions: {
+//         args: ['--headless', '--window-size=800x600']
+//       }
+//     }]
+//   : [{
+//       browserName: 'Chrome',
+//       browser_version: '46',
+//       os: 'Windows',
+//       os_version: '10'
+//     },
+//     {
+//       browserName: 'Chrome',
+//       browser_version: '57',
+//       os: 'Windows',
+//       os_version: '10'
+//     },
+//     {
+//       browserName: 'Edge',
+//       browser_version: '15.0',
+//       os: 'Windows',
+//       os_version: '10'
+//     },
+//     {
+//       browserName: 'Edge',
+//       browser_version: '17.0',
+//       os: 'Windows',
+//       os_version: '10'
+//     },
+//     {
+//       browserName: 'Edge',
+//       browser_version: '18.0',
+//       os: 'Windows',
+//       os_version: '10'
+//     },
+//     {
+//       browserName: 'IE',
+//       browser_version: '11',
+//       os: 'Windows',
+//       os_version: '10'
+//     },
+//     {
+//       browserName: 'IE',
+//       browser_version: '11',
+//       os: 'Windows',
+//       os_version: '7'
+//     },
+//     {
+//       browserName: 'Firefox',
+//       browser_version: '69',
+//       os: 'Windows',
+//       os_version: '10'
+//     },
+//     {
+//       browserName: 'Firefox',
+//       browser_version: '64',
+//       os: 'Windows',
+//       os_version: '10'
+//     },
+// {
+//   browserName: 'Safari',
+//   browser_version: '10.1',
+//   os: 'OS X',
+//   os_version: 'Sierra'
+// },
+// {
+//   browserName: 'Safari',
+//   browser_version: '9.1',
+//   os: 'OS X',
+//   os_version: 'El Capitan'
+// }
+// {
+//   browserName: 'Safari',
+//   browser_version: '10.0',
+//   os: 'OS X',
+//   os_version: 'Sierra',
+//   resolution: '1024x768'
+// },
+// {
+//   device: 'iPad Pro 9.7 2016',
+//   real_mobile: 'true',
+//   nativeWebTap: 'true',
+// },
+// {
+//   device: 'iPhone 8',
+//   os: 'iOS',
+//   os_version: '11',
+//   real_mobile: 'true',
+//   nativeWebTap: 'true',
+// },
+// {
+//   device: 'iPhone 8',
+//   os: 'iOS',
+//   os_version: '12',
+//   real_mobile: 'true',
+//   nativeWebTap: 'true',
+// },
+// {
+//   os_version: '11',
+//   device: 'iPhone SE',
+//   real_mobile: 'true',
+//   nativeWebTap: 'true',
+// },
+// {
+//   device: 'iPhone X',
+//   os_version: '11',
+//   real_mobile: 'true',
+//   nativeWebTap: 'true',
+// },
+// {
+//   device: 'iPhone XS',
+//   os_version: '12',
+//   real_mobile: 'true',
+//   nativeWebTap: 'true',
+// },
+// {
+//   os_version: '9.0',
+//   device: 'Google Pixel 3',
+//   real_mobile: 'true',
+// },
+// {
+//   os_version: '8.0',
+//   device: 'Samsung Galaxy S9',
+//   real_mobile: 'true',
+// },
+// {
+//   os_version: '7.1',
+//   device: 'Samsung Galaxy Note 8',
+//   real_mobile: 'true',
+// },
+// {
+//   os_version: '7.0',
+//   device: 'Samsung Galaxy S8',
+//   real_mobile: 'true',
+// },
+// {
+//   os_version: '6.0',
+//   device: 'Samsung Galaxy Note 4',
+//   real_mobile: 'true',
+// }
+// ]
 const capabilities = isLocal
-  ? [{
-      browserName: 'chrome',
-      chromeOptions: {
-        args: ['--headless', '--window-size=800x600']
+  ? [
+      {
+        browserName: 'chrome',
+        chromeOptions: {
+          args: ['--headless', '--window-size=800x600']
+        }
       }
-    }]
-  : [{
+    ]
+  : completeCaps([
+    {
+      tags: {
+        id: 'Chrome78Windows10desktop',
+        browser: 'chrome',
+        platform: 'windows',
+        device: 'desktop',
+        hits: 1102659,
+        popularity: 'high',
+        default: true
+      },
+      platform: 'Windows 10',
       browserName: 'Chrome',
-      browser_version: '46',
-      os: 'Windows',
-      os_version: '10'
+      version: '78'
     },
     {
-      browserName: 'Chrome',
-      browser_version: '57',
-      os: 'Windows',
-      os_version: '10'
-    },
-    {
-      browserName: 'Edge',
-      browser_version: '15.0',
-      os: 'Windows',
-      os_version: '10'
-    },
-    {
-      browserName: 'Edge',
-      browser_version: '17.0',
-      os: 'Windows',
-      os_version: '10'
-    },
-    {
-      browserName: 'Edge',
-      browser_version: '18.0',
-      os: 'Windows',
-      os_version: '10'
-    },
-    {
-      browserName: 'IE',
-      browser_version: '11',
-      os: 'Windows',
-      os_version: '10'
-    },
-    {
-      browserName: 'IE',
-      browser_version: '11',
-      os: 'Windows',
-      os_version: '7'
-    },
-    {
-      browserName: 'Firefox',
-      browser_version: '69',
-      os: 'Windows',
-      os_version: '10'
-    },
-    {
-      browserName: 'Firefox',
-      browser_version: '64',
-      os: 'Windows',
-      os_version: '10'
-    },
-    // {
-    //   browserName: 'Safari',
-    //   browser_version: '10.1',
-    //   os: 'OS X',
-    //   os_version: 'Sierra'
-    // },
-    {
+      tags: {
+        id: 'Safari12iOS12mobile',
+        browser: 'safari',
+        platform: 'ios',
+        device: 'mobile',
+        hits: 1516729,
+        popularity: 'high',
+        default: true
+      },
+      deviceName: 'iPhone XR Simulator',
+      platformName: 'iOS',
+      platformVersion: '12.0',
       browserName: 'Safari',
-      browser_version: '9.1',
-      os: 'OS X',
-      os_version: 'El Capitan'
+
+      timeouts: {
+        script: 30000
+      },
+      configOverrides: {
+        allScriptsTimeout: 0
+      }
     }
+
+    /*
+  {
+    name: 'Chrome',
+    browser_api_name: 'Chrome',
+    browser_version: '46',
+    os: 'Windows',
+    os_version: '10'
+  },
+  {
+    name: 'Chrome',
+    browser_api_name: 'Chrome',
+    browser_version: '57',
+    os: 'Windows',
+    os_version: '10'
+  } //,
+   {
+    browserName: 'Edge',
+    browser_version: '15.0',
+    os: 'Windows',
+    os_version: '10'
+  },
+  {
+    browserName: 'Edge',
+    browser_version: '17.0',
+    os: 'Windows',
+    os_version: '10'
+  },
+  {
+    browserName: 'Edge',
+    browser_version: '18.0',
+    os: 'Windows',
+    os_version: '10'
+  },
+  {
+    browserName: 'IE',
+    browser_version: '11',
+    os: 'Windows',
+    os_version: '10'
+  },
+  {
+    browserName: 'IE',
+    browser_version: '11',
+    os: 'Windows',
+    os_version: '7'
+  },
+  {
+    browserName: 'Firefox',
+    browser_version: '69',
+    os: 'Windows',
+    os_version: '10'
+  },
+  {
+    browserName: 'Firefox',
+    browser_version: '64',
+    os: 'Windows',
+    os_version: '10'
+  },
+  // {
+  //   browserName: 'Safari',
+  //   browser_version: '10.1',
+  //   os: 'OS X',
+  //   os_version: 'Sierra'
+  // },
+  {
+    browserName: 'Safari',
+    browser_version: '9.1',
+    os: 'OS X',
+    os_version: 'El Capitan'
+  } */
     // {
     //   browserName: 'Safari',
     //   browser_version: '10.0',
@@ -228,7 +424,7 @@ const capabilities = isLocal
     //   device: 'Samsung Galaxy Note 4',
     //   real_mobile: 'true',
     // }
-    ]
+  ])
 
 // https://www.browserstack.com/automate/node#add-on
 // https://github.com/browserstack/fast-selenium-scripts/blob/master/node/fast-selenium.js
@@ -264,6 +460,14 @@ function faster () {
       }
     }
   }
+}
+
+function completeCaps (caps) {
+  return caps.map((cap) => ({
+    browserName: '', // TypeError: Target browser must be a string...
+    ...commonCapabilities,
+    ...cap
+  }))
 }
 
 faster()
