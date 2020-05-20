@@ -20,11 +20,12 @@ npm start # Your browser will open documentation with hot reloading
 
 ## Testing
 
-Before running tests you need a `.env` file providing credentials to Browserstack:
+You can run the tests locally or with CrossBrowserTesting
+Before running tests with CrossBrowserTesting you need a `.env` file providing credentials:
 
 ```sh
-BROWSERSTACK_USER=...
-BROWSERSTACK_KEY=...
+SMARTBEAR_USER=...
+SMARTBEAR_AUTHKEY=...
 ```
 
 Save it in the root directory. Now you can either run the tests locally:
