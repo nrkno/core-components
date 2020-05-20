@@ -91,9 +91,30 @@ function config () {
     },
     onComplete: async (passed) => {
       console.log('passed?', passed)
-      resolve(passed)
-      process.exit(passed)
-      // if (isLocal) return
+      // process.exit(passed)
+      if (isLocal) return // claimed by protractor to be unnecessary
+
+      // resolve (passed)
+
+      // TODO: do something, to set proper test result in CBT.
+      // https://github.com/nrkno/protractor-runner-cbt/blob/e513a69145d17916a7034f1c42694f1e09bd50ff/runUtils/smartBearScore.ts
+      // https://crossbrowsertesting.com/apidocs/v3/selenium.html#!/default/put_selenium_selenium_test_id
+      const sessionId = await browser.getSession()
+      const passedText = passed ? 'passed' : 'failed'
+      return axios.put(`https://crossbrowsertesting.com/api/v3/selenium/${sessionId}`, {
+        body: {
+          action: 'set_score',
+          passedText
+        },
+        auth: {
+          user: username,
+          pass: authKey
+        },
+        json: true,
+        resolveWithFullResponse: true
+      })
+
+      // The following was the browserstack method..
       // const session = await browser.getSession()
       // return axios.put(`https://${username}:${authKey}@api.browserstack.com/automate/sessions/${session.id_}.json`, {
       //   status: passed ? 'passed' : 'failed'
@@ -408,7 +429,7 @@ const capabilities = isLocal
       platform: 'Windows 10',
       browserName: 'Firefox',
       version: '70x64'
-    } /*,
+    } /*
 
   // Firefox 64
   {
