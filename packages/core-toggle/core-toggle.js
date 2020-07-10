@@ -50,7 +50,7 @@ export default class CoreToggle extends HTMLElement {
 
   get button () {
     if (this._button && this._button.getAttribute('for') === this.id) return this._button // Speed up
-    return (this._button = this.id && document.querySelector(`[for="${this.id}"]`)) || this.previousElementSibling
+    return (this._button = this.id && document.querySelector(`[for="${this.id}"], [data-for="${this.id}]"`)) || this.previousElementSibling
   }
 
   // aria-haspopup triggers forms mode in JAWS, therefore store as custom attr
