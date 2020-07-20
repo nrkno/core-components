@@ -102,7 +102,8 @@ demo-->
 <script>
   // Update GUI
   document.getElementById('my-datepicker').disabled = (date) => {
-    var oneWeekFromNow = (new Date()).setDate(new Date().getDate() + 7)
+    var oneWeekFromNow = new Date()
+    oneWeekFromNow.setDate(new Date().getDate() + 7)
     return date > oneWeekFromNow
   }
 

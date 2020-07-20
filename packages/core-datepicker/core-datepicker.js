@@ -1,6 +1,14 @@
 import { addStyle, closest, dispatchEvent, toggleAttribute, queryAll } from '../utils'
 import parse from '@nrk/simple-date-parse'
 
+const FILL = {
+  month: (self, value) => daysInMonth(self.parse(value)).filter(day => !self.disabled(day))[0] || value,
+  null: (_self, value) => value
+}
+const DISABLED = {
+  month: (self, value) => daysInMonth(self.parse(value)).map((day) => self.disabled(day)).reduce((a, b) => a && b),
+  null: (self, value) => self.disabled(value)
+}
 const MASK = { year: '*-m-d', month: 'y-*-d', day: 'y-m-*', hour: '*:m', minute: 'h:*', second: 'h:m:*', timestamp: '*', null: '*' }
 const KEYS = { 33: '-1month', 34: '+1month', 35: 'y-m-99', 36: 'y-m-1', 37: '-1day', 38: '-1week', 39: '+1day', 40: '+1week' }
 const MONTHS = 'januar,februar,mars,april,mai,juni,juli,august,september,oktober,november,desember'
@@ -39,8 +47,10 @@ export default class CoreDatepicker extends HTMLElement {
   handleEvent (event) {
     if (event.defaultPrevented || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || (event.type === 'keydown' && !KEYS[event.keyCode])) return
     if (!this.contains(event.target) && !closest(event.target, `[for="${this.id}"]`)) return
-    if (event.type === 'change') this.date = MASK[event.target.getAttribute('data-type')].replace('*', event.target.value)
-    else if (event.type === 'click') {
+    if (event.type === 'change') {
+      const date = MASK[event.target.getAttribute('data-type')].replace('*', event.target.value)
+      this.date = FILL[event.target.getAttribute('data-fill')](this, date)
+    } else if (event.type === 'click') {
       const button = closest(event.target, 'button[value]')
       const table = closest(event.target, 'table')
       if (button) this.date = button.value
@@ -148,14 +158,28 @@ function table (self, table) {
 function select (self, select) {
   if (!select.firstElementChild) {
     select._autofill = true
+    select.setAttribute('data-fill', 'month')
     select.innerHTML = self.months.map((name, month) =>
       `<option value="y-${month + 1}-d"></option>`
     ).join('')
   }
-
+  const disabled = DISABLED[select.getAttribute('data-fill')]
   queryAll(select.children).forEach((option, month) => {
     if (select._autofill) option.textContent = self.months[month]
-    option.disabled = self.disabled(option.value)
+    option.disabled = disabled(self, option.value)
     option.selected = !self.diff(option.value)
   })
+}
+
+function daysInMonth (dateInMonth) {
+  const date = new Date(dateInMonth)
+  date.setDate(1)
+
+  const month = date.getMonth()
+  const days = []
+  while (date.getMonth() === month) {
+    days.push(new Date(date))
+    date.setDate(date.getDate() + 1)
+  }
+  return days
 }
