@@ -25,7 +25,7 @@
     "@babel/core": "^7.9.6",
     "@babel/preset-env": "^7.9.6",
     "@nrk/custom-element-to-react": "^1.1.1",
-    "@webcomponents/custom-elements": "^1.4.1",
+    "@webcomponents/custom-elements": "^1.4.2",
     "axios": "^0.19.2",
     "browserstack-local": "^1.4.5",
     "dotenv": "^8.2.0",
