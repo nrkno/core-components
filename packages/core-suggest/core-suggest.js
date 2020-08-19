@@ -20,7 +20,7 @@ export default class CoreSuggest extends HTMLElement {
     document.addEventListener('input', this)
     document.addEventListener('keydown', this)
     document.addEventListener('focusin', this)
-    setTimeout(() => onMutation(this)) // Ensure limit is respected
+    this.mutationTimeout = setTimeout(() => onMutation(this)) // Ensure limit is respected
     if (document.activeElement === this.input) this.hidden = false // Open if active
   }
 
@@ -31,6 +31,8 @@ export default class CoreSuggest extends HTMLElement {
     document.removeEventListener('input', this)
     document.removeEventListener('keydown', this)
     document.removeEventListener('focusin', this)
+
+    clearTimeout(this.mutationTimeout);
   }
 
   attributeChangedCallback (name, prev, next) {
