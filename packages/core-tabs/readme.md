@@ -127,7 +127,7 @@ myTabs.tab = myTab    // Set active tab from element
 ```js
 import CoreTabs from '@nrk/core-tabs/jsx'
 
-<CoreTabs for={Number|String}           // Optional. Sets active tab from number or id
+<CoreTabs tab={Number|String}           // Optional. Sets active tab by index or id
           ref={(comp) => {}}            // Optional. Get reference to React component
           forwardRef={(el) => {}}       // Optional. Get reference to underlying DOM custom element
           onTabsToggle={Function}>      // Optional. Listen to toggle event
