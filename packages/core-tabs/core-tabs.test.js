@@ -49,15 +49,35 @@ describe('core-tabs', () => {
         <core-tabs>
           <button id="tab-1">First tab</button>
           <button id="tab-2">Second tab</button>
+          <button id="tab-3">Third tab</button>
         </core-tabs>
         <div id="panel-1">Text of tab 1</div>
         <div id="panel-2">Text of tab 2</div>
+        <div id="panel-3">Text of tab 3</div>
       `
     })
     await browser.wait(ExpectedConditions.presenceOf($('core-tabs [role="tab"]')))
     await browser.executeScript(() => (document.querySelector('core-tabs').tab = 1))
     await expect(attr('#tab-1', 'aria-selected')).toEqual('false')
     await expect(attr('#tab-2', 'aria-selected')).toMatch(/true/i)
+    await expect(attr('#tab-3', 'aria-selected')).toEqual('false')
+  })
+
+  it('selects first tab by index', async () => {
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <core-tabs>
+          <button id="tab-1">First tab</button>
+          <button id="tab-2">Second tab</button>
+          <button id="tab-3">Third tab</button>
+        </core-tabs>
+      `
+    })
+    await browser.wait(ExpectedConditions.presenceOf($('core-tabs [role="tab"]')))
+    await browser.executeScript(() => (document.querySelector('core-tabs').tab = 0))
+    await expect(attr('#tab-1', 'aria-selected')).toMatch(/true/i)
+    await expect(attr('#tab-2', 'aria-selected')).toEqual('false')
+    await expect(attr('#tab-3', 'aria-selected')).toEqual('false')
   })
 
   it('selects tab by id', async () => {
