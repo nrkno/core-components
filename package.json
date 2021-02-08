@@ -22,7 +22,7 @@
     "test-remote": "export NODE_ENV=test-remote; npm run build && node -r esm node_modules/.bin/protractor bin/test.js && standard -v"
   },
   "devDependencies": {
-    "@babel/core": "^7.9.6",
+    "@babel/core": "^7.12.13",
     "@babel/preset-env": "^7.9.6",
     "@nrk/custom-element-to-react": "^1.1.1",
     "@webcomponents/custom-elements": "^1.4.1",
