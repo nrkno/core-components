@@ -31,6 +31,7 @@ export default utils.pkgs.reduce((all, path) => {
     output: {
       format: 'cjs',
       file: `${path}/${file}.test.cjs.js`,
+      exports: 'none', // Tests have no exports; set to 'auto' if this changes
       globals
     },
     treeshake,
@@ -46,6 +47,7 @@ export default utils.pkgs.reduce((all, path) => {
     output: {
       format: 'cjs',
       file: `${path}/${file}.cjs.js`,
+      exports: 'default',
       globals
     },
     treeshake,
@@ -70,6 +72,7 @@ export default utils.pkgs.reduce((all, path) => {
     output: {
       format: 'cjs',
       file: `${path}/jsx.js`,
+      exports: 'default',
       globals
     },
     treeshake,
