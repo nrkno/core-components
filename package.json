@@ -30,7 +30,7 @@
     "axios": "0.21.1",
     "browserstack-local": "1.4.8",
     "dotenv": "10.0.0",
-    "esm": "3.2.7",
+    "esm": "3.2.25",
     "fast-glob": "3.2.7",
     "jasmine-spec-reporter": "7.0.0",
     "protractor": "7.0.0",
@@ -41,7 +41,7 @@
     "rollup-plugin-json": "4.0.0",
     "rollup-plugin-node-resolve": "5.2.0",
     "rollup-plugin-serve": "1.1.0",
-    "rollup-plugin-uglify": "5.0.2",
+    "rollup-plugin-uglify": "^5.0.2",
     "standard": "16.0.3"
   },
   "standard": {
