@@ -112,7 +112,8 @@ function isVisible (el) {
 }
 
 function getZIndex (element) {
-  for (var el = element, zIndex = 1; el; el = el.offsetParent) {
+  let zIndex = 1
+  for (let el = element; el; el = el.offsetParent) {
     zIndex += Number(window.getComputedStyle(el).getPropertyValue('z-index')) || 0
   }
   return zIndex
