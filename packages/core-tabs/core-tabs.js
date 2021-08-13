@@ -63,7 +63,7 @@ export default class CoreTabs extends HTMLElement {
   get tab () { return document.getElementById(this.panel.getAttribute(FROM)) }
 
   set tab (value) {
-    if (!value) return
+    if (!value && value !== 0) return
     const panels = this.panels
     const prevIndex = this.tabs.indexOf(this.tab)
     const nextIndex = this.tabs.reduce((acc, tab, i) => {
