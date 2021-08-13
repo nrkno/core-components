@@ -49,7 +49,7 @@ export default class CoreToggle extends HTMLElement {
   }
 
   get button () {
-    if (this._button && (this._button.getAttribute('for') || this._button.getAttribute('data-for')) === this.id) return this._button // Speed up
+    if (this._button && (this._button.getAttribute('data-for') || this._button.getAttribute('for')) === this.id) return this._button // Speed up
     return (this._button = this.id && document.querySelector(`[for="${this.id}"],[data-for="${this.id}"]`)) || this.previousElementSibling
   }
 
