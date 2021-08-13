@@ -5,7 +5,7 @@
 
 ## Getting started
 
-All components are implemented as custom elements, so you may need to [polyfill](https://github.com/webcomponents/polyfills#custom-elements) custom elements before using them. Also, make
+All components are implemented as custom elements, so you may need to [polyfill](https://github.com/webcomponents/polyfills/tree/master/packages/custom-elements) custom elements before using them. Also, make
 sure your browser is [supported](#browser-support).
 
 ### Installation
@@ -59,7 +59,7 @@ Best practices and styling tips is not a pure functionality concern, and therefo
 * Browsers: Internet Explorer 11+, Edge 15+, Safari 9+, Firefox 64+, Chrome 46, Opera
 * Screen readers: MacOS/iOS: VoiceOver, Android: TalkBack, Windows: JAWS/NVDA
 
-For Internet Explorer and older Edge browsers you need a [polyfill](https://github.com/webcomponents/polyfills#custom-elements) for the custom elements spec.
+For Internet Explorer and older Edge browsers you need a [polyfill](https://github.com/webcomponents/polyfills/tree/master/packages/custom-elements) for the custom elements spec.
 
 
 ## Extending

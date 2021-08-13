@@ -45,6 +45,24 @@ describe('core-dialog', () => {
     await expect(prop('core-dialog + backdrop', 'hidden')).toMatch(/true/i)
   })
 
+  it('respects "data-for" attribute', async () => {
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <button data-for="dialog">Open</button>
+        <core-dialog id="dialog" hidden>
+          <div>Some content</div>
+          <button data-for="close">Close</button>
+        </core-dialog>
+      `
+    })
+    await $('button[data-for="dialog"]').click()
+    await expect(prop('core-dialog', 'hidden')).toMatch(/(null|false)/i)
+    await expect(prop('core-dialog + backdrop', 'hidden')).toMatch(/(null|false)/i)
+    await $('button[data-for="close"]').click()
+    await expect(prop('core-dialog', 'hidden')).toMatch(/true/i)
+    await expect(prop('core-dialog + backdrop', 'hidden')).toMatch(/true/i)
+  })
+
   it('opens and closes nested', async () => {
     await browser.executeScript(() => {
       document.body.innerHTML = `

@@ -84,7 +84,7 @@ Using static registers the custom element with default name automatically:
 <script src="https://static.nrk.no/core-components/major/7/core-tabs/core-tabs.min.js"></script>  <!-- Using static -->
 ```
 
-Remember to [polyfill](https://github.com/webcomponents/polyfills#custom-elements) custom elements if needed.
+Remember to [polyfill](https://github.com/webcomponents/polyfills/tree/master/packages/custom-elements) custom elements if needed.
 
 
 
@@ -97,7 +97,7 @@ Remember to [polyfill](https://github.com/webcomponents/polyfills#custom-element
   <button>Tab 1</button>                  <!-- Tab elements must be <a> or <button>. Do not use <li> -->
   <a href="#">Tab 2</a>
   <button>Tab 3</button>
-  <button for="panel-2">Tab 4</button>    <!-- Point to a specific tabpanel -->
+  <button data-for"panel-2">Tab 4</button>    <!-- Point to a specific tabpanel -->
 </core-tabs>
 <div>Tabpanel 1 content</div>             <!-- First tabpanel is the next element sibling of core-tabs -->
 <div hidden>Tabpanel 2 content</div>      <!-- Second tabpanel. Use hidden attribute to prevent FOUC -->
@@ -127,7 +127,7 @@ myTabs.tab = myTab    // Set active tab from element
 ```js
 import CoreTabs from '@nrk/core-tabs/jsx'
 
-<CoreTabs for={Number|String}           // Optional. Sets active tab from number or id
+<CoreTabs data-for={Number|String}           // Optional. Sets active tab from number or id
           ref={(comp) => {}}            // Optional. Get reference to React component
           forwardRef={(el) => {}}       // Optional. Get reference to underlying DOM custom element
           onTabsToggle={Function}>      // Optional. Listen to toggle event
@@ -173,9 +173,9 @@ A `<ul>`/`<li>` structure would seem logical for tabs, but this causes some scre
 
 ### Does panels always need be a next element sibling?
 The aria specification does not allow any elements that are focusable by a screen reader to be placed between tabs and panels. Therefore, `core-tabs` defaults to use the next element siblings as panels.
-This behaviour can be overridden, by setting up `id` on panel elements and the `for` attribute on tab element. Use with caution and *only* do this if your project *must* use another DOM structure. Example:
+This behaviour can be overridden, by setting up `id` on panel elements and the `data-for` attribute on tab element (`for` is deprecated). Use with caution and *only* do this if your project *must* use another DOM structure. Example:
 
 ```js
 const myTabs = document.querySelector('core-tabs')
-myTabs.tabs.forEach((tabs, index) => tab.setAttribute('for', myTabs.panels[index].id = 'my-panel-' + index))
+myTabs.tabs.forEach((tabs, index) => tab.setAttribute('data-for', myTabs.panels[index].id = 'my-panel-' + index))
 ```

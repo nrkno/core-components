@@ -99,7 +99,7 @@ describe('core-tabs', () => {
       document.body.innerHTML = `
         <core-tabs>
           <button id="tab-1" for="panel-1">First tab</button>
-          <button id="tab-2" for="panel-2">Second tab</button>
+          <button id="tab-2" data-for="panel-2">Second tab</button>
         </core-tabs>
         <div id="panel-2">Text of tab 2</div>
         <div id="panel-1">Text of tab 1</div>
