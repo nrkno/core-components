@@ -25,12 +25,13 @@ export default class CoreSuggest extends HTMLElement {
   }
 
   disconnectedCallback () {
-    this._input = this._regex = this._xhr = null
-    this._observer.disconnect()
     document.removeEventListener('click', this)
     document.removeEventListener('input', this)
     document.removeEventListener('keydown', this)
     document.removeEventListener('focusin', this)
+    // Clear internals to aid garbage collection
+    this._observer.disconnect()
+    this._observer = this._input = this._regex = this._xhr = null
   }
 
   attributeChangedCallback (name, prev, next) {
@@ -74,6 +75,8 @@ function toggleItem (item, show) {
 
 // This can happen quite frequently so make it fast
 function onMutation (self) {
+  if (!self._observer) return // Abort if disconnectedCallback has been called (this/self._observer is null)
+
   const needle = self.input.value.toLowerCase().trim()
   const items = self.querySelectorAll('a:not([hidden]),button:not([hidden])')
   const limit = Math.min(items.length, self.limit)
@@ -173,7 +176,7 @@ function onAjax (self) {
 }
 
 function onAjaxSend (self) {
-  if (!self.input.value) return // Abort if input is empty
+  if (!self._observer || !self.input.value) return // Abort if disconnectedCallback has completed or input is empty
   if (dispatchEvent(self, 'suggest.ajax.beforeSend', self._xhr)) {
     self._xhr.onerror = () => {
       self._xhr.responseError = 'Error: Network request failed'

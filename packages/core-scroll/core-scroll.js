@@ -55,7 +55,7 @@ export default class CoreScroll extends HTMLElement {
   }
 
   handleEvent (event = {}) {
-    if (event.defaultPrevented) return
+    if (!this.parentNode || event.defaultPrevented) return // Abort if removed from DOM or event is prevented
     if (event.type === 'wheel') DRAG.animate = false // Stop momentum animation onWheel
     else if (event.type === 'mousedown') onMousedown.call(this, event)
     else if (event.type === 'click') {

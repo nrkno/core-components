@@ -14,6 +14,7 @@ export default class CoreTabs extends HTMLElement {
   }
 
   connectedChildren () {
+    if (!this.parentNode) return // Abort if removed from DOM
     let next = this
     this.tabs.forEach((tab, index) => {
       const panel = document.getElementById(tab.getAttribute('for')) || (next = next.nextElementSibling || next)
