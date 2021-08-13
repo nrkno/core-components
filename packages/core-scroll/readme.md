@@ -28,11 +28,11 @@ demo-->
 
 ```html
 <!--demo-->
-<button data-for"my-scroll-js" value="up" aria-label="Rull opp">&uarr;</button>
-<button data-for"my-scroll-js" value="down" aria-label="Rull ned">&darr;</button>
+<button data-for="my-scroll-js" value="up" aria-label="Rull opp">&uarr;</button>
+<button data-for="my-scroll-js" value="down" aria-label="Rull ned">&darr;</button>
 <br>
-<button data-for"my-scroll-js" value="left" aria-label="Rull til venstre">&larr;</button>
-<button data-for"my-scroll-js" value="right" aria-label="Rull til høyre">&rarr;</button>
+<button data-for="my-scroll-js" value="left" aria-label="Rull til venstre">&larr;</button>
+<button data-for="my-scroll-js" value="right" aria-label="Rull til høyre">&rarr;</button>
 <div class="my-wrap my-wrap-js">
   <core-scroll id="my-scroll-js" class="my-scroll">
     <div>1</div><div>2</div><div>3</div><div>4</div><a href="#">5</a>
@@ -124,8 +124,8 @@ demo-->
 
 ```html
 <!--demo-->
-<button data-for"my-scroll-child" value="left" aria-label="Rull til venstre">&larr;</button>
-<button data-for"my-scroll-child" value="right" aria-label="Rull til høyre">&rarr;</button>
+<button data-for="my-scroll-child" value="left" aria-label="Rull til venstre">&larr;</button>
+<button data-for="my-scroll-child" value="right" aria-label="Rull til høyre">&rarr;</button>
 <div class="my-wrap">
   <core-scroll id="my-scroll-child" class="my-scroll" items="li">
     <ul>
@@ -161,7 +161,7 @@ Buttons can control a `core-scroll` by targeting its ID and specifying a directi
 
 ```html
 <button
-  data-for"my-scroll-js"      <!-- {String} Id of <core-scroll> -->
+  data-for="my-scroll-js"      <!-- {String} Id of <core-scroll> -->
   value="up"              <!-- {String} Sets direction of scroll. Possible values: "left", "right", "up" or "down" -->
   aria-label="Rull opp">  <!-- {String} Sets label -->
   &uarr;
