@@ -75,7 +75,7 @@ Using static registers the custom element with default name automatically:
 <script src="https://static.nrk.no/core-components/major/7/core-toggle/core-toggle.min.js"></script>  <!-- Using static -->
 ```
 
-Remember to [polyfill](https://github.com/webcomponents/polyfills#custom-elements) custom elements if needed.
+Remember to [polyfill](https://github.com/webcomponents/polyfills/tree/master/packages/custom-elements) custom elements if needed.
 
 
 ## Usage
@@ -83,7 +83,7 @@ Remember to [polyfill](https://github.com/webcomponents/polyfills#custom-element
 ### HTML / JavaScript
 
 ```html
-<button>Toggle VanillaJS</button>       <!-- Must be <button> placed directly before <core-toggle> or use id + for attributes -->
+<button>Toggle VanillaJS</button>       <!-- Must be <button> placed directly before <core-toggle> or use id + data-for attributes -->
 <core-toggle
   hidden                                <!-- Set hidden attribute to prevent FOUC -->
   popup="{Boolean|String}">             <!-- Optional. Defaults to false. Enable or disable if clicking outside toggle should close it. Provide a string to control the aria-label text on the toggle -->
@@ -130,11 +130,11 @@ import CoreToggle from '@nrk/core-toggle/jsx'
 
 ### With for
 
-Putting the toggle button directly before the content is highly recommended, as this fulfills all accessibility requirements by default. There might be scenarios though, where styling makes this DOM structure impractical. In such cases, give the `<button>` a `for` attribute, and the `<core-toggle>` an `id` with corresponding value. Make sure there is no text between the button and toggle content, as this will break the experience for screen reader users:
+Putting the toggle button directly before the content is highly recommended, as this fulfills all accessibility requirements by default. There might be scenarios though, where styling makes this DOM structure impractical. In such cases, give the `<button>` a `data-for` attribute (`for` is deprecated), and the `<core-toggle>` an `id` with corresponding value. Make sure there is no text between the button and toggle content, as this will break the experience for screen reader users:
 
 ```html
 <div>
-  <button for="my-toggle">Toggle</button>
+  <button data-for="my-toggle">Toggle</button>
 </div>
 <core-toggle id="my-toggle" hidden>...</core-toggle>
 ```

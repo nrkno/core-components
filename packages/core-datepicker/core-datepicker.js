@@ -38,7 +38,7 @@ export default class CoreDatepicker extends HTMLElement {
 
   handleEvent (event) {
     if (event.defaultPrevented || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || (event.type === 'keydown' && !KEYS[event.keyCode])) return
-    if (!this.contains(event.target) && !closest(event.target, `[for="${this.id}"]`)) return
+    if (!this.contains(event.target) && !closest(event.target, `[for="${this.id}"],[data-for="${this.id}"]`)) return
     if (event.type === 'change') this.date = MASK[event.target.getAttribute('data-type')].replace('*', event.target.value)
     else if (event.type === 'click') {
       const button = closest(event.target, 'button[value]')
