@@ -101,7 +101,7 @@ describe('core-toggle', () => {
     await expect(prop('core-toggle', 'hidden')).toMatch(/true/i)
   })
 
-  it('respects "for" attribute', async () => {
+  it('respects deprecated "for" attribute', async () => {
     await browser.executeScript(() => {
       document.body.innerHTML = `
         <div><button for="content">Toggle</button></div>
