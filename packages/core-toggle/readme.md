@@ -134,7 +134,7 @@ Putting the toggle button directly before the content is highly recommended, as 
 
 ```html
 <div>
-  <button data-for"my-toggle">Toggle</button>
+  <button data-for="my-toggle">Toggle</button>
 </div>
 <core-toggle id="my-toggle" hidden>...</core-toggle>
 ```

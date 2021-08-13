@@ -97,7 +97,7 @@ Remember to [polyfill](https://github.com/webcomponents/polyfills/tree/master/pa
   <button>Tab 1</button>                  <!-- Tab elements must be <a> or <button>. Do not use <li> -->
   <a href="#">Tab 2</a>
   <button>Tab 3</button>
-  <button data-for"panel-2">Tab 4</button>    <!-- Point to a specific tabpanel -->
+  <button data-for="panel-2">Tab 4</button>    <!-- Point to a specific tabpanel -->
 </core-tabs>
 <div>Tabpanel 1 content</div>             <!-- First tabpanel is the next element sibling of core-tabs -->
 <div hidden>Tabpanel 2 content</div>      <!-- Second tabpanel. Use hidden attribute to prevent FOUC -->
