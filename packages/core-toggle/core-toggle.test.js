@@ -101,7 +101,7 @@ describe('core-toggle', () => {
     await expect(prop('core-toggle', 'hidden')).toMatch(/true/i)
   })
 
-  it('respects "for" attribute', async () => {
+  it('respects deprecated "for" attribute', async () => {
     await browser.executeScript(() => {
       document.body.innerHTML = `
         <div><button for="content">Toggle</button></div>
@@ -109,8 +109,24 @@ describe('core-toggle', () => {
       `
     })
     const toggleId = await attr('core-toggle', 'id')
+    await $('button').click()
     await expect(attr('button', 'for')).toEqual(toggleId)
     await expect(attr('button', 'aria-controls')).toEqual(toggleId)
+    await expect(prop('core-toggle', 'hidden')).toMatch(/false/i)
+  })
+
+  it('respects "data-for" attribute', async () => {
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <div><button data-for="content">Toggle</button></div>
+        <core-toggle id="content" hidden></core-toggle>
+      `
+    })
+    const toggleId = await attr('core-toggle', 'id')
+    await $('button').click()
+    await expect(attr('button', 'data-for')).toEqual(toggleId)
+    await expect(attr('button', 'aria-controls')).toEqual(toggleId)
+    await expect(prop('core-toggle', 'hidden')).toMatch(/false/i)
   })
 
   it('respects exisiting aria-label with popup and value', async () => {

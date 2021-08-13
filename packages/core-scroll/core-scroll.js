@@ -55,17 +55,17 @@ export default class CoreScroll extends HTMLElement {
   }
 
   handleEvent (event = {}) {
-    if (event.defaultPrevented) return
+    if (!this.parentNode || event.defaultPrevented) return // Abort if removed from DOM or event is prevented
     if (event.type === 'wheel') DRAG.animate = false // Stop momentum animation onWheel
     else if (event.type === 'mousedown') onMousedown.call(this, event)
     else if (event.type === 'click') {
-      const btn = this.id && closest(event.target, `[for="${this.id}"]`)
+      const btn = this.id && closest(event.target, `[for="${this.id}"],[data-for="${this.id}"]`)
       if (btn && dispatchEvent(this, 'scroll.click', { move: btn.value })) this.scroll(btn.value)
     } else {
       const scroll = { left: this.scrollLeft, up: this.scrollTop, right: this.scrollRight, down: this.scrollBottom }
       const cursor = (scroll.left || scroll.right || scroll.up || scroll.down) ? 'grab' : ''
 
-      queryAll(this.id && `[for="${this.id}"]`).forEach((el) => (el.disabled = !scroll[el.value]))
+      queryAll(this.id && `[for="${this.id}"],[data-for="${this.id}"]`).forEach((el) => (el.disabled = !scroll[el.value]))
       dispatchEvent(this, 'scroll.change')
 
       if (!event.type) { // Do not change cursor while dragging

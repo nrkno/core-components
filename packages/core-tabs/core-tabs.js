@@ -14,9 +14,10 @@ export default class CoreTabs extends HTMLElement {
   }
 
   connectedChildren () {
+    if (!this.parentNode) return // Abort if removed from DOM
     let next = this
     this.tabs.forEach((tab, index) => {
-      const panel = document.getElementById(tab.getAttribute('for')) || (next = next.nextElementSibling || next)
+      const panel = document.getElementById(tab.getAttribute('data-for') || tab.getAttribute('for')) || (next = next.nextElementSibling || next)
 
       tab.setAttribute('role', 'tab')
       tab.setAttribute('aria-controls', panel.id = panel.id || getUUID())

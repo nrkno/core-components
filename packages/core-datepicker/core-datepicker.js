@@ -26,7 +26,7 @@ export default class CoreDatepicker extends HTMLElement {
   }
 
   attributeChangedCallback () {
-    if (!this._date) return // Only render after connectedCallback
+    if (!this._date) return // Only render after connectedCallback and before disconnectedCallback
     if (this.disabled(this.date) && !this.disabled(this._date)) return (this.date = this._date) // Jump back
     if (this.diff(this.date)) dispatchEvent(this, 'datepicker.change', this._date = this.date)
 
@@ -38,7 +38,7 @@ export default class CoreDatepicker extends HTMLElement {
 
   handleEvent (event) {
     if (event.defaultPrevented || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || (event.type === 'keydown' && !KEYS[event.keyCode])) return
-    if (!this.contains(event.target) && !closest(event.target, `[for="${this.id}"]`)) return
+    if (!this.contains(event.target) && !closest(event.target, `[for="${this.id}"],[data-for="${this.id}"]`)) return
     if (event.type === 'change') this.date = MASK[event.target.getAttribute('data-type')].replace('*', event.target.value)
     else if (event.type === 'click') {
       const button = closest(event.target, 'button[value]')

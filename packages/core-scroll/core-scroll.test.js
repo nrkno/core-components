@@ -14,7 +14,7 @@ describe('core-scroll', () => {
   it('sets up properties', async () => {
     await browser.executeScript(() => {
       document.body.innerHTML = `
-        <button for="scroller" value="down">Down</button>
+        <button data-for="scroller" value="down">Down</button>
         <core-scroll id="scroller">
           <div>This is overflowing content</div>
           <div>This is overflowing content</div>

@@ -56,44 +56,44 @@ demo-->
 ```html
 <!--demo-->
 <!-- Normal -->
-<button for="my-dialog">Open dialog</button>
+<button data-for="my-dialog">Open dialog</button>
 <core-dialog id="my-dialog" class="my-dialog" aria-label="first dialog title" hidden>
   <h1>This is a title</h1>
   <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
-  <button for="my-dialog-nested">Open an additional dialog</button>
+  <button data-for="my-dialog-nested">Open an additional dialog</button>
   <button type="button" autofocus style="visibility: hidden">Should not be focusable</button>
   <button type="button" autofocus>Autofocus</button>
-  <button for="close">Close</button>
+  <button data-for="close">Close</button>
   <core-dialog id="my-dialog-nested" class="my-dialog" aria-label="other dialog title" hidden>
     <h1>Another dialog, triggered inside the first dialog</h1>
     <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero.</p>
-    <button for="close">Close</button>
+    <button data-for="close">Close</button>
   </core-dialog>
 </core-dialog>
 
 <!-- Strict -->
-<button for="strict-dialog">Open strict dialog</button>
+<button data-for="strict-dialog">Open strict dialog</button>
 <core-dialog id="strict-dialog" class="my-dialog" aria-label="strict dialog title" hidden strict>
   <h1>This is a title</h1>
   <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
   <button type="button">This button does nothing</button>
-  <button for="close">Close</button>
+  <button data-for="close">Close</button>
 </core-dialog>
 
 <!-- Modal -->
-<button for="modal-dialog">Open modal dialog</button>
+<button data-for="modal-dialog">Open modal dialog</button>
 <core-dialog id="modal-dialog" class="my-dialog" aria-label="modal dialog title" hidden backdrop="false">
   <h1>This is a title</h1>
   <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
-  <button for="close">Close</button>
+  <button data-for="close">Close</button>
 </core-dialog>
 
 <!-- Custom backdrop -->
-<button for="modal-custom">Open dialog with custom backdrop</button>
+<button data-for="modal-custom">Open dialog with custom backdrop</button>
 <core-dialog id="modal-custom" class="my-dialog" aria-label="modal dialog title" hidden backdrop="back-custom">
   <h1>This is a title</h1>
   <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
-  <button for="close">Close</button>
+  <button data-for="close">Close</button>
 </core-dialog>
 <div id="back-custom" class="my-backdrop" style="background:rgba(0,0,50,.8)" hidden></div>
 ```
@@ -139,18 +139,18 @@ demo-->
 
   ReactDOM.render(<DialogContainerDemo />, document.getElementById('jsx-dialog'))
   ReactDOM.render(<div>
-    <button for="dialog-jsx">Open strict dialog jsx</button>
+    <button data-for="dialog-jsx">Open strict dialog jsx</button>
     <CoreDialog id="dialog-jsx" className="my-dialog" aria-label="React dialog" hidden strict backdrop>
       <h1>Strict dialog for JSX</h1>
       <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
-      <button for="close">Lukk</button>
+      <button data-for="close">Lukk</button>
     </CoreDialog>
     <br />
-    <button for="dialog-cust">Open no backdrop</button>
+    <button data-for="dialog-cust">Open no backdrop</button>
     <CoreDialog id="dialog-cust" className="my-dialog" aria-label="React dialog without backdrop" backdrop={false} hidden>
       <h1>Strict dialog for JSX</h1>
       <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
-      <button for="close">Lukk</button>
+      <button data-for="close">Lukk</button>
     </CoreDialog>
   </div>, document.getElementById('jsx-dialog-strict'))
 </script>
@@ -172,7 +172,7 @@ Using static registers the custom element with default name automatically:
 <script src="https://static.nrk.no/core-components/major/7/core-dialog/core-dialog.min.js"></script>  <!-- Using static -->
 ```
 
-Remember to [polyfill](https://github.com/webcomponents/polyfills#custom-elements) custom elements if needed.
+Remember to [polyfill](https://github.com/webcomponents/polyfills/tree/master/packages/custom-elements) custom elements if needed.
 
 
 ## Usage
@@ -180,7 +180,7 @@ Remember to [polyfill](https://github.com/webcomponents/polyfills#custom-element
 ### HTML / JavaScript
 
 ```html
-<button for="my-dialog">Open</button>    <!-- Opens dialog with id="my-dialog" -->
+<button data-for="my-dialog">Open</button>    <!-- Opens dialog with id="my-dialog" -->
 <core-dialog id="my-dialog"
              hidden                      <!-- Hide dialog by default -->
              strict                      <!-- Optional. If set, prevents the dialog from closing on ESC-key and on backdrop click -->
@@ -188,7 +188,7 @@ Remember to [polyfill](https://github.com/webcomponents/polyfills#custom-element
              aria-label="{String}">      <!-- Optional. Is read by screen readers -->
   <h1>Title of dialog</h1>
   <p>Some content</p>
-  <button for="close">Close dialog</button>   <!-- Closes dialog when for="close" -->
+  <button data-for="close">Close dialog</button>   <!-- Closes dialog when data-for="close" -->
 </core-dialog>
 ```
 
@@ -219,7 +219,7 @@ myDialog.show()         // Open dialog
 ```jsx
 import CoreDialog from '@nrk/core-dialog/jsx'
 
-<button for="my-dialog">Open</button>         // Opens dialog with id="my-dialog"
+<button data-for="my-dialog">Open</button>    // Opens dialog with id="my-dialog"
 <CoreDialog id="my-dialog"
             hidden                            // Hide dialog by default
             strict                            // Optional. If set, prevents the dialog from closing on ESC-key and on backdrop click
@@ -230,7 +230,7 @@ import CoreDialog from '@nrk/core-dialog/jsx'
             onDialogToggle={Function}>        // Optional. Toggle event handler. See event 'dialog.toggle'
   <h1>My React/Preact dialog</h1>
   <p>Some content</p>
-  <button for="close"></button>               // Closes dialog when for="close"
+  <button data-for="close"></button>          // Closes dialog when data-for="close"
 </CoreDialog>
 ```
 
@@ -248,7 +248,7 @@ content with `<h1 tabindex="-1">Dialog title</h1>`.
 
 ### Elements order
 
-Though not strictly required, the `<button>` opening a dialog should be placed directly before the `<core-dialog>` itself. This eases the mental model for screen reader users. Othewise, use `<button for="my-dialog-id"></button>`.
+Though not strictly required, the `<button>` opening a dialog should be placed directly before the `<core-dialog>` itself. This eases the mental model for screen reader users. Othewise, use `<button data-for="my-dialog-id"></button>`.
 
 ### Backdrop
 

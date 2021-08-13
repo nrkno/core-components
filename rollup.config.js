@@ -1,20 +1,21 @@
-import babel from 'rollup-plugin-babel'
-import commonjs from 'rollup-plugin-commonjs'
-import resolve from 'rollup-plugin-node-resolve'
+import babel from '@rollup/plugin-babel'
+import commonjs from '@rollup/plugin-commonjs'
+import json from '@rollup/plugin-json'
+import resolve from '@rollup/plugin-node-resolve'
 import serve from 'rollup-plugin-serve'
-import json from 'rollup-plugin-json'
-import { uglify } from 'rollup-plugin-uglify'
+import { terser } from 'rollup-plugin-terser'
 import utils from './bin/index.js'
 
-const minify = uglify({ output: { comments: /^!/ } })
+const minify = terser({ format: { comments: /^!/ } })
 const globals = { 'react-dom': 'ReactDOM', react: 'React' } // Exclude from output
 const external = Object.keys(globals)
 const treeshake = { moduleSideEffects: 'no-external' } // Strip React require
+const babelConfig = babel({ presets: [['@babel/preset-env', { modules: false }]], babelHelpers: 'bundled' })
 const plugins = [
   json(),
   resolve({ dedupe: external }),
-  commonjs(),
-  babel({ presets: [['@babel/preset-env', { modules: false }]] }),
+  commonjs(), // Must be above/before babelConfig
+  babelConfig,
   Boolean(process.env.ROLLUP_WATCH) && serve('packages')
 ]
 
@@ -31,6 +32,7 @@ export default utils.pkgs.reduce((all, path) => {
     output: {
       format: 'cjs',
       file: `${path}/${file}.test.cjs.js`,
+      exports: 'none', // Tests have no exports; set to 'auto' if this changes
       globals
     },
     treeshake,
@@ -38,14 +40,15 @@ export default utils.pkgs.reduce((all, path) => {
     plugins: [
       json(),
       resolve({ preferBuiltins: true }),
-      commonjs(),
-      babel({ presets: [['@babel/preset-env', { modules: false }]] })
+      commonjs(), // Must be above/before babelConfig
+      babelConfig
     ]
   }, {
     input: `${path}/${file}.js`, // JS CJS
     output: {
       format: 'cjs',
       file: `${path}/${file}.cjs.js`,
+      exports: 'default',
       globals
     },
     treeshake,
@@ -70,6 +73,7 @@ export default utils.pkgs.reduce((all, path) => {
     output: {
       format: 'cjs',
       file: `${path}/jsx.js`,
+      exports: 'default',
       globals
     },
     treeshake,

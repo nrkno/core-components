@@ -89,15 +89,15 @@ demo-->
     <table></table>
   </core-datepicker>
 </core-toggle>
-<button for="my-datepicker" value="now">Nå</button>
-<button for="my-datepicker" value="+1 week">Neste uke</button>
-<select for="my-datepicker">
+<button data-for="my-datepicker" value="now">Nå</button>
+<button data-for="my-datepicker" value="+1 week">Neste uke</button>
+<select data-for="my-datepicker">
   <option>Tid</option>
   <option value="11:m">11</option>
   <option value="12:m">12</option>
   <option value="13:m">13</option>
 </select>
-<table for="my-datepicker"></table>
+<table data-for="my-datepicker"></table>
 <input type="text" id="my-datepicker-output">
 <script>
   // Update GUI
@@ -166,7 +166,7 @@ Using static registers the custom element with default name automatically:
 <script src="https://static.nrk.no/core-components/major/7/core-datepicker/core-datepicker.min.js"></script>  <!-- Using static -->
 ```
 
-Remember to [polyfill](https://github.com/webcomponents/polyfills#custom-elements) custom elements if needed.
+Remember to [polyfill](https://github.com/webcomponents/polyfills/tree/master/packages/custom-elements) custom elements if needed.
 
 
 ## Usage
