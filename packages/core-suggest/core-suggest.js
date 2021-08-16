@@ -114,7 +114,7 @@ function onMutation (self) {
     const length = needle.length
     const hits = []
 
-    for (let start = 0; ~(start = haystack.indexOf(needle, start)); start += length) hits.push(start)
+    for (let start = 0; (start = haystack.indexOf(needle, start)) !== -1; start += length) hits.push(start)
     for (let start = 0, hitsLength = hits.length, node; (node = iterator.nextNode());) {
       const nodeStart = start
       const nodeEnd = start += node.textContent.length
