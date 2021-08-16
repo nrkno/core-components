@@ -1,10 +1,10 @@
-import { IS_IOS, closest, escapeHTML, dispatchEvent, toggleAttribute, queryAll } from '../utils'
+import { closest, dispatchEvent, escapeHTML, IS_IE11, IS_IOS, queryAll, toggleAttribute } from '../utils'
 
 const KEYS = { ENTER: 13, ESC: 27, PAGEUP: 33, PAGEDOWN: 34, END: 35, HOME: 36, UP: 38, DOWN: 40 }
 const AJAX_DEBOUNCE = 500
 
 export default class CoreSuggest extends HTMLElement {
-  static get observedAttributes () { return ['hidden'] }
+  static get observedAttributes () { return ['hidden', 'highlight'] }
 
   connectedCallback () {
     this._observer = new window.MutationObserver(() => onMutation(this)) // Enhance <a> and <button> markup
@@ -35,7 +35,9 @@ export default class CoreSuggest extends HTMLElement {
   }
 
   attributeChangedCallback (name, prev, next) {
-    if (this._observer) this.input.setAttribute('aria-expanded', !this.hidden)
+    if (!this._observer) return
+    if (name === 'hidden') this.input.setAttribute('aria-expanded', !this.hidden)
+    if (name === 'highlight') onMutation(this)
   }
 
   handleEvent (event) {
@@ -61,6 +63,12 @@ export default class CoreSuggest extends HTMLElement {
 
   set limit (int) { this.setAttribute('limit', int) }
 
+  get highlight () {
+    return String(/^on|off|keep$/i.exec(this.getAttribute('highlight')) || 'on').toLowerCase()
+  }
+
+  set highlight (str) { this.setAttribute('highlight', str) }
+
   // Must set attribute for IE11
   get hidden () { return this.hasAttribute('hidden') }
 
@@ -81,12 +89,14 @@ function onMutation (self) {
   const items = self.querySelectorAll('a:not([hidden]),button:not([hidden])')
   const limit = Math.min(items.length, self.limit)
 
-  // Remove old highlights
-  const marks = self.getElementsByTagName('mark')
-  while (marks[0]) {
-    const parent = marks[0].parentNode
-    parent.replaceChild(document.createTextNode(marks[0].textContent), marks[0])
-    parent.normalize && parent.normalize()
+  // Remove old highlights only when highlight-mode is not 'keep'
+  if (self.highlight !== 'keep') {
+    const marks = self.getElementsByTagName('mark')
+    while (marks[0]) {
+      const parent = marks[0].parentNode
+      parent.replaceChild(document.createTextNode(marks[0].textContent), marks[0])
+      parent.normalize && parent.normalize()
+    }
   }
 
   for (let i = 0, l = items.length; i < l; ++i) {
@@ -96,7 +106,8 @@ function onMutation (self) {
     toggleItem(items[i], i >= limit)
   }
 
-  if (needle) {
+  // Highlights disabled for iIE11 due to bugs in range calculation
+  if (needle && self.highlight === 'on' && !IS_IE11) {
     const range = document.createRange()
     const iterator = document.createNodeIterator(self, window.NodeFilter.SHOW_TEXT, null, false)
     const haystack = self.textContent.toLowerCase()

@@ -1,6 +1,7 @@
 export const IS_BROWSER = typeof window !== 'undefined'
 export const IS_ANDROID = IS_BROWSER && /(android)/i.test(navigator.userAgent) // Bad, but needed
 export const IS_IOS = IS_BROWSER && /iPad|iPhone|iPod/.test(String(navigator.platform))
+export const IS_IE11 = IS_BROWSER && window.msCrypto // msCrypto only exists in IE11
 
 // Mock HTMLElement for Node
 if (!IS_BROWSER && !global.HTMLElement) {
