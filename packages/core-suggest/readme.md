@@ -80,28 +80,22 @@ Remember to [polyfill](https://github.com/webcomponents/polyfills/tree/master/pa
 
 Typing into the input toggles the [hidden attribute](https://developer.mozilla.org/en/docs/Web/HTML/Global_attributes/hidden) on items of type `<button>` and `<a>`, based on matching [textContent](https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent) inside `<core-suggest>`. Focusing the input unhides the following element. The default filtering behavior can easily be altered through the `'suggest.select'`, `'suggest.filter'`, `'suggest.ajax'` and  `'suggest.ajax.beforeSend'` [events](#events).
 
+### Security
+
 Results will be rendered in the element inside `<core-suggest>`.
 Always use `coreSuggest.escapeHTML(String)` to safely render data from API or user.
 
-### `highlight` -attribute
+### Highlights
 
-> Accepts `'on', 'off', 'keep'`, defaults to `'on'`.
-
-> Highlighting is disabled for IE11 due to errant behavior.
-
+The `highlight`-attribute accepts `'on', 'off', 'keep'`, defaults to `'on'`.
 Optional attribute to override how core-suggest handles `<mark>`-tags in results.
+Highlighting is disabled for IE11 due to errant behavior.
 
-#### `'on'` (default)
-- Strips existing `<mark>`-tags
-- Wraps matches in `<mark>`-tags
-
-#### `'off'`
-- Strips existing `<mark>`-tags
-- Does not wrap matches
-
-#### `'keep'` (keep existing)
-- Does not strip existing `<mark>`-tags
-- Does not wrap matches
+VALUE | BEHAVIOUR
+:-- | :--
+`'on'` (default) | Strips existing `<mark>`-tags and wraps new matches in `<mark>`-tags
+`'off'` | Strips existing `<mark>`-tags, but does not wrap matches
+`'keep'` | Does not noting with `<mark>`-tags - existing tags are not stripped and no new matches are added
 
 ### HTML / JavaScript
 

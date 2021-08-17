@@ -106,7 +106,7 @@ function onMutation (self) {
     toggleItem(items[i], i >= limit)
   }
 
-  // Highlights disabled for iIE11 due to bugs in range calculation
+  // Highlights disabled for IE11 due to bugs in range calculation
   if (needle && self.highlight === 'on' && !IS_IE11) {
     const range = document.createRange()
     const iterator = document.createNodeIterator(self, window.NodeFilter.SHOW_TEXT, null, false)
