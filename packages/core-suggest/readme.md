@@ -80,8 +80,22 @@ Remember to [polyfill](https://github.com/webcomponents/polyfills/tree/master/pa
 
 Typing into the input toggles the [hidden attribute](https://developer.mozilla.org/en/docs/Web/HTML/Global_attributes/hidden) on items of type `<button>` and `<a>`, based on matching [textContent](https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent) inside `<core-suggest>`. Focusing the input unhides the following element. The default filtering behavior can easily be altered through the `'suggest.select'`, `'suggest.filter'`, `'suggest.ajax'` and  `'suggest.ajax.beforeSend'` [events](#events).
 
+### Security
+
 Results will be rendered in the element inside `<core-suggest>`.
 Always use `coreSuggest.escapeHTML(String)` to safely render data from API or user.
+
+### Highlights
+
+The `highlight`-attribute accepts `'on', 'off', 'keep'`, defaults to `'on'`.
+Optional attribute to override how core-suggest handles `<mark>`-tags in results.
+Highlighting is disabled for IE11 due to errant behavior.
+
+VALUE | BEHAVIOUR
+:-- | :--
+`'on'` (default) | Strips existing `<mark>`-tags and wraps new matches in `<mark>`-tags
+`'off'` | Strips existing `<mark>`-tags, but does not wrap matches
+`'keep'` | Does not noting with `<mark>`-tags - existing tags are not stripped and no new matches are added
 
 ### HTML / JavaScript
 
@@ -91,6 +105,7 @@ Always use `coreSuggest.escapeHTML(String)` to safely render data from API or us
        list="{String}">                                 <!-- Optional. Specify id of suggest element -->
 <core-suggest limit="{Number}"                          <!-- Optional. Limit maxium number of result items. Defaults to Infinity -->
               ajax="{String}"                           <!-- Optional. Fetches external data. See event 'suggest.ajax'. Example: 'https://search.com?q={{value}}' -->
+              highlight="{'on' | 'off' | 'keep'}"       <!-- Optional override of highlighting matches in results. Defaults to 'on'.  -->
               hidden>                                   <!-- Use hidden to toggle visibility -->
   <ul>                                                  <!-- Can be any tag, but items should be inside <li> -->
     <li><button>Item 1</button></li>                    <!-- Items must be <button> or <a> -->
@@ -109,11 +124,13 @@ const mySuggest = document.querySelector('core-suggest')
 // Getters
 mySuggest.ajax       // Get ajax URL value
 mySuggest.limit      // Get limit
+mySuggest.highlight  // Get highlight
 mySuggest.hidden     // Get hidden
 mySuggest.input      // Get input for suggest
 // Setters
 mySuggest.ajax = "https://search.com?q={{value}}"    // Set ajax endpoint URL for fetching external data.
 mySuggest.limit = 5                                  // Set limit for results
+mySuggest.highlight = 'on' | 'off' | 'keep'          // Set highlight strategy
 mySuggest.hidden = false                             // Set hidden value
 // Methods
 mySuggest.escapeHTML('<span>...</span>')             // Utility function for escaping HTML string
@@ -259,7 +276,7 @@ All styling in documentation is example only. Both the `<button>` and content el
 .my-input-content[hidden] {}          /* Target only closed content */
 
 .my-input-content :focus {}           /* Target focused item */
-.my-input-content mark {}             /* Target highlighted text (set `background: none;` to disable highlighting) */
+.my-input-content mark {}             /* Target highlighted text (use `highlight='off'` to disable highlighting) */
 ```
 
 

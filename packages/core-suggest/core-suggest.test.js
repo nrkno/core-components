@@ -150,6 +150,66 @@ describe('core-suggest', () => {
     await expect(prop('button[aria-label="Suggest 4, 4 av 3"]', 'hidden')).toMatch(/true/i)
   })
 
+  it('defaults to highlight -attribute "on", stripping existing and adding new <mark>-tags', async () => {
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <input type="text">
+        <core-suggest hidden>
+          <ul>
+            <li><button id="one">Suggest <mark>1</mark></button></li>
+            <li><button id="two">Suggest 2</button></li>
+          </ul>
+        </core-suggest>
+      `
+    })
+    // <mark>-tags are stripped on render
+    await $('input').click()
+    await expect(browser.executeScript(() => (document.querySelector('mark')))).toMatch(/null/i)
+    // matches are wrapped in <mark>-tags
+    await $('input').sendKeys('2')
+    await expect(browser.executeScript(() => (document.querySelector('mark').textContent))).toEqual('2')
+  })
+
+  it('supports highlight -attribute "keep", keeping existing and not adding new <mark>-tags', async () => {
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <input type="text">
+        <core-suggest highlight="keep" hidden>
+          <ul>
+            <li><button id="one">Suggest <mark>1</mark></button></li>
+            <li><button id="two">Suggest 2</button></li>
+          </ul>
+        </core-suggest>
+      `
+    })
+    // <mark>-tags are stripped on render
+    await $('input').click()
+    await expect(browser.executeScript(() => (document.querySelector('mark').textContent))).toEqual('1')
+    // input-matches are not wrapped in <mark>-tags
+    await $('input').sendKeys('2')
+    await expect(browser.executeScript(() => (document.querySelector('mark').textContent))).toEqual('1')
+  })
+
+  it('supports highlight -attribute "off", stripping existing and not adding new <mark>-tags', async () => {
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <input type="text">
+        <core-suggest highlight="off" hidden>
+          <ul>
+            <li><button id="one">Suggest <mark>1</mark></button></li>
+            <li><button id="two">Suggest 2</button></li>
+          </ul>
+        </core-suggest>
+      `
+    })
+    // <mark>-tags are stripped on render
+    await $('input').click()
+    await expect(browser.executeScript(() => (document.querySelector('mark')))).toMatch(/null/i)
+    // input-matches are not wrapped in <mark>-tags
+    await $('input').sendKeys('2')
+    await expect(browser.executeScript(() => (document.querySelector('mark')))).toMatch(/null/i)
+  })
+
   it('triggers ajax event on input ', async () => {
     const server = http.createServer((request, response) => {
       response.writeHead(200, HTTP_HEADERS)
