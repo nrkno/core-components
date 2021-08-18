@@ -5,6 +5,7 @@ import https from 'https'
 import dotenv from 'dotenv'
 import { SpecReporter } from 'jasmine-spec-reporter'
 import { getUUID } from '../packages/utils'
+import Axios from 'axios'
 
 dotenv.config()
 const isLocal = process.env.NODE_ENV === 'test'
@@ -12,7 +13,7 @@ const username = process.env.SMARTBEAR_USER
 const authKey = process.env.SMARTBEAR_AUTHKEY
 const localIdentifier = getUUID()
 const identifier = new Date().toLocaleString()
-const specs = path.resolve(process.cwd(), `packages/*/*.test.${isLocal ? '' : 'cjs.'}js`)
+const specs = path.resolve(process.cwd(), `packages/core-scroll/*.test.${isLocal ? '' : 'cjs.'}js`)
 
 const commonCapabilities = {
   username,
@@ -34,7 +35,7 @@ function config () {
     directConnect: isLocal,
     SELENIUM_PROMISE_MANAGER: false,
     jasmineNodeOpts: {
-      defaultTimeoutInterval: 2 * 60 * 1000,
+      defaultTimeoutInterval: 20 * 1000, // 20 sek
       print: Function.prototype // Disable dot reporter
     },
     allScriptsTimeout: 30000,
@@ -99,9 +100,12 @@ function config () {
       // TODO: do something, to set proper test result in CBT.
       // https://github.com/nrkno/protractor-runner-cbt/blob/e513a69145d17916a7034f1c42694f1e09bd50ff/runUtils/smartBearScore.ts
       // https://crossbrowsertesting.com/apidocs/v3/selenium.html#!/default/put_selenium_selenium_test_id
-      const sessionId = await browser.getSession()
-      const passedText = passed ? 'passed' : 'failed'
-      return axios.put(`https://crossbrowsertesting.com/api/v3/selenium/${sessionId}`, {
+      const session = await browser.getSession()
+      console.log('session:', session)
+      console.log('sessionId:', session.id_)
+      await browser.waitForAngularEnabled(false)
+      const passedText = passed ? 'pass' : 'fail'
+      Axios.put(`https://crossbrowsertesting.com/api/v3/selenium/${session.id_}`, {
         body: {
           action: 'set_score',
           passedText
@@ -113,6 +117,7 @@ function config () {
         json: true,
         resolveWithFullResponse: true
       })
+      // resolve (passed)
 
       // The following was the browserstack method..
       // const session = await browser.getSession()
@@ -361,7 +366,7 @@ const capabilities = isLocal
       platform: 'Windows 10',
       browserName: 'MicrosoftEdge',
       version: '18'
-    },
+    }
 
     /*
   // Edge 17.17134, Windows 10, hits=38578, vdist=0.171
@@ -416,20 +421,21 @@ const capabilities = isLocal
   */
     // Firefox 70, Windows 10, hits=145659, vdist=0.000
     // core-components
-    {
-      tags: {
-        id: 'firefox70',
-        browser: 'firefox',
-        platform: 'windows',
-        device: 'desktop',
-        hits: 145659,
-        popularity: 'high',
-        default: true
-      },
-      platform: 'Windows 10',
-      browserName: 'Firefox',
-      version: '70x64'
-    } /*
+    /* {
+    tags: {
+      id: 'firefox70',
+      browser: 'firefox',
+      platform: 'windows',
+      device: 'desktop',
+      hits: 145659,
+      popularity: 'high',
+      default: true,
+    },
+    platform: 'Windows 10',
+    browserName: 'Firefox',
+    version: '70x64',
+  } */
+    /*
 
   // Firefox 64
   {
