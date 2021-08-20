@@ -25,9 +25,25 @@ const commonCapabilities = {
   build: 'core-components tests'
 }
 
+/**
+ * stripSensitiveValuesByKey replaces value of target key (e.g 'password') with a redacted value
+ * @param {Array} entryList List of key-value objects
+ * @param {String} key key to be replaced
+ * @returns {Array} entryList with replaced values (if any were found)
+ */
+function stripSensitiveValuesByKey (entryList, key) {
+  const VAL_REDACTED = '**Value redacted**'
+  return entryList.map(entry => Object.prototype.hasOwnProperty.call(entry, key)
+    ? ({
+        ...entry,
+        [key]: VAL_REDACTED
+      })
+    : entry)
+}
+
 function config () {
   console.log('isLocal?', isLocal)
-  console.log('capabilities:', capabilities)
+  console.log('capabilities:', stripSensitiveValuesByKey(capabilities, 'password'))
   return {
     framework: 'jasmine',
     specs: [specs],
@@ -83,7 +99,7 @@ function config () {
         spec: {
           displaySuccessful: true,
           displayFailed: true,
-          displayStacktrace: true,
+          displayStacktrace: 'pretty',
           displayErrorMessages: true
         },
         summary: false
@@ -92,38 +108,26 @@ function config () {
     },
     onComplete: async (passed) => {
       console.log('passed?', passed)
-      // process.exit(passed)
       if (isLocal) return // claimed by protractor to be unnecessary
 
-      // resolve (passed)
-
-      // TODO: do something, to set proper test result in CBT.
-      // https://github.com/nrkno/protractor-runner-cbt/blob/e513a69145d17916a7034f1c42694f1e09bd50ff/runUtils/smartBearScore.ts
-      // https://crossbrowsertesting.com/apidocs/v3/selenium.html#!/default/put_selenium_selenium_test_id
       const session = await browser.getSession()
       console.log('session:', session)
       console.log('sessionId:', session.id_)
       await browser.waitForAngularEnabled(false)
       const passedText = passed ? 'pass' : 'fail'
       Axios.put(`https://crossbrowsertesting.com/api/v3/selenium/${session.id_}`, {
-        body: {
-          action: 'set_score',
-          passedText
-        },
-        auth: {
-          user: username,
-          pass: authKey
-        },
+        action: 'set_score',
+        score: passedText,
         json: true,
-        resolveWithFullResponse: true
+        resolveWithFullResponse: false
+      }, {
+        auth: {
+          username,
+          password: authKey
+        }
       })
-      // resolve (passed)
-
-      // The following was the browserstack method..
-      // const session = await browser.getSession()
-      // return axios.put(`https://${username}:${authKey}@api.browserstack.com/automate/sessions/${session.id_}.json`, {
-      //   status: passed ? 'passed' : 'failed'
-      // })
+        .then(_ => console.log('Score set successfully with response: '))
+        .catch(err => console.error('Setting score failed with error: ', err))
     }
   }
 }
@@ -277,8 +281,7 @@ const capabilities = isLocal
       {
         browserName: 'chrome',
         chromeOptions: {
-          // args: ['--headless', '--window-size=800x600']
-          args: ['--window-size=800x600']
+          args: ['--headless', '--window-size=800x600']
         }
       }
     ]
