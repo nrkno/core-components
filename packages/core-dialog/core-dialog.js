@@ -108,7 +108,7 @@ function getBackdrop (el, attr) {
 }
 
 function isVisible (el) {
-  return el.clientWidth && el.clientHeight && window.getComputedStyle(el).getPropertyValue('visibility') !== 'hidden'
+  return el.offsetWidth && el.offsetHeight && window.getComputedStyle(el).getPropertyValue('visibility') !== 'hidden'
 }
 
 function getZIndex (element) {

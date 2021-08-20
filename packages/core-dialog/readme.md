@@ -62,6 +62,7 @@ demo-->
   <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
   <button data-for="my-dialog-nested">Open an additional dialog</button>
   <button type="button" autofocus style="visibility: hidden">Should not be focusable</button>
+  <a href="#">Link</a>
   <button type="button" autofocus>Autofocus</button>
   <button data-for="close">Close</button>
   <core-dialog id="my-dialog-nested" class="my-dialog" aria-label="other dialog title" hidden>
