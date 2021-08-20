@@ -13,7 +13,7 @@ const username = process.env.SMARTBEAR_USER
 const authKey = process.env.SMARTBEAR_AUTHKEY
 const localIdentifier = getUUID()
 const identifier = new Date().toLocaleString()
-const specs = path.resolve(process.cwd(), `packages/core-scroll/*.test.${isLocal ? '' : 'cjs.'}js`)
+const specs = path.resolve(process.cwd(), `packages/*/*.test.${isLocal ? '' : 'cjs.'}js`)
 
 const commonCapabilities = {
   username,
