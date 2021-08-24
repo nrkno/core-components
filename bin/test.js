@@ -75,24 +75,6 @@ function config () {
         ...cap
       }
     }),
-    beforeLaunch: async () => {
-      await new Promise((resolve, reject) => {
-        // bsLocal.start({ key, localIdentifier, forceLocal: true }, (error) => {
-        //   if (error) return reject(Error('BrowserStack Local error: ' + error))
-        //   resolve(console.log('BrowserStack Local started'))
-        // })
-        resolve()
-      })
-    },
-    afterLaunch: async () => {
-      await new Promise((resolve, reject) => {
-        // bsLocal.stop((error) => {
-        //   if (error) return reject(Error('BrowserStack Local error: ' + error))
-        //   resolve(console.log('BrowserStack Local stopped'))
-        // })
-        resolve()
-      })
-    },
     onPrepare: () => {
       const env = jasmine.getEnv()
       env.addReporter(new SpecReporter({

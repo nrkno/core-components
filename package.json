@@ -36,6 +36,7 @@
     "dotenv": "10.0.0",
     "esm": "3.2.25",
     "fast-glob": "3.2.7",
+    "jasmine-ajax": "4.0.0",
     "jasmine-spec-reporter": "7.0.0",
     "protractor": "7.0.0",
     "regenerator-runtime": "0.13.9",

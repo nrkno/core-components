@@ -1,11 +1,13 @@
 import fs from 'fs'
 import path from 'path'
-import http from 'http'
 import { prop, attr } from '../test-utils'
 
 const coreSuggest = fs.readFileSync(path.resolve(__dirname, 'core-suggest.min.js'), 'utf-8')
 const customElements = fs.readFileSync(require.resolve('@webcomponents/custom-elements'), 'utf-8')
-const HTTP_HEADERS = { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'X-Requested-With' }
+const TEST_URL = '/some/cool/url'
+const TEST_EMPTY_RESPONSE = '{"results": []}'
+const TEST_ERROR_RESPONSE = '{"error": "Go away"}'
+const TEST_BAD_JSON_RESPONSE = '{"I am bad JSON"}'
 
 describe('core-suggest', () => {
   beforeEach(async () => {
@@ -211,22 +213,30 @@ describe('core-suggest', () => {
   })
 
   it('triggers ajax event on input ', async () => {
-    const server = http.createServer((request, response) => {
-      response.writeHead(200, HTTP_HEADERS)
-      response.end('{"results": []}')
-    })
-    const listener = server.listen()
-    await browser.executeScript((port) => {
+    await browser.executeScript((TEST_URL, TEST_EMPTY_RESPONSE) => {
+      // Mock XMLHttpRequest to control response and behavior explicitly
+      window.XMLHttpRequest = function () { return this }
+      window.XMLHttpRequest.prototype = {
+        setRequestHeader: Function.prototype,
+        abort: Function.prototype,
+        open: Function.prototype,
+        send: function () {
+          this.status = 200
+          this.responseText = TEST_EMPTY_RESPONSE
+          this.onload()
+        }
+      }
+      document.addEventListener('suggest.ajax', (event) => (window.response = event.detail.responseText))
+
       document.body.innerHTML = `
         <input type="text">
-        <core-suggest ajax="http://bs-local.com:${port}" hidden></core-suggest>
+        <core-suggest ajax="${TEST_URL}" hidden></core-suggest>
       `
-      document.addEventListener('suggest.ajax', (event) => (window.responseText = event.detail.responseText))
-    }, listener.address().port)
+    }, TEST_URL, TEST_EMPTY_RESPONSE)
+
     await $('input').sendKeys('abc')
-    const text = await browser.wait(() => browser.executeScript(() => window.responseText))
-    await expect(text).toEqual('{"results": []}')
-    server.close()
+    const text = await browser.wait(() => browser.executeScript(() => window.response))
+    await expect(text).toEqual(TEST_EMPTY_RESPONSE)
   })
 
   it('triggers ajax error event on bad url', async () => {
@@ -245,45 +255,58 @@ describe('core-suggest', () => {
   })
 
   it('triggers ajax error event on bad response status', async () => {
-    const server = http.createServer((request, response) => {
-      if (request.method === 'OPTIONS') response.writeHead(200, HTTP_HEADERS)
-      else response.writeHead(500, HTTP_HEADERS)
-      response.end('')
-    })
-    const listener = server.listen()
-    await browser.executeScript((port) => {
+    await browser.executeScript((TEST_URL, TEST_ERROR_RESPONSE) => {
+      // Mock XMLHttpRequest to control response and behavior explicitly
+      window.XMLHttpRequest = function () { return this }
+      window.XMLHttpRequest.prototype = {
+        setRequestHeader: Function.prototype,
+        abort: Function.prototype,
+        open: Function.prototype,
+        send: function () {
+          this.status = 500
+          this.responseText = TEST_ERROR_RESPONSE
+          this.onload()
+        }
+      }
+      // listen to suggest.ajax.error for bad response
+      document.addEventListener('suggest.ajax.error', (event) => (window.response = event.detail.responseText))
+
       document.body.innerHTML = `
         <input type="text">
-        <core-suggest ajax="http://bs-local.com:${port}" hidden></core-suggest>
+        <core-suggest ajax="${TEST_URL}" hidden></core-suggest>
       `
-      document.addEventListener('suggest.ajax.error', (event) => {
-        window.ajaxCode = String(event.detail.status)
-      })
-    }, listener.address().port)
+    }, TEST_URL, TEST_ERROR_RESPONSE)
+
     await $('input').sendKeys('abc')
-    const status = await browser.wait(() => browser.executeScript(() => window.ajaxCode))
-    await expect(status).toEqual('500')
-    server.close()
+    const text = await browser.wait(() => browser.executeScript(() => window.response))
+    await expect(text).toEqual(TEST_ERROR_RESPONSE)
   })
 
   it('triggers ajax error event on bad json', async () => {
-    const server = http.createServer((req, response) => {
-      response.writeHead(200, HTTP_HEADERS)
-      response.end('{"boom"!}')
-    })
-    const listener = server.listen()
-    await browser.executeScript((port) => {
+    await browser.executeScript((TEST_URL, TEST_BAD_JSON_RESPONSE) => {
+      // Mock XMLHttpRequest to control response and behavior explicitly
+      window.XMLHttpRequest = function () { return this }
+      window.XMLHttpRequest.prototype = {
+        setRequestHeader: Function.prototype,
+        abort: Function.prototype,
+        open: Function.prototype,
+        send: function () {
+          this.status = 200
+          this.responseText = TEST_BAD_JSON_RESPONSE
+          this.onload()
+        }
+      }
+      // Get responseText from suggest.ajax.error
+      document.addEventListener('suggest.ajax.error', (event) => (window.response = event.detail.responseText))
+
       document.body.innerHTML = `
         <input type="text">
-        <core-suggest ajax="http://bs-local.com:${port}" hidden></core-suggest>
+        <core-suggest ajax="${TEST_URL}" hidden></core-suggest>
       `
-      document.addEventListener('suggest.ajax.error', (event) => {
-        window.responseError = event.detail.responseError
-      })
-    }, listener.address().port)
+    }, TEST_URL, TEST_BAD_JSON_RESPONSE)
+
     await $('input').sendKeys('abc')
-    const error = await browser.wait(() => browser.executeScript(() => window.responseError))
-    await expect(error.match(/^SyntaxError/)).toBeTruthy()
-    server.close()
+    const text = await browser.wait(() => browser.executeScript(() => window.response))
+    await expect(text).toEqual(TEST_BAD_JSON_RESPONSE)
   })
 })
