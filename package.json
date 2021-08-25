@@ -19,8 +19,8 @@
     "start": "rollup --config --watch",
     "static-publish": "npm run build && static-publish --directory=packages --account=nrk-core --latest --major",
     "test": "npm run build && npm run protractor && npm run lint",
-    "test-remote": "npm run build && npm run test:cbt && npm run lint",
-    "test:cbt": "export NODE_ENV=test-remote; npm run protractor",
+    "test-remote": "npm run build && npm run test-remote-run && npm run lint",
+    "test-remote-run": "export NODE_ENV=test-remote; npm run protractor",
     "lint": "standard -v",
     "protractor": "node -r esm node_modules/.bin/protractor bin/test.js"
   },
