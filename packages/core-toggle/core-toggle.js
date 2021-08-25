@@ -1,7 +1,10 @@
-import { IS_ANDROID, IS_IOS, closest, dispatchEvent, getUUID, toggleAttribute } from '../utils'
+import { closest, dispatchEvent, getUUID, IS_ANDROID, IS_BROWSER, IS_IOS, toggleAttribute } from '../utils'
 
+// Element to ensure overflowing content can be reached by scrolling
+const SCROLLER = IS_BROWSER && document.createElement('div')
+const AUTOPOSITION = ['bottom', 'top', 'left', 'right']
 export default class CoreToggle extends HTMLElement {
-  static get observedAttributes () { return ['hidden'] }
+  static get observedAttributes () { return ['hidden', 'autoposition'] }
 
   connectedCallback () {
     if (IS_IOS) document.documentElement.style.cursor = 'pointer' // Fix iOS events for closing popups (https://stackoverflow.com/a/16006333/8819615)
@@ -22,6 +25,9 @@ export default class CoreToggle extends HTMLElement {
   }
 
   attributeChangedCallback () {
+    if (this.autoposition) {
+      observeToggle(this, this.hidden ? false : this.button, this.autoposition)
+    }
     if (this._open === this.hidden) { // this._open comparison ensures actual change
       this.button.setAttribute('aria-expanded', this._open = !this.hidden)
       try { this.querySelector('[autofocus]').focus() } catch (err) {}
@@ -58,6 +64,14 @@ export default class CoreToggle extends HTMLElement {
 
   set popup (val) { this[val === false ? 'removeAttribute' : 'setAttribute']('popup', val) }
 
+  get autoposition () {
+    const attrVal = this.getAttribute('autoposition')
+    if (attrVal === null) { return false }
+    return AUTOPOSITION.indexOf(attrVal.toLowerCase()) !== -1 ? attrVal.toLowerCase() : 'bottom'
+  }
+
+  set autoposition (val) { this.setAttribute('autoposition', val) }
+
   // Must set attribute for IE11
   get hidden () { return this.hasAttribute('hidden') }
 
@@ -80,5 +94,63 @@ export default class CoreToggle extends HTMLElement {
       target[data.innerHTML ? 'innerHTML' : 'textContent'] = data.innerHTML || label
       button.setAttribute('aria-label', `${button.textContent},${this.popup}`)
     }
+  }
+}
+
+/**
+ * setPosition
+ * @param {HTMLElement} contentEl Reference to the core-toggle element
+ * @param {HTMLElement} triggerEl Reference to the triggering element (usually <a> or <button>)
+ * @param {'bottom' | String} preferedDir Prefered direction to render in default: 'bottom' (swap String with values)
+ */
+function setPosition (contentEl, triggerEl, preferedDir) {
+  if (contentEl._skipPosition) return
+  contentEl._skipPosition = true
+  // TODO: Break if elements are gone or similar mumbo jumbo
+  const triggerRect = triggerEl.getBoundingClientRect()
+  const contentRect = contentEl.getBoundingClientRect()
+
+  const hasSpaceRight = triggerRect.left + contentRect.width < window.innerWidth
+  const hasSpaceUnder = triggerRect.bottom + contentRect.height < window.innerHeight
+  const hasSpaceOver = triggerRect.top - contentRect.height > 0
+  const prefersUnder = ['bottom', 'bottom-start', 'bottom-end'].indexOf(preferedDir) !== -1
+
+  // Always place under when no hasSpaceOver, as no OS can scroll further up than window.scrollY = 0
+  const placeUnder = (prefersUnder && hasSpaceUnder) || !hasSpaceOver
+  const scroll = placeUnder ? window.pageYOffset + triggerRect.bottom + contentRect.height + 30 : 0
+
+  contentEl.style.left = `${Math.round(hasSpaceRight ? triggerRect.left : triggerRect.right - contentRect.width)}px`
+  contentEl.style.top = `${Math.round(placeUnder ? triggerRect.bottom : triggerRect.top - contentRect.height)}px`
+  contentEl.style.marginTop = `${placeUnder ? 7 : -7}px` // Animate margin (not transform) to play nice with position:fixed
+  SCROLLER.style.cssText = `position:absolute;padding:1px;top:${Math.round(scroll)}px`
+  contentEl._skipPosition = null
+}
+
+/**
+* observeToggle
+* @param {HTMLElement} contentEl Reference to the core-toggle element
+* @param {HTMLElement|Boolean} triggerEl Reference to the triggering element (usually <a> or <button>). Set to false to teardown
+* @param {'bottom' | String} preferedDir Prefered direction to render in default: 'bottom' (swap String with values)
+*/
+function observeToggle (contentEl, triggerEl, preferedDir = 'bottom') {
+  if (triggerEl === false) {
+    if (!contentEl._positionObserver) return
+    // Teardown
+    SCROLLER.removeAttribute('style')
+    contentEl._positionObserver.disconnect()
+    contentEl._positionObserver = null
+    // TODO: clear contentEl._setPosition
+    // Garbageday!
+    contentEl.style.position = ''
+    window.removeEventListener('scroll', contentEl._setPosition, true) // Use capture to also listen for elements with overflow
+    window.removeEventListener('resize', contentEl._setPosition)
+  } else {
+    contentEl._setPosition = () => setPosition(contentEl, triggerEl, preferedDir)
+    contentEl.style.position = 'fixed'
+    window.addEventListener('scroll', contentEl._setPosition, true) // Use capture to also listen for elements with overflow
+    window.addEventListener('resize', contentEl._setPosition)
+    contentEl._positionObserver = window.MutationObserver && new window.MutationObserver(contentEl._setPosition)
+    contentEl._positionObserver.observe(contentEl, { childList: true, subtree: true, attributes: true })
+    contentEl._setPosition()
   }
 }
