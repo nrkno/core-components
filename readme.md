@@ -20,20 +20,25 @@ npm start # Your browser will open documentation with hot reloading
 
 ## Testing
 
-You can run the tests locally or with CrossBrowserTesting
-Before running tests with CrossBrowserTesting you need a `.env` file providing credentials:
+You can run the tests locally or remotely with CrossBrowserTesting.
+
+Run the tests locally:
+
+```sh
+npm test
+```
+
+Before running tests remotely you need a `.env` file providing credentials:
+
+User and authkey can be found in your user profile on [crossbrowsertesting](https://app.crossbrowsertesting.com/account)
 
 ```sh
 SMARTBEAR_USER=...
 SMARTBEAR_AUTHKEY=...
 ```
+Save it in the root directory.
 
-Save it in the root directory. Now you can either run the tests locally:
-
-```sh
-npm test
-```
-or remotely against all targeted browsers:
+Run tests remotely against all targeted browsers:
 
 ```sh
 npm run test-remote
