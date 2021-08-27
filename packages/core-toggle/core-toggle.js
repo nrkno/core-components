@@ -26,7 +26,7 @@ export default class CoreToggle extends HTMLElement {
 
   attributeChangedCallback () {
     if (this.autoposition) {
-      observeToggle(this, this.hidden ? false : this.button, this.autoposition)
+      observeToggle(this, this.hidden ? false : this.button)
     }
     if (this._open === this.hidden) { // this._open comparison ensures actual change
       this.button.setAttribute('aria-expanded', this._open = !this.hidden)
@@ -100,20 +100,18 @@ export default class CoreToggle extends HTMLElement {
 /**
  * setPosition
  * @param {HTMLElement} contentEl Reference to the core-toggle element
- * @param {HTMLElement} triggerEl Reference to the triggering element (usually <a> or <button>)
- * @param {'bottom' | String} preferedDir Prefered direction to render in default: 'bottom' (swap String with values)
  */
-function setPosition (contentEl, triggerEl, preferedDir) {
+function setPosition (contentEl) {
   if (contentEl._skipPosition) return
   contentEl._skipPosition = true
   // TODO: Break if elements are gone or similar mumbo jumbo
-  const triggerRect = triggerEl.getBoundingClientRect()
+  const triggerRect = contentEl.button.getBoundingClientRect()
   const contentRect = contentEl.getBoundingClientRect()
 
   const hasSpaceRight = triggerRect.left + contentRect.width < window.innerWidth
   const hasSpaceUnder = triggerRect.bottom + contentRect.height < window.innerHeight
   const hasSpaceOver = triggerRect.top - contentRect.height > 0
-  const prefersUnder = ['bottom', 'bottom-start', 'bottom-end'].indexOf(preferedDir) !== -1
+  const prefersUnder = ['bottom', 'bottom-start', 'bottom-end'].indexOf(contentEl.autoposition) !== -1
 
   // Always place under when no hasSpaceOver, as no OS can scroll further up than window.scrollY = 0
   const placeUnder = (prefersUnder && hasSpaceUnder) || !hasSpaceOver
@@ -121,7 +119,6 @@ function setPosition (contentEl, triggerEl, preferedDir) {
 
   contentEl.style.left = `${Math.round(hasSpaceRight ? triggerRect.left : triggerRect.right - contentRect.width)}px`
   contentEl.style.top = `${Math.round(placeUnder ? triggerRect.bottom : triggerRect.top - contentRect.height)}px`
-  contentEl.style.marginTop = `${placeUnder ? 7 : -7}px` // Animate margin (not transform) to play nice with position:fixed
   SCROLLER.style.cssText = `position:absolute;padding:1px;top:${Math.round(scroll)}px`
   contentEl._skipPosition = null
 }
@@ -130,27 +127,30 @@ function setPosition (contentEl, triggerEl, preferedDir) {
 * observeToggle
 * @param {HTMLElement} contentEl Reference to the core-toggle element
 * @param {HTMLElement|Boolean} triggerEl Reference to the triggering element (usually <a> or <button>). Set to false to teardown
-* @param {'bottom' | String} preferedDir Prefered direction to render in default: 'bottom' (swap String with values)
 */
-function observeToggle (contentEl, triggerEl, preferedDir = 'bottom') {
+function observeToggle (contentEl, triggerEl) {
   if (triggerEl === false) {
     if (!contentEl._positionObserver) return
     // Teardown
-    SCROLLER.removeAttribute('style')
+    document.body.removeChild(SCROLLER)
     contentEl._positionObserver.disconnect()
     contentEl._positionObserver = null
-    // TODO: clear contentEl._setPosition
-    // Garbageday!
+    contentEl._setPosition = null
+    // Clean up!
     contentEl.style.position = ''
     window.removeEventListener('scroll', contentEl._setPosition, true) // Use capture to also listen for elements with overflow
     window.removeEventListener('resize', contentEl._setPosition)
   } else {
-    contentEl._setPosition = () => setPosition(contentEl, triggerEl, preferedDir)
+    document.body.appendChild(SCROLLER)
+    contentEl._setPosition = () => setPosition(contentEl)
     contentEl.style.position = 'fixed'
+    // Listen to scroll and resize
     window.addEventListener('scroll', contentEl._setPosition, true) // Use capture to also listen for elements with overflow
     window.addEventListener('resize', contentEl._setPosition)
+    // Attach MutationObserver if supported
     contentEl._positionObserver = window.MutationObserver && new window.MutationObserver(contentEl._setPosition)
     contentEl._positionObserver.observe(contentEl, { childList: true, subtree: true, attributes: true })
+    // Initial trigger
     contentEl._setPosition()
   }
 }
