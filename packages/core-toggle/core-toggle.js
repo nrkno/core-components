@@ -2,7 +2,6 @@ import { closest, dispatchEvent, getUUID, IS_ANDROID, IS_BROWSER, IS_IOS, toggle
 
 // Element to ensure overflowing content can be reached by scrolling
 const SCROLLER = IS_BROWSER && document.createElement('div')
-const AUTOPOSITION = ['bottom', 'top', 'left', 'right']
 export default class CoreToggle extends HTMLElement {
   static get observedAttributes () { return ['hidden', 'autoposition'] }
 
@@ -22,21 +21,21 @@ export default class CoreToggle extends HTMLElement {
     this._button = null
     document.removeEventListener('keydown', this, true)
     document.removeEventListener('click', this)
+    handleAutoposition(this, true)
   }
 
   attributeChangedCallback () {
-    if (this.autoposition) {
-      observeToggle(this, this.hidden ? false : this.button)
-    }
     if (this._open === this.hidden) { // this._open comparison ensures actual change
       this.button.setAttribute('aria-expanded', this._open = !this.hidden)
       try { this.querySelector('[autofocus]').focus() } catch (err) {}
+      handleAutoposition(this, this.hidden)
       dispatchEvent(this, 'toggle')
     }
   }
 
   handleEvent (event) {
     if (event.defaultPrevented) return
+    if (event.type === 'resize' || event.type === 'scroll') return this.updatePosition()
     if (event.type === 'keydown' && event.keyCode === 27) {
       const isButton = event.target.getAttribute && event.target.getAttribute('aria-expanded') === 'true'
       const isHiding = isButton ? event.target === this.button : closest(event.target, this.nodeName) === this
@@ -54,6 +53,31 @@ export default class CoreToggle extends HTMLElement {
     }
   }
 
+  /**
+  * updatePosition Exposed for _very_ niche situations, use sparingly
+  * @param {HTMLElement} contentEl Reference to the core-toggle element
+  */
+  updatePosition () {
+    if (this._skipPosition || !this.button) return // Avoid infinite loops for mutationObserver
+    this._skipPosition = true
+    this.style.position = 'fixed' // Set viewModel before reading dimensions
+    const triggerRect = this.button.getBoundingClientRect()
+    const contentRect = this.getBoundingClientRect()
+
+    const hasSpaceRight = triggerRect.left + contentRect.width < window.innerWidth
+    const hasSpaceUnder = triggerRect.bottom + contentRect.height < window.innerHeight
+    const hasSpaceOver = triggerRect.top - contentRect.height > 0
+
+    // Always place under when no hasSpaceOver, as no OS can scroll further up than window.scrollY = 0
+    const placeUnder = hasSpaceUnder || !hasSpaceOver
+    const scroll = placeUnder ? window.pageYOffset + triggerRect.bottom + contentRect.height + 30 : 0
+
+    this.style.left = `${Math.round(hasSpaceRight ? triggerRect.left : triggerRect.right - contentRect.width)}px`
+    this.style.top = `${Math.round(placeUnder ? triggerRect.bottom : triggerRect.top - contentRect.height)}px`
+    SCROLLER.style.cssText = `position:absolute;padding:1px;top:${Math.round(scroll)}px`
+    setTimeout(() => (this._skipPosition = null)) // Timeout to flush event queue before we can resume acting on mutations
+  }
+
   get button () {
     if (this._button && (this._button.getAttribute('data-for') || this._button.getAttribute('for')) === this.id) return this._button // Speed up
     return (this._button = this.id && document.querySelector(`[for="${this.id}"],[data-for="${this.id}"]`)) || this.previousElementSibling
@@ -64,13 +88,9 @@ export default class CoreToggle extends HTMLElement {
 
   set popup (val) { this[val === false ? 'removeAttribute' : 'setAttribute']('popup', val) }
 
-  get autoposition () {
-    const attrVal = this.getAttribute('autoposition')
-    if (attrVal === null) { return false }
-    return AUTOPOSITION.indexOf(attrVal.toLowerCase()) !== -1 ? attrVal.toLowerCase() : 'bottom'
-  }
+  get autoposition () { return this.hasAttribute('autoposition') }
 
-  set autoposition (val) { this.setAttribute('autoposition', val) }
+  set autoposition (val) { toggleAttribute(this, 'autoposition', val) }
 
   // Must set attribute for IE11
   get hidden () { return this.hasAttribute('hidden') }
@@ -98,59 +118,25 @@ export default class CoreToggle extends HTMLElement {
 }
 
 /**
- * setPosition
- * @param {HTMLElement} contentEl Reference to the core-toggle element
- */
-function setPosition (contentEl) {
-  if (contentEl._skipPosition) return
-  contentEl._skipPosition = true
-  // TODO: Break if elements are gone or similar mumbo jumbo
-  const triggerRect = contentEl.button.getBoundingClientRect()
-  const contentRect = contentEl.getBoundingClientRect()
-
-  const hasSpaceRight = triggerRect.left + contentRect.width < window.innerWidth
-  const hasSpaceUnder = triggerRect.bottom + contentRect.height < window.innerHeight
-  const hasSpaceOver = triggerRect.top - contentRect.height > 0
-  const prefersUnder = ['bottom', 'bottom-start', 'bottom-end'].indexOf(contentEl.autoposition) !== -1
-
-  // Always place under when no hasSpaceOver, as no OS can scroll further up than window.scrollY = 0
-  const placeUnder = (prefersUnder && hasSpaceUnder) || !hasSpaceOver
-  const scroll = placeUnder ? window.pageYOffset + triggerRect.bottom + contentRect.height + 30 : 0
-
-  contentEl.style.left = `${Math.round(hasSpaceRight ? triggerRect.left : triggerRect.right - contentRect.width)}px`
-  contentEl.style.top = `${Math.round(placeUnder ? triggerRect.bottom : triggerRect.top - contentRect.height)}px`
-  SCROLLER.style.cssText = `position:absolute;padding:1px;top:${Math.round(scroll)}px`
-  contentEl._skipPosition = null
-}
-
-/**
-* observeToggle
-* @param {HTMLElement} contentEl Reference to the core-toggle element
-* @param {HTMLElement|Boolean} triggerEl Reference to the triggering element (usually <a> or <button>). Set to false to teardown
+* handleAutoposition Kept external from element as it is linked to multiple lifecycles and shouldn't be accessible as an internal function
+* @param {HTMLElement} self core-toggle instance
+* @param {Boolean} teardown if true, clean up and remove
 */
-function observeToggle (contentEl, triggerEl) {
-  if (triggerEl === false) {
-    if (!contentEl._positionObserver) return
-    // Teardown
-    document.body.removeChild(SCROLLER)
-    contentEl._positionObserver.disconnect()
-    contentEl._positionObserver = null
-    contentEl._setPosition = null
-    // Clean up!
-    contentEl.style.position = ''
-    window.removeEventListener('scroll', contentEl._setPosition, true) // Use capture to also listen for elements with overflow
-    window.removeEventListener('resize', contentEl._setPosition)
-  } else {
-    document.body.appendChild(SCROLLER)
-    contentEl._setPosition = () => setPosition(contentEl)
-    contentEl.style.position = 'fixed'
-    // Listen to scroll and resize
-    window.addEventListener('scroll', contentEl._setPosition, true) // Use capture to also listen for elements with overflow
-    window.addEventListener('resize', contentEl._setPosition)
+function handleAutoposition (self, teardown) {
+  if (teardown) {
+    if (self._positionObserver) self._positionObserver.disconnect()
+    if (SCROLLER.parentNode) SCROLLER.parentNode.removeChild(SCROLLER)
+    self.style.position = self._positionObserver = null
+    window.removeEventListener('scroll', self, true) // Use capture to also listen for elements with overflow
+    window.removeEventListener('resize', self)
+  } else if (self.autoposition) {
     // Attach MutationObserver if supported
-    contentEl._positionObserver = window.MutationObserver && new window.MutationObserver(contentEl._setPosition)
-    contentEl._positionObserver.observe(contentEl, { childList: true, subtree: true, attributes: true })
-    // Initial trigger
-    contentEl._setPosition()
+    if (!self._positionObserver) self._positionObserver = window.MutationObserver && new window.MutationObserver(self.updatePosition.bind(self))
+    if (self._positionObserver) self._positionObserver.observe(self, { childList: true, subtree: true, attributes: true })
+
+    document.body.appendChild(SCROLLER)
+    window.addEventListener('scroll', self, true) // Use capture to also listen for elements with overflow
+    window.addEventListener('resize', self)
+    self.updatePosition() // Initial trigger
   }
 }
