@@ -97,9 +97,9 @@ export default class CoreToggle extends HTMLElement {
 
   set hidden (val) { toggleAttribute(this, 'hidden', val) }
 
-  // Sets this.button aria-label, so visible button text can be augmentet with intension of button
+  // Set this.button aria-label, so that visible button text can be augmentet with intention of button
   // Example: Button text: "01.02.2019", aria-label: "01.02.2019, Choose date"
-  // Does not updates aria-label if not allready set to something else than this.popup
+  // Does not update aria-label if not already set to something else than this.popup
   get value () { return this.button.value || this.button.textContent }
 
   set value (data = false) {
