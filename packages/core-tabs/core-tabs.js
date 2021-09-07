@@ -10,11 +10,25 @@ export default class CoreTabs extends HTMLElement {
     this.setAttribute('role', 'tablist')
     this.addEventListener('click', this)
     this.addEventListener('keydown', this)
+    if (!this._childObserver) this._childObserver = window.MutationObserver && new window.MutationObserver(this.handleChildUpdate.bind(this))
+    if (this._childObserver) this._childObserver.observe(this, { childList: true })
+
     setTimeout(() => this.connectedChildren())
   }
 
   connectedChildren () {
     if (!this.parentNode) return // Abort if removed from DOM
+    this.handleChildUpdate()
+  }
+
+  disconnectedCallback () {
+    if (this._childObserver) this._childObserver.disconnect()
+    this.removeEventListener('click', this)
+    this.removeEventListener('keydown', this)
+    this._childObserver = null
+  }
+
+  handleChildUpdate () {
     let next = this
     this.tabs.forEach((tab, index) => {
       const panel = document.getElementById(tab.getAttribute('data-for') || tab.getAttribute('for')) || (next = next.nextElementSibling || next)
@@ -26,11 +40,6 @@ export default class CoreTabs extends HTMLElement {
       panel.setAttribute('tabindex', '0')
     })
     this.tab = this.tab // Setup open
-  }
-
-  disconnectedCallback () {
-    this.removeEventListener('click', this)
-    this.removeEventListener('keydown', this)
   }
 
   handleEvent (event) {
