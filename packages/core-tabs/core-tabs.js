@@ -39,7 +39,7 @@ export default class CoreTabs extends HTMLElement {
       panel.setAttribute('role', 'tabpanel')
       panel.setAttribute('tabindex', '0')
     })
-    this.tab = this.tab // Setup open
+    this.tab = this.tab || this.tabs[0] // Setup open
   }
 
   handleEvent (event) {
@@ -65,11 +65,11 @@ export default class CoreTabs extends HTMLElement {
 
   get panels () { return this.tabs.map((tab) => document.getElementById(tab.getAttribute('aria-controls'))) }
 
-  get panel () { return this.panels.filter((panel) => !panel.hasAttribute('hidden'))[0] }
+  get panel () { return this.panels.filter((panel) => !panel.hasAttribute('hidden'))[0] || null }
 
   get tabs () { return queryAll('button,a', this) }
 
-  get tab () { return document.getElementById(this.panel.getAttribute(FROM)) }
+  get tab () { return this.panel ? document.getElementById(this.panel.getAttribute(FROM)) : null }
 
   set tab (value) {
     if (!value && value !== 0) return
