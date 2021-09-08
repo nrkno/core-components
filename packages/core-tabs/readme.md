@@ -73,7 +73,7 @@ demo-->
 <div id="jsx-dynamic-tabs" class="my-vertical-tabs"></div>
 <script type="text/jsx">
   const Dynamic = () => {
-      const [elements, setElements] = React.useState([1,2])
+      const [elements, setElements] = React.useState([])
       const menu = elements.map(item => <button type="button">Dynamic Tab {item}</button>);
       const pages = elements.map(item => <div>Tabpanel {item}</div>);
 
@@ -83,7 +83,7 @@ demo-->
             Add extra tab
           </button>
           <button type="button" onClick={() => setElements([1,2])}>
-            reset
+            Set to two tabs
           </button>
           <CoreTabs>
             {menu}
