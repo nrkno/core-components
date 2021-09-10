@@ -39,7 +39,7 @@ export default class CoreTabs extends HTMLElement {
       panel.setAttribute('role', 'tabpanel')
       panel.setAttribute('tabindex', '0')
     })
-    this.tab = this.tab || this.tabs[0] // Setup open
+    this.tab = this.tab || null // Setup open
   }
 
   handleEvent (event) {
