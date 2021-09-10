@@ -194,4 +194,29 @@ describe('core-tabs', () => {
     await expect(tabId).toEqual('tab-2')
     await expect(browser.executeScript(() => document.querySelector('core-tabs').tab.id)).toEqual('tab-2')
   })
+
+  it('handles dynamically added children', async () => {
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+      <core-tabs id="dynamicInstance">
+      </core-tabs>
+      <div id="panel-1">Text of tab 1</div>
+      <div id="panel-2">Text of tab 2</div>
+      `
+    })
+    await expect(prop('#panel-1', 'hidden')).toMatch(/(null|false)/i)
+    await expect(prop('#panel-2', 'hidden')).toMatch(/(null|false)/i)
+    await browser.executeScript(() => {
+      const firstButton = document.createElement('button')
+      const secondButton = document.createElement('button')
+      firstButton.appendChild(document.createTextNode('Dynamic tab 1'))
+      secondButton.appendChild(document.createTextNode('Dynamic tab 2'))
+      const tabInstance = document.getElementById('dynamicInstance')
+      tabInstance.appendChild(firstButton)
+      tabInstance.appendChild(secondButton)
+    })
+    await browser.wait(ExpectedConditions.presenceOf($('core-tabs [role="tab"]')))
+    await expect(prop('#panel-1', 'hidden')).toMatch(/(null|false)/i)
+    await expect(prop('#panel-2', 'hidden')).toMatch(/(true)/i)
+  })
 })
