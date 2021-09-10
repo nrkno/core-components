@@ -85,6 +85,9 @@ demo-->
           <button type="button" onClick={() => setElements([1,2])}>
             Set to two tabs
           </button>
+          <button type="button" onClick={() => setElements([])}>
+            Remove all
+          </button>
           <CoreTabs>
             {menu}
           </CoreTabs>
