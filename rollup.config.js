@@ -26,6 +26,7 @@ export default utils.pkgs.reduce((all, path) => {
   const file = utils.getPackageName(path)
   const name = file.replace(/-./g, (m) => m.slice(-1).toUpperCase())
   const jsx = name.replace(/./, (m) => m.toUpperCase())
+  const bannerText = `/*! @nrk/${file} v${version} - Copyright (c) 2017-${new Date().getFullYear()} NRK */`
 
   return all.concat({
     input: `${path}/${file}.test.js`, // JS CJS (used for testing)
@@ -33,6 +34,7 @@ export default utils.pkgs.reduce((all, path) => {
       format: 'cjs',
       file: `${path}/${file}.test.cjs.js`,
       exports: 'none', // Tests have no exports; set to 'auto' if this changes
+      banner: bannerText,
       globals
     },
     treeshake,
@@ -48,6 +50,7 @@ export default utils.pkgs.reduce((all, path) => {
     output: {
       format: 'cjs',
       file: `${path}/${file}.cjs.js`,
+      banner: bannerText,
       exports: 'default',
       globals
     },
@@ -59,7 +62,7 @@ export default utils.pkgs.reduce((all, path) => {
     output: {
       format: 'umd',
       file: `${path}/${file}.min.js`,
-      banner: `/*! @nrk/${file} v${version} - Copyright (c) 2017-${new Date().getFullYear()} NRK */`,
+      banner: bannerText,
       footer: `window.customElements.define('${file}', ${name})`,
       sourcemap: true,
       globals,
@@ -73,6 +76,7 @@ export default utils.pkgs.reduce((all, path) => {
     output: {
       format: 'cjs',
       file: `${path}/jsx.js`,
+      banner: bannerText,
       exports: 'default',
       globals
     },
@@ -84,6 +88,7 @@ export default utils.pkgs.reduce((all, path) => {
     output: {
       format: 'umd',
       file: `${path}/${file}.jsx.js`,
+      banner: bannerText,
       name: jsx,
       sourcemap: true,
       globals
