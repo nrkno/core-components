@@ -68,6 +68,37 @@ demo-->
 </script>
 ```
 
+```html
+<!--demo-->
+<div id="jsx-dynamic-tabs" class="my-vertical-tabs"></div>
+<script type="text/jsx">
+  const Dynamic = () => {
+      const [elements, setElements] = React.useState([])
+      const menu = elements.map(item => <button type="button">Dynamic Tab {item}</button>);
+      const pages = elements.map(item => <div>Tabpanel {item}</div>);
+
+      return (
+        <>
+          <button type="button" onClick={() => setElements([...elements, elements.length + 1])}>
+            Add extra tab
+          </button>
+          <button type="button" onClick={() => setElements([1,2])}>
+            Set to two tabs
+          </button>
+          <button type="button" onClick={() => setElements([])}>
+            Remove all
+          </button>
+          <CoreTabs>
+            {menu}
+          </CoreTabs>
+          {pages}
+        </>
+      )
+    }
+  ReactDOM.render(<Dynamic />, document.getElementById('jsx-dynamic-tabs'))
+</script>
+```
+
 
 ## Installation
 
