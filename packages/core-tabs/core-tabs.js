@@ -12,7 +12,6 @@ export default class CoreTabs extends HTMLElement {
     this.addEventListener('keydown', this)
     if (!this._childObserver) this._childObserver = window.MutationObserver && new window.MutationObserver(updateChildren.bind(null, this))
     if (this._childObserver) this._childObserver.observe(this, { childList: true })
-
     setTimeout(() => updateChildren(this))
   }
 
@@ -46,7 +45,7 @@ export default class CoreTabs extends HTMLElement {
 
   get panels () { return this.tabs.map((tab) => document.getElementById(tab.getAttribute('aria-controls'))) }
 
-  get panel () { return this.panels.filter((panel) => !panel.hasAttribute('hidden'))[0] }
+  get panel () { return this.panels.filter((panel) => panel && !panel.hasAttribute('hidden'))[0] }
 
   get tabs () { return queryAll('button,a', this) }
 
