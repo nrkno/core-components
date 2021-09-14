@@ -63,7 +63,7 @@ describe('core-tabs', () => {
     await expect(attr('#tab-3', 'aria-selected')).toEqual('false')
   })
 
-  it('selects first tab by index', async () => {
+  it('accepts 0 as valid value to select first tab by index', async () => {
     await browser.executeScript(() => {
       document.body.innerHTML = `
         <core-tabs>
@@ -195,28 +195,45 @@ describe('core-tabs', () => {
     await expect(browser.executeScript(() => document.querySelector('core-tabs').tab.id)).toEqual('tab-2')
   })
 
-  it('handles dynamically added children', async () => {
+  it('respects hidden panels as indication of active tab', async () => {
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <core-tabs id="dynamicInstance">
+          <button id="tab-1">First tab</button>
+          <button id="tab-2">Second tab</button>
+        </core-tabs>
+        <div id="panel-1" hidden>Text of tab 1</div>
+        <div id="panel-2">Text of tab 2</div>
+      `
+    })
+    await browser.wait(ExpectedConditions.presenceOf($('core-tabs [role="tab"]')))
+    await expect(prop('#panel-1', 'hidden')).toEqual('true')
+    await expect(prop('#panel-2', 'hidden')).toEqual('false')
+    await expect(attr('#tab-2', 'aria-selected')).toEqual('true')
+  })
+
+  it('handles setup and interaction with dynamically added tabs', async () => {
     await browser.executeScript(() => {
       document.body.innerHTML = `
       <core-tabs id="dynamicInstance">
       </core-tabs>
-      <div id="panel-1">Text of tab 1</div>
+      <div id="panel-1" hidden>Text of tab 1</div>
       <div id="panel-2">Text of tab 2</div>
       `
     })
-    await expect(prop('#panel-1', 'hidden')).toMatch(/(null|false)/i)
-    await expect(prop('#panel-2', 'hidden')).toMatch(/(null|false)/i)
+
     await browser.executeScript(() => {
-      const firstButton = document.createElement('button')
-      const secondButton = document.createElement('button')
-      firstButton.appendChild(document.createTextNode('Dynamic tab 1'))
-      secondButton.appendChild(document.createTextNode('Dynamic tab 2'))
+      const firstButton = Object.assign(document.createElement('button'), { id: 'tab-1', textContent: 'Dynamic tab 1' })
+      const secondButton = Object.assign(document.createElement('button'), { id: 'tab-2', textContent: 'Dynamic tab 2' })
       const tabInstance = document.getElementById('dynamicInstance')
       tabInstance.appendChild(firstButton)
       tabInstance.appendChild(secondButton)
     })
+
     await browser.wait(ExpectedConditions.presenceOf($('core-tabs [role="tab"]')))
-    await expect(prop('#panel-1', 'hidden')).toMatch(/(null|false)/i)
-    await expect(prop('#panel-2', 'hidden')).toMatch(/(true)/i)
+    await $('#tab-1').click()
+    await expect(prop('#panel-1', 'hidden')).toEqual('false')
+    await expect(prop('#panel-2', 'hidden')).toEqual('true')
+    await expect(attr('#tab-1', 'aria-selected')).toEqual('true')
   })
 })
