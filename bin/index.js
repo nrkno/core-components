@@ -58,15 +58,15 @@ if (args.publish) {
   const action = args.publish.replace(/./, (m) => m.toUpperCase()) // Title case action
   const names = update.map(getPackageName).join(', ')
 
+  // Build, test and lint all packages
+  execSync('npm run test', { cwd: process.cwd(), stdio: 'inherit' })
+
   // Bump version in packages
   update.forEach((path) => {
     console.log(`Publishing ${getPackageName(path)}`)
     execSync(`npm version ${args.publish} -m 'Release ${args.publish} %s'`, { cwd: path, stdio: 'inherit' })
     console.log('')
   })
-
-  // Build all packages
-  execSync('npm run build', { cwd: process.cwd(), stdio: 'inherit' })
 
   // Publish all packages
   update.forEach((path) => {
