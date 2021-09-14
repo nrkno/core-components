@@ -10,14 +10,10 @@ export default class CoreTabs extends HTMLElement {
     this.setAttribute('role', 'tablist')
     this.addEventListener('click', this)
     this.addEventListener('keydown', this)
-    if (!this._childObserver) this._childObserver = window.MutationObserver && new window.MutationObserver(this.handleChildUpdate.bind(this))
+    if (!this._childObserver) this._childObserver = window.MutationObserver && new window.MutationObserver(updateChildren.bind(null, this))
     if (this._childObserver) this._childObserver.observe(this, { childList: true })
 
-    setTimeout(() => this.connectedChildren())
-  }
-
-  connectedChildren () {
-    this.handleChildUpdate()
+    setTimeout(() => updateChildren(this))
   }
 
   disconnectedCallback () {
@@ -25,21 +21,6 @@ export default class CoreTabs extends HTMLElement {
     this.removeEventListener('click', this)
     this.removeEventListener('keydown', this)
     this._childObserver = null
-  }
-
-  handleChildUpdate () {
-    if (!this.parentNode) return // Abort if removed from DOM
-    let next = this
-    this.tabs.forEach((tab, index) => {
-      const panel = document.getElementById(tab.getAttribute('data-for') || tab.getAttribute('for')) || (next = next.nextElementSibling || next)
-
-      tab.setAttribute('role', 'tab')
-      tab.setAttribute('aria-controls', panel.id = panel.id || getUUID())
-      panel.setAttribute(FROM, tab.id = tab.id || getUUID())
-      panel.setAttribute('role', 'tabpanel')
-      panel.setAttribute('tabindex', '0')
-    })
-    this.tab = this.tab || null // Setup open
   }
 
   handleEvent (event) {
@@ -65,11 +46,11 @@ export default class CoreTabs extends HTMLElement {
 
   get panels () { return this.tabs.map((tab) => document.getElementById(tab.getAttribute('aria-controls'))) }
 
-  get panel () { return this.panels.filter((panel) => !panel.hasAttribute('hidden'))[0] || null }
+  get panel () { return this.panels.filter((panel) => !panel.hasAttribute('hidden'))[0] }
 
   get tabs () { return queryAll('button,a', this) }
 
-  get tab () { return this.panel ? document.getElementById(this.panel.getAttribute(FROM)) : null }
+  get tab () { return document.getElementById(this.panel && this.panel.getAttribute(FROM)) }
 
   set tab (value) {
     if (!value && value !== 0) return
@@ -91,4 +72,19 @@ export default class CoreTabs extends HTMLElement {
 
     if (prevIndex !== nextIndex) dispatchEvent(this, 'tabs.toggle')
   }
+}
+
+function updateChildren (self) {
+  if (!self.parentNode) return // Abort if removed from DOM
+  let next = self
+  self.tabs.forEach((tab) => {
+    const panel = document.getElementById(tab.getAttribute('data-for') || tab.getAttribute('for')) || (next = next.nextElementSibling || next)
+
+    tab.setAttribute('role', 'tab')
+    tab.setAttribute('aria-controls', panel.id = panel.id || getUUID())
+    panel.setAttribute(FROM, tab.id = tab.id || getUUID())
+    panel.setAttribute('role', 'tabpanel')
+    panel.setAttribute('tabindex', '0')
+  })
+  self.tab = self.tab || 0 // Setup open
 }
