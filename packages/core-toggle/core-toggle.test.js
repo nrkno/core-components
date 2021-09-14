@@ -23,6 +23,7 @@ describe('core-toggle', () => {
     const toggleId = await attr('core-toggle', 'id')
     await expect(attr('button', 'aria-controls')).toEqual(toggleId)
     await expect(prop('core-toggle', 'hidden')).toMatch(/true/i)
+    await expect(prop('core-toggle', 'autoposition')).toMatch(/false/i)
     const buttonId = await attr('button', 'id')
     await expect(attr('core-toggle', 'aria-labelledby')).toEqual(buttonId)
   })
@@ -199,5 +200,17 @@ describe('core-toggle', () => {
     })
     const itemId = await browser.wait(() => browser.executeScript(() => window.itemId))
     await expect(itemId).toEqual('my-item')
+  })
+
+  it('supports attribute autoposition', async () => {
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <button>Toggle</button>
+        <core-toggle autoposition hidden></core-toggle>
+      `
+    })
+    await expect(prop('core-toggle', 'autoposition')).toMatch(/true/i)
+    await $('button').click()
+    await expect($('core-toggle').getCssValue('position')).toEqual('fixed')
   })
 })

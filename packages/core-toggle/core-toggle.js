@@ -1,7 +1,9 @@
-import { IS_ANDROID, IS_IOS, closest, dispatchEvent, getUUID, toggleAttribute } from '../utils'
+import { closest, dispatchEvent, getUUID, IS_ANDROID, IS_BROWSER, IS_IOS, toggleAttribute } from '../utils'
 
+// Element to ensure overflowing content can be reached by scrolling
+const SCROLLER = IS_BROWSER && document.createElement('div')
 export default class CoreToggle extends HTMLElement {
-  static get observedAttributes () { return ['hidden'] }
+  static get observedAttributes () { return ['hidden', 'autoposition'] }
 
   connectedCallback () {
     if (IS_IOS) document.documentElement.style.cursor = 'pointer' // Fix iOS events for closing popups (https://stackoverflow.com/a/16006333/8819615)
@@ -19,18 +21,21 @@ export default class CoreToggle extends HTMLElement {
     this._button = null
     document.removeEventListener('keydown', this, true)
     document.removeEventListener('click', this)
+    handleAutoposition(this, true)
   }
 
   attributeChangedCallback () {
     if (this._open === this.hidden) { // this._open comparison ensures actual change
       this.button.setAttribute('aria-expanded', this._open = !this.hidden)
       try { this.querySelector('[autofocus]').focus() } catch (err) {}
+      handleAutoposition(this, this.hidden)
       dispatchEvent(this, 'toggle')
     }
   }
 
   handleEvent (event) {
     if (event.defaultPrevented) return
+    if (event.type === 'resize' || event.type === 'scroll') return this.updatePosition()
     if (event.type === 'keydown' && event.keyCode === 27) {
       const isButton = event.target.getAttribute && event.target.getAttribute('aria-expanded') === 'true'
       const isHiding = isButton ? event.target === this.button : closest(event.target, this.nodeName) === this
@@ -48,6 +53,31 @@ export default class CoreToggle extends HTMLElement {
     }
   }
 
+  /**
+  * updatePosition Exposed for _very_ niche situations, use sparingly
+  * @param {HTMLElement} contentEl Reference to the core-toggle element
+  */
+  updatePosition () {
+    if (this._skipPosition || !this.button) return // Avoid infinite loops for mutationObserver
+    this._skipPosition = true
+    this.style.position = 'fixed' // Set viewModel before reading dimensions
+    const triggerRect = this.button.getBoundingClientRect()
+    const contentRect = this.getBoundingClientRect()
+
+    const hasSpaceRight = triggerRect.left + contentRect.width < window.innerWidth
+    const hasSpaceUnder = triggerRect.bottom + contentRect.height < window.innerHeight
+    const hasSpaceOver = triggerRect.top - contentRect.height > 0
+
+    // Always place under when no hasSpaceOver, as no OS can scroll further up than window.scrollY = 0
+    const placeUnder = hasSpaceUnder || !hasSpaceOver
+    const scroll = placeUnder ? window.pageYOffset + triggerRect.bottom + contentRect.height + 30 : 0
+
+    this.style.left = `${Math.round(hasSpaceRight ? triggerRect.left : triggerRect.right - contentRect.width)}px`
+    this.style.top = `${Math.round(placeUnder ? triggerRect.bottom : triggerRect.top - contentRect.height)}px`
+    SCROLLER.style.cssText = `position:absolute;padding:1px;top:${Math.round(scroll)}px`
+    setTimeout(() => (this._skipPosition = null)) // Timeout to flush event queue before we can resume acting on mutations
+  }
+
   get button () {
     if (this._button && (this._button.getAttribute('data-for') || this._button.getAttribute('for')) === this.id) return this._button // Speed up
     return (this._button = this.id && document.querySelector(`[for="${this.id}"],[data-for="${this.id}"]`)) || this.previousElementSibling
@@ -58,14 +88,18 @@ export default class CoreToggle extends HTMLElement {
 
   set popup (val) { this[val === false ? 'removeAttribute' : 'setAttribute']('popup', val) }
 
+  get autoposition () { return this.hasAttribute('autoposition') }
+
+  set autoposition (val) { toggleAttribute(this, 'autoposition', val) }
+
   // Must set attribute for IE11
   get hidden () { return this.hasAttribute('hidden') }
 
   set hidden (val) { toggleAttribute(this, 'hidden', val) }
 
-  // Sets this.button aria-label, so visible button text can be augmentet with intension of button
+  // Set this.button aria-label, so that visible button text can be augmentet with intention of button
   // Example: Button text: "01.02.2019", aria-label: "01.02.2019, Choose date"
-  // Does not updates aria-label if not allready set to something else than this.popup
+  // Does not update aria-label if not already set to something else than this.popup
   get value () { return this.button.value || this.button.textContent }
 
   set value (data = false) {
@@ -80,5 +114,29 @@ export default class CoreToggle extends HTMLElement {
       target[data.innerHTML ? 'innerHTML' : 'textContent'] = data.innerHTML || label
       button.setAttribute('aria-label', `${button.textContent},${this.popup}`)
     }
+  }
+}
+
+/**
+* handleAutoposition Kept external from element as it is linked to multiple lifecycles and shouldn't be accessible as an internal function
+* @param {HTMLElement} self core-toggle instance
+* @param {Boolean} teardown if true, clean up and remove
+*/
+function handleAutoposition (self, teardown) {
+  if (teardown) {
+    if (self._positionObserver) self._positionObserver.disconnect()
+    if (SCROLLER.parentNode) SCROLLER.parentNode.removeChild(SCROLLER)
+    self.style.position = self._positionObserver = null
+    window.removeEventListener('scroll', self, true) // Use capture to also listen for elements with overflow
+    window.removeEventListener('resize', self)
+  } else if (self.autoposition) {
+    // Attach MutationObserver if supported
+    if (!self._positionObserver) self._positionObserver = window.MutationObserver && new window.MutationObserver(self.updatePosition.bind(self))
+    if (self._positionObserver) self._positionObserver.observe(self, { childList: true, subtree: true, attributes: true })
+
+    document.body.appendChild(SCROLLER)
+    window.addEventListener('scroll', self, true) // Use capture to also listen for elements with overflow
+    window.addEventListener('resize', self)
+    self.updatePosition() // Initial trigger
   }
 }

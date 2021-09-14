@@ -156,6 +156,25 @@ Using the `popup` attribute in conjunction with embedded HTML in your toggle but
 
 If you have form elements inside a `<core-toggle>`, you can optionally add a `autofocus` attribute to the most prominent form element. This helps the user navigate quickly when toggle is opened.
 
+### Autoposition
+
+When using core-toggle near the screen edges, the `autoposition` attribute positions the toggled content where there is visual room around the button, using `position:fixed`.
+This enables core-toggle to be used inside scrollable areas.
+
+```html
+<!--demo-->
+<div style="overflow:auto; height:70px; width:200px; border:2px dashed #ccc;">
+  <button type="button">Toggle is autopositioned</button>
+  <core-toggle class="my-dropdown" autoposition hidden>
+    <ul>
+      <li><a>Link</a></li>
+      <li><a>Another link</a></li>
+      <li><a>Linking is life</a></li>
+    </ul>
+  </core-toggle>
+  <p>Scroll me to the edge!</p>
+</div>
+```
 ## Events
 
 ### toggle
