@@ -23,7 +23,6 @@ utils.buildDocs()
 
 export default utils.pkgs.reduce((all, path) => {
   const { version } = require(`${path}/package.json`)
-  console.log(version)
   const file = utils.getPackageName(path)
   const name = file.replace(/-./g, (m) => m.slice(-1).toUpperCase())
   const jsx = name.replace(/./, (m) => m.toUpperCase())
