@@ -13,6 +13,7 @@
     "install": "node -r esm bin/index.js --install",
     "postinstall": "webdriver-manager update",
     "outdated": "node -r esm bin/index.js --outdated",
+    "publish:prepatch": "node -r esm bin/index.js --publish=prepatch",
     "publish:patch": "node -r esm bin/index.js --publish=patch",
     "publish:minor": "node -r esm bin/index.js --publish=minor",
     "publish:major": "node -r esm bin/index.js --publish=major",
