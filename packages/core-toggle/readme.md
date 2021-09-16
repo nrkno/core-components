@@ -240,6 +240,8 @@ Content is only toggled when clicking the button. Great for accordions and expan
 
 ## Example: Select
 
+`popup`-attribute is required for Select behavior
+
 Listen to the `toggle.select` event and update the button's value from the selected item
 to create a component that behaves like a `<select>`:
 
