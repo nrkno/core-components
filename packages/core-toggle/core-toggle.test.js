@@ -186,7 +186,7 @@ describe('core-toggle', () => {
   it('triggers select event', async () => {
     await browser.executeScript(() => {
       document.body.innerHTML = `
-        <button>Toggle</button>
+        <button id="toggleBtn">Toggle</button>
         <core-toggle hidden>
           <button id="my-item">Select me</button>
         </core-toggle>
@@ -194,10 +194,9 @@ describe('core-toggle', () => {
     })
     await browser.executeScript(() => {
       document.addEventListener('toggle.select', (event) => (window.itemId = event.detail.id))
-      const toggle = document.querySelector('core-toggle')
-      toggle.hidden = false
-      toggle.children[0].click()
     })
+    await $('#toggleBtn').click()
+    await $('#my-item').click()
     const itemId = await browser.wait(() => browser.executeScript(() => window.itemId))
     await expect(itemId).toEqual('my-item')
   })
@@ -212,5 +211,23 @@ describe('core-toggle', () => {
     await expect(prop('core-toggle', 'autoposition')).toMatch(/true/i)
     await $('button').click()
     await expect($('core-toggle').getCssValue('position')).toEqual('fixed')
+  })
+
+  it('updates aria-label on select when event value is set to event detail', async () => {
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <button id="toggleBtn">Toggle</button>
+        <core-toggle hidden popup="Choose wisely">
+          <button id="my-item">Select me</button>
+        </core-toggle>
+      `
+      document.addEventListener('toggle.select', (event) => (event.target.value = event.detail))
+    })
+    await browser.wait(ExpectedConditions.presenceOf($('#toggleBtn[aria-label="Toggle,Choose wisely"]')))
+    await $('#toggleBtn').click()
+    await $('#my-item').click()
+
+    // aria-label always ends with popup-attribute
+    await expect(attr('#toggleBtn', 'aria-label')).toEqual('Select me,Choose wisely')
   })
 })
