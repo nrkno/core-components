@@ -68,6 +68,9 @@ if (args.publish) {
     console.log('')
   })
 
+  // Build all packages to set correct version in banner
+  execSync('npm run build', { cwd: process.cwd(), stdio: 'inherit' })
+
   // Publish all packages
   update.forEach((path) => {
     execSync('git push && git push --tags && npm publish --access public', { cwd: path, stdio: 'inherit' })
