@@ -186,7 +186,7 @@ describe('core-toggle', () => {
   it('triggers select event', async () => {
     await browser.executeScript(() => {
       document.body.innerHTML = `
-        <button>Toggle</button>
+        <button id="toggleBtn">Toggle</button>
         <core-toggle hidden>
           <button id="my-item">Select me</button>
         </core-toggle>
@@ -194,10 +194,9 @@ describe('core-toggle', () => {
     })
     await browser.executeScript(() => {
       document.addEventListener('toggle.select', (event) => (window.itemId = event.detail.id))
-      const toggle = document.querySelector('core-toggle')
-      toggle.hidden = false
-      toggle.children[0].click()
     })
+    await $('#toggleBtn').click()
+    await $('#my-item').click()
     const itemId = await browser.wait(() => browser.executeScript(() => window.itemId))
     await expect(itemId).toEqual('my-item')
   })
