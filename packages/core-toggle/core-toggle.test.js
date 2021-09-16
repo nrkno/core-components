@@ -212,4 +212,22 @@ describe('core-toggle', () => {
     await $('button').click()
     await expect($('core-toggle').getCssValue('position')).toEqual('fixed')
   })
+
+  it('updates aria-label on select when event value is set to event detail', async () => {
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <button id="toggleBtn">Toggle</button>
+        <core-toggle hidden popup="Choose wisely">
+          <button id="my-item">Select me</button>
+        </core-toggle>
+      `
+      document.addEventListener('toggle.select', (event) => (event.target.value = event.detail))
+    })
+    await browser.wait(ExpectedConditions.presenceOf($('#toggleBtn[aria-label="Toggle,Choose wisely"]')))
+    await $('#toggleBtn').click()
+    await $('#my-item').click()
+
+    // aria-label always ends with popup-attribute
+    await expect(attr('#toggleBtn', 'aria-label')).toEqual('Select me,Choose wisely')
+  })
 })
