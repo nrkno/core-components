@@ -86,7 +86,7 @@ Remember to [polyfill](https://github.com/webcomponents/polyfills/tree/master/pa
 <button type="button">Toggle VanillaJS</button>       <!-- Must be <button> placed directly before <core-toggle> or use id + data-for attributes -->
 <core-toggle
   hidden                                <!-- Set hidden attribute to prevent FOUC -->
-  popup="{Boolean|String}">             <!-- Optional. Defaults to false. Enable or disable if clicking outside toggle should close it. Provide a string to control the aria-label text on the toggle -->
+  popup="{String?}">                    <!-- Optional. If present, clicking outside open toggle will close it. Providing a  string also enables select-behavior, by replacing value inside button with selected value, and suffixes provided string to aria-label on button-->
   <div>Content</div>
 </core-toggle>
 ```
