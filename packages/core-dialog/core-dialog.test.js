@@ -115,11 +115,11 @@ describe('core-dialog', () => {
     await expect(prop('#dialog-outer', 'hidden')).toMatch(/true/i)
   })
 
-  it('respects backdrop false option', async () => {
+  it('respects backdrop="off"', async () => {
     await browser.executeScript(() => {
       document.body.innerHTML = `
         <button data-for="dialog">Open</button>
-        <core-dialog id="dialog" backdrop="false" hidden>
+        <core-dialog id="dialog" backdrop="off" hidden>
           <button data-for="close">Close</button>
         </core-dialog>
       `

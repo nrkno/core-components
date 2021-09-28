@@ -1,13 +1,14 @@
 import { closest, dispatchEvent, toggleAttribute, queryAll } from '../utils'
 
 const FOCUSABLE = '[tabindex],a,button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled])'
+const BACKDROP_OFF = 'off'
+const BACKDROP_ON = 'on'
 
 export default class CoreDialog extends HTMLElement {
   static get observedAttributes () { return ['hidden', 'backdrop'] }
 
   connectedCallback () {
     this._focus = true // Used to check if connectedCallback has run
-    this._autoBackdrop = null
     this.attributeChangedCallback() // Ensure correct setup backdrop
     this.addEventListener('transitionend', this)
     document.addEventListener('keydown', this)
@@ -16,8 +17,8 @@ export default class CoreDialog extends HTMLElement {
 
   disconnectedCallback () {
     reFocus(this._focus) // Try moving focus back to <button>
-    if (this._autoBackdrop) this._autoBackdrop.parentNode.removeChild(this._autoBackdrop) // Remove generated backdrop element
-    this._focus = this._autoBackdrop = null // Garbage collection
+    if (this._generatedBackdrop) this._generatedBackdrop.parentNode.removeChild(this._generatedBackdrop) // Remove generated backdrop element
+    this._focus = this._generatedBackdrop = null // Garbage collection
     this.removeEventListener('transitionend', this)
     document.removeEventListener('keydown', this)
     document.removeEventListener('click', this)
@@ -95,16 +96,21 @@ export default class CoreDialog extends HTMLElement {
 
   get backdrop () { return getBackdrop(this, this.getAttribute('backdrop')) }
 
-  set backdrop (val) { this.setAttribute('backdrop', val || 'false') }
+  set backdrop (val) { typeof val === 'string' ? this.setAttribute('backdrop', val) : this.removeAttribute('backdrop') }
 }
 
-function getBackdrop (el, attr) {
-  const next = el.nextElementSibling
-  if (!el.parentNode || attr === 'false') return false
-  if (attr && attr !== 'true') return document.getElementById(attr) || false
+function getBackdrop (self, attr) {
+  const next = self.nextElementSibling
+  const attrLower = String(attr).toLowerCase()
+  if (!self.parentNode || attrLower === BACKDROP_OFF) return false
+  if (attr && attrLower !== BACKDROP_ON) {
+    return document.getElementById(attr) ||
+      console.warn(self, `cannot find backdrop element with id: ${attr}`) ||
+      false
+  }
   if (next && next.nodeName === 'BACKDROP') return next
-  el._autoBackdrop = document.createElement('backdrop')
-  return el.insertAdjacentElement('afterend', el._autoBackdrop)
+  self._generatedBackdrop = document.createElement('backdrop')
+  return self.insertAdjacentElement('afterend', self._generatedBackdrop)
 }
 
 function isVisible (el) {
