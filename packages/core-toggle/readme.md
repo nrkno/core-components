@@ -86,8 +86,9 @@ Remember to [polyfill](https://github.com/webcomponents/polyfills/tree/master/pa
 <button type="button">Toggle VanillaJS</button>       <!-- Must be <button> placed directly before <core-toggle> or use id + data-for attributes -->
 <core-toggle
   hidden                                <!-- Set hidden attribute to prevent FOUC -->
-  popup="{String?}">                    <!-- Optional. If present, clicking outside open toggle will close it. Providing a  string also enables select-behavior, by replacing value inside button with selected value, and suffixes provided string to aria-label on button-->
-  <div>Content</div>
+  popup="{String?}"                    <!-- Optional. If present, clicking outside open toggle will close it. Providing a string also enables select-behavior, by replacing value inside button with selected value, and suffixes provided string to aria-label on button -->
+>
+  Content                               <!-- Content to be toggled. Accepts text, elements and components -->
 </core-toggle>
 ```
 
@@ -104,9 +105,9 @@ myToggle.hidden         // Get hidden value
 myToggle.value          // Get toggle button text
 
 // Setters
-myToggle.popup = true   // Enable or disable if clicking outside toggle should close it. Provide a string to control the aria-label text on the toggle
-myToggle.hidden = true  // Set hidden attribute
-myToggle.value = 'Velg' // Sets innerHTML of the button and safely updates aria-label for screen readers. Defaults to button.innerHTML
+myToggle.popup = {Boolean|String}   // If true, clicking outside open toggle will close it. Providing a string also enables select-behavior, by replacing value inside button with selected value, and suffixes provided string to aria-label on button
+myToggle.hidden = true              // Set hidden attribute
+myToggle.value = 'Velg'             // Sets innerHTML of the button and safely updates aria-label for screen readers. Defaults to button.innerHTML
 ```
 
 ### React / Preact
@@ -114,15 +115,16 @@ myToggle.value = 'Velg' // Sets innerHTML of the button and safely updates aria-
 ```js
 import CoreToggle from '@nrk/core-toggle/jsx'
 
+<button type="button">Use with JSX</button>
 <CoreToggle
   hidden                         // Set hidden attribute to prevent FOUC
-  popup={Boolean|String}         // Optional. Defaults to false. Enable or disable if clicking outside toggle should close it. Provide a string to control the aria-label text on the toggle
+  popup={Boolean|String}         // Optional. If true, clicking outside open toggle will close it. Providing a string also enables select-behavior, by replacing value inside button with selected value, and suffixes provided string to aria-label on button
   ref={(comp) => {}}             // Optional. Get reference to React component
   forwardRef={(el) => {}}        // Optional. Get reference to underlying DOM custom element
   onToggle={Function}            // Optional. Toggle event listener. See event 'toggle'
-  onToggleSelect={Function}>     // Optional. Toggle select event listener. See event 'toggle.select'
-  <button>Use with JSX</button>  // First element must result in a <button>. Accepts both elements and components
-  <div>Content</div>             // Next element will be toggled. Accepts both elements and components
+  onToggleSelect={Function}      // Optional. Toggle select event listener. See event 'toggle.select'
+>
+  Content                        // Content to be toggled. Accepts text, elements and components
 </CoreToggle>
 ```
 
@@ -223,7 +225,7 @@ Content is only toggled when clicking the button. Great for accordions and expan
 
 ```html
 <!--demo-->
-<button>Toggle VanillaJS</button>  <!-- must be <button> -->
+<button type="button">Toggle VanillaJS</button>  <!-- must be <button> -->
 <core-toggle hidden>Content</core-toggle>  <!-- hidden prevents flash of unstyled content -->
 ```
 ```html
@@ -231,7 +233,7 @@ Content is only toggled when clicking the button. Great for accordions and expan
 <div id="jsx-toggle-default"></div>
 <script type="text/jsx">
   ReactDOM.render(<>
-    <button>Toggle JSX</button>
+    <button type="button">Toggle JSX</button>
     <CoreToggle hidden onToggle={console.log}>Content</CoreToggle>
   </>, document.getElementById('jsx-toggle-default'))
 </script>
