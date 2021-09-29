@@ -115,6 +115,48 @@ describe('core-dialog', () => {
     await expect(prop('#dialog-outer', 'hidden')).toMatch(/true/i)
   })
 
+  it('defaults to backdrop="on" when not supplied', async () => {
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <button data-for="dialog">Open</button>
+        <core-dialog id="dialog" hidden>
+          <button data-for="close">Close</button>
+        </core-dialog>
+      `
+    })
+    await $('button[data-for="dialog"]').click()
+    await expect(prop('core-dialog', 'hidden')).toMatch(/(null|false)/i)
+    await expect(await $('backdrop').isPresent()).toEqual(true)
+  })
+
+  it('respects explicit backdrop="on"', async () => {
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <button data-for="dialog">Open</button>
+        <core-dialog id="dialog" backdrop="on" hidden>
+          <button data-for="close">Close</button>
+        </core-dialog>
+      `
+    })
+    await $('button[data-for="dialog"]').click()
+    await expect(prop('core-dialog', 'hidden')).toMatch(/(null|false)/i)
+    await expect(await $('backdrop').isPresent()).toEqual(true)
+  })
+
+  it('respects backdrop with no value, defaulting to "on"', async () => {
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <button data-for="dialog">Open</button>
+        <core-dialog id="dialog" backdrop hidden>
+          <button data-for="close">Close</button>
+        </core-dialog>
+      `
+    })
+    await $('button[data-for="dialog"]').click()
+    await expect(prop('core-dialog', 'hidden')).toMatch(/(null|false)/i)
+    await expect(await $('backdrop').isPresent()).toEqual(true)
+  })
+
   it('respects backdrop="off"', async () => {
     await browser.executeScript(() => {
       document.body.innerHTML = `
@@ -127,6 +169,50 @@ describe('core-dialog', () => {
     await $('button[data-for="dialog"]').click()
     await expect(prop('core-dialog', 'hidden')).toMatch(/(null|false)/i)
     await expect(prop('core-dialog', 'nextElementSibling')).toMatch(/(null|false)/i)
+    await expect(await $('backdrop').isPresent()).toEqual(false)
+  })
+
+  it('respects backdrop with custom id', async () => {
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <button data-for="dialog">Open</button>
+        <core-dialog id="dialog" backdrop="back-custom" hidden>
+          <button data-for="close">Close</button>
+        </core-dialog>
+        <div id="back-custom" class="my-backdrop" style="background:rgba(0,0,50,.8)" hidden></div>
+      `
+    })
+    await $('button[data-for="dialog"]').click()
+    await expect(prop('core-dialog', 'hidden')).toMatch(/(null|false)/i)
+    await expect(prop('#back-custom', 'hidden')).toMatch(/(null|false)/i)
+    await expect(await $('backdrop').isPresent()).toEqual(false)
+  })
+
+  it('displays no backdrop and logs warning when custom backdrop is provided and not found', async () => {
+    // Use custom console.warn to save what is logged
+    await browser.executeScript(() => {
+      window.console.warn = function (_, log) {
+        window.warning = String(log)
+      }
+    })
+    const missingID = 'wrong-back-custom'
+    await browser.executeScript((missingID) => {
+      document.body.innerHTML = `
+        <button data-for="dialog">Open</button>
+        <core-dialog id="dialog" backdrop="${missingID}" hidden>
+          <button data-for="close">Close</button>
+        </core-dialog>
+        <div id="back-custom" class="my-backdrop" style="background:rgba(0,0,50,.8)" hidden></div>
+      `
+    }, missingID)
+    await $('button[data-for="dialog"]').click()
+    await expect(prop('core-dialog', 'hidden')).toMatch(/(null|false)/i)
+    // Neither basic backdrop nor possibly intended sibling are triggered
+    await expect(prop('#back-custom', 'hidden')).toEqual('true')
+    await expect(await $('backdrop').isPresent()).toEqual(false)
+    // Get stored console.warn from protractor browser
+    const consoleWarn = await browser.wait(() => browser.executeScript(() => window.warning))
+    await expect(consoleWarn).toEqual(`cannot find backdrop element with id: ${missingID}`)
   })
 
   it('respects strict option', async () => {
