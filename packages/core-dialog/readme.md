@@ -51,58 +51,69 @@
 </style>
 demo-->
 
-## Example
+## Examples
+
+### Plain JavaScript
 
 ```html
 <!--demo-->
-<!-- Normal -->
-<button data-for="my-dialog">Open dialog</button>
+<button data-for="my-dialog" type="button">Open dialog</button>
 <core-dialog id="my-dialog" class="my-dialog" aria-label="first dialog title" hidden>
-  <h1>This is a title</h1>
+  <h1>Dialog title</h1>
   <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
-  <button data-for="my-dialog-nested">Open an additional dialog</button>
-  <button type="button" autofocus style="visibility: hidden">Should not be focusable</button>
-  <a href="#">Link</a>
-  <button type="button" autofocus>Autofocus</button>
-  <button data-for="close">Close</button>
+  <label>
+    <small>Label for autofocused input</small>
+    <input type="text" autofocus placeholder="Input with autofocus">
+  </label>
+  <br>
+  <br>
+  <button data-for="close" type="button">Close</button>
+  <button data-for="my-dialog-nested" type="button">Open an additional dialog</button>
   <core-dialog id="my-dialog-nested" class="my-dialog" aria-label="other dialog title" hidden>
     <h1>Another dialog, triggered inside the first dialog</h1>
     <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero.</p>
-    <button data-for="close">Close</button>
+    <button data-for="close" type="button">Close</button>
   </core-dialog>
 </core-dialog>
+```
 
-<!-- Strict -->
+```html
+<!--demo-->
 <button data-for="strict-dialog">Open strict dialog</button>
 <core-dialog id="strict-dialog" class="my-dialog" aria-label="strict dialog title" hidden strict>
-  <h1>This is a title</h1>
+  <h1>Strict dialog title</h1>
   <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
   <button type="button">This button does nothing</button>
-  <button data-for="close">Close</button>
+  <button data-for="close" type="button">Close</button>
 </core-dialog>
+```
 
-<!-- Modal -->
-<button data-for="modal-dialog">Open modal dialog</button>
-<core-dialog id="modal-dialog" class="my-dialog" aria-label="modal dialog title" hidden backdrop="false">
-  <h1>This is a title</h1>
+```html
+<!--demo-->
+<button data-for="modal-dialog">Open dialog without backdrop</button>
+<core-dialog id="modal-dialog" class="my-dialog" aria-label="modal dialog title" hidden backdrop="off">
+  <h1>Dialog without backdrop</h1>
   <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
   <button data-for="close">Close</button>
 </core-dialog>
+```
 
-<!-- Custom backdrop -->
+```html
+<!--demo-->
 <button data-for="modal-custom">Open dialog with custom backdrop</button>
 <core-dialog id="modal-custom" class="my-dialog" aria-label="modal dialog title" hidden backdrop="back-custom">
-  <h1>This is a title</h1>
+  <h1>Dialog title</h1>
   <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
   <button data-for="close">Close</button>
 </core-dialog>
 <div id="back-custom" class="my-backdrop" style="background:rgba(0,0,50,.8)" hidden></div>
 ```
 
+### React
+
 ```html
 <!--demo-->
 <div id="jsx-dialog"></div>
-<div id="jsx-dialog-strict"></div>
 <script type="text/jsx">
   class DialogContainerDemo extends React.Component {
     constructor (props) {
@@ -122,8 +133,8 @@ demo-->
 
     render () {
       return (
-        <div>
-          <button onClick={this.toggleDialog}>Open dialog jsx</button>
+        <>
+          <button onClick={this.toggleDialog} type="button">Open React dialog</button>
           <CoreDialog
             className="my-dialog"
             hidden={this.state.hidden}
@@ -131,32 +142,73 @@ demo-->
             aria-label="React dialog">
             <h1>Dialog for JSX</h1>
             <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
-            <button onClick={this.toggleDialog}>Lukk</button>
+            <button onClick={this.toggleDialog} type="button">Lukk</button>
           </CoreDialog>
-        </div>
+        </>
       )
     }
   }
 
   ReactDOM.render(<DialogContainerDemo />, document.getElementById('jsx-dialog'))
-  ReactDOM.render(<div>
-    <button data-for="dialog-jsx">Open strict dialog jsx</button>
-    <CoreDialog id="dialog-jsx" className="my-dialog" aria-label="React dialog" hidden strict backdrop>
-      <h1>Strict dialog for JSX</h1>
-      <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
-      <button data-for="close">Lukk</button>
-    </CoreDialog>
-    <br />
-    <button data-for="dialog-cust">Open no backdrop</button>
-    <CoreDialog id="dialog-cust" className="my-dialog" aria-label="React dialog without backdrop" backdrop={false} hidden>
-      <h1>Strict dialog for JSX</h1>
-      <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
-      <button data-for="close">Lukk</button>
-    </CoreDialog>
-  </div>, document.getElementById('jsx-dialog-strict'))
 </script>
 ```
 
+```html
+<!--demo-->
+<div id="jsx-dialog-strict"></div>
+<script type="text/jsx">
+  ReactDOM.render(
+    <>
+      <button data-for="dialog-strict-jsx" type="button">Open strict React dialog</button>
+      <CoreDialog id="dialog-strict-jsx" className="my-dialog" aria-label="Strict React dialog" hidden strict>
+        <h1>Strict dialog for JSX</h1>
+        <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
+        <button data-for="close" type="button">Lukk</button>
+      </CoreDialog>
+    </>,
+    document.getElementById('jsx-dialog-strict')
+  )
+</script>
+```
+
+```html
+<!--demo-->
+<div id="jsx-dialog-no-backdrop"></div>
+<script type="text/jsx">
+  ReactDOM.render(
+    <>
+      <button data-for="dialog-no-back-jsx" type="button">Open React dialog without backdrop</button>
+      <CoreDialog id="dialog-no-back-jsx" className="my-dialog" aria-label="React dialog without backdrop" backdrop="off" hidden>
+        <h1>React dialog without backdrop</h1>
+        <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
+        <button data-for="close" type="button">Lukk</button>
+      </CoreDialog>
+    </>,
+    document.getElementById('jsx-dialog-no-backdrop')
+  )
+</script>
+```
+
+```html
+<!--demo-->
+<div id="jsx-dialog-custom"></div>
+<script type="text/jsx">
+  ReactDOM.render(
+    <div>
+      <button data-for="dialog-cust-jsx" type="button">Open React dialog with custom backdrop</button>
+      <CoreDialog id="dialog-cust-jsx" className="my-dialog" aria-label="React dialog with custom backdrop" backdrop="custom-backdrop-jsx" hidden>
+        <h1>React dialog with custom backdrop</h1>
+        <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
+        <button data-for="close" type="button">Lukk</button>
+      </CoreDialog>
+      <div id="custom-backdrop-jsx" className="my-backdrop" style={{background:'rgba(0,0,50,.8)'}} hidden></div>
+    </div>,
+    document.getElementById('jsx-dialog-custom')
+  )
+</script>
+```
+
+**NB!** Do not wrap `CoreDialog` with custom backdrop as direct children of React.Fragments (instead, wrap in a block element like `<div>`), to ensure access to the backdrop element on mount.
 
 ## Installation
 
@@ -185,7 +237,7 @@ Remember to [polyfill](https://github.com/webcomponents/polyfills/tree/master/pa
 <core-dialog id="my-dialog"
              hidden                      <!-- Hide dialog by default -->
              strict                      <!-- Optional. If set, prevents the dialog from closing on ESC-key and on backdrop click -->
-             backdrop="{Boolean|String}" <!-- Optional. If false, disables backdrop, string ID points to custom backdrop element -->
+             backdrop="{on|off|String}"  <!-- Optional. Default is "on" and will use standard backdrop. "off" disables backdrop and string ID points to custom backdrop element -->
              aria-label="{String}">      <!-- Optional. Is read by screen readers -->
   <h1>Title of dialog</h1>
   <p>Some content</p>
@@ -207,7 +259,7 @@ myDialog.backdrop       // Get backdrop element (if enabled) (see "Markup" for m
 // Setters
 myDialog.hidden = false // Open dialog
 myDialog.strict = false // Set strict mode. If set, prevents the dialog from closing on ESC-key and on backdrop click
-myDialog.backdrop = false | true | 'my-drop' // Set boolean to enable/disable backdrop or string ID to point to custom backdrop element
+myDialog.backdrop = 'on' | 'off' | 'my-drop' // Set "on"/"off" to enable/disable standard backdrop or string ID to point to custom backdrop element
 myDialog.style.zIndex = '9' // Set z-index manually. If unset, z-index is automatically set for both dialog and backdrop element. Default unset.
 
 // Methods

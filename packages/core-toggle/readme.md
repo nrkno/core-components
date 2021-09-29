@@ -19,12 +19,12 @@ demo-->
 
 ```html
 <!--demo-->
-<button>Popup VanillaJS</button>
+<button type="button">Popup VanillaJS</button>
 <core-toggle class="my-dropdown" popup hidden>
   <ul>
     <li><a>Link</a></li>
     <li>
-      <button>Can also be nested</button>
+      <button type="button">Can also be nested</button>
       <core-toggle class="my-dropdown" popup hidden>
         <ul>
           <li><a>Sub-link</a></li>
@@ -41,13 +41,13 @@ demo-->
 <div id="jsx-toggle-popup"></div>
 <script type="text/jsx">
   ReactDOM.render(<>
-    <button>Popup JSX</button>
+    <button type="button">Popup JSX</button>
     <CoreToggle className='my-dropdown' hidden popup onToggleSelect={console.warn}>
       <ul>
-        <li><button>Select</button></li>
+        <li><button type="button">Select</button></li>
         <li><a href='#'>Link</a></li>
         <li>
-          <button>Can also be nested</button>
+          <button type="button">Can also be nested</button>
           <CoreToggle className='my-dropdown' hidden popup>
             <ul>
               <li><a href='#'>Sub-link</a></li>
@@ -83,11 +83,12 @@ Remember to [polyfill](https://github.com/webcomponents/polyfills/tree/master/pa
 ### HTML / JavaScript
 
 ```html
-<button>Toggle VanillaJS</button>       <!-- Must be <button> placed directly before <core-toggle> or use id + data-for attributes -->
+<button type="button">Toggle VanillaJS</button>       <!-- Must be <button> placed directly before <core-toggle> or use id + data-for attributes -->
 <core-toggle
   hidden                                <!-- Set hidden attribute to prevent FOUC -->
-  popup="{Boolean|String}">             <!-- Optional. Defaults to false. Enable or disable if clicking outside toggle should close it. Provide a string to control the aria-label text on the toggle -->
-  <div>Content</div>
+  popup="{String?}"                    <!-- Optional. If present, clicking outside open toggle will close it. Providing a string also enables select-behavior, by replacing value inside button with selected value, and suffixes provided string to aria-label on button -->
+>
+  Content                               <!-- Content to be toggled. Accepts text, elements and components -->
 </core-toggle>
 ```
 
@@ -104,9 +105,9 @@ myToggle.hidden         // Get hidden value
 myToggle.value          // Get toggle button text
 
 // Setters
-myToggle.popup = true   // Enable or disable if clicking outside toggle should close it. Provide a string to control the aria-label text on the toggle
-myToggle.hidden = true  // Set hidden attribute
-myToggle.value = 'Velg' // Sets innerHTML of the button and safely updates aria-label for screen readers. Defaults to button.innerHTML
+myToggle.popup = {Boolean|String}   // If true, clicking outside open toggle will close it. Providing a string also enables select-behavior, by replacing value inside button with selected value, and suffixes provided string to aria-label on button
+myToggle.hidden = true              // Set hidden attribute
+myToggle.value = 'Velg'             // Sets innerHTML of the button and safely updates aria-label for screen readers. Defaults to button.innerHTML
 ```
 
 ### React / Preact
@@ -114,15 +115,16 @@ myToggle.value = 'Velg' // Sets innerHTML of the button and safely updates aria-
 ```js
 import CoreToggle from '@nrk/core-toggle/jsx'
 
+<button type="button">Use with JSX</button>
 <CoreToggle
   hidden                         // Set hidden attribute to prevent FOUC
-  popup={Boolean|String}         // Optional. Defaults to false. Enable or disable if clicking outside toggle should close it. Provide a string to control the aria-label text on the toggle
+  popup={Boolean|String}         // Optional. If true, clicking outside open toggle will close it. Providing a string also enables select-behavior, by replacing value inside button with selected value, and suffixes provided string to aria-label on button
   ref={(comp) => {}}             // Optional. Get reference to React component
   forwardRef={(el) => {}}        // Optional. Get reference to underlying DOM custom element
   onToggle={Function}            // Optional. Toggle event listener. See event 'toggle'
-  onToggleSelect={Function}>     // Optional. Toggle select event listener. See event 'toggle.select'
-  <button>Use with JSX</button>  // First element must result in a <button>. Accepts both elements and components
-  <div>Content</div>             // Next element will be toggled. Accepts both elements and components
+  onToggleSelect={Function}      // Optional. Toggle select event listener. See event 'toggle.select'
+>
+  Content                        // Content to be toggled. Accepts text, elements and components
 </CoreToggle>
 ```
 
@@ -134,7 +136,7 @@ Putting the toggle button directly before the content is highly recommended, as 
 
 ```html
 <div>
-  <button data-for="my-toggle">Toggle</button>
+  <button data-for="my-toggle" type="button">Toggle</button>
 </div>
 <core-toggle id="my-toggle" hidden>...</core-toggle>
 ```
@@ -144,7 +146,7 @@ Putting the toggle button directly before the content is highly recommended, as 
 Using the `popup` attribute in conjunction with embedded HTML in your toggle button (an SVG icon for instance) will only preserve text when updating the value/label for the button. To preserve the embedded HTML, put the actual button text inside a `<span>`:
 
 ```html
-<button>
+<button type="button">
   <span>Toggle</span>
   <svg style="width:1.5em; height:1.5em" aria-hidden="true"><use xlink:href="#nrk-heart"></use></svg>
 </button>
@@ -223,7 +225,7 @@ Content is only toggled when clicking the button. Great for accordions and expan
 
 ```html
 <!--demo-->
-<button>Toggle VanillaJS</button>  <!-- must be <button> -->
+<button type="button">Toggle VanillaJS</button>  <!-- must be <button> -->
 <core-toggle hidden>Content</core-toggle>  <!-- hidden prevents flash of unstyled content -->
 ```
 ```html
@@ -231,7 +233,7 @@ Content is only toggled when clicking the button. Great for accordions and expan
 <div id="jsx-toggle-default"></div>
 <script type="text/jsx">
   ReactDOM.render(<>
-    <button>Toggle JSX</button>
+    <button type="button">Toggle JSX</button>
     <CoreToggle hidden onToggle={console.log}>Content</CoreToggle>
   </>, document.getElementById('jsx-toggle-default'))
 </script>
@@ -247,12 +249,12 @@ to create a component that behaves like a `<select>`:
 
 ```html
 <!--demo-->
-<button>Episode 1</button>
+<button type="button">Episode 1</button>
 <core-toggle class="my-select my-dropdown" hidden popup="Choose episode">
   <ul>
-    <li><button>Episode 1</button></li>
-    <li><button>Episode 2</button></li>
-    <li><button>Episode 3</button></li>
+    <li><button type="button">Episode 1</button></li>
+    <li><button type="button">Episode 2</button></li>
+    <li><button type="button">Episode 3</button></li>
   </ul>
 </core-toggle>
 <script>
@@ -281,12 +283,12 @@ to create a component that behaves like a `<select>`:
     }
     render () {
       return <>
-        <button>{this.state.value}</button>
+        <button type="button">{this.state.value}</button>
         <CoreToggle className='my-dropdown' popup='Example picker' hidden onToggleSelect={this.onSelect}>
           <ul>
-            <li><button>One</button></li>
-            <li><button>Two</button></li>
-            <li><button>Three</button></li>
+            <li><button type="button">One</button></li>
+            <li><button type="button">Two</button></li>
+            <li><button type="button">Three</button></li>
           </ul>
         </CoreToggle>
       </>
