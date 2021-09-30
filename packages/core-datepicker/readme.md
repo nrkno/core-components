@@ -24,26 +24,28 @@
 </style>
 demo-->
 
-## Example
+## Examples
 
 ```html
 <!-- demo -->
-<button class="my-toggle">Velg dato</button>
+<button type="button" class="my-toggle">Velg dato</button>
 <core-toggle popup hidden class="my-popup">
-  <core-datepicker id="my-datepicker"
+  <core-datepicker
+    id="my-datepicker"
     days="Mon,Tue,Wed,Thu,Fri,Sat,Sun"
-    months="January,Febuary,March,April,May,June,July,August,September,October,November,December">
+    months="January,Febuary,March,April,May,June,July,August,September,October,November,December"
+  >
     <input type="timestamp">
     <fieldset>
       <legend>Navigasjon</legend>
-      <button value="now">I dag</button>
-      <button value="now - 1 day">I går</button>
-      <button value="now + 1 day">I morgen</button>
-      <button value="- 1 week">Tilbake en uke</button>
-      <button value="+ 1 week">Fremover en uke</button>
-      <button value="now tuesday - 1 week">Tirsdag sist uke</button>
-      <button value="now + 10 years">Om ti år</button>
-      <button value="yy00-01-01 - 100 years">Forrige århundre</button>
+      <button type="button" value="now">I dag</button>
+      <button type="button" value="now - 1 day">I går</button>
+      <button type="button" value="now + 1 day">I morgen</button>
+      <button type="button" value="- 1 week">Tilbake en uke</button>
+      <button type="button" value="+ 1 week">Fremover en uke</button>
+      <button type="button" value="now tuesday - 1 week">Tirsdag sist uke</button>
+      <button type="button" value="now + 10 years">Om ti år</button>
+      <button type="button" value="yy00-01-01 - 100 years">Forrige århundre</button>
     </fieldset>
     <label>
       År
@@ -89,8 +91,8 @@ demo-->
     <table></table>
   </core-datepicker>
 </core-toggle>
-<button data-for="my-datepicker" value="now">Nå</button>
-<button data-for="my-datepicker" value="+1 week">Neste uke</button>
+<button type="button" data-for="my-datepicker" value="now">Nå</button>
+<button type="button" data-for="my-datepicker" value="+1 week">Neste uke</button>
 <select data-for="my-datepicker">
   <option>Tid</option>
   <option value="11:m">11</option>
@@ -130,18 +132,19 @@ demo-->
     onChange (event) { this.setState({ date: event.target.date }) }
     render () {
       return <div>
-        <button>Velg dato JSX</button>
+        <button type="button">Velg dato JSX</button>
         <CoreToggle hidden popup className="my-popup">
           <CoreDatepicker
             timestamp={this.state.date.getTime()}
             disabled={(date) => date <= this.today}
-            onDatepickerChange={this.onChange}>
+            onDatepickerChange={this.onChange}
+          >
               <label>År<input type="year" /></label>
               <label>Måned<select></select></label>
               <table></table>
           </CoreDatepicker>
         </CoreToggle>
-        <button onClick={this.onNow}>I dag JSX</button>
+        <button type="button" onClick={this.onNow}>I dag JSX</button>
         <input type="text" readOnly value={this.state.date.toLocaleDateString()} />
       </div>
     }
@@ -212,14 +215,14 @@ All date values - both HTML markup and JavaScript - accepts accepts dates as num
   <fieldset>
     <legend>Navigasjon</legend>
     <!-- Dates relative to today/now by using the keyword 'now' -->
-    <button value="now">I dag</button>
-    <button value="now - 1 day|week|month|year">I går/forrige uke/måned/år</button>
-    <button value="now + 1 day|week|month|year">I morgen/neste uke/måned/år</button>
+    <button type="button" value="now">I dag</button>
+    <button type="button" value="now - 1 day|week|month|year">I går/forrige uke/måned/år</button>
+    <button type="button" value="now + 1 day|week|month|year">I morgen/neste uke/måned/år</button>
 
     <!-- Semi-specific dates -->
     <!-- Will use the first two digits of the current year and set the two last -->
     <!-- digits of the year 0. Will set the date to 1st of January -->
-    <button value="yy00-01-01">Start of current century</button>
+    <button type="button" value="yy00-01-01">Start of current century</button>
   </fieldset>
 </core-datepicker>
 ```
