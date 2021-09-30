@@ -23,7 +23,7 @@ custom element with its default tag name (i.e. `core-toggle`) automatically on l
 potentially resulting in name conflicts later on:
 
 ```html
-<script src="https://static.nrk.no/core-components/major/7/core-datepicker/core-datepicker.min.js"></script>  <!-- Using static -->
+<script src="https://static.nrk.no/core-components/major/8/core-datepicker/core-datepicker.min.js"></script>  <!-- Using static -->
 ```
 
 ### Usage
