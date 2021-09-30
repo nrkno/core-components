@@ -113,6 +113,15 @@ demo-->
     if (event.target.id !== 'my-datepicker') return
     document.getElementById('my-datepicker-output').value = event.target.date.toLocaleString()
   })
+
+  // Handle click on today when input is empty
+  document.addEventListener('datepicker.click.day', function (event) {
+    if (event.target.id !== 'my-datepicker') return
+    const input = document.getElementById('my-datepicker-output')
+    if (input.value === '' && event.target.date.toDateString() === new Date().toDateString()) {
+      input.value = event.target.date.toLocaleString()
+    }
+  })
 </script>
 ```
 
