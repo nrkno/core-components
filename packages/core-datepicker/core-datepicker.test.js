@@ -1,7 +1,6 @@
 import parse from '@nrk/simple-date-parse'
 import fs from 'fs'
 import path from 'path'
-import { $ } from 'protractor'
 import { attr, prop } from '../test-utils'
 
 const coreDatepicker = fs.readFileSync(path.resolve(__dirname, 'core-datepicker.min.js'), 'utf-8')
