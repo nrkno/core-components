@@ -26,25 +26,25 @@
     "protractor": "node -r esm node_modules/.bin/protractor bin/test.js"
   },
   "devDependencies": {
-    "@babel/core": "7.15.0",
-    "@babel/preset-env": "7.15.0",
+    "@babel/core": "7.15.8",
+    "@babel/preset-env": "7.15.8",
     "@nrk/custom-element-to-react": "1.1.1",
     "@rollup/plugin-babel": "5.3.0",
-    "@rollup/plugin-commonjs": "20.0.0",
+    "@rollup/plugin-commonjs": "21.0.0",
     "@rollup/plugin-json": "4.1.0",
-    "@rollup/plugin-node-resolve": "13.0.4",
+    "@rollup/plugin-node-resolve": "13.0.5",
     "@webcomponents/custom-elements": "1.5.0",
-    "axios": "0.21.4",
+    "axios": "0.22.0",
     "dotenv": "10.0.0",
     "esm": "3.2.25",
     "fast-glob": "3.2.7",
     "jasmine-spec-reporter": "7.0.0",
     "protractor": "7.0.0",
     "regenerator-runtime": "0.13.9",
-    "rollup": "2.56.2",
+    "rollup": "2.58.0",
     "rollup-plugin-serve": "1.1.0",
     "rollup-plugin-terser": "7.0.2",
-    "standard": "16.0.3"
+    "standard": "16.0.4"
   },
   "standard": {
     "globals": [
