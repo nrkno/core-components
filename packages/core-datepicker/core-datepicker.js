@@ -149,18 +149,18 @@ function setupTable (self, table) {
   queryAll('th', table).forEach((th, day) => (th.textContent = self.days[day]))
   queryAll('button', table).forEach((button) => {
     const isToday = day.getDate() === today.getDate() && day.getMonth() === today.getMonth() && day.getFullYear() === today.getFullYear()
-    const isSelected = !self.diff(day)
+    const isSelected = self._date === null ? isToday : !self.diff(day)
     const dayInMonth = day.getDate()
     const dayMonth = day.getMonth()
 
     button.textContent = dayInMonth // Set textContent instead of innerHTML avoids reflow
     button.value = `${day.getFullYear()}-${dayMonth + 1}-${dayInMonth}`
     button.disabled = self.disabled(day)
-    button.setAttribute('tabindex', Number(self._date ? isSelected : isToday) - 1)
+    button.setAttribute('tabindex', Number(isSelected) - 1)
     button.setAttribute('data-adjacent', month !== dayMonth)
     button.setAttribute('aria-label', `${dayInMonth}. ${self.months[dayMonth]}`)
     button.setAttribute('aria-current', isToday && 'date')
-    toggleAttribute(button, 'autofocus', self.date === null ? isToday : isSelected)
+    toggleAttribute(button, 'autofocus', isSelected)
     day.setDate(dayInMonth + 1)
   })
 }
