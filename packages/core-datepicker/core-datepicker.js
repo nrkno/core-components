@@ -25,11 +25,12 @@ export default class CoreDatepicker extends HTMLElement {
     document.removeEventListener('keydown', this)
   }
 
-  attributeChangedCallback () {
+  attributeChangedCallback (_, prev, next) {
     if (!this.parentNode) return // Only render after connectedCallback
     if (this.disabled(this.date) && !this.disabled(this._date)) return (this.date = this._date) // Jump back
-    if (this.diff(this.date)) dispatchEvent(this, 'datepicker.change', this._date = this.date)
 
+    // Treat null <=> 0 as a valid change despite no apparent diff
+    if (this.diff(this.date) || (prev === null && next === '0') || (prev === '0' && next === null)) dispatchEvent(this, 'datepicker.change', this._date = this.date)
     forEachController('button', this, setupButton)
     forEachController('select', this, setupSelect)
     forEachController('input', this, setupInput)
