@@ -7,7 +7,7 @@ const MONTHS = 'januar,februar,mars,april,mai,juni,juli,august,september,oktober
 const DAYS = 'man,tirs,ons,tors,fre,lør,søn'
 
 export default class CoreDatepicker extends HTMLElement {
-  static get observedAttributes () { return ['date', 'months', 'days', 'timestamp'] }
+  static get observedAttributes () { return ['date', 'months', 'days'] }
 
   connectedCallback () {
     this._date = this.date // Store for later comparison and speeding up things
@@ -86,22 +86,19 @@ export default class CoreDatepicker extends HTMLElement {
   get second () { return this._date ? pad(this._date.getSeconds()) : null }
 
   get date () {
-    const dateAttr = this.getAttribute('date')
+    let dateAttr = this.getAttribute('date')
     if (!dateAttr) {
-      const timestampAttr = this.getAttribute('timestamp')
-      if (timestampAttr) {
-        if (!this.deprecationWarn) console.warn(this, 'uses deprecated `timestamp` attribute, please change to use `date`.')
-        this.deprecationWarn = true
-        return this.parse(timestampAttr)
-      } else {
-        return null
-      }
+      dateAttr = this.getAttribute('timestamp')
+      if (!dateAttr) return null
+      this.removeAttribute('timestamp')
+      console.warn(this, 'uses deprecated `timestamp` attribute, please change to use `date`.')
     }
     return this.parse(dateAttr)
   }
 
-  // TODO: setAttribute to parse of null?
-  set date (val) { return this.setAttribute('date', val ? this.parse(val).getTime() : null) }
+  set date (val) {
+    return val === null ? this.removeAttribute('date') : this.setAttribute('date', this.parse(val).getTime())
+  }
 
   set months (val) { this.setAttribute('months', [].concat(val).join(',')) }
 
