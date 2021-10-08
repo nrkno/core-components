@@ -25,7 +25,7 @@ export default class CoreDatepicker extends HTMLElement {
     document.removeEventListener('keydown', this)
   }
 
-  attributeChangedCallback (_, prev, next) {
+  attributeChangedCallback (attr, prev, next) {
     if (!this.parentNode) return // Only render after connectedCallback
     if (this.disabled(this.date) && !this.disabled(this._date)) return (this.date = this._date) // Jump back
 
