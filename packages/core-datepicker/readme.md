@@ -24,7 +24,68 @@
 </style>
 demo-->
 
-## Examples
+## Examples (Plain JS)
+
+#### Toggled calendar
+Toggled datepicker ([using core-toggle](/?core-toggle/readme.md)) with calendar to update value of input
+
+Note: We add event listeners to both, `datepicker.change` as well as `datepicker.click.day`, events to only close the `core-toggle` on the latter of the two.
+
+```html
+<!-- demo -->
+<input type="text" placeholder="No date selected" id="toggled-datepicker-output">
+<button type="button">Show calendar</button>
+<core-toggle id="calendar-toggle" popup hidden class="my-popup">
+  <core-datepicker
+    id="toggled-datepicker"
+    days="Mon,Tue,Wed,Thu,Fri,Sat,Sun"
+    months="January,Febuary,March,April,May,June,July,August,September,October,November,December"
+  >
+    <table></table>
+  </core-datepicker>
+</core-toggle>
+<script>
+  // Update output
+  document.addEventListener('datepicker.change', function (event) {
+    if (event.target.id !== 'toggled-datepicker') return
+    document.getElementById('toggled-datepicker-output').value = event.target.date ? event.target.date.toLocaleString() : null
+  })
+  // Close toggle on click
+  document.addEventListener('datepicker.click.day', function (event) {
+    if (event.target.id !== 'toggled-datepicker') return
+    document.getElementById('calendar-toggle').setAttribute('hidden', true)
+    document.getElementById('toggled-datepicker-output').value = event.target.date ? event.target.date.toLocaleString() : null
+  })
+</script>
+```
+
+#### Adjacent calendar
+Datepicker with inline calendar
+
+Note: Table and buttons are outside of core-datepicker element, using `data-for`.
+
+```html
+<!-- demo -->
+<core-datepicker
+  id="adjacent-datepicker"
+></core-datepicker>
+<button type="button" data-for="adjacent-datepicker" value="-1 month">Previous month</button>
+<input id="adjacent-datepicker-output" placeholder="No date selected" readonly/>
+<button type="button" data-for="adjacent-datepicker" value="now">Today</button>
+<button type="button" data-for="adjacent-datepicker" value="+1 month">Next month</button>
+
+<table data-for="adjacent-datepicker"></table>
+<script>
+  // Update output
+  document.addEventListener('datepicker.change', function (event) {
+    if (event.target.id !== 'adjacent-datepicker') return
+    document.getElementById('adjacent-datepicker-output').value = event.target.date ? event.target.date.toLocaleString() : null
+  })
+</script>
+```
+
+#### All the things
+Extravagantly featured implementation to showcase most of what you can do out of the box
 
 ```html
 <!-- demo -->
@@ -113,18 +174,57 @@ demo-->
     if (event.target.id !== 'my-datepicker') return
     document.getElementById('my-datepicker-output').value = event.target.date.toLocaleString()
   })
-
-  // Handle click on today when input is empty
-  document.addEventListener('datepicker.click.day', function (event) {
-    if (event.target.id !== 'my-datepicker') return
-    const input = document.getElementById('my-datepicker-output')
-    if (input.value === '' && event.target.date.toDateString() === new Date().toDateString()) {
-      input.value = event.target.date.toLocaleString()
-    }
-  })
 </script>
 ```
+## Examples (React)
+#### Toggled calendar
 
+Toggled datepicker ([using core-toggle](/?core-toggle/readme.md)) with calendar to update value of input
+
+```html
+<!-- demo -->
+<div id="react-basic-datepicker"></div>
+
+<script>
+  const BasicPicker = () => {
+    const [hiddenVal, setHiddenVal] = React.useState(true)
+    const [dateVal, setDateVal] = React.useState(null)
+
+    const handleToggle = (event) => { setHiddenVal(event.target.hidden) }
+    const handleDateChange = (event) => { setDateVal(event.target.date) }
+    const handleDateClick = (event) => {
+      setDateVal(event.target.date)
+      setHiddenVal(true)
+    }
+    return (
+      <>
+        <input type="text" readOnly value={dateVal ? dateVal.toLocaleDateString() : ''} />
+        <button type="button">Velg dato</button>
+        <CoreToggle
+          className="my-popup"
+          hidden={hiddenVal}
+          onToggle={handleToggle}
+          popup
+        >
+          <CoreDatepicker
+            date={dateVal}
+            onDatepickerChange={handleDateChange}
+            onDatepickerClickDay={handleDateClick}
+          >
+              <label>År<input type="year" /></label>
+              <label>Måned<select></select></label>
+              <table></table>
+          </CoreDatepicker>
+        </CoreToggle>
+      </>
+    )
+  }
+  ReactDOM.render(<BasicPicker />, document.getElementById('react-basic-datepicker'))
+</script>
+
+
+```
+#### React class
 ```html
 <!-- demo -->
 <div id="jsx-datepicker"></div>
@@ -133,20 +233,27 @@ demo-->
     constructor (props) {
       super(props)
       this.today = Date.now() - Date.now() % 864e3
-      this.state = { date: new Date() }
+      this.state = { date: null }
       this.onNow = this.onNow.bind(this)
       this.onChange = this.onChange.bind(this)
+      this.resetDate = this.resetDate.bind(this)
+      this.myRef = React.createRef();
     }
     onNow () { this.setState({ date: new Date() }) }
     onChange (event) { this.setState({ date: event.target.date }) }
+    resetDate () {
+      this.setState({ date: null })
+    }
+    getForwardRef (node) { return node }
     render () {
-      return <div>
+      return <>
         <button type="button">Velg dato JSX</button>
         <CoreToggle hidden popup className="my-popup">
           <CoreDatepicker
-            timestamp={this.state.date.getTime()}
+            date={this.state.date}
             disabled={(date) => date <= this.today}
             onDatepickerChange={this.onChange}
+            forwardRef={this.myRef}
           >
               <label>År<input type="year" /></label>
               <label>Måned<select></select></label>
@@ -154,8 +261,9 @@ demo-->
           </CoreDatepicker>
         </CoreToggle>
         <button type="button" onClick={this.onNow}>I dag JSX</button>
-        <input type="text" readOnly value={this.state.date.toLocaleDateString()} />
-      </div>
+        <button type="button" onClick={this.resetDate}>Nullstill</button>
+        <input type="text" readOnly value={this.state.date ? this.state.date.toLocaleDateString() : ''} />
+      </>
     }
   }
 
@@ -189,7 +297,7 @@ All date values - both HTML markup and JavaScript - accepts accepts dates as num
 
 ```html
 <core-datepicker
-  timestamp="{String}"    <!-- Optional. Sets date from UNIX timestamp -->
+  date="{String}"         <!-- Optional. Uses simple-date-parse to set date from parseable value or natural language -->
   months="{String}"       <!-- Optional. Comma separated list of custom month names to be used. ("Jan,Feb,...") -->
   days="{String}">        <!-- Optional. Comma separated list of custom weekday names to be used ("Man,Tir,Ons,...") -->
   <!-- There are different behaviours depending on the type of <input>. -->
@@ -265,16 +373,18 @@ myDatepicker.parse('fri')                    // Utility function for parsing tim
 ```jsx
 import CoreDatepicker from '@nrk/core-datepicker/jsx'
 
-<CoreDatepicker timestamp={String}                // Optional. Sets date from timestamp
-                months={String}                   // Optional. Comma separated list of custom month names to be used ("Jan,Feb,...")
-                days={String}                     // Optional. Comma separated list of custom weekday names to be used ("Man,Tir,Ons,...")
-                ref={(comp) => {}}                // Optional. Get reference to React component
-                forwardRef={(el) => {}}           // Optional. Get reference to underlying DOM custom element
-                onDatepickerChange={Function}     // Optional. See 'datepicker.change'
-                onDatepickerClickDay={Function}>  // Optional. See 'datepicker.click.day'
-  <input type="radio|checkbox|year|month|day|hour|minute|second|timestamp"/> // Same as with vanilla js
-  <select></select>                    // Same as with vanilla js
-  <table></table>                      // Same as with vanilla js
+<CoreDatepicker
+  date={String}                     // Optional. Uses simple-date-parse to set date from parseable value or natural language
+  months={String}                   // Optional. Comma separated list of custom month names to be used ("Jan,Feb,...")
+  days={String}                     // Optional. Comma separated list of custom weekday names to be used ("Man,Tir,Ons,...")
+  ref={(comp) => {}}                // Optional. Get reference to React component
+  forwardRef={(el) => {}}           // Optional. Get reference to underlying DOM custom element
+  onDatepickerChange={Function}     // Optional. See event 'datepicker.change'
+  onDatepickerClickDay={Function}   // Optional. See event 'datepicker.click.day'
+>
+  <input type="radio|checkbox|year|month|day|hour|minute|second|timestamp"/> // Same as with plain js
+  <select></select>                    // Same as with plain js
+  <table></table>                      // Same as with plain js
 </CoreDatepicker>
 ```
 
@@ -305,7 +415,8 @@ document.addEventListener('datepicker.click.day', (event) => {
 
 ## Properties
 
-`@nrk/core-datepicker` defaults to Norwegian Bookmål text without abbreviations (writing `September` instead of `Sept`). This can be configured by setting the `days` and `months` properties. Note that abbreviations should always be at least 3 characters long to ensure a better experience for screen reader users (for instance writing `Mon`, `Tue`... instead of `m`, `t`...).
+`@nrk/core-datepicker` defaults to Norwegian Bokmål text without abbreviations (writing `September` instead of `Sept`). This can be configured by setting the `days` and `months` properties.
+Note that abbreviations should always be at least 3 characters long to ensure a better experience for screen reader users (for instance writing `Mon`, `Tue`... instead of `m`, `t`...).
 
 ```js
 myDatepicker.days = ['man', 'tir', 'ons', 'tor', 'fre', 'lør', 'søn'] // Change name of days
