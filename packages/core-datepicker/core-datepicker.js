@@ -29,7 +29,7 @@ export default class CoreDatepicker extends HTMLElement {
     if (!this.parentNode) return // Only render after connectedCallback
     if (this.disabled(this.date) && !this.disabled(this._date)) return (this.date = this._date) // Jump back
 
-    // Treat change between null and 0 as a valid change for dispatching event
+    // Treat change between null and 0, either way, as a valid change for dispatching event
     if (this.diff(this.date) || (prev === null && next === '0') || (prev === '0' && next === null)) dispatchEvent(this, 'datepicker.change', this._date = this.date)
     forEachController('button', this, setupButton)
     forEachController('select', this, setupSelect)
