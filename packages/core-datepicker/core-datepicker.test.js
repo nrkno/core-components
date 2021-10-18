@@ -60,7 +60,8 @@ describe('core-datepicker', () => {
 
   it('supports simple-date-parse literals in date-attribute', async () => {
     const inputVal = 'now'
-    const parsedNow = parse(inputVal, Date.now())
+    const parsedNow = parse(inputVal)
+
     await browser.executeScript((inputVal) => {
       document.body.innerHTML = `
         <core-datepicker date="${inputVal}">
