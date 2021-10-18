@@ -92,7 +92,7 @@ export default class CoreDatepicker extends HTMLElement {
       dateAttr = this.getAttribute('timestamp')
       if (!dateAttr) return null
       this.removeAttribute('timestamp')
-      console.warn(this, 'uses deprecated `timestamp` attribute, please change to use `date`.')
+      console.warn(this, 'uses deprecated `timestamp` attribute. Please use `date` as specified in the docs (https://static.nrk.no/core-components/latest/index.html?core-datepicker/readme.md). Note that the attribute has been removed to avoid confusion with the `date` attribute')
     }
     return this.parse(dateAttr)
   }
