@@ -89,7 +89,7 @@ Extravagantly featured implementation to showcase most of what you can do out of
 
 ```html
 <!-- demo -->
-<button type="button" class="my-toggle">Velg dato</button>
+<button type="button" class="my-toggle">Choose date</button>
 <core-toggle popup hidden class="my-popup">
   <core-datepicker
     id="my-datepicker"
@@ -98,18 +98,18 @@ Extravagantly featured implementation to showcase most of what you can do out of
   >
     <input type="timestamp">
     <fieldset>
-      <legend>Navigasjon</legend>
-      <button type="button" value="now">I dag</button>
-      <button type="button" value="now - 1 day">I går</button>
-      <button type="button" value="now + 1 day">I morgen</button>
-      <button type="button" value="- 1 week">Tilbake en uke</button>
-      <button type="button" value="+ 1 week">Fremover en uke</button>
-      <button type="button" value="now tuesday - 1 week">Tirsdag sist uke</button>
-      <button type="button" value="now + 10 years">Om ti år</button>
-      <button type="button" value="yy00-01-01 - 100 years">Forrige århundre</button>
+      <legend>Navigation</legend>
+      <button type="button" value="now">Today</button>
+      <button type="button" value="now - 1 day">Yesterday</button>
+      <button type="button" value="now + 1 day">Tomorrow</button>
+      <button type="button" value="- 1 week">Previous week</button>
+      <button type="button" value="+ 1 week">Next week</button>
+      <button type="button" value="now tuesday - 1 week">Tuesday last week</button>
+      <button type="button" value="now + 10 years">Add ten years</button>
+      <button type="button" value="yy00-01-01 - 100 years">Last century</button>
     </fieldset>
     <label>
-      År
+      Year
       <select>
         <option value="2016-m-d">2016</option>
         <option value="2017-m-d">2017</option>
@@ -117,30 +117,30 @@ Extravagantly featured implementation to showcase most of what you can do out of
         <option value="2019-m-d">2019</option>
       </select>
     </label>
-    <label>Måned<select></select></label>
+    <label>Month<select></select></label>
     <fieldset>
-      <legend>Måned</legend>
-      <label><input type="radio" name="my-months" value="y-1-d">Jan</label>
-      <label><input type="radio" name="my-months" value="y-2-d">Feb</label>
-      <label><input type="radio" name="my-months" value="y-3-d">Mars</label>
+      <legend>Month</legend>
+      <label><input type="radio" name="my-months" value="y-1-d">January</label>
+      <label><input type="radio" name="my-months" value="y-2-d">February</label>
+      <label><input type="radio" name="my-months" value="y-3-d">March</label>
       <label><input type="radio" name="my-months" value="y-4-d">April</label>
-      <label><input type="radio" name="my-months" value="y-5-d">Mai</label>
-      <label><input type="radio" name="my-months" value="y-6-d">Juni</label>
-      <label><input type="radio" name="my-months" value="y-7-d">Juli</label>
-      <label><input type="radio" name="my-months" value="y-8-d">Aug</label>
-      <label><input type="radio" name="my-months" value="y-9-d">Sep</label>
-      <label><input type="radio" name="my-months" value="y-10-d">Okt</label>
-      <label><input type="radio" name="my-months" value="y-11-d">Nov</label>
-      <label><input type="radio" name="my-months" value="y-12-d">Des</label>
+      <label><input type="radio" name="my-months" value="y-5-d">May</label>
+      <label><input type="radio" name="my-months" value="y-6-d">June</label>
+      <label><input type="radio" name="my-months" value="y-7-d">July</label>
+      <label><input type="radio" name="my-months" value="y-8-d">August</label>
+      <label><input type="radio" name="my-months" value="y-9-d">September</label>
+      <label><input type="radio" name="my-months" value="y-10-d">October</label>
+      <label><input type="radio" name="my-months" value="y-11-d">November</label>
+      <label><input type="radio" name="my-months" value="y-12-d">December</label>
     </fieldset>
-    <label><span>År</span><input type="year"></label>
-    <label><span>Måned</span><input type="month"></label>
+    <label><span>Year</span><input type="year"></label>
+    <label><span>Month</span><input type="month"></label>
     <fieldset>
-      <legend>Klokke</legend>
-      <label>Time<input type="hour"></label>
-      <label>Minutt<input type="minute"></label>
+      <legend>Clock</legend>
+      <label>Hour<input type="hour"></label>
+      <label>Minute<input type="minute"></label>
       <label>
-        <span>Time</span>
+        <span>Hour</span>
         <select>
           <option>--</option>
           <option value="11:m">11</option>
@@ -152,18 +152,19 @@ Extravagantly featured implementation to showcase most of what you can do out of
     <table></table>
   </core-datepicker>
 </core-toggle>
-<button type="button" data-for="my-datepicker" value="now">Nå</button>
-<button type="button" data-for="my-datepicker" value="+1 week">Neste uke</button>
+<button type="button" data-for="my-datepicker" value="now">Now</button>
+<button type="button" data-for="my-datepicker" value="now + 1 week">Next week</button>
+<button type="button" data-for="my-datepicker" value="+ 1 week">Add one week</button>
 <select data-for="my-datepicker">
-  <option>Tid</option>
+  <option>Hour</option>
   <option value="11:m">11</option>
   <option value="12:m">12</option>
   <option value="13:m">13</option>
 </select>
 <table data-for="my-datepicker"></table>
-<input type="text" id="my-datepicker-output">
+<input type="text" id="my-datepicker-output" placeholder="No date selected">
 <script>
-  // Update GUI
+  // Disable dates past one week from now
   document.getElementById('my-datepicker').disabled = (date) => {
     var oneWeekFromNow = (new Date()).setDate(new Date().getDate() + 7)
     return date > oneWeekFromNow
@@ -198,8 +199,8 @@ Toggled datepicker ([using core-toggle](/?core-toggle/readme.md)) with calendar 
     }
     return (
       <>
-        <input type="text" readOnly value={dateVal ? dateVal.toLocaleDateString() : ''} />
-        <button type="button">Velg dato</button>
+        <input type="text" readOnly value={dateVal ? dateVal.toLocaleDateString() : ''} placeholder="No date selected"/>
+        <button type="button">Choose date</button>
         <CoreToggle
           className="my-popup"
           hidden={hiddenVal}
@@ -211,8 +212,8 @@ Toggled datepicker ([using core-toggle](/?core-toggle/readme.md)) with calendar 
             onDatepickerChange={handleDateChange}
             onDatepickerClickDay={handleDateClick}
           >
-              <label>År<input type="year" /></label>
-              <label>Måned<select></select></label>
+              <label>Year<input type="year" /></label>
+              <label>Month<select></select></label>
               <table></table>
           </CoreDatepicker>
         </CoreToggle>
@@ -247,7 +248,7 @@ Toggled datepicker ([using core-toggle](/?core-toggle/readme.md)) with calendar 
     getForwardRef (node) { return node }
     render () {
       return <>
-        <button type="button">Velg dato JSX</button>
+        <button type="button">Choose date</button>
         <CoreToggle hidden popup className="my-popup">
           <CoreDatepicker
             date={this.state.date}
@@ -255,14 +256,14 @@ Toggled datepicker ([using core-toggle](/?core-toggle/readme.md)) with calendar 
             onDatepickerChange={this.onChange}
             forwardRef={this.myRef}
           >
-              <label>År<input type="year" /></label>
-              <label>Måned<select></select></label>
+              <label>Year <input type="year" /></label>
+              <label>Month <select></select></label>
               <table></table>
           </CoreDatepicker>
         </CoreToggle>
-        <button type="button" onClick={this.onNow}>I dag JSX</button>
-        <button type="button" onClick={this.resetDate}>Nullstill</button>
-        <input type="text" readOnly value={this.state.date ? this.state.date.toLocaleDateString() : ''} />
+        <button type="button" onClick={this.onNow}>Today</button>
+        <button type="button" onClick={this.resetDate}>Reset</button>
+        <input type="text" readOnly value={this.state.date ? this.state.date.toLocaleDateString() : ''} placeholder="No date selected" />
       </>
     }
   }
