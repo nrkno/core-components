@@ -112,7 +112,7 @@ npm install @nrk/core-tabs  # Using NPM
 Using static registers the custom element with default name automatically:
 
 ```html
-<script src="https://static.nrk.no/core-components/major/8/core-tabs/core-tabs.min.js"></script>  <!-- Using static -->
+<script src="https://static.nrk.no/core-components/major/9/core-tabs/core-tabs.min.js"></script>  <!-- Using static -->
 ```
 
 Remember to [polyfill](https://github.com/webcomponents/polyfills/tree/master/packages/custom-elements) custom elements if needed.
