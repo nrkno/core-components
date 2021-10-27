@@ -159,13 +159,16 @@ myTabs.tab = myTab    // Set active tab from element
 import CoreTabs from '@nrk/core-tabs/jsx'
 
 <CoreTabs
-          data-for={String}      // Id to element that re-renders when a new tab is clicked.
           tab={String}                  // Optional. Sets current active tab by index or id
           ref={(comp) => {}}            // Optional. Get reference to React component
           forwardRef={(el) => {}}       // Optional. Get reference to underlying DOM custom element
           onTabsToggle={Function}>      // Optional. Listen to toggle event
-  <button>Tab 1</button>                // Tab elements must be <a> or <button>. Do not use <li>
-  <a href="#">Tab 2</a>
+  <button
+    data-for={String}      // Id to element that contains the tab-related content
+  >
+    Tab 1
+  </button>                
+  <a href="#">Tab 2</a>    // Tab element must be <a> or <button>. Do not use <li>
 </CoreTabs>
 <div>Tabpanel 1 content</div>           // First tabpanel is the next element sibling of CoreTabs
 <div hidden>Tabpanel 1 content</div>    // Second tabpanel. Use hidden attribute to prevent FOUC
