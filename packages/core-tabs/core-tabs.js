@@ -67,6 +67,9 @@ export default class CoreTabs extends HTMLElement {
       tab.setAttribute('aria-selected', openTab)
       tab.setAttribute('tabindex', Number(openTab) - 1)
       toggleAttribute(panel, 'hidden', !openPanel)
+      if(openTab) {
+        panel.setAttribute(FROM, tab.id);
+      }
     })
 
     if (prevIndex !== nextIndex) dispatchEvent(this, 'tabs.toggle')
@@ -81,7 +84,6 @@ function updateChildren (self) {
 
     tab.setAttribute('role', 'tab')
     tab.setAttribute('aria-controls', panel.id = panel.id || getUUID())
-    panel.setAttribute(FROM, tab.id = tab.id || getUUID())
     panel.setAttribute('role', 'tabpanel')
     panel.setAttribute('tabindex', '0')
   })
