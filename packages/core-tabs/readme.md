@@ -99,6 +99,56 @@ demo-->
 </script>
 ```
 
+```html
+<!--demo-->
+<div id="jsx-tabs-2"></div>
+<script type="text/jsx">
+  const EpisodeList = ({seasonNumber}) => {
+    const episodes = [["S1: Episode 1", "S1: Episode 2", "S1: Episode 3"], ["S2: Episode 1", "S2: Episode 2"]];
+
+    const [episodesInSeason, setEpisodesInSeason] = React.useState(episodes[seasonNumber-1]);
+
+    React.useEffect(() => {
+      setEpisodesInSeason(episodes[seasonNumber-1])
+    }, [seasonNumber])
+
+    return (
+      <div id="episode-list">
+        Table panel: Content here should change: 
+        <br/><br/>
+        {episodesInSeason.map(episode => <button>{episode}</button>)}
+      </div>
+    )
+  }
+  const SeasonList = () => {
+    const [selectedSeason, setSelectedSeason] = React.useState(1);
+
+    return (
+      <div>
+        <CoreTabs id="season-list">
+          <button
+            id="season-tab-0"
+            data-for="episode-list"
+            onClick={() => setSelectedSeason(1)}
+          >
+            Season 1
+          </button>
+          <button
+            id="season-tab-1"
+            data-for="episode-list"
+            onClick={() => setSelectedSeason(2)}
+          >
+            Season 2
+          </button>
+        </CoreTabs>
+        <EpisodeList seasonNumber={selectedSeason} />
+      </div>
+    )
+  }
+  ReactDOM.render(<SeasonList />, document.getElementById('jsx-tabs-2'))
+</script>
+```
+
 
 ## Installation
 
