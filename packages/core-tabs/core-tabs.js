@@ -1,6 +1,8 @@
 /* eslint no-self-assign: 0 */
 
-import { IS_ANDROID, dispatchEvent, getUUID, queryAll, closest, toggleAttribute } from '../utils'
+import { closest, dispatchEvent, getUUID, isInteger, IS_ANDROID, queryAll, toggleAttribute } from '../utils'
+
+/** @typedef {HTMLButtonElement | HTMLAnchorElement} TabElement */
 
 const FROM = IS_ANDROID ? 'data-labelledby' : 'aria-labelledby' // Android has a bug and reads only label instead of content
 const KEYS = { SPACE: 32, END: 35, HOME: 36, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40 }
@@ -10,9 +12,9 @@ export default class CoreTabs extends HTMLElement {
     this.setAttribute('role', 'tablist')
     this.addEventListener('click', this)
     this.addEventListener('keydown', this)
-    if (!this._childObserver) this._childObserver = window.MutationObserver && new window.MutationObserver(updateChildren.bind(null, this))
+    if (!this._childObserver) this._childObserver = window.MutationObserver && new window.MutationObserver(augmentDOM.bind(null, this))
     if (this._childObserver) this._childObserver.observe(this, { childList: true })
-    setTimeout(() => updateChildren(this))
+    setTimeout(() => augmentDOM(this))
   }
 
   disconnectedCallback () {
@@ -43,49 +45,110 @@ export default class CoreTabs extends HTMLElement {
     }
   }
 
-  get panels () { return this.tabs.map((tab) => document.getElementById(tab.getAttribute('aria-controls'))) }
+  get panels () { return this.tabs.map(getPanelFromTab) }
 
-  get panel () { return this.panels.filter((panel) => panel && !panel.hasAttribute('hidden'))[0] }
+  get panel () { return getPanelFromTab(this.tab) }
 
+  /**
+   * @returns {[TabElement]}
+   */
   get tabs () { return queryAll('button,a', this) }
 
-  get tab () { return document.getElementById(this.panel && this.panel.getAttribute(FROM)) }
+  /**
+   * @returns {TabElement}
+   */
+  get tab () {
+    const tabAttr = this.getAttribute('tab')
+    const allTabs = this.tabs
+    const allPanels = this.panels
 
+    let tab = isInteger(parseInt(tabAttr))
+      ? allTabs[tabAttr] // Integer, assume index
+      : document.getElementById(tabAttr) // Non-integer, assume id
+
+    if (!tab) { // No tab is set, check for hidden panels
+      const firstVisiblePanel = allPanels.filter(panel => panel && !panel.hasAttribute('hidden'))[0]
+      tab = allTabs.filter(tab => tab.getAttribute('aria-controls') === (firstVisiblePanel && firstVisiblePanel.id))[0]
+    }
+
+    if (!tab) { tab = allTabs[0] } // No tab, fallback to first tab
+    return tab
+  }
+
+  /**
+   * @param {string | number | TabElement} value
+   * @returns {void}
+   */
   set tab (value) {
     if (!value && value !== 0) return
-    const panels = this.panels
-    const prevIndex = this.tabs.indexOf(this.tab)
-    const nextIndex = this.tabs.reduce((acc, tab, i) => {
-      return (i === value || tab === value || tab.id === value) ? i : acc
-    }, this.tab)
+    const allTabs = this.tabs
+    const allPanels = this.panels
+    const prevIndex = allTabs.indexOf(this.tab)
+    const nextIndex = allTabs.indexOf(allTabs.filter((tab, i) => (i === Number(value) || tab === value || tab.id === value))[0] || this.tab)
 
-    this.tabs.forEach((tab, index) => {
-      const panel = panels[index]
+    /** @type {TabElement | undefined} */
+    let nextTab
+
+    allTabs.forEach((tab, index) => {
+      const tabPanel = getPanelFromTab(tab)
       const openTab = index === nextIndex
-      const openPanel = panel === panels[nextIndex]
+      const openPanel = tabPanel === allPanels[nextIndex]
 
-      tab.setAttribute('aria-selected', openTab)
-      tab.setAttribute('tabindex', Number(openTab) - 1)
-      toggleAttribute(panel, 'hidden', !openPanel)
-      if (openTab) {
-        panel.setAttribute(FROM, tab.id)
+      if (openTab && openPanel) nextTab = tab
+      tab.setAttribute('aria-selected', openTab && openPanel)
+      tab.setAttribute('tabindex', Number(openTab && openPanel) - 1)
+      if (tabPanel) {
+        toggleAttribute(tabPanel, 'hidden', !openPanel)
+        if (openTab) {
+          tabPanel.setAttribute(FROM, tab.id)
+        }
       }
     })
 
-    if (prevIndex !== nextIndex) dispatchEvent(this, 'tabs.toggle')
+    if (prevIndex !== nextIndex) {
+      // Update tab-attribute if present.
+      const tabAttr = this.getAttribute('tab')
+      if (tabAttr) {
+        this.setAttribute('tab',
+          isInteger(parseInt(tabAttr))
+            ? nextIndex // Integer, set index
+            : nextTab && nextTab.id // Non-integer, set id
+        )
+      }
+      dispatchEvent(this, 'tabs.toggle')
+    }
   }
 }
 
-function updateChildren (self) {
+/**
+ * Get matching panel for tab through aria-controls
+ * NB! Assumes that augmentDOM has run successfully
+ * @param {TabElement} tab
+ * @returns {HTMLElement | null} panel
+ */
+function getPanelFromTab (tab) {
+  return document.getElementById(tab.getAttribute('aria-controls'))
+}
+
+/**
+ * Augments the DOM surrounding the CoreTabs element with the following
+ *  - Assigns a panel to each tab with aria-controls
+ *  - Handles accessibility concerns through role and tabindices
+ *  - Finally assigns tab-value to CoreTabs, running both getter and setter in the process for additional attribute setup
+ * @param {CoreTabs} self CoreTabs element
+ * @returns {void}
+ */
+function augmentDOM (self) {
   if (!self.parentNode) return // Abort if removed from DOM
   let next = self
   self.tabs.forEach((tab) => {
-    const panel = document.getElementById(tab.getAttribute('data-for') || tab.getAttribute('for')) || (next = next.nextElementSibling || next)
-
+    const tabPanel = document.getElementById(tab.getAttribute('data-for') || tab.getAttribute('for')) || (next = next.nextElementSibling || next)
+    tab.id = tab.id || getUUID()
     tab.setAttribute('role', 'tab')
-    tab.setAttribute('aria-controls', panel.id = panel.id || getUUID())
-    panel.setAttribute('role', 'tabpanel')
-    panel.setAttribute('tabindex', '0')
+    tab.setAttribute('aria-controls', tabPanel.id = tabPanel.id || getUUID())
+    tabPanel.setAttribute('role', 'tabpanel')
+    tabPanel.setAttribute('tabindex', '0')
   })
-  self.tab = self.tab || 0 // Setup open
+  // Setup tab-specific attributes after above iterator has established matching panels and set necessary attributes
+  self.tab = self.tab
 }
