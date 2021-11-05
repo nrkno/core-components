@@ -23,8 +23,8 @@
 </style>
 demo-->
 
-## Example
-
+## Examples (plain JS)
+#### Nested tabs
 ```html
 <!--demo-->
 <core-tabs>
@@ -39,13 +39,37 @@ demo-->
     <button>Subtab 2</button>
     <button>Subtab 3</button>
   </core-tabs>
-  <div>Subtabpanel 1</div>
+  <div hidden>Subtabpanel 1</div>
   <div>Subtabpanel 2</div>
-  <div>Subtabpanel 3</div>
+  <div hidden>Subtabpanel 3</div>
 </div>
 <div hidden>Tabpanel 3</div>
 ```
-
+#### Few panels
+```html
+<!--demo-->
+<core-tabs id="few-panels-plain-js" tab="fppj-tab-3">
+  <button type="button" data-for="panel-1" id="fppj-tab-1">First tab</button>
+  <button type="button" data-for="panel-2" id="fppj-tab-2">Second tab</button>
+  <button type="button" data-for="panel-2" id="fppj-tab-3">Third tab</button>
+</core-tabs>
+<div id="panel-1">
+  Text of the first panel
+</div>
+<div id="panel-2">Text of the second panel, shared by second and third tab</div>
+```
+#### Single panel
+```html
+<!--demo-->
+<core-tabs id="single-panel-plain-js" tab='sppj-tab-2'>
+  <button type="button" data-for="only-panel" id="sppj-tab-1">First tab</button>
+  <button type="button" data-for="only-panel" id="sppj-tab-2">Second tab</button>
+  <button type="button" data-for="only-panel" id="sppj-tab-3">Third tab</button>
+</core-tabs>
+<div id="only-panel">Text of the only panel. Note that <code>aria-labelledBy</code> reflects active tab</div>
+```
+## Examples (React)
+#### Nested tabs
 ```html
 <!--demo-->
 <div id="jsx-tabs" class="my-vertical-tabs"></div>
@@ -67,7 +91,7 @@ demo-->
   </div>, document.getElementById('jsx-tabs'))
 </script>
 ```
-
+#### Dynamic tabs
 ```html
 <!--demo-->
 <div id="jsx-dynamic-tabs" class="my-vertical-tabs"></div>
@@ -98,51 +122,58 @@ demo-->
   ReactDOM.render(<Dynamic />, document.getElementById('jsx-dynamic-tabs'))
 </script>
 ```
-
+#### Single panel
 ```html
 <!--demo-->
 <div id="jsx-tabs-2"></div>
 <script type="text/jsx">
   const EpisodeList = ({seasonNumber}) => {
-    const episodes = [["S1: Episode 1", "S1: Episode 2", "S1: Episode 3"], ["S2: Episode 1", "S2: Episode 2"]];
+    const episodes = [
+      ["S1: Episode 1", "S1: Episode 2", "S1: Episode 3"],
+      ["S2: Episode 1", "S2: Episode 2"]
+    ];
 
-    const [episodesInSeason, setEpisodesInSeason] = React.useState(episodes[seasonNumber-1]);
+    const [episodesInSeason, setEpisodesInSeason] = React.useState(episodes[seasonNumber - 1]);
 
     React.useEffect(() => {
-      setEpisodesInSeason(episodes[seasonNumber-1])
+      setEpisodesInSeason(episodes[seasonNumber - 1])
     }, [seasonNumber])
 
     return (
       <div id="episode-list">
-        Table panel: Content here should change: 
+        Table panel for season {seasonNumber}: Content here should change: 
         <br/><br/>
         {episodesInSeason.map(episode => <button>{episode}</button>)}
       </div>
     )
   }
   const SeasonList = () => {
-    const [selectedSeason, setSelectedSeason] = React.useState(1);
+    const [selectedSeason, setSelectedSeason] = React.useState(2);
 
     return (
-      <div>
-        <CoreTabs id="season-list">
+      <>
+        <CoreTabs
+          tab={selectedSeason - 1}
+          id="season-list"
+          onTabsToggle={event => setSelectedSeason(Number(event.target.getAttribute('tab')) + 1)}
+        >
           <button
+            type="button"
             id="season-tab-0"
             data-for="episode-list"
-            onClick={() => setSelectedSeason(1)}
           >
             Season 1
           </button>
           <button
+            type="button"
             id="season-tab-1"
             data-for="episode-list"
-            onClick={() => setSelectedSeason(2)}
           >
             Season 2
           </button>
         </CoreTabs>
         <EpisodeList seasonNumber={selectedSeason} />
-      </div>
+      </>
     )
   }
   ReactDOM.render(<SeasonList />, document.getElementById('jsx-tabs-2'))
@@ -171,10 +202,16 @@ Remember to [polyfill](https://github.com/webcomponents/polyfills/tree/master/pa
 
 ## Usage
 
+### Attributes
+
+Name | Optional | Accepts values | Description
+:-- | :-- | :-- | :--
+`tab` | Yes | `number \| string` | Used to set active tab. Number is index (starting at `0`), string is an id-reference to a tab-element.
+
 ### HTML / JavaScript
 
 ```html
-<core-tabs>
+<core-tabs tab="{string | number}">       <!-- Optional. Used to set active tab String associates id-reference to tab element -->
   <button>Tab 1</button>                  <!-- Tab elements must be <a> or <button>. Do not use <li> -->
   <a href="#">Tab 2</a>
   <button>Tab 3</button>
@@ -234,7 +271,7 @@ import CoreTabs from '@nrk/core-tabs/jsx'
 Fired when toggling a tab:
 
 ```js
-document.addEventListener('tabs.toggle', (event) =>
+document.addEventListener('tabs.toggle', (event) => {
   event.target     // The tabs element
 })
 ```
