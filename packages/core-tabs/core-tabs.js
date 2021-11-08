@@ -125,7 +125,7 @@ export default class CoreTabs extends HTMLElement {
  * @returns {HTMLElement | null} panel
  */
 function getPanelFromTab (tab) {
-  return document.getElementById(tab.getAttribute('aria-controls'))
+  return document.getElementById(tab.getAttribute('data-for') || tab.getAttribute('for') || tab.getAttribute('aria-controls'))
 }
 
 /**
@@ -138,14 +138,19 @@ function getPanelFromTab (tab) {
  */
 function augmentDOM (self) {
   if (!self.parentNode) return // Abort if removed from DOM
-  let next = self
+
+  // Store tabPanel to reference in case no further siblings are found
+  let tabPanel
   self.tabs.forEach((tab) => {
-    const tabPanel = document.getElementById(tab.getAttribute('data-for') || tab.getAttribute('for')) || (next = next.nextElementSibling || next)
+    tabPanel = getPanelFromTab(tab) || (tabPanel || self).nextElementSibling || tabPanel
     tab.id = tab.id || getUUID()
     tab.setAttribute('role', 'tab')
     tab.setAttribute('aria-controls', tabPanel.id = tabPanel.id || getUUID())
-    tabPanel.setAttribute('role', 'tabpanel')
-    tabPanel.setAttribute('tabindex', '0')
+
+    if (tabPanel) {
+      tabPanel.setAttribute('role', 'tabpanel')
+      tabPanel.setAttribute('tabindex', '0')
+    }
   })
   // Setup tab-specific attributes after above iterator has established matching panels and set necessary attributes
   self.tab = self.tab
