@@ -1,6 +1,6 @@
 /* eslint no-self-assign: 0 */
 
-import { closest, dispatchEvent, getUUID, isInteger, IS_ANDROID, queryAll, toggleAttribute } from '../utils'
+import { closest, dispatchEvent, getUUID, IS_ANDROID, queryAll, toggleAttribute } from '../utils'
 
 /** @typedef {HTMLButtonElement | HTMLAnchorElement} TabElement */
 
@@ -61,16 +61,22 @@ export default class CoreTabs extends HTMLElement {
     const tabAttr = this.getAttribute('tab')
     const allTabs = this.tabs
 
-    let tab = isInteger(Number(tabAttr))
-      ? allTabs[tabAttr] // Integer, assume index
-      : document.getElementById(tabAttr) // Non-integer, assume id
+    // First tab with aria-selected="true"
+    let tab = allTabs.filter(tab => tab.getAttribute('aria-selected') === 'true')[0]
 
-    if (!tab) { // No tab is set, check for visible panel
-      tab = allTabs.filter(tab => !getPanelFromTab(tab).hasAttribute('hidden'))[0] // First tab with visible panel
+    // No tab is set, check for match in index or id
+    if (!tab) tab = allTabs[parseInt(tabAttr)] || document.getElementById(tabAttr)
+
+    // No tab is set, check for first tab with visible panel
+    if (!tab) {
+      tab = allTabs.filter(tab => {
+        const tabPanel = getPanelFromTab(tab)
+        return tabPanel && !tabPanel.hasAttribute('hidden')
+      })[0]
     }
 
-    if (!tab) { tab = allTabs[0] } // No tab, fallback to first tab
-    return tab
+    // Fallback to first tab
+    return tab || allTabs[0]
   }
 
   /**
@@ -80,41 +86,26 @@ export default class CoreTabs extends HTMLElement {
   set tab (value) {
     if (!value && value !== 0) return
     const allTabs = this.tabs
-    const allPanels = this.panels
-    const prevIndex = allTabs.indexOf(this.tab)
-    const nextIndex = allTabs.indexOf(allTabs.filter((tab, i) => (i === Number(value) || tab === value || tab.id === value))[0] || this.tab)
+    const nextTab = allTabs.filter((tab, i) => {
+      return i === Number(value) || tab === value || tab.id === value
+    })[0] || this.tab
+    const nextPanel = getPanelFromTab(nextTab)
 
-    /** @type {TabElement | undefined} */
-    let nextTab
-
-    allTabs.forEach((tab, index) => {
+    allTabs.forEach((tab) => {
       const tabPanel = getPanelFromTab(tab)
-      const openTab = index === nextIndex
-      const openPanel = tabPanel === allPanels[nextIndex]
+      const isOpenTab = tab === nextTab
 
-      if (openTab && openPanel) nextTab = tab
-      tab.setAttribute('aria-selected', openTab && openPanel)
-      tab.setAttribute('tabindex', Number(openTab && openPanel) - 1)
+      tab.setAttribute('aria-selected', isOpenTab)
+      tab.setAttribute('tabindex', Number(isOpenTab) - 1)
+
+      // Core-tabs does not own the panels and will only update them if found
       if (tabPanel) {
-        toggleAttribute(tabPanel, 'hidden', !openPanel)
-        if (openTab) {
-          tabPanel.setAttribute(FROM, tab.id)
-        }
+        toggleAttribute(tabPanel, 'hidden', tabPanel !== nextPanel)
+        if (isOpenTab) tabPanel.setAttribute(FROM, tab.id)
       }
     })
 
-    if (prevIndex !== nextIndex) {
-      // Update tab-attribute if present.
-      const tabAttr = this.getAttribute('tab')
-      if (tabAttr) {
-        this.setAttribute('tab',
-          isInteger(Number(tabAttr))
-            ? nextIndex // Integer, set index
-            : nextTab && nextTab.id // Non-integer, set id
-        )
-      }
-      dispatchEvent(this, 'tabs.toggle')
-    }
+    this.setAttribute('tab', allTabs.indexOf(nextTab))
   }
 }
 
