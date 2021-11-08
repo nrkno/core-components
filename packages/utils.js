@@ -141,15 +141,3 @@ export function queryAll (elements, context = document) {
   }
   return []
 }
-
-/**
- * isInteger as a substitute for Number.isInteger due to lacking IE-support
- * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isInteger
- * @param {Number} val
- * @returns {Boolean}
- */
-export function isInteger (val) {
-  const isCallable = typeof val === 'function'
-  const isObject = typeof val === 'object' ? val !== null : isCallable
-  return !isObject && isFinite(val) && Math.floor(val) === val
-}
