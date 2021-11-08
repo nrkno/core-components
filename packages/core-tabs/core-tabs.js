@@ -62,7 +62,7 @@ export default class CoreTabs extends HTMLElement {
     const allTabs = this.tabs
     const allPanels = this.panels
 
-    let tab = isInteger(parseInt(tabAttr))
+    let tab = isInteger(Number(tabAttr))
       ? allTabs[tabAttr] // Integer, assume index
       : document.getElementById(tabAttr) // Non-integer, assume id
 
@@ -110,7 +110,7 @@ export default class CoreTabs extends HTMLElement {
       const tabAttr = this.getAttribute('tab')
       if (tabAttr) {
         this.setAttribute('tab',
-          isInteger(parseInt(tabAttr))
+          isInteger(Number(tabAttr))
             ? nextIndex // Integer, set index
             : nextTab && nextTab.id // Non-integer, set id
         )

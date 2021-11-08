@@ -145,7 +145,7 @@ export function queryAll (elements, context = document) {
 /**
  * isInteger as a substitute for Number.isInteger due to lacking IE-support
  * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isInteger
- * @param {*} val
+ * @param {Number} val
  * @returns {Boolean}
  */
 export function isInteger (val) {
