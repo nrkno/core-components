@@ -60,15 +60,13 @@ export default class CoreTabs extends HTMLElement {
   get tab () {
     const tabAttr = this.getAttribute('tab')
     const allTabs = this.tabs
-    const allPanels = this.panels
 
     let tab = isInteger(Number(tabAttr))
       ? allTabs[tabAttr] // Integer, assume index
       : document.getElementById(tabAttr) // Non-integer, assume id
 
-    if (!tab) { // No tab is set, check for hidden panels
-      const firstVisiblePanel = allPanels.filter(panel => panel && !panel.hasAttribute('hidden'))[0]
-      tab = allTabs.filter(tab => tab.getAttribute('aria-controls') === (firstVisiblePanel && firstVisiblePanel.id))[0]
+    if (!tab) { // No tab is set, check for visible panel
+      tab = allTabs.filter(tab => !getPanelFromTab(tab).hasAttribute('hidden'))[0] // First tab with visible panel
     }
 
     if (!tab) { tab = allTabs[0] } // No tab, fallback to first tab
