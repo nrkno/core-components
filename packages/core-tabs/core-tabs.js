@@ -8,6 +8,8 @@ const FROM = IS_ANDROID ? 'data-labelledby' : 'aria-labelledby' // Android has a
 const KEYS = { SPACE: 32, END: 35, HOME: 36, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40 }
 
 export default class CoreTabs extends HTMLElement {
+  static get observedAttributes () { return ['tab'] }
+
   connectedCallback () {
     this.setAttribute('role', 'tablist')
     this.addEventListener('click', this)
@@ -22,6 +24,13 @@ export default class CoreTabs extends HTMLElement {
     this.removeEventListener('click', this)
     this.removeEventListener('keydown', this)
     this._childObserver = null
+  }
+
+  attributeChangedCallback (attr, prev, next) {
+    if (attr === 'tab' && prev !== next) {
+      this.tab = next
+      dispatchEvent(this, 'tabs.toggle')
+    }
   }
 
   handleEvent (event) {
