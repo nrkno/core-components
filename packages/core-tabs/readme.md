@@ -122,6 +122,47 @@ demo-->
   ReactDOM.render(<Dynamic />, document.getElementById('jsx-dynamic-tabs'))
 </script>
 ```
+#### Active by index
+```html
+<!--demo-->
+<div id="jsx-index-tabs"></div>
+<script type="text/jsx">
+  const IndexTabs = () => {
+      const [tabIndex, setTabIndex] = React.useState(0)
+      const handleTabsToggle = (event) => { setTabIndex(parseInt(event.target.getAttribute('tab'))) }
+      const handleInputChange = (event) => { setTabIndex(parseInt(event.target.value)) }
+
+      return (
+        <>
+          <div>
+            <label>
+              Set active tab
+              <input
+                type="range"
+                value={tabIndex}
+                min="0"
+                max="3"
+                step="1"
+                onChange={handleInputChange}
+              />
+            </label>
+          </div>
+          <CoreTabs tab={tabIndex} onTabsToggle={handleTabsToggle}>
+            <button type="button">Tab 1</button>
+            <button type="button">Tab 2</button>
+            <button type="button">Tab 3</button>
+            <button type="button">Tab 4</button>
+          </CoreTabs>
+          <div>Tabpanel 1</div>
+          <div>Tabpanel 2</div>
+          <div>Tabpanel 3</div>
+          <div>Tabpanel 4</div>
+        </>
+      )
+    }
+  ReactDOM.render(<IndexTabs />, document.getElementById('jsx-index-tabs'))
+</script>
+```
 #### Single panel
 ```html
 <!--demo-->
