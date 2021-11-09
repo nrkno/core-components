@@ -74,7 +74,7 @@ export default class CoreTabs extends HTMLElement {
     let tab = allTabs.filter(tab => tab.getAttribute('aria-selected') === 'true')[0]
 
     // No tab is set, check for match in index or id
-    if (!tab) tab = allTabs[parseInt(tabAttr)] || document.getElementById(tabAttr)
+    if (!tab) tab = allTabs[Number(tabAttr || NaN)] || document.getElementById(tabAttr)
 
     // No tab is set, check for first tab with visible panel
     if (!tab) {
