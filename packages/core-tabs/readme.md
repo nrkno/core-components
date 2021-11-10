@@ -287,15 +287,16 @@ myTabs.tab = myTab    // Set active tab from element
 import CoreTabs from '@nrk/core-tabs/jsx'
 
 <CoreTabs
-          tab={String}                  // Optional. Sets current active tab by index or id
-          ref={(comp) => {}}            // Optional. Get reference to React component
-          forwardRef={(el) => {}}       // Optional. Get reference to underlying DOM custom element
-          onTabsToggle={Function}>      // Optional. Listen to toggle event
+  tab={String}                  // Optional. Sets current active tab by index or id
+  ref={(comp) => {}}            // Optional. Get reference to React component
+  forwardRef={(el) => {}}       // Optional. Get reference to underlying DOM custom element
+  onTabsToggle={Function}       // Optional. Listen to toggle event
+>
   <button                  // Tab element must be <a> or <button>. Do not use <li>
     data-for={String}      // Id to element that contains the tab-related content
   >
     Tab 1
-  </button>                
+  </button>
   <a href="#">Tab 2</a>    
 </CoreTabs>
 <div>Tabpanel 1 content</div>           // First tabpanel is the next element sibling of CoreTabs
@@ -335,7 +336,7 @@ All styling in documentation is example only. Both the tabs and tabpanels receiv
 ### Why aren't tabs wrapped in `<ul><li>...</li></ul>`?
 A `<ul>`/`<li>` structure would seem logical for tabs, but this causes some screen readers to incorrectly announce tabs as single (tab 1 of 1).
 
-### Does panels always need be a next element sibling?
+### Must panels always be next element siblings to `<core-tabs>`?
 The aria specification does not allow any elements that are focusable by a screen reader to be placed between tabs and panels. Therefore, `core-tabs` defaults to use the next element siblings as panels.
 This behaviour can be overridden, by setting up `id` on panel elements and the `data-for` attribute on tab element (`for` is deprecated). Use with caution and *only* do this if your project *must* use another DOM structure. Example:
 
