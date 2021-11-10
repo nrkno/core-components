@@ -145,9 +145,9 @@ function augmentDOM (self) {
     tabPanel = getPanelFromTab(tab) || (tabPanel || self).nextElementSibling || tabPanel
     tab.id = tab.id || getUUID()
     tab.setAttribute('role', 'tab')
-    tab.setAttribute('aria-controls', tabPanel.id = tabPanel.id || getUUID())
 
     if (tabPanel) {
+      tab.setAttribute('aria-controls', tabPanel.id = tabPanel.id || getUUID())
       tabPanel.setAttribute('role', 'tabpanel')
       tabPanel.setAttribute('tabindex', '0')
     }
