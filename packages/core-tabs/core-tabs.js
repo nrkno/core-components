@@ -29,7 +29,6 @@ export default class CoreTabs extends HTMLElement {
   attributeChangedCallback (attr, prev, next) {
     if (attr === 'tab' && prev !== next) {
       this.tab = next
-      dispatchEvent(this, 'tabs.toggle')
     }
   }
 
@@ -95,6 +94,7 @@ export default class CoreTabs extends HTMLElement {
   set tab (value) {
     if (!value && value !== 0) return
     const allTabs = this.tabs
+    const prevTab = this.tab
     const nextTab = allTabs.filter((tab, i) => {
       return i === Number(value) || tab === value || tab.id === value
     })[0] || this.tab
@@ -115,6 +115,11 @@ export default class CoreTabs extends HTMLElement {
     })
 
     this.setAttribute('tab', allTabs.indexOf(nextTab))
+
+    // Dispatch toggle-event when the referenced tab is changed, and not just updating tab-attribute to index from id
+    if (prevTab !== nextTab) {
+      dispatchEvent(this, 'tabs.toggle')
+    }
   }
 }
 
