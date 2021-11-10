@@ -53,7 +53,7 @@ demo-->
   <button type="button" data-for="panel-2" id="fppj-tab-2">Second tab</button>
   <button type="button" data-for="panel-2" id="fppj-tab-3">Third tab</button>
 </core-tabs>
-<div id="panel-1">
+<div id="panel-1" hidden>
   Text of the first panel
 </div>
 <div id="panel-2">Text of the second panel, shared by second and third tab</div>
@@ -72,7 +72,7 @@ demo-->
 #### Nested tabs
 ```html
 <!--demo-->
-<div id="jsx-tabs" class="my-vertical-tabs"></div>
+<div id="react-nested-tabs" class="my-vertical-tabs"></div>
 <script type="text/jsx">
   ReactDOM.render(<div>
     <CoreTabs>
@@ -80,7 +80,7 @@ demo-->
       <button>Vertical tab 2 JSX</button>
     </CoreTabs>
     <div>Tabpanel 1 JSX</div>
-    <div>
+    <div hidden>
       <CoreTabs>
         <button>Subtab 1 JSX</button>
         <button hidden>Subtab 2 JSX</button>
@@ -88,18 +88,18 @@ demo-->
       <div>Subtabpanel 1</div>
       <div hidden>Subtabpanel 2</div>
     </div>
-  </div>, document.getElementById('jsx-tabs'))
+  </div>, document.getElementById('react-nested-tabs'))
 </script>
 ```
 #### Dynamic tabs
 ```html
 <!--demo-->
-<div id="jsx-dynamic-tabs" class="my-vertical-tabs"></div>
+<div id="react-dynamic-tabs" class="my-vertical-tabs"></div>
 <script type="text/jsx">
   const Dynamic = () => {
       const [elements, setElements] = React.useState([])
       const menu = elements.map(item => <button type="button">Dynamic Tab {item}</button>);
-      const pages = elements.map(item => <div>Tabpanel {item}</div>);
+      const pages = elements.map(item => <div hidden>Tabpanel {item}</div>);
 
       return (
         <>
@@ -119,13 +119,13 @@ demo-->
         </>
       )
     }
-  ReactDOM.render(<Dynamic />, document.getElementById('jsx-dynamic-tabs'))
+  ReactDOM.render(<Dynamic />, document.getElementById('react-dynamic-tabs'))
 </script>
 ```
 #### Active by index
 ```html
 <!--demo-->
-<div id="jsx-index-tabs"></div>
+<div id="react-index-tabs"></div>
 <script type="text/jsx">
   const IndexTabs = () => {
       const [tabIndex, setTabIndex] = React.useState(0)
@@ -154,19 +154,19 @@ demo-->
             <button type="button">Tab 4</button>
           </CoreTabs>
           <div>Tabpanel 1</div>
-          <div>Tabpanel 2</div>
-          <div>Tabpanel 3</div>
-          <div>Tabpanel 4</div>
+          <div hidden>Tabpanel 2</div>
+          <div hidden>Tabpanel 3</div>
+          <div hidden>Tabpanel 4</div>
         </>
       )
     }
-  ReactDOM.render(<IndexTabs />, document.getElementById('jsx-index-tabs'))
+  ReactDOM.render(<IndexTabs />, document.getElementById('react-index-tabs'))
 </script>
 ```
 #### Single panel
 ```html
 <!--demo-->
-<div id="jsx-tabs-2"></div>
+<div id="react-single-panel"></div>
 <script type="text/jsx">
   const EpisodeList = ({seasonNumber}) => {
     const episodes = [
@@ -217,7 +217,7 @@ demo-->
       </>
     )
   }
-  ReactDOM.render(<SeasonList />, document.getElementById('jsx-tabs-2'))
+  ReactDOM.render(<SeasonList />, document.getElementById('react-single-panel'))
 </script>
 ```
 
@@ -344,3 +344,6 @@ This behaviour can be overridden, by setting up `id` on panel elements and the `
 const myTabs = document.querySelector('core-tabs')
 myTabs.tabs.forEach((tabs, index) => tab.setAttribute('data-for', myTabs.panels[index].id = 'my-panel-' + index))
 ```
+
+### How do I avoid panels flickering on initialization?
+When you know what panel will be visible on load, all others should have the `hidden`-attribute to avoid [Flash of unstyled content](https://en.wikipedia.org/wiki/Flash_of_unstyled_content) (FOUC). If the active panel is unknown to your template, set `hidden`-attribute on all panels initially.
