@@ -97,7 +97,7 @@ export default class CoreTabs extends HTMLElement {
     const prevTab = this.tab
     const nextTab = allTabs.filter((tab, i) => {
       return i === Number(value) || tab === value || tab.id === value
-    })[0] || this.tab
+    })[0] || prevTab
     const nextPanel = getPanelFromTab(nextTab)
 
     allTabs.forEach((tab) => {
