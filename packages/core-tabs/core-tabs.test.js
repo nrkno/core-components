@@ -174,27 +174,6 @@ describe('core-tabs', () => {
     await expect(prop('#panel-2', 'hidden')).toMatch(/true/i)
   })
 
-  it('triggers toggle event', async () => {
-    await browser.executeScript(() => {
-      document.body.innerHTML = `
-        <core-tabs>
-          <button id="tab-1">First tab</button>
-          <button id="tab-2">Second tab</button>
-        </core-tabs>
-        <div id="panel-1">Text of tab 1</div>
-        <div id="panel-2">Text of tab 2</div>
-      `
-    })
-    await browser.wait(ExpectedConditions.presenceOf($('core-tabs [role="tab"]')))
-    await browser.executeScript(() => {
-      document.addEventListener('tabs.toggle', (event) => (window.tabId = event.target.tab.id))
-      document.querySelector('core-tabs').tab = 1
-    })
-    const tabId = await browser.wait(() => browser.executeScript(() => window.tabId))
-    await expect(tabId).toEqual('tab-2')
-    await expect(browser.executeScript(() => document.querySelector('core-tabs').tab.id)).toEqual('tab-2')
-  })
-
   it('respects hidden panels as indication of active tab', async () => {
     await browser.executeScript(() => {
       document.body.innerHTML = `
@@ -235,6 +214,86 @@ describe('core-tabs', () => {
     await expect(prop('#panel-1', 'hidden')).toEqual('false')
     await expect(prop('#panel-2', 'hidden')).toEqual('true')
     await expect(attr('#tab-1', 'aria-selected')).toEqual('true')
+  })
+
+  describe('dispatches toggle-event', () => {
+    it('does not trigger toggle-event during setup', async () => {
+      await browser.executeScript(() => {
+        window.toggleEventTimes = 0
+        document.addEventListener('tabs.toggle', () => { window.toggleEventTimes += 1 })
+      })
+      await browser.executeScript(() => {
+        document.body.innerHTML = `
+          <core-tabs>
+            <button id="tab-1">First tab</button>
+            <button id="tab-2">Second tab</button>
+          </core-tabs>
+          <div id="panel-1">Text of tab 1</div>
+          <div id="panel-2">Text of tab 2</div>
+        `
+      })
+      await browser.wait(ExpectedConditions.presenceOf($('core-tabs [role="tab"]')))
+      await expect(browser.executeScript(() => window.toggleEventTimes)).toEqual(0)
+    })
+
+    it('does not trigger toggle-event during setup with tab-attribute set using id', async () => {
+      await browser.executeScript(() => {
+        window.toggleEventTimes = 0
+        document.addEventListener('tabs.toggle', () => { window.toggleEventTimes += 1 })
+      })
+      await browser.executeScript(() => {
+        document.body.innerHTML = `
+          <core-tabs tab="tab-2">
+            <button id="tab-1">First tab</button>
+            <button id="tab-2">Second tab</button>
+          </core-tabs>
+          <div id="panel-1">Text of tab 1</div>
+          <div id="panel-2">Text of tab 2</div>
+        `
+      })
+      await browser.wait(ExpectedConditions.presenceOf($('core-tabs [role="tab"]')))
+      await expect(browser.executeScript(() => window.toggleEventTimes)).toEqual(0)
+    })
+
+    it('does not trigger toggle-event during setup with tab-attribute set using index', async () => {
+      await browser.executeScript(() => {
+        window.toggleEventTimes = 0
+        document.addEventListener('tabs.toggle', () => { window.toggleEventTimes += 1 })
+      })
+      await browser.executeScript(() => {
+        document.body.innerHTML = `
+          <core-tabs tab="0">
+            <button id="tab-1">First tab</button>
+            <button id="tab-2">Second tab</button>
+          </core-tabs>
+          <div id="panel-1">Text of tab 1</div>
+          <div id="panel-2">Text of tab 2</div>
+        `
+      })
+      await browser.wait(ExpectedConditions.presenceOf($('core-tabs [role="tab"]')))
+      await expect(browser.executeScript(() => window.toggleEventTimes)).toEqual(0)
+    })
+
+    it('triggers toggle event on tab change', async () => {
+      await browser.executeScript(() => {
+        document.body.innerHTML = `
+          <core-tabs>
+            <button id="tab-1">First tab</button>
+            <button id="tab-2">Second tab</button>
+          </core-tabs>
+          <div id="panel-1">Text of tab 1</div>
+          <div id="panel-2">Text of tab 2</div>
+        `
+      })
+      await browser.wait(ExpectedConditions.presenceOf($('core-tabs [role="tab"]')))
+      await browser.executeScript(() => {
+        document.addEventListener('tabs.toggle', (event) => (window.tabId = event.target.tab.id))
+        document.querySelector('core-tabs').tab = 1
+      })
+      const tabId = await browser.wait(() => browser.executeScript(() => window.tabId))
+      await expect(tabId).toEqual('tab-2')
+      await expect(browser.executeScript(() => document.querySelector('core-tabs').tab.id)).toEqual('tab-2')
+    })
   })
 
   describe('supports optional attribute "tab"', () => {
@@ -363,6 +422,10 @@ describe('core-tabs', () => {
   describe('supports fewer panels than tabs, e.g used with dynamic content', () => {
     it('gracefully works without panels', async () => {
       await browser.executeScript(() => {
+        window.toggleEventTimes = 0
+        document.addEventListener('tabs.toggle', () => { window.toggleEventTimes += 1 })
+      })
+      await browser.executeScript(() => {
         document.body.innerHTML = `
           <core-tabs id="tabsnopanels">
             <button data-for="panel-1" id="tab-1">First tab</button>
@@ -371,9 +434,28 @@ describe('core-tabs', () => {
         `
       })
       await browser.wait(ExpectedConditions.presenceOf($('core-tabs [role="tab"]')))
-      await expect(attr('#tabsnopanels', 'tab')).toMatch(/null/i)
-      await expect(attr('#tab-1', 'aria-selected')).toMatch(/null/i)
-      await expect(attr('#tab-2', 'aria-selected')).toMatch(/null/i)
+      // Event is not triggered
+      await expect(browser.executeScript(() => window.toggleEventTimes)).toEqual(0)
+      // Attributes are set as expected
+      await expect(attr('#tabsnopanels', 'tab')).toEqual('0')
+      await expect(attr('#tab-1', 'aria-selected')).toEqual('true')
+      await expect(attr('#tab-2', 'aria-selected')).toEqual('false')
+      await expect(attr('#tab-1', 'aria-controls')).toMatch(/null/i)
+      await expect(attr('#tab-2', 'aria-controls')).toMatch(/null/i)
+      // Panels length should have equal length to tabs, but entries should be empty
+      await expect(browser.executeScript(() => document.getElementById('tabsnopanels').panels.length))
+        .toEqual(browser.executeScript(() => document.getElementById('tabsnopanels').tabs.length))
+      await expect(browser.executeScript(() => document.getElementById('tabsnopanels').panels[0])).toMatch(/null/i)
+      await expect(browser.executeScript(() => document.getElementById('tabsnopanels').panels[1])).toMatch(/null/i)
+      await expect(browser.executeScript(() => document.getElementById('tabsnopanels').panel)).toMatch(/null/i)
+      // Tabs getters
+      await expect(browser.executeScript(() => document.getElementById('tabsnopanels').tabs.length)).toEqual(2)
+      await expect(browser.executeScript(() => document.getElementById('tabsnopanels').tab.id)).toEqual('tab-1')
+      // Setter works
+      await browser.executeScript(() => { document.getElementById('tabsnopanels').tab = 'tab-2' })
+      await expect(attr('#tab-2', 'aria-selected')).toEqual('true')
+      // Setter triggers event once
+      await expect(browser.executeScript(() => window.toggleEventTimes)).toEqual(1)
     })
 
     it('defaults to aria-labelledBy to the first tab', async () => {
