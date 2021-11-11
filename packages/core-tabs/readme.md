@@ -23,8 +23,8 @@
 </style>
 demo-->
 
-## Example
-
+## Examples (plain JS)
+#### Nested tabs
 ```html
 <!--demo-->
 <core-tabs>
@@ -39,16 +39,40 @@ demo-->
     <button>Subtab 2</button>
     <button>Subtab 3</button>
   </core-tabs>
-  <div>Subtabpanel 1</div>
+  <div hidden>Subtabpanel 1</div>
   <div>Subtabpanel 2</div>
-  <div>Subtabpanel 3</div>
+  <div hidden>Subtabpanel 3</div>
 </div>
 <div hidden>Tabpanel 3</div>
 ```
-
+#### Few panels
 ```html
 <!--demo-->
-<div id="jsx-tabs" class="my-vertical-tabs"></div>
+<core-tabs id="few-panels-plain-js" tab="fppj-tab-3">
+  <button type="button" data-for="panel-1" id="fppj-tab-1">First tab</button>
+  <button type="button" data-for="panel-2" id="fppj-tab-2">Second tab</button>
+  <button type="button" data-for="panel-2" id="fppj-tab-3">Third tab</button>
+</core-tabs>
+<div id="panel-1" hidden>
+  Text of the first panel
+</div>
+<div id="panel-2">Text of the second panel, shared by second and third tab</div>
+```
+#### Single panel
+```html
+<!--demo-->
+<core-tabs id="single-panel-plain-js" tab='sppj-tab-2'>
+  <button type="button" data-for="only-panel" id="sppj-tab-1">First tab</button>
+  <button type="button" data-for="only-panel" id="sppj-tab-2">Second tab</button>
+  <button type="button" data-for="only-panel" id="sppj-tab-3">Third tab</button>
+</core-tabs>
+<div id="only-panel">Text of the only panel. Note that <code>aria-labelledBy</code> reflects active tab</div>
+```
+## Examples (React)
+#### Nested tabs
+```html
+<!--demo-->
+<div id="react-nested-tabs" class="my-vertical-tabs"></div>
 <script type="text/jsx">
   ReactDOM.render(<div>
     <CoreTabs>
@@ -56,7 +80,7 @@ demo-->
       <button>Vertical tab 2 JSX</button>
     </CoreTabs>
     <div>Tabpanel 1 JSX</div>
-    <div>
+    <div hidden>
       <CoreTabs>
         <button>Subtab 1 JSX</button>
         <button hidden>Subtab 2 JSX</button>
@@ -64,18 +88,18 @@ demo-->
       <div>Subtabpanel 1</div>
       <div hidden>Subtabpanel 2</div>
     </div>
-  </div>, document.getElementById('jsx-tabs'))
+  </div>, document.getElementById('react-nested-tabs'))
 </script>
 ```
-
+#### Dynamic tabs
 ```html
 <!--demo-->
-<div id="jsx-dynamic-tabs" class="my-vertical-tabs"></div>
+<div id="react-dynamic-tabs" class="my-vertical-tabs"></div>
 <script type="text/jsx">
   const Dynamic = () => {
       const [elements, setElements] = React.useState([])
       const menu = elements.map(item => <button type="button">Dynamic Tab {item}</button>);
-      const pages = elements.map(item => <div>Tabpanel {item}</div>);
+      const pages = elements.map(item => <div hidden>Tabpanel {item}</div>);
 
       return (
         <>
@@ -95,7 +119,105 @@ demo-->
         </>
       )
     }
-  ReactDOM.render(<Dynamic />, document.getElementById('jsx-dynamic-tabs'))
+  ReactDOM.render(<Dynamic />, document.getElementById('react-dynamic-tabs'))
+</script>
+```
+#### Active by index
+```html
+<!--demo-->
+<div id="react-index-tabs"></div>
+<script type="text/jsx">
+  const IndexTabs = () => {
+      const [tabIndex, setTabIndex] = React.useState(0)
+      const handleTabsToggle = (event) => { setTabIndex(parseInt(event.target.getAttribute('tab'))) }
+      const handleInputChange = (event) => { setTabIndex(parseInt(event.target.value)) }
+
+      return (
+        <>
+          <div>
+            <label>
+              Set active tab
+              <input
+                type="range"
+                value={tabIndex}
+                min="0"
+                max="3"
+                step="1"
+                onChange={handleInputChange}
+              />
+            </label>
+          </div>
+          <CoreTabs tab={tabIndex} onTabsToggle={handleTabsToggle}>
+            <button type="button">Tab 1</button>
+            <button type="button">Tab 2</button>
+            <button type="button">Tab 3</button>
+            <button type="button">Tab 4</button>
+          </CoreTabs>
+          <div>Tabpanel 1</div>
+          <div hidden>Tabpanel 2</div>
+          <div hidden>Tabpanel 3</div>
+          <div hidden>Tabpanel 4</div>
+        </>
+      )
+    }
+  ReactDOM.render(<IndexTabs />, document.getElementById('react-index-tabs'))
+</script>
+```
+#### Single panel
+```html
+<!--demo-->
+<div id="react-single-panel"></div>
+<script type="text/jsx">
+  const EpisodeList = ({seasonNumber}) => {
+    const episodes = [
+      ["S1: Episode 1", "S1: Episode 2", "S1: Episode 3"],
+      ["S2: Episode 1", "S2: Episode 2"]
+    ];
+
+    const [episodesInSeason, setEpisodesInSeason] = React.useState(episodes[seasonNumber - 1]);
+
+    React.useEffect(() => {
+      setEpisodesInSeason(episodes[seasonNumber - 1])
+    }, [seasonNumber])
+
+    return (
+      <div id="episode-list">
+        Table panel for season {seasonNumber}: Content here should change: 
+        <br/><br/>
+        {episodesInSeason.map(episode => <button>{episode}</button>)}
+      </div>
+    )
+  }
+  const SeasonList = () => {
+    const [selectedSeason, setSelectedSeason] = React.useState(2);
+
+    return (
+      <>
+        <CoreTabs
+          tab={selectedSeason - 1}
+          id="season-list"
+          onTabsToggle={event => setSelectedSeason(Number(event.target.getAttribute('tab')) + 1)}
+        >
+          <button
+            type="button"
+            id="season-tab-0"
+            data-for="episode-list"
+          >
+            Season 1
+          </button>
+          <button
+            type="button"
+            id="season-tab-1"
+            data-for="episode-list"
+          >
+            Season 2
+          </button>
+        </CoreTabs>
+        <EpisodeList seasonNumber={selectedSeason} />
+      </>
+    )
+  }
+  ReactDOM.render(<SeasonList />, document.getElementById('react-single-panel'))
 </script>
 ```
 
@@ -121,10 +243,16 @@ Remember to [polyfill](https://github.com/webcomponents/polyfills/tree/master/pa
 
 ## Usage
 
+### Attributes
+
+Name | Optional | Accepts values | Description
+:-- | :-- | :-- | :--
+`tab` | Yes | `number \| string` | Used to set active tab. Number is index (starting at `0`), string is an id-reference to a tab-element.
+
 ### HTML / JavaScript
 
 ```html
-<core-tabs>
+<core-tabs tab="{string | number}">       <!-- Optional. Used to set active tab String associates id-reference to tab element -->
   <button>Tab 1</button>                  <!-- Tab elements must be <a> or <button>. Do not use <li> -->
   <a href="#">Tab 2</a>
   <button>Tab 3</button>
@@ -158,12 +286,18 @@ myTabs.tab = myTab    // Set active tab from element
 ```js
 import CoreTabs from '@nrk/core-tabs/jsx'
 
-<CoreTabs data-for={Number|String}      // Optional. Sets active tab by index or id
-          ref={(comp) => {}}            // Optional. Get reference to React component
-          forwardRef={(el) => {}}       // Optional. Get reference to underlying DOM custom element
-          onTabsToggle={Function}>      // Optional. Listen to toggle event
-  <button>Tab 1</button>                // Tab elements must be <a> or <button>. Do not use <li>
-  <a href="#">Tab 2</a>
+<CoreTabs
+  tab={String}                  // Optional. Sets current active tab by index or id
+  ref={(comp) => {}}            // Optional. Get reference to React component
+  forwardRef={(el) => {}}       // Optional. Get reference to underlying DOM custom element
+  onTabsToggle={Function}       // Optional. Listen to toggle event
+>
+  <button                  // Tab element must be <a> or <button>. Do not use <li>
+    data-for={String}      // Id to element that contains the tab-related content
+  >
+    Tab 1
+  </button>
+  <a href="#">Tab 2</a>    
 </CoreTabs>
 <div>Tabpanel 1 content</div>           // First tabpanel is the next element sibling of CoreTabs
 <div hidden>Tabpanel 1 content</div>    // Second tabpanel. Use hidden attribute to prevent FOUC
@@ -179,7 +313,7 @@ import CoreTabs from '@nrk/core-tabs/jsx'
 Fired when toggling a tab:
 
 ```js
-document.addEventListener('tabs.toggle', (event) =>
+document.addEventListener('tabs.toggle', (event) => {
   event.target     // The tabs element
 })
 ```
@@ -202,7 +336,7 @@ All styling in documentation is example only. Both the tabs and tabpanels receiv
 ### Why aren't tabs wrapped in `<ul><li>...</li></ul>`?
 A `<ul>`/`<li>` structure would seem logical for tabs, but this causes some screen readers to incorrectly announce tabs as single (tab 1 of 1).
 
-### Does panels always need be a next element sibling?
+### Must panels always be next element siblings to `<core-tabs>`?
 The aria specification does not allow any elements that are focusable by a screen reader to be placed between tabs and panels. Therefore, `core-tabs` defaults to use the next element siblings as panels.
 This behaviour can be overridden, by setting up `id` on panel elements and the `data-for` attribute on tab element (`for` is deprecated). Use with caution and *only* do this if your project *must* use another DOM structure. Example:
 
@@ -210,3 +344,6 @@ This behaviour can be overridden, by setting up `id` on panel elements and the `
 const myTabs = document.querySelector('core-tabs')
 myTabs.tabs.forEach((tabs, index) => tab.setAttribute('data-for', myTabs.panels[index].id = 'my-panel-' + index))
 ```
+
+### How do I avoid panels flickering on initialization?
+When you know what panel will be visible on load, all others should have the `hidden`-attribute to avoid [Flash of unstyled content](https://en.wikipedia.org/wiki/Flash_of_unstyled_content) (FOUC). If the active panel is unknown to your template, set `hidden`-attribute on all panels initially.
