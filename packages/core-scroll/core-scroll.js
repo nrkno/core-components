@@ -61,9 +61,14 @@ export default class CoreScroll extends HTMLElement {
       const btn = this.id && closest(event.target, `[for="${this.id}"],[data-for="${this.id}"]`)
       if (btn && dispatchEvent(this, 'scroll.click', { move: btn.value })) this.scroll(btn.value)
     } else {
-      const scroll = { left: this.scrollLeft, up: this.scrollTop, right: this.scrollRight, down: this.scrollBottom }
+      // We floor all values to handle potential decimal leftovers if browser is zoomed in or out
+      const scroll = {
+        up: Math.floor(this.scrollTop),
+        right: Math.floor(this.scrollRight),
+        down: Math.floor(this.scrollBottom),
+        left: Math.floor(this.scrollLeft)
+      }
       const cursor = (scroll.left || scroll.right || scroll.up || scroll.down) ? 'grab' : ''
-
       queryAll(this.id && `[for="${this.id}"],[data-for="${this.id}"]`).forEach((el) => (el.disabled = !scroll[el.value]))
       dispatchEvent(this, 'scroll.change')
 
@@ -96,9 +101,11 @@ export default class CoreScroll extends HTMLElement {
   // Ensure falsy values becomes ''
   set items (val) { this.setAttribute('items', val || '') }
 
-  get scrollRight () { return this.scrollWidth - this.clientWidth - this.scrollLeft }
+  // ScrollLeft can return decimals when browser is zoomed, leading to unwanted negative values
+  get scrollRight () { return Math.max(0, this.scrollWidth - this.clientWidth - this.scrollLeft) }
 
-  get scrollBottom () { return this.scrollHeight - this.clientHeight - this.scrollTop }
+  // Safeguard for negative due to decimals for scrollTop similar to scrollLeft above
+  get scrollBottom () { return Math.max(0, this.scrollHeight - this.clientHeight - this.scrollTop) }
 
   // Avoid friction 1 (infinite)
   get friction () { return Math.min(0.99, this.getAttribute('friction')) || 0.8 }
