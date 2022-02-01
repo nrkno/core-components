@@ -1,5 +1,41 @@
 import { IS_BROWSER, addStyle, closest, dispatchEvent, throttle, getUUID, queryAll } from '../utils'
 
+/**
+ * @typedef {{ x: number, y: number }} scrollCoords
+ */
+
+/**
+ * @typedef {object} scrollPoint
+ * @property {Number} x
+ * @property {Number} y
+ * @property {'top' | 'bottom'} prop
+ */
+
+/**
+ * @typedef {'up'| 'down' | 'left' | 'right'} scrollDirection
+ */
+
+/**
+ * @typedef {scrollDirection | scrollPoint | Element} scrollTarget
+ */
+
+/**
+ * @typedef {Object} dragType
+ * @property {String} animate Id of element to animate
+ * @property {Number} diffSumX
+ * @property {Number} diffSumY
+ * @property {Number} diffX
+ * @property {Number} diffY
+ * @property {Number} pageX
+ * @property {Number} pageY
+ * @property {Number} scrollX
+ * @property {Number} scrollY
+ * @property {HTMLElement} target
+ */
+
+/**
+ * @type {dragType}
+ */
 const DRAG = {}
 const MOVE = { up: { y: -1, prop: 'top' }, down: { y: 1, prop: 'bottom' }, left: { x: -1 }, right: { x: 1 } }
 const MOVE_SIGNIFICANT = 10
@@ -53,6 +89,10 @@ export default class CoreScroll extends HTMLElement {
     document.removeEventListener('click', this)
   }
 
+  /**
+   *
+   * @param {Event} event
+   */
   handleEvent (event = {}) {
     if (!this.parentNode || event.defaultPrevented) return // Abort if removed from DOM or event is prevented
     if (event.type === 'wheel') DRAG.animate = false // Stop momentum animation onWheel
@@ -165,6 +205,12 @@ function onMouseup (event) {
   DRAG.target = null // Prevent memory leak
 }
 
+/**
+ * Takes an element, coordinates or cardinal direction and returns x/y -coordinates
+ * @param {CoreScroll} self CoreScroll HTMLElement
+ * @param {scrollTarget} move
+ * @returns {scrollPoint}
+ */
 function parsePoint (self, move) {
   const point = typeof move === 'object' ? move : { move }
   if (typeof point.x !== 'number') point.x = self.scrollLeft
