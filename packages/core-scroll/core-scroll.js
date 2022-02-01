@@ -119,7 +119,12 @@ export default class CoreScroll extends HTMLElement {
     }
   }
 
-  scroll (point) {
+  /**
+   * Scroll to Element, point or cardinal direction within core-scroll
+   * @param {scrollTarget} point Element, {x, y} pixel distance from top/left or cardinal direction ['up', 'down', 'left', 'right']
+   * @param {Function} doneCallback Callback function triggered once scrolling is done
+   */
+  scroll (point, doneCallback) {
     const { x, y } = parsePoint(this, point)
     const uuid = DRAG.animate = getUUID() // Giving the animation an ID to workaround IE timeout issues
     const friction = this.friction
@@ -131,6 +136,8 @@ export default class CoreScroll extends HTMLElement {
         this.scrollLeft = x - Math.round(moveX *= friction)
         this.scrollTop = y - Math.round(moveY *= friction)
         requestFrame(move)
+      } else if (doneCallback && typeof doneCallback === 'function') {
+        doneCallback()
       }
     }
     move()
