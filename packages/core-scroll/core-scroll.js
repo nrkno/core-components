@@ -219,6 +219,19 @@ function onMouseup (event) {
  * @returns {scrollPoint}
  */
 function parsePoint (self, move) {
+  const scrollItems = self.items
+  // Move is an element within CoreScroll
+  const toItem = move && move.nodeType && scrollItems.filter((item) => item.contains(move))[0]
+  if (toItem) {
+    // Target offset subtracting CoreScroll offset and half of offsetHeight/width to center
+    return {
+      x: Math.max(0, toItem.offsetLeft - self.offsetLeft - ((self.offsetWidth / 2) - (toItem.offsetWidth / 2))),
+      y: Math.max(0, toItem.offsetTop - self.offsetTop - ((self.offsetHeight / 2) - (toItem.offsetHeight / 2)))
+    }
+  } else if (move && move.nodeType && !toItem) {
+    // Unable to find element
+    console.warn(self, `cannot find child element ${move} as a valid target for scrolling`)
+  }
   const point = typeof move === 'object' ? move : { move }
   if (typeof point.x !== 'number') point.x = self.scrollLeft
   if (typeof point.y !== 'number') point.y = self.scrollTop
@@ -229,7 +242,7 @@ function parsePoint (self, move) {
     const scroll = bounds[start] - self[point.move.x ? 'scrollLeft' : 'scrollTop']
     const edge = bounds[start] + bounds[point.move.x ? 'width' : 'height'] * point.move[axis]
 
-    self.items.every((el) => { // Use .every as this loop stops on return false
+    scrollItems.every((el) => { // Use .every as this loop stops on return false
       const rect = el.getBoundingClientRect()
       const marg = el.ownerDocument.defaultView.getComputedStyle(el)[`margin-${start}`]
 
