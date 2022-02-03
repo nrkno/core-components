@@ -215,12 +215,12 @@ describe('core-scroll', () => {
             <div class="content-item">This is overflowing content</div>
             <div class="content-item">This is overflowing content</div>
             <div class="content-item">This is overflowing content</div>
-            <div class="content-item" id="fourth">This is overflowing content</div>
+            <div class="content-item">This is overflowing content</div>
             <br>
             <div class="content-item">This is overflowing content</div>
             <div class="content-item">This is overflowing content</div>
             <div class="content-item">This is overflowing content</div>
-            <div class="content-item">This is overflowing content</div>
+            <div class="content-item" id="fourth">This is overflowing content</div>
             <br>
             <div class="content-item">This is overflowing content</div>
             <div class="content-item">This is overflowing content</div>
@@ -230,7 +230,7 @@ describe('core-scroll', () => {
         </div>
       `
       })
-      // await browser.wait(ExpectedConditions.presenceOf($('core-datepicker')))
+
       await expect(browser.executeScript(() => document.getElementById('scroller').scrollRight)).toEqual(172)
       await expect(browser.executeScript(() => document.getElementById('scroller').scrollBottom)).toEqual(130)
       await browser.executeScript(() => {
@@ -239,8 +239,34 @@ describe('core-scroll', () => {
       await delay(100) // Wait for scroll to end
       await expect(browser.executeScript(() => document.getElementById('scroller').scrollLeft)).toEqual(172)
       await expect(browser.executeScript(() => document.getElementById('scroller').scrollRight)).toEqual(0)
-      await expect(browser.executeScript(() => document.getElementById('scroller').scrollTop)).toEqual(110)
-      await expect(browser.executeScript(() => document.getElementById('scroller').scrollBottom)).toEqual(20)
+      await expect(browser.executeScript(() => document.getElementById('scroller').scrollTop)).toEqual(65)
+      await expect(browser.executeScript(() => document.getElementById('scroller').scrollBottom)).toEqual(65)
+    })
+
+    it('informs in console.warn when target element is not within core-scroll', async () => {
+      // Use custom console.warn to save what is logged
+      await browser.executeScript(() => {
+        window.console.warn = function (_, log) {
+          window.warning = String(log)
+        }
+      })
+      await browser.executeScript(() => {
+        document.body.innerHTML = `
+        <button data-for="scroller" value="down">Down</button>
+        <div class="content-container">
+          <core-scroll id="scroller">
+            <div class="content-item">This is overflowing content</div>
+          </core-scroll>
+          <div class="content-item" id="fourth">This is overflowing content</div>
+        </div>
+      `
+      })
+      await browser.executeScript(() => {
+        document.getElementById('scroller').scroll(document.getElementById('fourth'))
+      })
+      // Get stored console.warn from protractor browser
+      const consoleWarn = await browser.wait(() => browser.executeScript(() => window.warning))
+      await expect(consoleWarn).toEqual('cannot find child element [object HTMLDivElement] as a valid target for scrolling')
     })
   })
 })
