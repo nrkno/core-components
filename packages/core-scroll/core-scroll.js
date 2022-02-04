@@ -132,7 +132,7 @@ export default class CoreScroll extends HTMLElement {
     let moveX = requestJumps ? 1 : x - this.scrollLeft
     let moveY = requestJumps ? 1 : y - this.scrollTop
 
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       const move = () => {
         if (DRAG.animate === uuid && (Math.round(moveX) || Math.round(moveY))) {
           this.scrollLeft = x - Math.round(moveX *= friction)
