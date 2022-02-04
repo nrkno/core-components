@@ -9,5 +9,3 @@ export function attr (selector, name) {
     return String(document.querySelector(selector).getAttribute(name))
   }, selector, name)
 }
-
-export const delay = ms => new Promise((resolve) => setTimeout(resolve, ms))

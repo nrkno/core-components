@@ -122,25 +122,28 @@ export default class CoreScroll extends HTMLElement {
   /**
    * Scroll to Element, point or cardinal direction within core-scroll
    * @param {scrollTarget} point Element, {x, y} pixel distance from top/left or cardinal direction ['up', 'down', 'left', 'right']
-   * @param {Function} doneCallback Callback function triggered once scrolling is done
+   * @returns {Promise<scrollPoint>} scrollPoint
    */
-  scroll (point, doneCallback) {
-    const { x, y } = parsePoint(this, point)
+  scroll (point) {
+    const endPoint = parsePoint(this, point)
+    const { x, y } = endPoint
     const uuid = DRAG.animate = getUUID() // Giving the animation an ID to workaround IE timeout issues
     const friction = this.friction
     let moveX = requestJumps ? 1 : x - this.scrollLeft
     let moveY = requestJumps ? 1 : y - this.scrollTop
 
-    const move = () => {
-      if (DRAG.animate === uuid && (Math.round(moveX) || Math.round(moveY))) {
-        this.scrollLeft = x - Math.round(moveX *= friction)
-        this.scrollTop = y - Math.round(moveY *= friction)
-        requestFrame(move)
-      } else if (doneCallback && typeof doneCallback === 'function') {
-        doneCallback()
+    return new Promise((resolve, reject) => {
+      const move = () => {
+        if (DRAG.animate === uuid && (Math.round(moveX) || Math.round(moveY))) {
+          this.scrollLeft = x - Math.round(moveX *= friction)
+          this.scrollTop = y - Math.round(moveY *= friction)
+          requestFrame(move)
+        } else {
+          resolve(endPoint)
+        }
       }
-    }
-    move()
+      move()
+    })
   }
 
   get items () { return queryAll(this.getAttribute('items') || this.children, this) }
@@ -229,7 +232,6 @@ function parsePoint (self, move) {
       y: Math.max(0, toItem.offsetTop - self.offsetTop - ((self.offsetHeight / 2) - (toItem.offsetHeight / 2)))
     }
   } else if (move && move.nodeType && !toItem) {
-    // Unable to find element
     console.warn(self, `cannot find child element ${move} as a valid target for scrolling`)
   }
   const point = typeof move === 'object' ? move : { move }

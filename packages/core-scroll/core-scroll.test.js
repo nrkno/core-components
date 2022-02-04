@@ -1,6 +1,7 @@
 import fs from 'fs'
 import path from 'path'
-import { delay } from '../test-utils'
+// eslint-disable-next-line no-unused-vars
+import CoreScroll from './core-scroll' // Only used for local @type
 
 const coreScroll = fs.readFileSync(path.resolve(__dirname, 'core-scroll.min.js'), 'utf-8')
 const customElements = fs.readFileSync(require.resolve('@webcomponents/custom-elements'), 'utf-8')
@@ -160,10 +161,13 @@ describe('core-scroll', () => {
       // await browser.wait(ExpectedConditions.presenceOf($('core-datepicker')))
       await expect(browser.executeScript(() => document.getElementById('scroller').scrollRight)).toEqual(172)
       await expect(browser.executeScript(() => document.getElementById('scroller').scrollBottom)).toEqual(130)
-      await browser.executeScript(() => {
-        document.getElementById('scroller').scroll('right')
+      await browser.executeScript(async () => {
+        /**
+         * @type {CoreScroll}
+         */
+        const coreScroll = document.getElementById('scroller')
+        await coreScroll.scroll('right')
       })
-      await delay(100) // Wait for animation of .scroll to end
       await expect(browser.executeScript(() => document.getElementById('scroller').scrollLeft)).toEqual(172)
       await expect(browser.executeScript(() => document.getElementById('scroller').scrollRight)).toEqual(0)
       await expect(browser.executeScript(() => document.getElementById('scroller').scrollBottom)).toEqual(130)
@@ -196,10 +200,13 @@ describe('core-scroll', () => {
       // await browser.wait(ExpectedConditions.presenceOf($('core-datepicker')))
       await expect(browser.executeScript(() => document.getElementById('scroller').scrollRight)).toEqual(172)
       await expect(browser.executeScript(() => document.getElementById('scroller').scrollBottom)).toEqual(130)
-      await browser.executeScript(() => {
-        document.getElementById('scroller').scroll({ x: 2, y: 30 })
+      await browser.executeScript(async () => {
+        /**
+         * @type {CoreScroll}
+         */
+        const coreScroll = document.getElementById('scroller')
+        await coreScroll.scroll({ x: 2, y: 30 })
       })
-      await delay(100) // Wait for scroll to end
       await expect(browser.executeScript(() => document.getElementById('scroller').scrollLeft)).toEqual(2)
       await expect(browser.executeScript(() => document.getElementById('scroller').scrollRight)).toEqual(170)
       await expect(browser.executeScript(() => document.getElementById('scroller').scrollTop)).toEqual(30)
@@ -233,40 +240,44 @@ describe('core-scroll', () => {
 
       await expect(browser.executeScript(() => document.getElementById('scroller').scrollRight)).toEqual(172)
       await expect(browser.executeScript(() => document.getElementById('scroller').scrollBottom)).toEqual(130)
-      await browser.executeScript(() => {
-        document.getElementById('scroller').scroll(document.getElementById('fourth'))
+      await browser.executeScript(async () => {
+        /**
+         * @type {CoreScroll}
+         */
+        const coreScroll = document.getElementById('scroller')
+        await coreScroll.scroll(document.getElementById('fourth'))
       })
-      await delay(100) // Wait for scroll to end
       await expect(browser.executeScript(() => document.getElementById('scroller').scrollLeft)).toEqual(172)
       await expect(browser.executeScript(() => document.getElementById('scroller').scrollRight)).toEqual(0)
       await expect(browser.executeScript(() => document.getElementById('scroller').scrollTop)).toEqual(65)
       await expect(browser.executeScript(() => document.getElementById('scroller').scrollBottom)).toEqual(65)
     })
 
-    it('informs in console.warn when target element is not within core-scroll', async () => {
-      // Use custom console.warn to save what is logged
-      await browser.executeScript(() => {
-        window.console.warn = function (_, log) {
-          window.warning = String(log)
-        }
-      })
+    it('returns a promise when scrolling is complete', async () => {
       await browser.executeScript(() => {
         document.body.innerHTML = `
         <button data-for="scroller" value="down">Down</button>
         <div class="content-container">
           <core-scroll id="scroller">
             <div class="content-item">This is overflowing content</div>
+            <br>
+            <div class="content-item">This is overflowing content</div>
+            <br>
+            <div class="content-item" id="targetEl">This is overflowing content</div>
           </core-scroll>
-          <div class="content-item" id="fourth">This is overflowing content</div>
         </div>
       `
       })
-      await browser.executeScript(() => {
-        document.getElementById('scroller').scroll(document.getElementById('fourth'))
+      await browser.executeScript(async () => {
+        /**
+         * @type {CoreScroll}
+         */
+        const coreScroll = document.getElementById('scroller')
+        window.done = await coreScroll.scroll(document.getElementById('targetEl'))
       })
-      // Get stored console.warn from protractor browser
-      const consoleWarn = await browser.wait(() => browser.executeScript(() => window.warning))
-      await expect(consoleWarn).toEqual('cannot find child element [object HTMLDivElement] as a valid target for scrolling')
+      // Because we await the scroll in the above invocation, both synchronous and async expects get the expected result.
+      await expect(browser.executeScript(() => window.done)).toEqual({ x: 0, y: 175 })
+      await expect(await browser.wait(() => browser.executeScript(() => window.done))).toEqual({ x: 0, y: 175 })
     })
   })
 })
