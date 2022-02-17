@@ -17,6 +17,8 @@
 <style>
   .my-wrap { overflow: hidden; white-space: nowrap; height: 100%; border: 1px solid }
   .my-wrap-js { height: 200px }
+  .my-slider > div { box-sizing: border-box; display: inline-block; vertical-align: middle; width: 80%; height: 180px; border: 1px solid; padding: 10px; margin: 10px; transition: 1s;}
+
   .my-scroll ul { list-style: none; margin: 0; padding: 0 }
   .my-scroll li,
   .my-scroll > a,
@@ -24,7 +26,50 @@
 </style>
 demo-->
 
-## Example
+## Examples
+
+### Scroll snap slider
+
+```html
+<!--demo-->
+<button data-for="my-slider" value="left" aria-label="Rull til venstre">&larr;</button>
+<button data-for="my-slider" value="right" aria-label="Rull til høyre">&rarr;</button>
+<div class="my-wrap my-wrap-js">
+  <core-scroll id="my-slider" class="my-slider">
+    <div>1</div><div>2</div><div>3</div><div>4</div><a href="#">5</a>
+    <div>6</div><div>7</div><div>8</div><div>9</div><div>10</div>
+    <div>11</div><div>12</div><div>13</div><div>14</div><div>15</div>
+  </core-scroll>
+</div>
+```
+
+### Snapping
+
+```html
+<!--demo-->
+<button data-for="my-snap" value="left" aria-label="Rull til venstre">&larr;</button>
+<button data-for="my-snap" value="right" aria-label="Rull til høyre">&rarr;</button>
+<div class="my-wrap">
+  <core-scroll class="my-scroll" id="my-snap">
+    <div>1</div><div>2</div><div>3</div><div>4</div><a href="#">5</a>
+    <div>6</div><div>7</div><div>8</div><div>9</div><div>10</div>
+    <div>11</div><div>12</div><div>13</div><div>14</div><div>15</div>
+  </core-scroll>
+</div>
+<style>
+  #my-snap:not([data-core-scroll-dragging]) > * { scroll-snap-align: start; }
+  #my-snap:not([data-core-scroll-dragging]) {
+    /* scroll-behavior: smooth; */
+    overflow: scroll;
+    -webkit-scroll-snap-type: x proximity;
+    -ms-scroll-snap-type: x proximity;
+    scroll-snap-type: x proximity;
+    scroll-padding: 10px;
+  }
+</style>
+```
+
+### All directions with nesting
 
 ```html
 <!--demo-->

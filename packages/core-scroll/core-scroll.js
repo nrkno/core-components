@@ -126,7 +126,8 @@ function onMousedown (event) {
   DRAG.scrollX = this.scrollLeft
   DRAG.scrollY = this.scrollTop
   DRAG.target = this
-
+  // TODO: If snapping is enabled
+  DRAG.target.setAttribute('data-core-scroll-dragging', '')
   document.body.style.cursor = this.style.cursor = '-webkit-grabbing'
   document.body.style.cursor = this.style.cursor = 'grabbing'
   document.addEventListener('mousemove', onMousemove)
@@ -162,6 +163,8 @@ function onMouseup (event) {
   DRAG.target.style.pointerEvents = '' // Allow events again
   DRAG.target.style.cursor = '-webkit-grab'
   DRAG.target.style.cursor = 'grab'
+  // TODO: If snapping is enabled
+  DRAG.target.removeAttribute('data-core-scroll-dragging')
   DRAG.target = null // Prevent memory leak
 }
 
