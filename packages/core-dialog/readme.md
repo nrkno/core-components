@@ -51,9 +51,8 @@
 </style>
 demo-->
 
-## Examples
-
-### Plain JavaScript
+## Examples (plain JS)
+#### Nested dialog
 
 ```html
 <!--demo-->
@@ -76,6 +75,7 @@ demo-->
   </core-dialog>
 </core-dialog>
 ```
+#### Strict dialog
 
 ```html
 <!--demo-->
@@ -87,6 +87,7 @@ demo-->
   <button data-for="close" type="button">Close</button>
 </core-dialog>
 ```
+#### Modal dialog
 
 ```html
 <!--demo-->
@@ -97,6 +98,7 @@ demo-->
   <button data-for="close">Close</button>
 </core-dialog>
 ```
+#### Custom backdrop
 
 ```html
 <!--demo-->
@@ -109,7 +111,8 @@ demo-->
 <div id="back-custom" class="my-backdrop" style="background:rgba(0,0,50,.8)" hidden></div>
 ```
 
-### React
+## Examples (React)
+#### Class component
 
 ```html
 <!--demo-->
@@ -139,9 +142,12 @@ demo-->
             className="my-dialog"
             hidden={this.state.hidden}
             onDialogToggle={this.handleToggle}
-            aria-label="React dialog">
+            aria-label="React dialog"
+          >
             <h1>Dialog for JSX</h1>
-            <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
+            <p>
+              Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.
+            </p>
             <button onClick={this.toggleDialog} type="button">Lukk</button>
           </CoreDialog>
         </>
@@ -153,6 +159,8 @@ demo-->
 </script>
 ```
 
+#### Strict dialog
+
 ```html
 <!--demo-->
 <div id="jsx-dialog-strict"></div>
@@ -160,9 +168,17 @@ demo-->
   ReactDOM.render(
     <>
       <button data-for="dialog-strict-jsx" type="button">Open strict React dialog</button>
-      <CoreDialog id="dialog-strict-jsx" className="my-dialog" aria-label="Strict React dialog" hidden strict>
+      <CoreDialog
+        id="dialog-strict-jsx"
+        className="my-dialog"
+        aria-label="Strict React dialog"
+        hidden
+        strict
+      >
         <h1>Strict dialog for JSX</h1>
-        <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
+        <p>
+          Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.
+        </p>
         <button data-for="close" type="button">Lukk</button>
       </CoreDialog>
     </>,
@@ -171,6 +187,8 @@ demo-->
 </script>
 ```
 
+#### No backdrop
+
 ```html
 <!--demo-->
 <div id="jsx-dialog-no-backdrop"></div>
@@ -178,9 +196,17 @@ demo-->
   ReactDOM.render(
     <>
       <button data-for="dialog-no-back-jsx" type="button">Open React dialog without backdrop</button>
-      <CoreDialog id="dialog-no-back-jsx" className="my-dialog" aria-label="React dialog without backdrop" backdrop="off" hidden>
+      <CoreDialog
+        id="dialog-no-back-jsx"
+        className="my-dialog"
+        aria-label="React dialog without backdrop"
+        backdrop="off"
+        hidden
+      >
         <h1>React dialog without backdrop</h1>
-        <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
+        <p>
+          Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.
+        </p>
         <button data-for="close" type="button">Lukk</button>
       </CoreDialog>
     </>,
@@ -188,6 +214,9 @@ demo-->
   )
 </script>
 ```
+#### Custom backdrop
+
+**NB!** Do not wrap `CoreDialog` with custom backdrop as direct children of React.Fragments (instead, wrap in a block element like `<div>`), to ensure access to the backdrop element on mount.
 
 ```html
 <!--demo-->
@@ -196,19 +225,30 @@ demo-->
   ReactDOM.render(
     <div>
       <button data-for="dialog-cust-jsx" type="button">Open React dialog with custom backdrop</button>
-      <CoreDialog id="dialog-cust-jsx" className="my-dialog" aria-label="React dialog with custom backdrop" backdrop="custom-backdrop-jsx" hidden>
+      <CoreDialog
+        id="dialog-cust-jsx"
+        className="my-dialog"
+        aria-label="React dialog with custom backdrop"
+        backdrop="custom-backdrop-jsx"
+        hidden
+      >
         <h1>React dialog with custom backdrop</h1>
-        <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
+        <p>
+          Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.
+        </p>
         <button data-for="close" type="button">Lukk</button>
       </CoreDialog>
-      <div id="custom-backdrop-jsx" className="my-backdrop" style={{background:'rgba(0,0,50,.8)'}} hidden></div>
+      <div
+        id="custom-backdrop-jsx"
+        className="my-backdrop"
+        style={{background:'rgba(0,0,50,.8)'}}
+        hidden
+      ></div>
     </div>,
     document.getElementById('jsx-dialog-custom')
   )
 </script>
 ```
-
-**NB!** Do not wrap `CoreDialog` with custom backdrop as direct children of React.Fragments (instead, wrap in a block element like `<div>`), to ensure access to the backdrop element on mount.
 
 ## Installation
 
