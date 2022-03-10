@@ -110,6 +110,28 @@ demo-->
 </core-dialog>
 <div id="back-custom" class="my-backdrop" style="background:rgba(0,0,50,.8)" hidden></div>
 ```
+#### Preventing overscroll
+
+Prevent scrolling the background when scrolling inside a scrollable element inside the dialog by setting `overscroll-behavior: contain` on the dialog-element.
+
+Note that `overscroll-behavior` is only supported through enabling experimental features in Safari and Safari on iOS ([caniuse](https://caniuse.com/?search=overscroll-behavior)).
+
+Read [this](https://ishadeed.com/article/prevent-scroll-chaining-overscroll-behavior/) if you want a primer on how `overscroll-behavior` works.
+
+```html
+<!--demo-->
+<button data-for="overscroll-dialog">Open scrollable dialog</button>
+<core-dialog id="overscroll-dialog" class="my-dialog" aria-label="Scrollable dialog title" hidden style="overscroll-behavior: contain">
+  <h1>Scrollable dialog title</h1>
+  <p style="max-height: 100px;overflow: scroll;border: 1px solid gray;">
+    Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.
+  </p>
+  <p style="max-height: 100px;overflow: scroll;border: 1px solid gray;">
+    Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.
+  </p>
+  <button data-for="close" type="button">Close</button>
+</core-dialog>
+```
 
 ## Examples (React)
 #### Class component
