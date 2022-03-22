@@ -40,6 +40,10 @@ export default class CoreSuggest extends HTMLElement {
     if (name === 'highlight') onMutation(this)
   }
 
+  /**
+   * Use `focusin` because it bubbles (`focus` does not)
+   * @param {KeyboardEvent | FocusEvent | InputEvent | MouseEvent} event
+   */
   handleEvent (event) {
     if (event.ctrlKey || event.altKey || event.metaKey || event.defaultPrevented) return
     if (event.type === 'focusin' || event.type === 'click') onClick(this, event)
@@ -63,6 +67,9 @@ export default class CoreSuggest extends HTMLElement {
 
   set limit (int) { this.setAttribute('limit', int) }
 
+  /**
+   * @returns {'on' | 'off' | 'keep'} defaults to `'on'`
+   */
   get highlight () {
     return String(/^on|off|keep$/i.exec(this.getAttribute('highlight')) || 'on').toLowerCase()
   }
@@ -75,13 +82,63 @@ export default class CoreSuggest extends HTMLElement {
   set hidden (val) { toggleAttribute(this, 'hidden', val) }
 }
 
+/**
+ * @param {CoreSuggest} self Core suggest element
+ * @returns {HTMLSpanElement}
+ */
+function appendResultsNotificationSpan (self) {
+  if (!self._observer) return // Abort if disconnectedCallback has been called
+  const resultsNotificationSpan = document.createElement('span')
+  resultsNotificationSpan.setAttribute('aria-live', 'polite')
+  resultsNotificationSpan.setAttribute('style', `
+    position: absolute !important;
+    overflow: hidden !important;
+    width: 1px !important;
+    height: 1px !important;
+    clip: rect(0, 0, 0, 0) !important;
+  `)
+  self.appendChild(resultsNotificationSpan)
+  return resultsNotificationSpan
+}
+
+/**
+ * Sets textContent for resultsShownSpan to notify screen readers whenever results are visible
+ * Adds a timeout to clear textContent after 2000 ms
+ *
+ * @param {CoreSuggest} self Core suggest element
+ * @param {Boolean} clear defaults to false. Flag to remove textContent of existing node
+ * @returns {void}
+ */
+function notifyResultsVisible (self, clear = false) {
+  if (!self._observer) return // Abort if disconnectedCallback has been called
+
+  if (clear) {
+    self._clearLiveRegion()
+  } else {
+    const label = self.getAttribute('data-live-label-visible') || 'Søkeresultater vises'
+    self._pushToLiveRegion(label)
+  }
+}
+
+/**
+ * @param {Element} item
+ * @param {Boolean} show
+ */
 function toggleItem (item, show) {
   const li = item.parentElement // JAWS requires hiding parent <li> (if existing)
   if (li.nodeName === 'LI') toggleAttribute(li, 'hidden', show)
   toggleAttribute(item, 'hidden', show)
 }
 
-// This can happen quite frequently so make it fast
+/**
+ * Callback for mutationObserver
+ * Enhances items with aria-label, tabindex and type="button"
+ * Respects limit attribute
+ * Updates <mark> tags for highlighting according to attribute
+ * This can happen quite frequently so make it fast
+ * @param {CoreSuggest} self Core suggest element
+ * @returns {void}
+ */
 function onMutation (self) {
   if (!self._observer) return // Abort if disconnectedCallback has been called (this/self._observer is null)
 
@@ -136,6 +193,15 @@ function onMutation (self) {
   self._observer.takeRecords() // Empty mutation queue to skip mutations done by highlighting
 }
 
+/**
+ * Handle input event in connected input
+ * Performs filtering of core-suggest items
+ * Dispatches event
+ *  * `suggest.filter`
+ * @param {CoreSuggest} self Core suggest element
+ * @param {InputEvent} event
+ * @returns {void}
+ */
 function onInput (self, event) {
   if (event.target !== self.input || !dispatchEvent(self, 'suggest.filter') || onAjax(self)) return
   const value = self.input.value.toLowerCase()
@@ -146,6 +212,12 @@ function onInput (self, event) {
   }
 }
 
+/**
+ *
+ * @param {CoreSuggest} self Core suggest element
+ * @param {KeyboardEvent} event
+ * @returns {void}
+ */
 function onKey (self, event) {
   if (!self.contains(event.target) && self.input !== event.target) return
   const items = [self.input].concat(queryAll('[tabindex="-1"]:not([hidden])', self))
@@ -164,6 +236,13 @@ function onKey (self, event) {
   if (item) item.focus()
 }
 
+/**
+ * Handle focus or click events
+ * Dispatches `suggest.select`
+ * @param {CoreSuggest} self Core suggest element
+ * @param {FocusEvent | MouseEvent} event
+ * @returns {void}
+ */
 function onClick (self, event) {
   const item = event.type === 'click' && self.contains(event.target) && closest(event.target, 'a,button')
   const show = !item && (self.contains(event.target) || self.input === event.target)
@@ -177,6 +256,11 @@ function onClick (self, event) {
   setTimeout(() => (self.hidden = !show))
 }
 
+/**
+ * Handle ajax event using ajax attribute
+ * @param {CoreSuggest} self Core suggest element
+ * @returns {true}
+ */
 function onAjax (self) {
   if (!self.ajax) return
   clearTimeout(self._xhrTime) // Clear previous search
@@ -186,6 +270,15 @@ function onAjax (self) {
   return true
 }
 
+/**
+ * Handle ajax request, replacing `{{value}}` in ajax-attribute with URIEncoded value from input
+ * Dispatches the following events
+ *  * suggest.ajax.beforeSend
+ *  * suggest.ajax.error
+ *  * suggest.ajax
+ * @param {CoreSuggest} self Core suggest element
+ * @returns {void}
+ */
 function onAjaxSend (self) {
   if (!self._observer || !self.input.value) return // Abort if disconnectedCallback has completed or input is empty
   if (dispatchEvent(self, 'suggest.ajax.beforeSend', self._xhr)) {
