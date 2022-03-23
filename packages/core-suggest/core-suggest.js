@@ -14,6 +14,7 @@ const KEY = {
   PAGEUP: 'PageUp'
 }
 const AJAX_DEBOUNCE = 500
+const ARIA_LIVE_DELAY = 100 // 100 ms established as sufficient, through testing, to not be invasive of expected behavior
 
 export default class CoreSuggest extends HTMLElement {
   static get observedAttributes () { return ['hidden', 'highlight'] }
@@ -27,6 +28,8 @@ export default class CoreSuggest extends HTMLElement {
     this.input.setAttribute('autocomplete', 'off')
     this.input.setAttribute('aria-autocomplete', 'list')
     this.input.setAttribute('aria-expanded', false)
+
+    this._ariaLiveSpan = appendResultsNotificationSpan(this)
 
     document.addEventListener('click', this)
     document.addEventListener('input', this)
@@ -43,12 +46,16 @@ export default class CoreSuggest extends HTMLElement {
     document.removeEventListener('focusin', this)
     // Clear internals to aid garbage collection
     this._observer.disconnect()
-    this._observer = this._input = this._regex = this._xhr = null
+    if (this._ariaLiveTimeout) clearTimeout(this._ariaLiveTimeout) // Clear existing timeout
+    this._observer = this._input = this._regex = this._xhr = this._xhrTime = this._ariaLiveTimeout = this._ariaLiveSpan = null
   }
 
   attributeChangedCallback (name, prev, next) {
     if (!this._observer) return
-    if (name === 'hidden') this.input.setAttribute('aria-expanded', !this.hidden)
+    if (name === 'hidden') {
+      this.input.setAttribute('aria-expanded', !this.hidden)
+      setTimeout(() => notifyResultsVisible(this, this.hidden), ARIA_LIVE_DELAY)
+    }
     if (name === 'highlight') onMutation(this)
   }
 
@@ -65,6 +72,25 @@ export default class CoreSuggest extends HTMLElement {
 
   escapeHTML (str) { return escapeHTML(str) }
 
+  _clearLiveRegion () {
+    if (this._ariaLiveTimeout) clearTimeout(this._ariaLiveTimeout) // Clear existing timeout
+    this._ariaLiveSpan.textContent = ''
+  }
+
+  /**
+   * @param {String} label
+   * @returns {void}
+   */
+  _pushToLiveRegion (label) {
+    if (this._ariaLiveSpan.textContent === label) return // Abort duplicates
+    if (this._ariaLiveTimeout) clearTimeout(this._ariaLiveTimeout) // Clear existing timeout
+    this._ariaLiveSpan.textContent = label
+    this._ariaLiveTimeout = setTimeout(() => (this._clearLiveRegion()), ARIA_LIVE_DELAY)
+  }
+
+  /**
+   * @returns {HTMLInputElement}
+   */
   get input () {
     if (this._input && this._input.getAttribute('list') === this.id) return this._input // Speed up
     return (this._input = this.id && document.querySelector(`input[list=${this.id}]`)) || this.previousElementSibling
@@ -114,8 +140,8 @@ function appendResultsNotificationSpan (self) {
 }
 
 /**
- * Sets textContent for resultsShownSpan to notify screen readers whenever results are visible
- * Adds a timeout to clear textContent after 2000 ms
+ * Notify screen readers when results are visible
+ * textContent uses attribute `'live-region-label'` or defaults to `'Søkeresultater vises'`
  *
  * @param {CoreSuggest} self Core suggest element
  * @param {Boolean} clear defaults to false. Flag to remove textContent of existing node
@@ -127,7 +153,7 @@ function notifyResultsVisible (self, clear = false) {
   if (clear) {
     self._clearLiveRegion()
   } else {
-    const label = self.getAttribute('data-live-label-visible') || 'Søkeresultater vises'
+    const label = self.getAttribute('live-region-label') || 'Søkeresultater vises'
     self._pushToLiveRegion(label)
   }
 }
