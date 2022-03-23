@@ -1,6 +1,18 @@
 import { closest, dispatchEvent, escapeHTML, IS_IE11, IS_IOS, queryAll, toggleAttribute } from '../utils'
 
-const KEYS = { ENTER: 13, ESC: 27, PAGEUP: 33, PAGEDOWN: 34, END: 35, HOME: 36, UP: 38, DOWN: 40 }
+const KEY = {
+  DOWN_IE: 'Down',
+  DOWN: 'ArrowDown',
+  UP_IE: 'Up',
+  UP: 'ArrowUp',
+  ENTER: 'Enter',
+  ESC_IE: 'Esc',
+  ESC: 'Escape',
+  END: 'End',
+  HOME: 'Home',
+  PAGEDOWN: 'PageDown',
+  PAGEUP: 'PageUp'
+}
 const AJAX_DEBOUNCE = 500
 
 export default class CoreSuggest extends HTMLElement {
@@ -221,18 +233,25 @@ function onInput (self, event) {
 function onKey (self, event) {
   if (!self.contains(event.target) && self.input !== event.target) return
   const items = [self.input].concat(queryAll('[tabindex="-1"]:not([hidden])', self))
-  let { keyCode, target, item = false } = event
+  let { key, target, item = false } = event
 
-  if (keyCode === KEYS.DOWN) item = items[items.indexOf(target) + 1] || items[0]
-  else if (keyCode === KEYS.UP) item = items[items.indexOf(target) - 1] || items.pop()
-  else if (self.contains(target)) { // Aditional shortcuts if focus is inside list
-    if (keyCode === KEYS.END || keyCode === KEYS.PAGEDOWN) item = items.pop()
-    else if (keyCode === KEYS.HOME || keyCode === KEYS.PAGEUP) item = items[1]
-    else if (keyCode !== KEYS.ENTER) items[0].focus()
+  if (key === KEY.DOWN || key === KEY.DOWN_IE) {
+    item = items[items.indexOf(target) + 1] || items[0]
+  } else if (key === KEY.UP || key === KEY.UP_IE) {
+    item = items[items.indexOf(target) - 1] || items.pop()
+  } else if (self.contains(target)) {
+    // Aditional shortcuts if focus is inside list
+    if (key === KEY.END || key === KEY.PAGEDOWN) {
+      item = items.pop()
+    } else if (key === KEY.HOME || key === KEY.PAGEUP) {
+      item = items[1]
+    } else if (key !== KEY.ENTER) {
+      items[0].focus()
+    }
   }
 
-  setTimeout(() => (self.hidden = keyCode === KEYS.ESC)) // Let focus buble first
-  if (item || keyCode === KEYS.ESC) event.preventDefault() // Prevent leaving maximized safari
+  setTimeout(() => (self.hidden = (key === KEY.ESC || key === KEY.ESC_IE))) // Let focus buble first
+  if (item || (key === KEY.ESC || key === KEY.ESC_IE)) event.preventDefault() // Prevent leaving maximized safari
   if (item) item.focus()
 }
 
