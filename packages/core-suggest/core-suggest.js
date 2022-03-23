@@ -47,14 +47,15 @@ export default class CoreSuggest extends HTMLElement {
     // Clear internals to aid garbage collection
     this._observer.disconnect()
     if (this._ariaLiveTimeout) clearTimeout(this._ariaLiveTimeout) // Clear existing timeout
-    this._observer = this._input = this._regex = this._xhr = this._xhrTime = this._ariaLiveTimeout = this._ariaLiveSpan = null
+    this._observer = this._input = this._regex = this._xhr = this._xhrTime = this._ariaLiveDelay = this._ariaLiveTimeout = this._ariaLiveSpan = null
   }
 
   attributeChangedCallback (name, prev, next) {
     if (!this._observer) return
     if (name === 'hidden') {
       this.input.setAttribute('aria-expanded', !this.hidden)
-      setTimeout(() => notifyResultsVisible(this, this.hidden), ARIA_LIVE_DELAY)
+      if (this._ariaLiveDelay) clearTimeout(this._ariaLiveDelay)
+      this._ariaLiveDelay = setTimeout(() => notifyResultsVisible(this, this.hidden), ARIA_LIVE_DELAY)
     }
     if (name === 'highlight') onMutation(this)
   }
