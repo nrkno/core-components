@@ -105,7 +105,8 @@ VALUE | BEHAVIOUR
        list="{String}">                                 <!-- Optional. Specify id of suggest element -->
 <core-suggest limit="{Number}"                          <!-- Optional. Limit maxium number of result items. Defaults to Infinity -->
               ajax="{String}"                           <!-- Optional. Fetches external data. See event 'suggest.ajax'. Example: 'https://search.com?q={{value}}' -->
-              highlight="{'on' | 'off' | 'keep'}"       <!-- Optional override of highlighting matches in results. Defaults to 'on'.  -->
+              highlight="{'on' | 'off' | 'keep'}"       <!-- Optional override of highlighting matches in results. Defaults to 'on'. -->
+              filter-disabled                           <!-- Optional. Disables built-in filtering of content from input value. Useful when you want to perform filtering yourself -->
               hidden>                                   <!-- Use hidden to toggle visibility -->
   <ul>                                                  <!-- Can be any tag, but items should be inside <li> -->
     <li><button>Item 1</button></li>                    <!-- Items must be <button> or <a> -->
