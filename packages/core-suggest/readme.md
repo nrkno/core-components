@@ -298,7 +298,7 @@ Ajax requests can be stopped by calling `event.preventDefault()` on `'suggest.fi
 ```html
 <!--demo-->
 <input id="my-input-ajax" placeholder="Country...">
-<core-suggest ajax="https://restcountries.eu/rest/v2/name/{{value}}?fields=name" hidden></core-suggest>
+<core-suggest ajax="https://restcountries.com/v2/name/{{value}}?fields=name" hidden></core-suggest>
 <script>
   document.addEventListener('suggest.filter', (event) => {
     const suggest = event.target
@@ -346,7 +346,7 @@ Ajax requests can be stopped by calling `event.preventDefault()` on `'suggest.fi
       return <div>
         <input type='text' placeholder='Country... (JSX)' />
         <CoreSuggest
-         ajax="https://restcountries.eu/rest/v2/name/{{value}}?fields=name"
+         ajax="https://restcountries.com/v2/name/{{value}}?fields=name"
          onSuggestFilter={this.onFilter}
          onSuggestAjax={this.onAjax}>
           <ul>
@@ -375,7 +375,7 @@ Hybrid solution; lazy load items, but let `core-suggest` still handle filtering:
 <script>
   window.getCountries = (callback) => {
     const xhr = new XMLHttpRequest()
-    const url = 'https://restcountries.eu/rest/v2/?fields=name'
+    const url = 'https://restcountries.com/v2/?fields=name'
 
     xhr.onload = () => callback(JSON.parse(xhr.responseText))
     xhr.open('GET', url, true)
