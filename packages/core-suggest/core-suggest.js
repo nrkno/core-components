@@ -17,7 +17,7 @@ const AJAX_DEBOUNCE = 500
 const ARIA_LIVE_DELAY = 150 // 150 ms established as sufficient, through testing, to not be invasive of expected screen-reader behavior
 
 export default class CoreSuggest extends HTMLElement {
-  static get observedAttributes () { return ['hidden', 'highlight'] }
+  static get observedAttributes () { return ['hidden', 'highlight', 'empty'] }
 
   connectedCallback () {
     this._observer = new window.MutationObserver(() => onMutation(this)) // Enhance <a> and <button> markup
@@ -121,6 +121,10 @@ export default class CoreSuggest extends HTMLElement {
   get hidden () { return this.hasAttribute('hidden') }
 
   set hidden (val) { toggleAttribute(this, 'hidden', val) }
+
+  get empty () { return this.hasAttribute('empty') }
+
+  set empty (val) { toggleAttribute(this, 'empty', val) }
 }
 
 /**
@@ -196,6 +200,8 @@ function onMutation (self) {
       parent.normalize && parent.normalize()
     }
   }
+
+  self.empty = items.length < 1
 
   for (let i = 0, l = items.length; i < l; ++i) {
     items[i].setAttribute('aria-label', `${items[i].textContent}, ${i + 1} av ${limit}`)
