@@ -14,7 +14,7 @@ const KEY = {
   PAGEUP: 'PageUp'
 }
 const AJAX_DEBOUNCE = 500
-const ARIA_LIVE_DELAY = 100 // 100 ms established as sufficient, through testing, to not be invasive of expected behavior
+const ARIA_LIVE_DELAY = 150 // 150 ms established as sufficient, through testing, to not be invasive of expected screen-reader behavior
 
 export default class CoreSuggest extends HTMLElement {
   static get observedAttributes () { return ['hidden', 'highlight'] }
