@@ -201,7 +201,7 @@ function onMutation (self) {
     }
   }
 
-  self.empty = items.length < 1
+  self.empty = items.length === 0
 
   for (let i = 0, l = items.length; i < l; ++i) {
     items[i].setAttribute('aria-label', `${items[i].textContent}, ${i + 1} av ${limit}`)
