@@ -257,6 +257,15 @@ function onInput (self, event) {
   for (let i = 0, l = items.length; i < l; ++i) {
     toggleItem(items[i], (items[i].value || items[i].textContent).toLowerCase().indexOf(value) === -1)
   }
+
+  if (items.length > 0) {
+    const visibleItems = queryAll('[tabindex="-1"]:not([hidden])', self)
+    if (visibleItems && visibleItems.length === 0) {
+      // All items have been hidden by filter
+      const label = self.getAttribute('live-region-empty-label')
+      self._pushToLiveRegion(label)
+    }
+  }
 }
 
 /**
