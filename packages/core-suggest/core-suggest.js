@@ -358,6 +358,8 @@ function onAjaxSend (self) {
         self._xhr.responseError = error.toString()
         dispatchEvent(self, 'suggest.ajax.error', self._xhr)
       }
+      // Data successfully received
+      notifyResultsVisible(self)
       dispatchEvent(self, 'suggest.ajax', self._xhr)
     }
     self._xhr.open('GET', self.ajax.replace('{{value}}', window.encodeURIComponent(self.input.value)), true)
