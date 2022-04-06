@@ -62,7 +62,7 @@ export default class CoreSuggest extends HTMLElement {
       if (!this.empty && !this.hidden) {
         // Clear if there is an existing delay
         if (this._ariaLiveDelay) clearTimeout(this._ariaLiveDelay)
-        this._ariaLiveDelay = setTimeout(() => notifyResultsVisible(this, this.hidden), ARIA_LIVE_DELAY)
+        this._ariaLiveDelay = setTimeout(() => notifyResultsVisible(this), ARIA_LIVE_DELAY)
       }
     }
     if (name === 'highlight') onMutation(this)
@@ -154,21 +154,15 @@ function appendResultsNotificationSpan (self) {
 
 /**
  * Notify screen readers when results are visible
- * textContent uses attribute `'live-region-label'` or defaults to `'Søkeresultater vises'`
+ * textContent uses attribute `'live-region-shown-label'`
  *
  * @param {CoreSuggest} self Core suggest element
- * @param {Boolean} clear defaults to false. Flag to remove textContent of existing node
  * @returns {void}
  */
-function notifyResultsVisible (self, clear = false) {
+function notifyResultsVisible (self) {
   if (!self._observer) return // Abort if disconnectedCallback has been called
-
-  if (clear) {
-    self._clearLiveRegion()
-  } else {
-    const label = self.getAttribute('live-region-label') || 'Søkeresultater vises'
-    self._pushToLiveRegion(label)
-  }
+  const label = self.getAttribute('live-region-shown-label')
+  self._pushToLiveRegion(label)
 }
 
 /**
