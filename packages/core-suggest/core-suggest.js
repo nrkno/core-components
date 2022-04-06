@@ -52,12 +52,18 @@ export default class CoreSuggest extends HTMLElement {
     this._observer = this._input = this._regex = this._xhr = this._xhrTime = this._ariaLiveDelay = this._ariaLiveTimeout = this._ariaLiveSpan = null
   }
 
-  attributeChangedCallback (name, prev, next) {
+  attributeChangedCallback (name) {
     if (!this._observer) return
     if (name === 'hidden') {
       this.input.setAttribute('aria-expanded', !this.hidden)
-      if (this._ariaLiveDelay) clearTimeout(this._ariaLiveDelay)
-      this._ariaLiveDelay = setTimeout(() => notifyResultsVisible(this, this.hidden), ARIA_LIVE_DELAY)
+    }
+    if (name === 'empty' || name === 'hidden') {
+      // Notify screen readers when visible and list has content
+      if (!this.empty && !this.hidden) {
+        // Clear if there is an existing delay
+        if (this._ariaLiveDelay) clearTimeout(this._ariaLiveDelay)
+        this._ariaLiveDelay = setTimeout(() => notifyResultsVisible(this, this.hidden), ARIA_LIVE_DELAY)
+      }
     }
     if (name === 'highlight') onMutation(this)
   }
