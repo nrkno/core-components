@@ -21,13 +21,18 @@ demo-->
 > or from a custom endpoint with AJAX.
 
 
-## Example
+## Examples (Plain JS)
+
+#### Static content list
 
 ```html
 <!--demo-->
 <label for="my-input">Search</label>
-<input id="my-input" type="text" placeholder="Type something...">
-<core-suggest hidden>
+<input id="my-input" type="text" placeholder="Type something..." list="live-suggest">
+<core-suggest
+  id='live-suggest'
+  hidden
+>
   <ul>
     <li><button>Chro<b>me</b></button></li>
     <li><button>Firefox</button></li>
@@ -37,6 +42,182 @@ demo-->
   </ul>
 </core-suggest>
 ```
+#### Live-region
+
+Core-suggest always notifies when suggestions are visible and status of filter by default.
+Sets `live-region-shown-label="Suggestions shown"` and `live-region-empty-label="No suggestions"` to get notifications when suggestions are shown and when suggestions-list is emptied by filter
+
+```html
+<!--demo-->
+
+<p>Custom label values</p>
+<label for="my-live-region-input">Search</label>
+<input id="my-live-region-input" type="text" placeholder="Type to filter">
+<core-suggest
+  live-region-shown-label="Suggestions are shown"
+  live-region-empty-label="No suggestions"
+  live-region-count-label="Showing {{value}} suggestions"
+  hidden
+>
+  <ul>
+    <li><button>Chrome</button></li>
+    <li><button>Firefox</button></li>
+    <li><button>Opera</button></li>
+    <li><button>Safari</button></li>
+    <li><button>Microsoft Edge</button></li>
+  </ul>
+</core-suggest>
+
+<p>Only notify when suggestions are shown</p>
+
+<label for="my-live-region-shown-input">Search</label>
+<input id="my-live-region-shown-input" type="text" placeholder="Type to filter">
+<core-suggest
+  live-region-shown-label="Suggestions are shown"
+  live-region-empty-label=""
+  hidden
+>
+  <ul>
+    <li><button>Chrome</button></li>
+    <li><button>Firefox</button></li>
+    <li><button>Opera</button></li>
+    <li><button>Safari</button></li>
+    <li><button>Microsoft Edge</button></li>
+  </ul>
+</core-suggest>
+
+<p>Only notify when suggestions are removed by filter</p>
+
+<label for="my-live-region-filtered-input">Search</label>
+<input id="my-live-region-filtered-input" type="text" placeholder="Type to filter">
+<core-suggest
+  live-region-shown-label=""
+  live-region-empty-label="No suggestions"
+  hidden
+>
+  <ul>
+    <li><button>Chrome</button></li>
+    <li><button>Firefox</button></li>
+    <li><button>Opera</button></li>
+    <li><button>Safari</button></li>
+    <li><button>Microsoft Edge</button></li>
+  </ul>
+</core-suggest>
+```
+
+#### Inside tabindexed container
+
+```html
+<!--demo-->
+<div tabindex="-1">
+  <label for="my-tabindexed-input">Search</label>
+  <input id="my-tabindexed-input" type="text" placeholder="Type something...">
+  <core-suggest hidden>
+    <ul>
+      <li><button>Chro<b>me</b></button></li>
+      <li><button>Firefox</button></li>
+      <li><button>Opera</button></li>
+      <li><button>Safari</button></li>
+      <li><button>Microsoft Edge</button></li>
+    </ul>
+  </core-suggest>
+</div>
+```
+
+#### Ajax
+
+Ajax requests can be stopped by calling `event.preventDefault()` on `'suggest.filter'`. Remember to always escape html and debounce requests when fetching data from external sources. The http request sent by `@nrk/core-suggest` will have header `X-Requested-With: XMLHttpRequest` for easier [server side detection and CSRF prevention](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html).
+
+
+Note: When using `@nrk/core-suggest` with the `ajax: https://search.com?q={{value}}` functionality, make sure to implement both a `Searching...` status (while fetching data from the server), and a `No hits` status (if server responds with no results). These status indicators are highly recommended, but not provided by default as the context of use will affect the optimal textual formulation. [See example implementation →](#example-ajax)
+
+If you need to alter default headers, request method or post data, use the [`suggest.ajax.beforeSend` event  →](#input-ajax-beforesend)
+
+```html
+<!--demo-->
+<input id="my-input-ajax" placeholder="Country...">
+<core-suggest ajax="https://restcountries.com/v2/name/{{value}}?fields=name" hidden></core-suggest>
+<script>
+  document.addEventListener('suggest.filter', (event) => {
+    const suggest = event.target
+    const input = suggest.input
+    const value = input.value.trim()
+
+    if (input.id !== 'my-input-ajax') return // Make sure we are on correct input
+    suggest.innerHTML = value ? `<ul><li><button>Searching for ${value}...</button></li></ul>` : ''
+  })
+  document.addEventListener('suggest.ajax', (event) => {
+    const suggest = event.target
+    const input = suggest.input
+    if (input.id !== 'my-input-ajax') return // Make sure we are on correct input
+    const items = event.detail.responseJSON
+    suggest.innerHTML = `<ul>${items.length ? items.slice(0, 10)
+      .map((item) => { return `<li><button>${suggest.escapeHTML(item.name)}</button></li>` })           // Generate list
+      .join('') : '<li><button>No results</button></li>'}</ul>`
+  })
+</script>
+```
+#### Lazy
+
+Hybrid solution; lazy load items, use `core-suggest` to handle filtering:
+```html
+<!--demo-->
+<input id="my-input-lazy" placeholder="Filter lazy-loaded content">
+<core-suggest hidden></core-suggest>
+<script>
+  window.getCountries = (callback) => {
+    const xhr = new XMLHttpRequest()
+    const url = 'https://restcountries.com/v3.1/all?fields=name'
+
+    xhr.onload = () => callback(JSON.parse(xhr.responseText))
+    xhr.open('GET', url, true)
+    xhr.send()
+  }
+
+  document.addEventListener('focus', (event) => {
+    if (event.target.id !== 'my-input-lazy') return // Make sure we are on correct input
+    const input = event.target
+    const suggest = input.nextElementSibling
+    input.id = '' // Prevent double execution
+    window.getCountries((items) => {
+      suggest.innerHTML = `<ul>${items.map((item) =>
+        '<li><button type="button">' + suggest.escapeHTML(item.name?.common) + '</button></li>'
+      ).join('')}</ul>`
+    })
+  }, true)
+</script>
+```
+
+
+#### Dynamic
+Synchronous operation; dynamically populate items based on input value:
+
+```html
+<!--demo-->
+<input id="my-input-dynamic" placeholder="Type to generate suggestions">
+<core-suggest hidden filter-disabled>
+  <ul></ul>
+</core-suggest>
+<script>
+  document.addEventListener('suggest.filter', (event) => {
+    const suggest = event.target
+    const list = suggest.firstElementChild
+    const input = suggest.input
+    const value = input.value.trim()
+    const mails = ['facebook.com', 'gmail.com', 'hotmail.com', 'mac.com', 'mail.com', 'msn.com', 'live.com']
+
+    if (input.id !== 'my-input-dynamic') return // Make sure we are on correct input
+    event.preventDefault()
+    list.innerHTML = `${value ? mails.map((mail) => {
+      return '<li><button type="button">' + value.replace(/(@.*|$)/, '@' + mail) + '</button></li>'
+    }).join('') : ''}`
+  })
+</script>
+```
+
+## Examples (React)
+
+#### Static content
 
 ```html
 <!--demo-->
@@ -45,7 +226,12 @@ demo-->
   ReactDOM.render(<div>
     <label for="my-input-jsx">Search JSX</label>
     <input id='my-input-jsx' type='text' placeholder='Type something...' />
-    <CoreSuggest className='my-dropdown' hidden>
+    <CoreSuggest
+      live-region-shown-label="Suggestions shown"
+      live-region-empty-label="No suggestions"
+      className='my-dropdown'
+      hidden
+    >
       <ul>
         <li><button>Chrome</button></li>
         <li><button>Firefox</button></li>
@@ -55,6 +241,138 @@ demo-->
       </ul>
     </CoreSuggest>
   </div>, document.getElementById('jsx-input'))
+</script>
+```
+#### Ajax
+
+Ajax requests can be stopped by calling `event.preventDefault()` on `'suggest.filter'`. Remember to always escape html and debounce requests when fetching data from external sources. The http request sent by `@nrk/core-suggest` will have header `X-Requested-With: XMLHttpRequest` for easier [server side detection and CSRF prevention](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html).
+
+Note: When using `@nrk/core-suggest` with the `ajax: https://search.com?q={{value}}` functionality, make sure to implement both a `Searching...` status (while fetching data from the server), and a `No hits` status (if server responds with no results). These status indicators are highly recommended, but not provided by default as the context of use will affect the optimal textual formulation. [See example implementation →](#example-ajax)
+
+If you need to alter default headers, request method or post data, use the [`suggest.ajax.beforeSend` event  →](#input-ajax-beforesend)
+
+```html
+<!--demo-->
+<div id="jsx-input-ajax"></div>
+<script type="text/jsx">
+  class AjaxInput extends React.Component {
+    constructor (props) {
+      super(props)
+      this.onFilter = this.onFilter.bind(this)
+      this.onAjax = this.onAjax.bind(this)
+      this.state = { items: [], value: '' }
+    }
+    onFilter (event) {
+      const suggest = event.target
+      const value = suggest.input.value
+      const items = value ? [{name: `Searching for ${value}...`}] : []
+
+      this.setState({value, items}) // Store value for rendering
+    }
+    onAjax (event) {
+      const items = event.detail.responseJSON
+      this.setState({items: items.length ? items : [{name: 'No results'}]})
+    }
+    render () {
+      return (
+        <div>
+          <input type='text' placeholder='Country... (JSX)' />
+          <CoreSuggest
+            ajax="https://restcountries.com/v3.1/name/{{value}}?fields=name"
+            onSuggestFilter={this.onFilter}
+            onSuggestAjax={this.onAjax}
+          >
+            <ul>
+              {this.state.items.slice(0, 10).map((item) =>
+                <li key={item.name.official}>
+                  <button>{item.name.common}</button>
+                </li>
+              )}
+            </ul>
+          </CoreSuggest>
+        </div>
+      )
+    }
+  }
+  ReactDOM.render(<AjaxInput />, document.getElementById('jsx-input-ajax'))
+</script>
+```
+
+#### Lazy 
+
+Hybrid solution; lazy load items, but let `core-suggest` still handle filtering:
+
+```html
+<!--demo-->
+<div id="jsx-input-lazy"></div>
+<script type="text/jsx">
+  class LazyInput extends React.Component {
+    constructor (props) {
+      super(props)
+      this.onFocus = this.onFocus.bind(this)
+      this.state = {items: []}
+    }
+    onFocus (event) {
+      this.onFocus = null // Load items only on first interaction
+      window.getCountries((items) => this.setState({items})) // getCountries defined in JS
+    }
+    render () {
+      return <div>
+        <input type='text' placeholder='Filter by typing' onFocus={this.onFocus} />
+        <CoreSuggest>
+          <ul className='my-dropdown'>
+            {this.state.items.map((item) =>
+              <li key={item.name.official}><button>{item.name.common}</button></li>
+            )}
+          </ul>
+        </CoreSuggest>
+      </div>
+    }
+  }
+
+  ReactDOM.render(<LazyInput />, document.getElementById('jsx-input-lazy'))
+</script>
+```
+
+
+#### Dynamic
+
+Synchronous operation; dynamically populate items based on input value:
+
+```html
+<!--demo-->
+<div id="jsx-input-dynamic"></div>
+<script>
+  class DynamicInput extends React.Component {
+    constructor (props) {
+      super(props)
+      this.onFilter = this.onFilter.bind(this)
+      this.mails = ['facebook.com', 'gmail.com', 'hotmail.com', 'mac.com', 'mail.com', 'msn.com', 'live.com']
+      this.state = {items: []}
+    }
+    onFilter (event) {
+      const suggest = event.target
+      const value = suggest.input.value.trim()
+      const items = value ? this.mails.map((mail) => value.replace(/(@.*|$)/, `@${mail}`)) : []
+
+      event.preventDefault()
+      this.setState({value, items})
+    }
+    render () {
+      return <div>
+        <input type='text' placeholder='Type to generate suggestions' />
+        <CoreSuggest onSuggestFilter={this.onFilter}>
+          <ul className='my-dropdown'>
+            {this.state.items.map((text) =>
+              <li key={text}><button>{text}</button></li>
+            )}
+          </ul>
+        </CoreSuggest>
+      </div>
+    }
+  }
+
+  ReactDOM.render(<DynamicInput />, document.getElementById('jsx-input-dynamic'))
 </script>
 ```
 
@@ -279,217 +597,6 @@ All styling in documentation is example only. Both the `<button>` and content el
 .my-input-content :focus {}           /* Target focused item */
 .my-input-content mark {}             /* Target highlighted text (use `highlight='off'` to disable highlighting) */
 ```
-
-
-## Notes
-
-### Ajax
-
-When using `@nrk/core-suggest` with the `ajax: https://search.com?q={{value}}` functionality, make sure to implement both a `Searching...` status (while fetching data from the server), and a `No hits` status (if server responds with no results). These status indicators are highly recommended, but not provided by default as the context of use will affect the optimal textual formulation. [See example implementation →](#example-ajax)
-
-If you need to alter default headers, request method or post data, use the [`suggest.ajax.beforeSend` event  →](#input-ajax-beforesend)
-
-
-
-## Example: Ajax
-
-Ajax requests can be stopped by calling `event.preventDefault()` on `'suggest.filter'`. Remember to always escape html and debounce requests when fetching data from external sources. The http request sent by `@nrk/core-suggest` will have header `X-Requested-With: XMLHttpRequest` for easier [server side detection and CSRF prevention](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html).
-
-```html
-<!--demo-->
-<input id="my-input-ajax" placeholder="Country...">
-<core-suggest ajax="https://restcountries.com/v2/name/{{value}}?fields=name" hidden></core-suggest>
-<script>
-  document.addEventListener('suggest.filter', (event) => {
-    const suggest = event.target
-    const input = suggest.input
-    const value = input.value.trim()
-
-    if (input.id !== 'my-input-ajax') return // Make sure we are on correct input
-    suggest.innerHTML = value ? `<ul><li><button>Searching for ${value}...</button></li></ul>` : ''
-  })
-  document.addEventListener('suggest.ajax', (event) => {
-    const suggest = event.target
-    const input = suggest.input
-    if (input.id !== 'my-input-ajax') return // Make sure we are on correct input
-    const items = event.detail.responseJSON
-    suggest.innerHTML = `<ul>${items.length ? items.slice(0, 10)
-      .map((item) => { return `<li><button>${suggest.escapeHTML(item.name)}</button></li>` })           // Generate list
-      .join('') : '<li><button>No results</button></li>'}</ul>`
-  })
-</script>
-```
-
-```html
-<!--demo-->
-<div id="jsx-input-ajax"></div>
-<script type="text/jsx">
-  class AjaxInput extends React.Component {
-    constructor (props) {
-      super(props)
-      this.onFilter = this.onFilter.bind(this)
-      this.onAjax = this.onAjax.bind(this)
-      this.state = { items: [], value: '' }
-    }
-    onFilter (event) {
-      const suggest = event.target
-      const value = suggest.input.value
-      const items = value ? [{name: `Searching for ${value}...`}] : []
-
-      this.setState({value, items}) // Store value for rendering
-    }
-    onAjax (event) {
-      const items = event.detail.responseJSON
-      this.setState({items: items.length ? items : [{name: 'No results'}]})
-    }
-    render () {
-      return <div>
-        <input type='text' placeholder='Country... (JSX)' />
-        <CoreSuggest
-         ajax="https://restcountries.com/v2/name/{{value}}?fields=name"
-         onSuggestFilter={this.onFilter}
-         onSuggestAjax={this.onAjax}>
-          <ul>
-            {this.state.items.slice(0, 10).map((item, key) =>
-              <li key={key}>
-                <button>{item.name}</button>
-              </li>
-            )}
-          </ul>
-        </CoreSuggest>
-      </div>
-    }
-  }
-  ReactDOM.render(<AjaxInput />, document.getElementById('jsx-input-ajax'))
-</script>
-```
-
-
-
-## Example: Lazy
-Hybrid solution; lazy load items, but let `core-suggest` still handle filtering:
-```html
-<!--demo-->
-<input id="my-input-lazy" placeholder="Country...">
-<core-suggest hidden></core-suggest>
-<script>
-  window.getCountries = (callback) => {
-    const xhr = new XMLHttpRequest()
-    const url = 'https://restcountries.com/v2/?fields=name'
-
-    xhr.onload = () => callback(JSON.parse(xhr.responseText))
-    xhr.open('GET', url, true)
-    xhr.send()
-  }
-
-  document.addEventListener('focus', (event) => {
-    if (event.target.id !== 'my-input-lazy') return // Make sure we are on correct input
-    const input = event.target
-    const suggest = input.nextElementSibling
-    input.id = '' // Prevent double execution
-    window.getCountries((items) => {
-      suggest.innerHTML = `<ul>${items.map((item) =>
-        '<li><button>' + suggest.escapeHTML(item.name) + '</button></li>'
-      ).join('')}</ul>`
-    })
-  }, true)
-</script>
-```
-
-```html
-<!--demo-->
-<div id="jsx-input-lazy"></div>
-<script type="text/jsx">
-  class LazyInput extends React.Component {
-    constructor (props) {
-      super(props)
-      this.onFocus = this.onFocus.bind(this)
-      this.state = {items: []}
-    }
-    onFocus (event) {
-      this.onFocus = null // Load items only on first interaction
-      window.getCountries((items) => this.setState({items})) // getCountries defined in JS
-    }
-    render () {
-      return <div>
-        <input type='text' placeholder='Country... (JSX)' onFocus={this.onFocus} />
-        <CoreSuggest>
-          <ul className='my-dropdown'>
-            {this.state.items.map((item, key) =>
-              <li key={key}><button>{item.name}</button></li>
-            )}
-          </ul>
-        </CoreSuggest>
-      </div>
-    }
-  }
-
-  ReactDOM.render(<LazyInput />, document.getElementById('jsx-input-lazy'))
-</script>
-```
-
-
-
-## Example: Dynamic
-Synchronous operation; dynamically populating items based input value:
-```html
-<!--demo-->
-<input id="my-input-dynamic" placeholder="Type your email...">
-<core-suggest hidden></core-suggest>
-<script>
-  document.addEventListener('suggest.filter', (event) => {
-    const suggest = event.target
-    const input = suggest.input
-    const value = input.value.trim()
-    const mails = ['facebook.com', 'gmail.com', 'hotmail.com', 'mac.com', 'mail.com', 'msn.com', 'live.com']
-
-    if (input.id !== 'my-input-dynamic') return // Make sure we are on correct input
-    event.preventDefault()
-    suggest.innerHTML = `<ul>${value ? mails.map((mail) => {
-      return '<li><button>' + value.replace(/(@.*|$)/, '@' + mail) + '</button></li>'
-    }).join('') : ''}</ul>`
-  })
-</script>
-```
-
-```html
-<!--demo-->
-<div id="jsx-input-dynamic"></div>
-<script>
-  class DynamicInput extends React.Component {
-    constructor (props) {
-      super(props)
-      this.onFilter = this.onFilter.bind(this)
-      this.mails = ['facebook.com', 'gmail.com', 'hotmail.com', 'mac.com', 'mail.com', 'msn.com', 'live.com']
-      this.state = {items: []}
-    }
-    onFilter (event) {
-      const suggest = event.target
-      const value = suggest.input.value.trim()
-      const items = value ? this.mails.map((mail) => value.replace(/(@.*|$)/, `@${mail}`)) : []
-
-      event.preventDefault()
-      this.setState({value, items})
-    }
-    render () {
-      return <div>
-        <input type='text' placeholder='Type your email... (JSX)' />
-        <CoreSuggest onSuggestFilter={this.onFilter}>
-          <ul className='my-dropdown'>
-            {this.state.items.map((text, key) =>
-              <li key={key}><button>{text}</button></li>
-            )}
-          </ul>
-        </CoreSuggest>
-      </div>
-    }
-  }
-
-  ReactDOM.render(<DynamicInput />, document.getElementById('jsx-input-dynamic'))
-</script>
-```
-
-
 
 ## FAQ
 
