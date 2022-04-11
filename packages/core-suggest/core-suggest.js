@@ -15,6 +15,8 @@ const KEY = {
 }
 const AJAX_DEBOUNCE = 500
 const ARIA_LIVE_DELAY = 150 // 150 ms established as sufficient, through testing, to not be invasive of expected screen-reader behavior
+const ARIA_LIVE_VISIBLE = 'Forslag vises'
+const ARIA_LIVE_FILTERED = 'Ingen forslag'
 
 export default class CoreSuggest extends HTMLElement {
   static get observedAttributes () { return ['hidden', 'highlight', 'empty'] }
@@ -162,7 +164,8 @@ function appendResultsNotificationSpan (self) {
 function notifyResultsVisible (self) {
   if (!self._observer) return // Abort if disconnectedCallback has been called
   const label = self.getAttribute('live-region-shown-label')
-  self._pushToLiveRegion(label)
+  if (label === '') return // Abort if label is set to explicit empty string
+  self._pushToLiveRegion(label || ARIA_LIVE_VISIBLE)
 }
 
 /**
@@ -263,7 +266,8 @@ function onInput (self, event) {
     if (visibleItems && visibleItems.length === 0) {
       // All items have been hidden by filter
       const label = self.getAttribute('live-region-empty-label')
-      self._pushToLiveRegion(label)
+      if (label === '') return // Abort if label is set to explicit empty string
+      self._pushToLiveRegion(label || ARIA_LIVE_FILTERED)
     }
   }
 }
