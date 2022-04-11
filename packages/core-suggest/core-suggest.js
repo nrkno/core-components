@@ -17,6 +17,7 @@ const AJAX_DEBOUNCE = 500
 const ARIA_LIVE_DELAY = 150 // 150 ms established as sufficient, through testing, to not be invasive of expected screen-reader behavior
 const ARIA_LIVE_VISIBLE = 'Forslag vises'
 const ARIA_LIVE_FILTERED = 'Ingen forslag'
+const ARIA_LIVE_COUNT = '{{value}} forslag'
 
 export default class CoreSuggest extends HTMLElement {
   static get observedAttributes () { return ['hidden', 'highlight', 'empty'] }
@@ -169,6 +170,36 @@ function notifyResultsVisible (self) {
 }
 
 /**
+ * Notify screen readers how many results are visible
+ * textContent uses attribute `'live-region-count-label'`
+ * Replaces `{{value}}` with number of visible items
+ *
+ * @param {CoreSuggest} self Core suggest element
+ * @param {Number} items Number of visible items
+ * @returns {void}
+ */
+function notifyResultCount (self, items = 0) {
+  if (!self._observer) return // Abort if disconnectedCallback has been called
+  const label = self.getAttribute('live-region-count-label')
+  if (label === '') return // Abort if label is set to explicit empty string
+  self._pushToLiveRegion((label || ARIA_LIVE_COUNT).replace('{{value}}', items))
+}
+
+/**
+ * Notify screen readers when all results are hidden by filter
+ * textContent uses attribute `'live-region-empty-label'`
+ *
+ * @param {CoreSuggest} self Core suggest element
+ * @returns {void}
+ */
+function notifyResultsEmpty (self) {
+  if (!self._observer) return // Abort if disconnectedCallback has been called
+  const label = self.getAttribute('live-region-empty-label')
+  if (label === '') return // Abort if label is set to explicit empty string
+  self._pushToLiveRegion(label || ARIA_LIVE_FILTERED)
+}
+
+/**
  * @param {Element} item
  * @param {Boolean} show
  */
@@ -263,11 +294,11 @@ function onInput (self, event) {
 
   if (items.length > 0) {
     const visibleItems = queryAll('[tabindex="-1"]:not([hidden])', self)
-    if (visibleItems && visibleItems.length === 0) {
+    if (visibleItems.length === 0) {
       // All items have been hidden by filter
-      const label = self.getAttribute('live-region-empty-label')
-      if (label === '') return // Abort if label is set to explicit empty string
-      self._pushToLiveRegion(label || ARIA_LIVE_FILTERED)
+      notifyResultsEmpty(self)
+    } else if (visibleItems.length < items.length) {
+      notifyResultCount(self, visibleItems.length)
     }
   }
 }
