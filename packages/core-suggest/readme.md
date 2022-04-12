@@ -23,7 +23,9 @@ demo-->
 
 ## Examples (Plain JS)
 
-#### Static content list
+#### Static content
+
+Use core-suggest to filter static markup
 
 ```html
 <!--demo-->
@@ -44,8 +46,7 @@ demo-->
 ```
 #### Live-region
 
-Core-suggest always notifies when suggestions are visible and status of filter by default.
-Sets `live-region-shown-label="Suggestions shown"` and `live-region-empty-label="No suggestions"` to get notifications when suggestions are shown and when suggestions-list is emptied by filter
+Modify the default notifications announced to screen readers when suggestions are visible, empty and filtered
 
 ```html
 <!--demo-->
@@ -105,25 +106,6 @@ Sets `live-region-shown-label="Suggestions shown"` and `live-region-empty-label=
 </core-suggest>
 ```
 
-#### Inside tabindexed container
-
-```html
-<!--demo-->
-<div tabindex="-1">
-  <label for="my-tabindexed-input">Search</label>
-  <input id="my-tabindexed-input" type="text" placeholder="Type something...">
-  <core-suggest hidden>
-    <ul>
-      <li><button>Chro<b>me</b></button></li>
-      <li><button>Firefox</button></li>
-      <li><button>Opera</button></li>
-      <li><button>Safari</button></li>
-      <li><button>Microsoft Edge</button></li>
-    </ul>
-  </core-suggest>
-</div>
-```
-
 #### Ajax
 
 Ajax requests can be stopped by calling `event.preventDefault()` on `'suggest.filter'`. Remember to always escape html and debounce requests when fetching data from external sources. The http request sent by `@nrk/core-suggest` will have header `X-Requested-With: XMLHttpRequest` for easier [server side detection and CSRF prevention](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html).
@@ -136,24 +118,26 @@ If you need to alter default headers, request method or post data, use the [`sug
 ```html
 <!--demo-->
 <input id="my-input-ajax" placeholder="Country...">
-<core-suggest ajax="https://restcountries.com/v2/name/{{value}}?fields=name" hidden></core-suggest>
+<core-suggest ajax="https://restcountries.com/v2/name/{{value}}?fields=name" hidden><ul></ul></core-suggest>
 <script>
   document.addEventListener('suggest.filter', (event) => {
     const suggest = event.target
     const input = suggest.input
+    const list = suggest.firstElementChild
     const value = input.value.trim()
 
     if (input.id !== 'my-input-ajax') return // Make sure we are on correct input
-    suggest.innerHTML = value ? `<ul><li><button>Searching for ${value}...</button></li></ul>` : ''
+    list.innerHTML = value ? `<li><button>Searching for ${value}...</button></li>` : ''
   })
   document.addEventListener('suggest.ajax', (event) => {
     const suggest = event.target
     const input = suggest.input
+    const list = suggest.firstElementChild
     if (input.id !== 'my-input-ajax') return // Make sure we are on correct input
     const items = event.detail.responseJSON
-    suggest.innerHTML = `<ul>${items.length ? items.slice(0, 10)
+    list.innerHTML = `${items.length ? items.slice(0, 10)
       .map((item) => { return `<li><button>${suggest.escapeHTML(item.name)}</button></li>` })           // Generate list
-      .join('') : '<li><button>No results</button></li>'}</ul>`
+      .join('') : '<li><button>No results</button></li>'}`
   })
 </script>
 ```
@@ -163,7 +147,7 @@ Hybrid solution; lazy load items, use `core-suggest` to handle filtering:
 ```html
 <!--demo-->
 <input id="my-input-lazy" placeholder="Filter lazy-loaded content">
-<core-suggest hidden></core-suggest>
+<core-suggest hidden><ul></ul></core-suggest>
 <script>
   window.getCountries = (callback) => {
     const xhr = new XMLHttpRequest()
@@ -178,11 +162,13 @@ Hybrid solution; lazy load items, use `core-suggest` to handle filtering:
     if (event.target.id !== 'my-input-lazy') return // Make sure we are on correct input
     const input = event.target
     const suggest = input.nextElementSibling
+    const list = suggest.firstElementChild
+
     input.id = '' // Prevent double execution
     window.getCountries((items) => {
-      suggest.innerHTML = `<ul>${items.map((item) =>
-        '<li><button type="button">' + suggest.escapeHTML(item.name?.common) + '</button></li>'
-      ).join('')}</ul>`
+      list.innerHTML = items.map((item) =>
+        '<li><button>' + suggest.escapeHTML(item.name?.common) + '</button></li>'
+      ).join('')
     })
   }, true)
 </script>
@@ -229,6 +215,7 @@ Synchronous operation; dynamically populate items based on input value:
     <CoreSuggest
       live-region-shown-label="Suggestions shown"
       live-region-empty-label="No suggestions"
+      live-region-count-label="Showing {{value}} suggestions"
       className='my-dropdown'
       hidden
     >
@@ -415,6 +402,19 @@ VALUE | BEHAVIOUR
 `'off'` | Strips existing `<mark>`-tags, but does not wrap matches
 `'keep'` | Does not noting with `<mark>`-tags - existing tags are not stripped and no new matches are added
 
+### Aria-live
+
+Core-suggest notifies screen readers using a polite aria-live region when suggestions are shown and status of filter changes; number of suggestions and when there are no suggestions, by default.
+
+To do this, we append a `<span>` with `aria-live="polite"` and hide it from view. When something is notified, we set and subsequently clear the `textContent` of this span.
+
+Text sent to screen readers can be adjusted by setting the following attributes on the `core-suggest` element:
+ * `live-region-shown-label="Forslag vises"`
+ * `live-region-empty-label="Ingen forslag"`
+ * `live-region-count-label="{{value}} forslag"`
+
+**NB!** When updating contents of a `<core-suggest>` element, avoid replacing the `innerHTML` (and thus removing the aria-live region) of the suggest. By updating the contents of a child element, e.g a `<ul>`, the aria-live region is present and will be able to announce that suggestions are shown.
+
 ### HTML / JavaScript
 
 
@@ -425,6 +425,9 @@ VALUE | BEHAVIOUR
               ajax="{String}"                           <!-- Optional. Fetches external data. See event 'suggest.ajax'. Example: 'https://search.com?q={{value}}' -->
               highlight="{'on' | 'off' | 'keep'}"       <!-- Optional override of highlighting matches in results. Defaults to 'on'. -->
               filter-disabled                           <!-- Optional. Disables built-in filtering of content from input value. Useful when you want to perform filtering yourself -->
+              live-region-shown-label                   <!-- Optional. Override text sent to aria-live region when suggestions are shown -->
+              live-region-empty-label                   <!-- Optional. Override text sent to aria-live region when suggestions are empty due to filter -->
+              live-region-count-label                   <!-- Optional. Override text sent to aria-live region when suggestions are counted as part of filtering -->
               hidden>                                   <!-- Use hidden to toggle visibility -->
   <ul>                                                  <!-- Can be any tag, but items should be inside <li> -->
     <li><button>Item 1</button></li>                    <!-- Items must be <button> or <a> -->
