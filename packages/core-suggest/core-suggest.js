@@ -51,7 +51,7 @@ export default class CoreSuggest extends HTMLElement {
     document.removeEventListener('focusin', this)
     // Clear internals to aid garbage collection
     this._observer.disconnect()
-    if (this._ariaLiveTimeout) clearTimeout(this._ariaLiveTimeout) // Clear existing timeout
+    clearTimeout(this._ariaLiveTimeout) // Clear existing timeout
     this._observer = this._input = this._regex = this._xhr = this._xhrTime = this._ariaLiveDelay = this._ariaLiveTimeout = this._ariaLiveSpan = null
   }
 
@@ -63,8 +63,7 @@ export default class CoreSuggest extends HTMLElement {
     if (name === 'empty' || name === 'hidden') {
       // Notify screen readers when visible and list has content
       if (!this.empty && !this.hidden) {
-        // Clear if there is an existing delay
-        if (this._ariaLiveDelay) clearTimeout(this._ariaLiveDelay)
+        clearTimeout(this._ariaLiveDelay) // Clear existing delay
         this._ariaLiveDelay = setTimeout(() => notifyResultsVisible(this), ARIA_LIVE_DELAY)
       }
     }
@@ -85,7 +84,7 @@ export default class CoreSuggest extends HTMLElement {
   escapeHTML (str) { return escapeHTML(str) }
 
   _clearLiveRegion () {
-    if (this._ariaLiveTimeout) clearTimeout(this._ariaLiveTimeout) // Clear existing timeout
+    clearTimeout(this._ariaLiveTimeout) // Clear existing timeout
     this._ariaLiveSpan.textContent = ''
   }
 
@@ -95,7 +94,7 @@ export default class CoreSuggest extends HTMLElement {
    */
   _pushToLiveRegion (label) {
     if (this._ariaLiveSpan.textContent === label) return // Abort duplicates
-    if (this._ariaLiveTimeout) clearTimeout(this._ariaLiveTimeout) // Clear existing timeout
+    clearTimeout(this._ariaLiveTimeout) // Clear existing timeout
     this._ariaLiveSpan.textContent = label
     this._ariaLiveTimeout = setTimeout(() => (this._clearLiveRegion()), ARIA_LIVE_DELAY)
   }
