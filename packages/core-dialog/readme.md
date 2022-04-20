@@ -51,9 +51,8 @@
 </style>
 demo-->
 
-## Examples
-
-### Plain JavaScript
+## Examples (plain JS)
+#### Nested dialog
 
 ```html
 <!--demo-->
@@ -76,6 +75,7 @@ demo-->
   </core-dialog>
 </core-dialog>
 ```
+#### Strict dialog
 
 ```html
 <!--demo-->
@@ -87,6 +87,7 @@ demo-->
   <button data-for="close" type="button">Close</button>
 </core-dialog>
 ```
+#### Modal dialog
 
 ```html
 <!--demo-->
@@ -97,6 +98,7 @@ demo-->
   <button data-for="close">Close</button>
 </core-dialog>
 ```
+#### Custom backdrop
 
 ```html
 <!--demo-->
@@ -108,8 +110,31 @@ demo-->
 </core-dialog>
 <div id="back-custom" class="my-backdrop" style="background:rgba(0,0,50,.8)" hidden></div>
 ```
+#### Preventing overscroll
 
-### React
+Prevent scrolling the background when scrolling inside a scrollable element inside the dialog by setting `overscroll-behavior: contain` on the dialog-element.
+
+Note that `overscroll-behavior` is only supported through enabling experimental features in Safari and Safari on iOS ([caniuse](https://caniuse.com/?search=overscroll-behavior)).
+
+Read [this](https://ishadeed.com/article/prevent-scroll-chaining-overscroll-behavior/) if you want a primer on how `overscroll-behavior` works.
+
+```html
+<!--demo-->
+<button data-for="overscroll-dialog">Open scrollable dialog</button>
+<core-dialog id="overscroll-dialog" class="my-dialog" aria-label="Scrollable dialog title" hidden style="overscroll-behavior: contain">
+  <h1>Scrollable dialog title</h1>
+  <p style="max-height: 100px;overflow: scroll;border: 1px solid gray;">
+    Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.
+  </p>
+  <p style="max-height: 100px;overflow: scroll;border: 1px solid gray;">
+    Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.
+  </p>
+  <button data-for="close" type="button">Close</button>
+</core-dialog>
+```
+
+## Examples (React)
+#### Class component
 
 ```html
 <!--demo-->
@@ -139,9 +164,12 @@ demo-->
             className="my-dialog"
             hidden={this.state.hidden}
             onDialogToggle={this.handleToggle}
-            aria-label="React dialog">
+            aria-label="React dialog"
+          >
             <h1>Dialog for JSX</h1>
-            <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
+            <p>
+              Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.
+            </p>
             <button onClick={this.toggleDialog} type="button">Lukk</button>
           </CoreDialog>
         </>
@@ -153,6 +181,8 @@ demo-->
 </script>
 ```
 
+#### Strict dialog
+
 ```html
 <!--demo-->
 <div id="jsx-dialog-strict"></div>
@@ -160,9 +190,17 @@ demo-->
   ReactDOM.render(
     <>
       <button data-for="dialog-strict-jsx" type="button">Open strict React dialog</button>
-      <CoreDialog id="dialog-strict-jsx" className="my-dialog" aria-label="Strict React dialog" hidden strict>
+      <CoreDialog
+        id="dialog-strict-jsx"
+        className="my-dialog"
+        aria-label="Strict React dialog"
+        hidden
+        strict
+      >
         <h1>Strict dialog for JSX</h1>
-        <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
+        <p>
+          Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.
+        </p>
         <button data-for="close" type="button">Lukk</button>
       </CoreDialog>
     </>,
@@ -171,6 +209,8 @@ demo-->
 </script>
 ```
 
+#### No backdrop
+
 ```html
 <!--demo-->
 <div id="jsx-dialog-no-backdrop"></div>
@@ -178,9 +218,17 @@ demo-->
   ReactDOM.render(
     <>
       <button data-for="dialog-no-back-jsx" type="button">Open React dialog without backdrop</button>
-      <CoreDialog id="dialog-no-back-jsx" className="my-dialog" aria-label="React dialog without backdrop" backdrop="off" hidden>
+      <CoreDialog
+        id="dialog-no-back-jsx"
+        className="my-dialog"
+        aria-label="React dialog without backdrop"
+        backdrop="off"
+        hidden
+      >
         <h1>React dialog without backdrop</h1>
-        <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
+        <p>
+          Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.
+        </p>
         <button data-for="close" type="button">Lukk</button>
       </CoreDialog>
     </>,
@@ -188,6 +236,9 @@ demo-->
   )
 </script>
 ```
+#### Custom backdrop
+
+**NB!** Do not wrap `CoreDialog` with custom backdrop as direct children of React.Fragments (instead, wrap in a block element like `<div>`), to ensure access to the backdrop element on mount.
 
 ```html
 <!--demo-->
@@ -196,19 +247,30 @@ demo-->
   ReactDOM.render(
     <div>
       <button data-for="dialog-cust-jsx" type="button">Open React dialog with custom backdrop</button>
-      <CoreDialog id="dialog-cust-jsx" className="my-dialog" aria-label="React dialog with custom backdrop" backdrop="custom-backdrop-jsx" hidden>
+      <CoreDialog
+        id="dialog-cust-jsx"
+        className="my-dialog"
+        aria-label="React dialog with custom backdrop"
+        backdrop="custom-backdrop-jsx"
+        hidden
+      >
         <h1>React dialog with custom backdrop</h1>
-        <p>Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.</p>
+        <p>
+          Nunc mi felis, condimentum quis hendrerit sed, porta eget libero. Aenean scelerisque ex eu nisi varius hendrerit. Suspendisse elementum quis massa at vehicula. Nulla lacinia mi pulvinar, venenatis nisi ut, commodo quam. Praesent egestas mi sit amet quam porttitor, mollis mattis mi rhoncus.
+        </p>
         <button data-for="close" type="button">Lukk</button>
       </CoreDialog>
-      <div id="custom-backdrop-jsx" className="my-backdrop" style={{background:'rgba(0,0,50,.8)'}} hidden></div>
+      <div
+        id="custom-backdrop-jsx"
+        className="my-backdrop"
+        style={{background:'rgba(0,0,50,.8)'}}
+        hidden
+      ></div>
     </div>,
     document.getElementById('jsx-dialog-custom')
   )
 </script>
 ```
-
-**NB!** Do not wrap `CoreDialog` with custom backdrop as direct children of React.Fragments (instead, wrap in a block element like `<div>`), to ensure access to the backdrop element on mount.
 
 ## Installation
 
