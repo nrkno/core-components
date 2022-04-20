@@ -141,17 +141,8 @@ export default class CoreSuggest extends HTMLElement {
  */
 function appendResultsNotificationSpan (self) {
   if (!self._observer) return // Abort if disconnectedCallback has been called
-  const resultsNotificationSpan = document.createElement('span')
-  resultsNotificationSpan.setAttribute('aria-live', 'polite')
-  resultsNotificationSpan.setAttribute('style', `
-    position: absolute !important;
-    overflow: hidden !important;
-    width: 1px !important;
-    height: 1px !important;
-    clip: rect(0, 0, 0, 0) !important;
-  `)
-  self.appendChild(resultsNotificationSpan)
-  return resultsNotificationSpan
+  self.insertAdjacentHTML('beforeend', '<span aria-live="polite" style="position: absolute !important; overflow: hidden !important; width: 1px !important; height: 1px !important; clip: rect(0, 0, 0, 0) !important"></span>')
+  return self.lastElementChild
 }
 
 /**
