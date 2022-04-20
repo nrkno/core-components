@@ -274,7 +274,7 @@ function onMutation (self) {
  * @returns {void}
  */
 function onInput (self, event) {
-  if (event.target !== self.input || !dispatchEvent(self, 'suggest.filter') || onAjax(self) || self.hasAttribute('filter-disabled')) return
+  if (event.target !== self.input || !dispatchEvent(self, 'suggest.filter') || onAjax(self)) return
   const value = self.input.value.toLowerCase()
   const items = self.querySelectorAll('a,button')
 

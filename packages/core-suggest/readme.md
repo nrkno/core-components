@@ -181,7 +181,7 @@ Synchronous operation; dynamically populate items based on input value:
 ```html
 <!--demo-->
 <input id="my-input-dynamic" placeholder="Type to generate suggestions">
-<core-suggest hidden filter-disabled>
+<core-suggest hidden>
   <ul></ul>
 </core-suggest>
 <script>
@@ -424,7 +424,6 @@ Text sent to screen readers can be adjusted by setting the following attributes 
 <core-suggest limit="{Number}"                          <!-- Optional. Limit maxium number of result items. Defaults to Infinity -->
               ajax="{String}"                           <!-- Optional. Fetches external data. See event 'suggest.ajax'. Example: 'https://search.com?q={{value}}' -->
               highlight="{'on' | 'off' | 'keep'}"       <!-- Optional override of highlighting matches in results. Defaults to 'on'. -->
-              filter-disabled                           <!-- Optional. Disables built-in filtering of content from input value. Useful when you want to perform filtering yourself -->
               live-region-shown-label                   <!-- Optional. Override text sent to aria-live region when suggestions are shown -->
               live-region-empty-label                   <!-- Optional. Override text sent to aria-live region when suggestions are empty due to filter -->
               live-region-count-label                   <!-- Optional. Override text sent to aria-live region when suggestions are counted as part of filtering -->
@@ -503,7 +502,7 @@ Putting the input directly before the suggestion list is highly recommended, as 
 ## Events
 
 ### suggest.filter
-Fired before a default filtering occurs:
+Fired before a default filtering occurs. If you wish to handle filtering yourself, e.g fuzzy search or similar, use `event.preventDefault()` to disable the default filtering.
 
 ```js
 document.addEventListener('suggest.filter', (event) => {
