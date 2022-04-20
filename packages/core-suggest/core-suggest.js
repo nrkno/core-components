@@ -26,13 +26,13 @@ export default class CoreSuggest extends HTMLElement {
     this._observer = new window.MutationObserver(() => onMutation(this)) // Enhance <a> and <button> markup
     this._observer.observe(this, { subtree: true, childList: true, attributes: true, attributeFilter: ['hidden'] })
     this._xhr = new window.XMLHttpRequest()
-    this._id = this.getAttribute('id') ? this.getAttribute('id') : getUUID()
+    this.id = this.id || getUUID()
 
     if (IS_IOS) this.input.setAttribute('role', 'combobox') // iOS does not inform about editability if combobox
     this.input.setAttribute('autocomplete', 'off')
     this.input.setAttribute('aria-autocomplete', 'list')
     this.input.setAttribute('aria-expanded', false)
-    this.input.setAttribute('aria-controls', this._id)
+    this.input.setAttribute('aria-controls', this.id)
 
     this._ariaLiveSpan = appendResultsNotificationSpan(this)
 
