@@ -291,7 +291,7 @@ function onInput (self, event) {
     toggleItem(items[i], (items[i].value || items[i].textContent).toLowerCase().indexOf(value) === -1)
   }
 
-  if (items.length > 0) {
+  if (!self.empty) {
     const visibleItems = queryAll('[tabindex="-1"]:not([hidden])', self)
     if (visibleItems.length === 0) {
       // All items have been hidden by filter
