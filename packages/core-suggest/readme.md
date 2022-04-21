@@ -55,9 +55,9 @@ Modify the default notifications announced to screen readers when suggestions ar
 <label for="my-live-region-input">Search</label>
 <input id="my-live-region-input" type="text" placeholder="Type to filter">
 <core-suggest
-  live-region-shown-label="Suggestions are shown"
-  live-region-empty-label="No suggestions"
-  live-region-count-label="Showing {{value}} suggestions"
+  data-sr-shown-message="Suggestions are shown"
+  data-sr-empty-message="No suggestions"
+  data-sr-count-message="Showing {{value}} suggestions"
   hidden
 >
   <ul>
@@ -74,8 +74,8 @@ Modify the default notifications announced to screen readers when suggestions ar
 <label for="my-live-region-shown-input">Search</label>
 <input id="my-live-region-shown-input" type="text" placeholder="Type to filter">
 <core-suggest
-  live-region-shown-label="Suggestions are shown"
-  live-region-empty-label=""
+  data-sr-shown-message="Suggestions are shown"
+  data-sr-empty-message=""
   hidden
 >
   <ul>
@@ -92,8 +92,8 @@ Modify the default notifications announced to screen readers when suggestions ar
 <label for="my-live-region-filtered-input">Search</label>
 <input id="my-live-region-filtered-input" type="text" placeholder="Type to filter">
 <core-suggest
-  live-region-shown-label=""
-  live-region-empty-label="No suggestions"
+  data-sr-shown-message=""
+  data-sr-empty-message="No suggestions"
   hidden
 >
   <ul>
@@ -213,9 +213,9 @@ Synchronous operation; dynamically populate items based on input value:
     <label for="my-input-jsx">Search JSX</label>
     <input id='my-input-jsx' type='text' placeholder='Type something...' />
     <CoreSuggest
-      live-region-shown-label="Suggestions shown"
-      live-region-empty-label="No suggestions"
-      live-region-count-label="Showing {{value}} suggestions"
+      data-sr-shown-message="Suggestions shown"
+      data-sr-empty-message="No suggestions"
+      data-sr-count-message="Showing {{value}} suggestions"
       className='my-dropdown'
       hidden
     >
@@ -409,9 +409,9 @@ Core-suggest notifies screen readers using a polite aria-live region when sugges
 To do this, we append a `<span>` with `aria-live="polite"` and hide it from view. When something is notified, we set and subsequently clear the `textContent` of this span.
 
 Text sent to screen readers can be adjusted by setting the following attributes on the `core-suggest` element:
- * `live-region-shown-label="Forslag vises"`
- * `live-region-empty-label="Ingen forslag"`
- * `live-region-count-label="{{value}} forslag"`
+ * `data-sr-shown-message="Forslag vises"`
+ * `data-sr-empty-message="Ingen forslag"`
+ * `data-sr-count-message="{{value}} forslag"`
 
 **NB!** When updating contents of a `<core-suggest>` element, avoid replacing the `innerHTML` (and thus removing the aria-live region) of the suggest. By updating the contents of a child element, e.g a `<ul>`, the aria-live region is present and will be able to announce that suggestions are shown.
 
@@ -424,9 +424,9 @@ Text sent to screen readers can be adjusted by setting the following attributes 
 <core-suggest limit="{Number}"                          <!-- Optional. Limit maxium number of result items. Defaults to Infinity -->
               ajax="{String}"                           <!-- Optional. Fetches external data. See event 'suggest.ajax'. Example: 'https://search.com?q={{value}}' -->
               highlight="{'on' | 'off' | 'keep'}"       <!-- Optional override of highlighting matches in results. Defaults to 'on'. -->
-              live-region-shown-label                   <!-- Optional. Override text sent to aria-live region when suggestions are shown -->
-              live-region-empty-label                   <!-- Optional. Override text sent to aria-live region when suggestions are empty due to filter -->
-              live-region-count-label                   <!-- Optional. Override text sent to aria-live region when suggestions are counted as part of filtering -->
+              data-sr-shown-message                     <!-- Optional. Override text sent to aria-live region when suggestions are shown -->
+              data-sr-empty-message                     <!-- Optional. Override text sent to aria-live region when suggestions are empty due to filter -->
+              data-sr-count-message                     <!-- Optional. Override text sent to aria-live region when suggestions are counted as part of filtering -->
               hidden>                                   <!-- Use hidden to toggle visibility -->
   <ul>                                                  <!-- Can be any tag, but items should be inside <li> -->
     <li><button>Item 1</button></li>                    <!-- Items must be <button> or <a> -->

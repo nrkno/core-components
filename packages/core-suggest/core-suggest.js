@@ -147,21 +147,21 @@ function appendResultsNotificationSpan (self) {
 
 /**
  * Notify screen readers when results are visible
- * textContent uses attribute `'live-region-shown-label'`
+ * textContent uses attribute `'data-sr-shown-message'`
  *
  * @param {CoreSuggest} self Core suggest element
  * @returns {void}
  */
 function notifyResultsVisible (self) {
   if (!self._observer) return // Abort if disconnectedCallback has been called
-  const label = self.getAttribute('live-region-shown-label')
+  const label = self.getAttribute('data-sr-shown-message')
   if (label === '') return // Abort if label is set to explicit empty string
   self._pushToLiveRegion(label || ARIA_LIVE_VISIBLE)
 }
 
 /**
  * Notify screen readers how many results are visible
- * textContent uses attribute `'live-region-count-label'`
+ * textContent uses attribute `'data-sr-count-message'`
  * Replaces `{{value}}` with number of visible items
  *
  * @param {CoreSuggest} self Core suggest element
@@ -170,21 +170,21 @@ function notifyResultsVisible (self) {
  */
 function notifyResultCount (self, items = 0) {
   if (!self._observer) return // Abort if disconnectedCallback has been called
-  const label = self.getAttribute('live-region-count-label')
+  const label = self.getAttribute('data-sr-count-message')
   if (label === '') return // Abort if label is set to explicit empty string
   self._pushToLiveRegion((label || ARIA_LIVE_COUNT).replace('{{value}}', items))
 }
 
 /**
  * Notify screen readers when all results are hidden by filter
- * textContent uses attribute `'live-region-empty-label'`
+ * textContent uses attribute `'data-sr-empty-message'`
  *
  * @param {CoreSuggest} self Core suggest element
  * @returns {void}
  */
 function notifyResultsEmpty (self) {
   if (!self._observer) return // Abort if disconnectedCallback has been called
-  const label = self.getAttribute('live-region-empty-label')
+  const label = self.getAttribute('data-sr-empty-message')
   if (label === '') return // Abort if label is set to explicit empty string
   self._pushToLiveRegion(label || ARIA_LIVE_FILTERED)
 }
