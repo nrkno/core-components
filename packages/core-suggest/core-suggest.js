@@ -23,8 +23,8 @@ export default class CoreSuggest extends HTMLElement {
   static get observedAttributes () { return ['hidden', 'highlight'] }
 
   connectedCallback () {
-    this._observer = new window.MutationObserver(() => onMutation(this)) // Enhance <a> and <button> markup
-    this._observer.observe(this, { subtree: true, childList: true, attributes: true, attributeFilter: ['hidden'] })
+    this._observer = new window.MutationObserver(mutationsList => onMutation(this, mutationsList))
+    this._observer.observe(this, { subtree: true, childList: true, attributes: true, attributeFilter: ['hidden'], attributeOldValue: true })
     this._xhr = new window.XMLHttpRequest()
     this.id = this.id || getUUID()
 
@@ -59,13 +59,6 @@ export default class CoreSuggest extends HTMLElement {
     if (!this._observer) return
     if (name === 'hidden') {
       this.input.setAttribute('aria-expanded', !this.hidden)
-    }
-    if (name === 'empty' || name === 'hidden') {
-      // Notify screen readers when visible and list has content
-      if (!this.empty && !this.hidden) {
-        clearTimeout(this._ariaLiveDelay) // Clear existing delay
-        this._ariaLiveDelay = setTimeout(() => notifyResultsVisible(this), ARIA_LIVE_DELAY)
-      }
     }
     if (name === 'highlight') onMutation(this)
   }
@@ -200,11 +193,13 @@ function toggleItem (item, show) {
  * Enhances items with aria-label, tabindex and type="button"
  * Respects limit attribute
  * Updates <mark> tags for highlighting according to attribute
+ * Trigger messages for screen-readers
  * This can happen quite frequently so make it fast
  * @param {CoreSuggest} self Core suggest element
+ * @param {MutationRecord[]?} mutations Optional. List of MutationRecords
  * @returns {void}
  */
-function onMutation (self) {
+function onMutation (self, mutations) {
   if (!self._observer) return // Abort if disconnectedCallback has been called (this/self._observer is null)
 
   const needle = self.input.value.toLowerCase().trim()
@@ -257,6 +252,40 @@ function onMutation (self) {
       }
     }
   }
+
+  // Send messages for screen readers
+  if (mutations) {
+    for (const mutation of mutations) {
+      if (mutation.attributeName === 'hidden') {
+        if (mutation.target === self) {
+          if (mutation.oldValue === '' && !self._empty) {
+            // Notify screen readers when visible and list has content
+            clearTimeout(self._ariaLiveDelay) // Clear existing delay
+            self._ariaLiveDelay = setTimeout(() => notifyResultsVisible(self, items.length), ARIA_LIVE_DELAY)
+            break // Break loop to avoid duplicate messages
+          }
+        } else {
+          if (mutation.oldValue === null && self._empty) {
+            // Notify screen readers when suggestions are completely hidden by filter
+            notifyResultsEmpty(self)
+            break // Break loop to avoid duplicate messages
+          } else if (!self._empty) {
+            // Notify screen readers when number of suggestions are modified by filter
+            notifyResultCount(self, items.length)
+            break // Break loop to avoid duplicate messages
+          }
+        }
+      } else if (mutation.type === 'childList') {
+        if (!self.hidden && !self._empty) {
+          // Notify screen readers when visible and list has inserted content
+          clearTimeout(self._ariaLiveDelay) // Clear existing delay
+          self._ariaLiveDelay = setTimeout(() => notifyResultsVisible(self, items.length), ARIA_LIVE_DELAY)
+          break
+        }
+      }
+    }
+  }
+
   self._observer.takeRecords() // Empty mutation queue to skip mutations done by highlighting
 }
 
@@ -276,16 +305,6 @@ function onInput (self, event) {
 
   for (let i = 0, l = items.length; i < l; ++i) {
     toggleItem(items[i], (items[i].value || items[i].textContent).toLowerCase().indexOf(value) === -1)
-  }
-
-  if (!self.empty) {
-    const visibleItems = queryAll('[tabindex="-1"]:not([hidden])', self)
-    if (visibleItems.length === 0) {
-      // All items have been hidden by filter
-      notifyResultsEmpty(self)
-    } else if (visibleItems.length < items.length) {
-      notifyResultCount(self, visibleItems.length)
-    }
   }
 }
 
