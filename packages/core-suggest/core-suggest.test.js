@@ -311,14 +311,14 @@ describe('core-suggest', () => {
   })
 
   describe('aria-live', () => {
-    it('creates an empty span with aria-live="polite"', async () => {
+    it('creates an empty span on body with aria-live="polite"', async () => {
       await browser.executeScript(() => {
         document.body.innerHTML = `
           <input type="text">
           <core-suggest hidden></core-suggest>
         `
       })
-      await expect(attr('core-suggest > span', 'aria-live')).toEqual('polite')
+      await expect(attr('body > span', 'aria-live')).toEqual('polite')
     })
 
     it('exposes internal function _pushToLiveRegion to append, then clear textContent of aria-live region', async () => {
@@ -331,9 +331,9 @@ describe('core-suggest', () => {
         `
         document.querySelector('core-suggest')._pushToLiveRegion(label)
       }, testLabel)
-      await expect(browser.executeScript(() => document.querySelector('core-suggest > span').textContent)).toEqual(testLabel)
+      await expect(browser.executeScript(() => document.querySelector('body > span').textContent)).toEqual(testLabel)
       await browser.sleep(ARIA_LIVE_DELAY)
-      await expect(browser.executeScript(() => document.querySelector('core-suggest > span').textContent)).toEqual('')
+      await expect(browser.executeScript(() => document.querySelector('body > span').textContent)).toEqual('')
     })
 
     it('exposes internal function _clearLiveRegion to clear textContent of aria-live region', async () => {
@@ -346,7 +346,7 @@ describe('core-suggest', () => {
         document.querySelector('core-suggest')._pushToLiveRegion(label)
         document.querySelector('core-suggest')._clearLiveRegion()
       }, testLabel)
-      await expect(browser.executeScript(() => document.querySelector('core-suggest > span').textContent)).toEqual('')
+      await expect(browser.executeScript(() => document.querySelector('body > span').textContent)).toEqual('')
     })
   })
 })
