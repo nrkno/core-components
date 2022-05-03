@@ -86,7 +86,7 @@ export default class CoreSuggest extends HTMLElement {
    * @param {String} label
    * @returns {void}
    */
-  _pushToLiveRegion (label) {
+  pushToLiveRegion (label) {
     if (this._ariaLiveSpan.textContent === label) return // Abort duplicates
     clearTimeout(this._ariaLiveTimeout) // Clear existing timeout
     this._ariaLiveSpan.textContent = label
@@ -147,7 +147,7 @@ function notifyResultsVisible (self, items) {
   if (!self._observer) return // Abort if disconnectedCallback has been called
   const label = self.getAttribute('data-sr-shown-message')
   if (label === '') return // Abort if label is set to explicit empty string
-  self._pushToLiveRegion((label || ARIA_LIVE_VISIBLE).replace('{{value}}', items))
+  self.pushToLiveRegion((label || ARIA_LIVE_VISIBLE).replace('{{value}}', items))
 }
 
 /**
@@ -163,7 +163,7 @@ function notifyResultCount (self, items = 0) {
   if (!self._observer) return // Abort if disconnectedCallback has been called
   const label = self.getAttribute('data-sr-count-message')
   if (label === '') return // Abort if label is set to explicit empty string
-  self._pushToLiveRegion((label || ARIA_LIVE_COUNT).replace('{{value}}', items))
+  self.pushToLiveRegion((label || ARIA_LIVE_COUNT).replace('{{value}}', items))
 }
 
 /**
@@ -177,7 +177,7 @@ function notifyResultsEmpty (self) {
   if (!self._observer) return // Abort if disconnectedCallback has been called
   const label = self.getAttribute('data-sr-empty-message')
   if (label === '') return // Abort if label is set to explicit empty string
-  self._pushToLiveRegion(label || ARIA_LIVE_FILTERED)
+  self.pushToLiveRegion(label || ARIA_LIVE_FILTERED)
 }
 
 /**
