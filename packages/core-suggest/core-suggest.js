@@ -52,6 +52,7 @@ export default class CoreSuggest extends HTMLElement {
     // Clear internals to aid garbage collection
     this._observer.disconnect()
     clearTimeout(this._ariaLiveTimeout) // Clear existing timeout
+    if (this._ariaLiveSpan.parentNode) this._ariaLiveSpan.parentNode.removeChild(this._ariaLiveSpan)
     this._observer = this._input = this._regex = this._xhr = this._xhrTime = this._ariaLiveDelay = this._ariaLiveTimeout = this._ariaLiveSpan = null
   }
 
@@ -129,9 +130,9 @@ export default class CoreSuggest extends HTMLElement {
  * @returns {HTMLSpanElement}
  */
 function appendResultsNotificationSpan (self) {
-  if (!self._observer) return // Abort if disconnectedCallback has been called
-  self.insertAdjacentHTML('beforeend', '<span aria-live="polite" style="position: absolute !important; overflow: hidden !important; width: 1px !important; height: 1px !important; clip: rect(0, 0, 0, 0) !important"></span>')
-  return self.lastElementChild
+  if (!self._observer || self._ariaLiveSpan) return // Abort if disconnectedCallback has been called
+  document.body.insertAdjacentHTML('beforeend', '<span aria-live="polite" style="position: absolute !important; overflow: hidden !important; width: 1px !important; height: 1px !important; clip: rect(0, 0, 0, 0) !important"></span>')
+  return document.body.lastElementChild
 }
 
 /**
