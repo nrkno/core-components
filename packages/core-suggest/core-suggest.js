@@ -140,13 +140,14 @@ function appendResultsNotificationSpan (self) {
  * textContent uses attribute `'data-sr-shown-message'`
  *
  * @param {CoreSuggest} self Core suggest element
+ * @param {Number} items Number of visible items
  * @returns {void}
  */
-function notifyResultsVisible (self) {
+function notifyResultsVisible (self, items) {
   if (!self._observer) return // Abort if disconnectedCallback has been called
   const label = self.getAttribute('data-sr-shown-message')
   if (label === '') return // Abort if label is set to explicit empty string
-  self._pushToLiveRegion(label || ARIA_LIVE_VISIBLE)
+  self._pushToLiveRegion((label || ARIA_LIVE_VISIBLE).replace('{{value}}', items))
 }
 
 /**
