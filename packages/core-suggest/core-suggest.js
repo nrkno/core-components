@@ -24,7 +24,7 @@ export default class CoreSuggest extends HTMLElement {
 
   connectedCallback () {
     this._observer = new window.MutationObserver(mutationsList => onMutation(this, mutationsList))
-    this._observer.observe(this, { subtree: true, childList: true, attributes: true, attributeFilter: ['hidden'], attributeOldValue: true })
+    this._observer.observe(this, { subtree: true, childList: true, attributes: true, attributeFilter: ['hidden'] })
     this._xhr = new window.XMLHttpRequest()
     this.id = this.id || getUUID()
 
@@ -260,18 +260,18 @@ function onMutation (self, mutations) {
     for (const mutation of mutations) {
       if (mutation.attributeName === 'hidden') {
         if (mutation.target === self) {
-          if (mutation.oldValue === '' && !self._empty) {
+          if (!self.hidden && !self._empty) {
             // Notify screen readers when visible and list has content
             clearTimeout(self._ariaLiveDelay) // Clear existing delay
             self._ariaLiveDelay = setTimeout(() => notifyResultsVisible(self, items.length), ARIA_LIVE_DELAY)
             break // Break loop to avoid duplicate messages
           }
         } else {
-          if (mutation.oldValue === null && self._empty) {
+          if (self._empty) {
             // Notify screen readers when suggestions are completely hidden by filter
             notifyResultsEmpty(self)
             break // Break loop to avoid duplicate messages
-          } else if (!self._empty) {
+          } else {
             // Notify screen readers when number of suggestions are modified by filter
             notifyResultCount(self, items.length)
             break // Break loop to avoid duplicate messages
