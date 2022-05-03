@@ -20,7 +20,7 @@ const ARIA_LIVE_FILTERED = 'Ingen forslag'
 const ARIA_LIVE_COUNT = '{{value}} forslag'
 
 export default class CoreSuggest extends HTMLElement {
-  static get observedAttributes () { return ['hidden', 'highlight', 'empty'] }
+  static get observedAttributes () { return ['hidden', 'highlight'] }
 
   connectedCallback () {
     this._observer = new window.MutationObserver(() => onMutation(this)) // Enhance <a> and <button> markup
@@ -129,10 +129,6 @@ export default class CoreSuggest extends HTMLElement {
   get hidden () { return this.hasAttribute('hidden') }
 
   set hidden (val) { toggleAttribute(this, 'hidden', val) }
-
-  get empty () { return this.hasAttribute('empty') }
-
-  set empty (val) { toggleAttribute(this, 'empty', val) }
 }
 
 /**
@@ -225,7 +221,7 @@ function onMutation (self) {
     }
   }
 
-  self.empty = items.length === 0
+  self._empty = items.length === 0
 
   for (let i = 0, l = items.length; i < l; ++i) {
     items[i].setAttribute('aria-label', `${items[i].textContent}, ${i + 1} av ${limit}`)
