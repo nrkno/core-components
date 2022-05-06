@@ -79,7 +79,7 @@ export default class CoreSuggest extends HTMLElement {
 
   _clearLiveRegion () {
     clearTimeout(this._ariaLiveTimeout) // Clear existing timeout
-    this._ariaLiveSpan.textContent = ''
+    this._ariaLiveSpan.textContent = null
   }
 
   /**
