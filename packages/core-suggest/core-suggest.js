@@ -1,4 +1,4 @@
-import { closest, dispatchEvent, escapeHTML, getUUID, IS_IE11, IS_IOS, queryAll, toggleAttribute } from '../utils'
+import { closest, dispatchEvent, escapeHTML, getUUID, IS_IE11, queryAll, toggleAttribute } from '../utils'
 
 const KEY = {
   DOWN_IE: 'Down',
@@ -28,7 +28,7 @@ export default class CoreSuggest extends HTMLElement {
     this._xhr = new window.XMLHttpRequest()
     this.id = this.id || getUUID()
 
-    if (IS_IOS) this.input.setAttribute('role', 'combobox') // iOS does not inform about editability if combobox
+    this.input.setAttribute('role', 'combobox')
     this.input.setAttribute('autocomplete', 'off')
     this.input.setAttribute('aria-autocomplete', 'list')
     this.input.setAttribute('aria-expanded', false)
