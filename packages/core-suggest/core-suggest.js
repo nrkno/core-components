@@ -87,7 +87,6 @@ export default class CoreSuggest extends HTMLElement {
    * @returns {void}
    */
   pushToLiveRegion (label) {
-    if (this._ariaLiveSpan.textContent === label) return // Abort duplicates
     clearTimeout(this._ariaLiveTimeout) // Clear existing timeout
     this._ariaLiveSpan.textContent = label
     this._ariaLiveTimeout = setTimeout(() => (this._clearLiveRegion()), ARIA_LIVE_DELAY)
