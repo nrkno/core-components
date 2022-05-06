@@ -118,26 +118,34 @@ If you need to alter default headers, request method or post data, use the [`sug
 ```html
 <!--demo-->
 <input id="my-input-ajax" placeholder="Country...">
-<core-suggest ajax="https://restcountries.com/v2/name/{{value}}?fields=name" hidden><ul></ul></core-suggest>
+<core-suggest ajax="https://restcountries.com/v2/name/{{value}}?fields=name" hidden></core-suggest>
 <script>
   document.addEventListener('suggest.filter', (event) => {
     const suggest = event.target
     const input = suggest.input
-    const list = suggest.firstElementChild
     const value = input.value.trim()
 
     if (input.id !== 'my-input-ajax') return // Make sure we are on correct input
-    list.innerHTML = value ? `<li><button>Searching for ${value}...</button></li>` : ''
+    suggest.innerHTML = value ? `<ul><li><button>Searching for ${value}...</button></li></ul>` : ''
   })
   document.addEventListener('suggest.ajax', (event) => {
     const suggest = event.target
     const input = suggest.input
-    const list = suggest.firstElementChild
+
     if (input.id !== 'my-input-ajax') return // Make sure we are on correct input
     const items = event.detail.responseJSON
-    list.innerHTML = `${items.length ? items.slice(0, 10)
-      .map((item) => { return `<li><button>${suggest.escapeHTML(item.name)}</button></li>` })           // Generate list
-      .join('') : '<li><button>No results</button></li>'}`
+    suggest.innerHTML = `<ul>${items.length ? items.slice(0, 10)
+      .map((item) => { return `<li><button>${suggest.escapeHTML(item.name)}</button></li>` }) // Generate list
+      .join('') : '<li><button>No results</button></li>'}</ul>`
+  })
+  document.addEventListener('suggest.ajax.error', (event) => {
+    const suggest = event.target
+    const input = suggest.input
+
+    if (input.id !== 'my-input-ajax') return // Make sure we are on correct input
+    console.log(event)
+    const items = event.detail.responseJSON
+    suggest.innerHTML = '<ul><li><button>No results</button></li></ul>'
   })
 </script>
 ```
@@ -147,7 +155,7 @@ Hybrid solution; lazy load items, use `core-suggest` to handle filtering:
 ```html
 <!--demo-->
 <input id="my-input-lazy" placeholder="Filter lazy-loaded content">
-<core-suggest hidden><ul></ul></core-suggest>
+<core-suggest hidden></core-suggest>
 <script>
   window.getCountries = (callback) => {
     const xhr = new XMLHttpRequest()
@@ -162,13 +170,12 @@ Hybrid solution; lazy load items, use `core-suggest` to handle filtering:
     if (event.target.id !== 'my-input-lazy') return // Make sure we are on correct input
     const input = event.target
     const suggest = input.nextElementSibling
-    const list = suggest.firstElementChild
 
     input.id = '' // Prevent double execution
     window.getCountries((items) => {
-      list.innerHTML = items.map((item) =>
+      suggest.innerHTML = `<ul>${items.map((item) =>
         '<li><button>' + suggest.escapeHTML(item.name?.common) + '</button></li>'
-      ).join('')
+      ).join('')}</ul>`
     })
   }, true)
 </script>
@@ -181,22 +188,19 @@ Synchronous operation; dynamically populate items based on input value:
 ```html
 <!--demo-->
 <input id="my-input-dynamic" placeholder="Type to generate suggestions">
-<core-suggest hidden>
-  <ul></ul>
-</core-suggest>
+<core-suggest hidden></core-suggest>
 <script>
   document.addEventListener('suggest.filter', (event) => {
     const suggest = event.target
-    const list = suggest.firstElementChild
     const input = suggest.input
     const value = input.value.trim()
     const mails = ['facebook.com', 'gmail.com', 'hotmail.com', 'mac.com', 'mail.com', 'msn.com', 'live.com']
 
     if (input.id !== 'my-input-dynamic') return // Make sure we are on correct input
     event.preventDefault()
-    list.innerHTML = `${value ? mails.map((mail) => {
+    suggest.innerHTML = `<ul>${value ? mails.map((mail) => {
       return '<li><button type="button">' + value.replace(/(@.*|$)/, '@' + mail) + '</button></li>'
-    }).join('') : ''}`
+    }).join('') : ''}</ul>`
   })
 </script>
 ```
