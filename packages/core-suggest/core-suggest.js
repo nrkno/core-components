@@ -158,7 +158,7 @@ function notifyResultsVisible (self, items) {
  * @param {Number} items Number of visible items
  * @returns {void}
  */
-function notifyResultCount (self, items = 0) {
+function notifyResultCount (self, items) {
   if (!self._observer) return // Abort if disconnectedCallback has been called
   const label = self.getAttribute('data-sr-count-message')
   if (label === '') return // Abort if label is set to explicit empty string
@@ -263,17 +263,17 @@ function onMutation (self, mutations) {
             // Notify screen readers when visible and list has content
             clearTimeout(self._ariaLiveDelay) // Clear existing delay
             self._ariaLiveDelay = setTimeout(() => notifyResultsVisible(self, items.length), ARIA_LIVE_DELAY)
-            break // Break loop to avoid duplicate messages
+            break // Avoid duplicate messages
           }
         } else {
           if (self._empty) {
             // Notify screen readers when suggestions are completely hidden by filter
             notifyResultsEmpty(self)
-            break // Break loop to avoid duplicate messages
+            break // Avoid duplicate messages
           } else {
             // Notify screen readers when number of suggestions are modified by filter
             notifyResultCount(self, items.length)
-            break // Break loop to avoid duplicate messages
+            break // Avoid duplicate messages
           }
         }
       } else if (mutation.type === 'childList') {
@@ -281,7 +281,7 @@ function onMutation (self, mutations) {
           // Notify screen readers when visible and list has inserted content
           clearTimeout(self._ariaLiveDelay) // Clear existing delay
           self._ariaLiveDelay = setTimeout(() => notifyResultsVisible(self, items.length), ARIA_LIVE_DELAY)
-          break
+          break // Avoid duplicate messages
         }
       }
     }
