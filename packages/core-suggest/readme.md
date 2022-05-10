@@ -222,9 +222,6 @@ Synchronous operation; dynamically populate items based on input value:
     <label for="my-input-jsx">Search JSX</label>
     <input id='my-input-jsx' type='text' placeholder='Type something...' />
     <CoreSuggest
-      data-sr-shown-message="Suggestions shown"
-      data-sr-empty-message="No suggestions"
-      data-sr-count-message="Showing {{value}} suggestions"
       className='my-dropdown'
       hidden
     >
