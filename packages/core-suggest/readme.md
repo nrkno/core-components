@@ -464,6 +464,7 @@ mySuggest.highlight = 'on' | 'off' | 'keep'          // Set highlight strategy
 mySuggest.hidden = false                             // Set hidden value
 // Methods
 mySuggest.escapeHTML('<span>...</span>')             // Utility function for escaping HTML string
+mySuggest.pushToLiveRegion('Message to be read')     // Sends string content to aria-live region to notify screen readers
 ```
 
 ### React / Preact
