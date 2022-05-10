@@ -13,6 +13,11 @@
 <style>
 li button:focus {outline: 3px solid rgb(94, 158, 215)}
 label {display: block}
+.table-wrapper { overflow-x: auto; margin-bottom: 1.5rem; width: 100%; }
+.table-wrapper table { border-collapse: collapse; }
+.table-wrapper table caption { text-align: left; font-weight: bold; }
+.table-wrapper table th { padding: .5em .5em; font-weight: 600; text-align: center; border: 1px solid #0f0f0f; }
+.table-wrapper table td { padding: .5em .5em; text-align: center; border: 1px solid #0f0f0f; }
 </style>
 demo-->
 
@@ -604,6 +609,202 @@ All styling in documentation is example only. Both the `<button>` and content el
 .my-input-content mark {}             /* Target highlighted text (use `highlight='off'` to disable highlighting) */
 ```
 
+## Notes on accessibility
+
+### Screen reader notifications
+
+Release 1.3.0 introduced screen reader notifications for the following scenarios:
+ - Suggestions become visible to the user, message defaults to `Forslag vises`.
+ - The number of suggestions are announced when it changes, message defaults to `{{value}} forslag`.
+ - When no suggestions remain, message defaults to `Ingen forslag`.
+
+Norwegian language is used by default, but the content can be changed by setting the appropriate [attributes](#aria-live)
+
+These notifications have been added to improve the user experience when using screen readers and to comply with [WCAG 2.1 4.1.3](https://www.w3.org/WAI/WCAG21/Understanding/status-messages.html), in-depth information available from [uutilsynet](https://www.uutilsynet.no/wcag-standarden/413-statusbeskjeder-niva-aa/152)
+
+As part of verifying compatibility with various screen-readers we made the following observations:
+
+* When using NVDA, JAWS or Narrator on Windows, notification when visible (`Forslag vises`) is superfluous as `aria-expanded` conveyes that the content is expanded. It is kept in for broader support across platforms.
+* 
+
+Using JAWS version 2022-04 on windows 10, NVDA version 2021.3.5 on windows 10, Narrator on windows 10, TalkBack on EMUI 100
+Testing resuls as of `2022-05-10`:
+
+
+<div class="table-wrapper" tabindex="0">
+<table>
+  <caption>Screen reader is notified when suggestions become visible to the user</caption>
+  <colgroup span="3"></colgroup>
+  <colgroup span="2"></colgroup>
+  <colgroup span="3"></colgroup>
+  <colgroup span="1"></colgroup>
+  <colgroup span="1"></colgroup>
+  <colgroup span="2"></colgroup>
+  <colgroup span="2"></colgroup>
+  <tbody>
+    <tr>
+      <th colspan="3" scope="colgroup">JAWS</th>
+      <th colspan="2" scope="colgroup">Narrator</th>
+      <th colspan="3" scope="colgroup">NVDA</th>
+      <th colspan="1" scope="colgroup">Orca</th>
+      <th colspan="1" scope="colgroup">TalkBack</th>
+      <th colspan="2" scope="colgroup">VoiceOver (iOS)</th>
+      <th colspan="2" scope="colgroup">VoiceOver (macOS)</th>
+    </tr>
+    <tr>
+      <th scope="col">Chrome</th>
+      <th scope="col">Edge</th>
+      <th scope="col">Firefox</th>
+      <th scope="col">Chrome</th>
+      <th scope="col">Edge</th>
+      <th scope="col">Chrome</th>
+      <th scope="col">Edge</th>
+      <th scope="col">Firefox</th>
+      <th scope="col">Firefox</th>
+      <th scope="col">Chrome</th>
+      <th scope="col">Safari</th>
+      <th scope="col">Chrome</th>
+      <th scope="col">Safari</th>
+      <th scope="col">Chrome</th>
+    </tr>
+    <tr>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Partial *</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Partial *</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+`*` JAWS and Orca on Firefox will not always relay visible suggestions, but is covered by `aria-expanded`.
+
+<div class="table-wrapper" tabindex="0">
+<table>
+  <caption>Screen reader is notified when the number of suggestions changes</caption>
+  <colgroup span="3"></colgroup>
+  <colgroup span="2"></colgroup>
+  <colgroup span="3"></colgroup>
+  <colgroup span="1"></colgroup>
+  <colgroup span="1"></colgroup>
+  <colgroup span="2"></colgroup>
+  <colgroup span="2"></colgroup>
+  <tbody>
+    <tr>
+      <th colspan="3" scope="colgroup">JAWS</th>
+      <th colspan="2" scope="colgroup">Narrator</th>
+      <th colspan="3" scope="colgroup">NVDA</th>
+      <th colspan="1" scope="colgroup">Orca</th>
+      <th colspan="1" scope="colgroup">TalkBack</th>
+      <th colspan="2" scope="colgroup">VoiceOver (iOS)</th>
+      <th colspan="2" scope="colgroup">VoiceOver (macOS)</th>
+    </tr>
+    <tr>
+      <th scope="col">Chrome</th>
+      <th scope="col">Edge</th>
+      <th scope="col">Firefox</th>
+      <th scope="col">Chrome</th>
+      <th scope="col">Edge</th>
+      <th scope="col">Chrome</th>
+      <th scope="col">Edge</th>
+      <th scope="col">Firefox</th>
+      <th scope="col">Firefox</th>
+      <th scope="col">Chrome</th>
+      <th scope="col">Safari</th>
+      <th scope="col">Chrome</th>
+      <th scope="col">Safari</th>
+      <th scope="col">Chrome</th>
+    </tr>
+    <tr>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Partial *</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Partial **</td>
+      <td>Supported</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+`*` JAWS on Firefox will sometimes not read number of suggestions until you remove characters
+
+`**` Voiceover on Safari will sometimes stop relaying updates to number of suggestions.
+
+<div class="table-wrapper" tabindex="0">
+<table>
+  <caption>Screen reader is notified when no suggestions remain</caption>
+  <colgroup span="3"></colgroup>
+  <colgroup span="2"></colgroup>
+  <colgroup span="3"></colgroup>
+  <colgroup span="1"></colgroup>
+  <colgroup span="1"></colgroup>
+  <colgroup span="2"></colgroup>
+  <colgroup span="2"></colgroup>
+  <tbody>
+    <tr>
+      <th colspan="3" scope="colgroup">JAWS</th>
+      <th colspan="2" scope="colgroup">Narrator</th>
+      <th colspan="3" scope="colgroup">NVDA</th>
+      <th colspan="1" scope="colgroup">Orca</th>
+      <th colspan="1" scope="colgroup">TalkBack</th>
+      <th colspan="2" scope="colgroup">VoiceOver (iOS)</th>
+      <th colspan="2" scope="colgroup">VoiceOver (macOS)</th>
+    </tr>
+    <tr>
+      <th scope="col">Chrome</th>
+      <th scope="col">Edge</th>
+      <th scope="col">Firefox</th>
+      <th scope="col">Chrome</th>
+      <th scope="col">Edge</th>
+      <th scope="col">Chrome</th>
+      <th scope="col">Edge</th>
+      <th scope="col">Firefox</th>
+      <th scope="col">Firefox</th>
+      <th scope="col">Chrome</th>
+      <th scope="col">Safari</th>
+      <th scope="col">Chrome</th>
+      <th scope="col">Safari</th>
+      <th scope="col">Chrome</th>
+    </tr>
+    <tr>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
 ## FAQ
 
 ### Why not use `<datalist>` instead?
@@ -617,7 +818,8 @@ Despite well documented [examples in the aria 1.1 spesification](https://www.w3.
 - `role="listbox"` - VoiceOver needs aria-selected to falsely announce "0 selected"</li>
 - `role="option"` - falsely announces links and buttons as "text"</li>
 - `aria-live="assertive"` - fails to correctly inform user if current target is link or button</li>
-- `role="combobox"` - skipped in iOS as VoiceOver fails to inform current field is editable</li>
+
+- `aria-controls` - Reads 'tilgjengelig forslag' on windows Narrator on focus
 
 ### How do I use core-suggest with multiple tags/output values?
 Tagging and screen readers is a complex matter, requiring more than comma separated values. Currently, tagging is just a part of the wishlist for core-suggest. If tagging functionality is of interest for your project, please add a +1 to the [tagging task](https://github.com/nrkno/core-components/issues/9), describe your needs in a comment, and you'll be updated about progress.
