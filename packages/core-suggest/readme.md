@@ -25,7 +25,6 @@ demo-->
 > search results and smart select box abilities and automatic highlighting. Results can be with fetched directly from markup
 > or from a custom endpoint with AJAX.
 
-
 ## Examples (Plain JS)
 
 #### Static content
@@ -35,13 +34,17 @@ Use core-suggest to filter static markup
 ```html
 <!--demo-->
 <label for="my-input">Search</label>
-<input id="my-input" type="text" placeholder="Type something..." list="live-suggest">
-<core-suggest
-  id='live-suggest'
-  hidden
->
+<input
+  id="my-input"
+  type="text"
+  placeholder="Type something..."
+  list="live-suggest"
+/>
+<core-suggest id="live-suggest" hidden>
   <ul>
-    <li><button>Chro<b>me</b></button></li>
+    <li>
+      <button>Chro<b>me</b></button>
+    </li>
     <li><button>Firefox</button></li>
     <li><button>Opera</button></li>
     <li><button>Safari</button></li>
@@ -49,6 +52,7 @@ Use core-suggest to filter static markup
   </ul>
 </core-suggest>
 ```
+
 #### Live-region
 
 Modify the default notifications announced to screen readers when suggestions are visible, empty and filtered
@@ -58,9 +62,9 @@ Modify the default notifications announced to screen readers when suggestions ar
 
 <p>Custom label values</p>
 <label for="my-live-region-input">Search</label>
-<input id="my-live-region-input" type="text" placeholder="Type to filter">
+<input id="my-live-region-input" type="text" placeholder="Type to filter" />
 <core-suggest
-  data-sr-shown-message="Suggestions are shown"
+  data-sr-shown-message="{{value}} suggestions shown"
   data-sr-empty-message="No suggestions"
   data-sr-count-message="Showing {{value}} suggestions"
   hidden
@@ -77,10 +81,15 @@ Modify the default notifications announced to screen readers when suggestions ar
 <p>Only notify when suggestions are shown</p>
 
 <label for="my-live-region-shown-input">Search</label>
-<input id="my-live-region-shown-input" type="text" placeholder="Type to filter">
+<input
+  id="my-live-region-shown-input"
+  type="text"
+  placeholder="Type to filter"
+/>
 <core-suggest
   data-sr-shown-message="Suggestions are shown"
   data-sr-empty-message=""
+  data-sr-count-message=""
   hidden
 >
   <ul>
@@ -95,10 +104,15 @@ Modify the default notifications announced to screen readers when suggestions ar
 <p>Only notify when suggestions are removed by filter</p>
 
 <label for="my-live-region-filtered-input">Search</label>
-<input id="my-live-region-filtered-input" type="text" placeholder="Type to filter">
+<input
+  id="my-live-region-filtered-input"
+  type="text"
+  placeholder="Type to filter"
+/>
 <core-suggest
   data-sr-shown-message=""
   data-sr-empty-message="No suggestions"
+  data-sr-count-message=""
   hidden
 >
   <ul>
@@ -115,98 +129,140 @@ Modify the default notifications announced to screen readers when suggestions ar
 
 Ajax requests can be stopped by calling `event.preventDefault()` on `'suggest.filter'`. Remember to always escape html and debounce requests when fetching data from external sources. The http request sent by `@nrk/core-suggest` will have header `X-Requested-With: XMLHttpRequest` for easier [server side detection and CSRF prevention](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html).
 
-
 Note: When using `@nrk/core-suggest` with the `ajax: https://search.com?q={{value}}` functionality, make sure to implement both a `Searching...` status (while fetching data from the server), and a `No hits` status (if server responds with no results). These status indicators are highly recommended, but not provided by default as the context of use will affect the optimal textual formulation. [See example implementation →](#example-ajax)
 
-If you need to alter default headers, request method or post data, use the [`suggest.ajax.beforeSend` event  →](#input-ajax-beforesend)
+If you need to alter default headers, request method or post data, use the [`suggest.ajax.beforeSend` event →](#input-ajax-beforesend)
 
 ```html
 <!--demo-->
-<input id="my-input-ajax" placeholder="Country...">
-<core-suggest ajax="https://restcountries.com/v2/name/{{value}}?fields=name" hidden></core-suggest>
+<input id="my-input-ajax" placeholder="Country..." />
+<core-suggest
+  ajax="https://restcountries.com/v2/name/{{value}}?fields=name"
+  hidden
+></core-suggest>
 <script>
-  document.addEventListener('suggest.filter', (event) => {
-    const suggest = event.target
-    const input = suggest.input
-    const value = input.value.trim()
+  document.addEventListener("suggest.filter", (event) => {
+    const suggest = event.target;
+    const input = suggest.input;
+    const value = input.value.trim();
 
-    if (input.id !== 'my-input-ajax') return // Make sure we are on correct input
-    suggest.innerHTML = value ? `<ul><li><button>Searching for ${value}...</button></li></ul>` : ''
-  })
-  document.addEventListener('suggest.ajax', (event) => {
-    const suggest = event.target
-    const input = suggest.input
+    if (input.id !== "my-input-ajax") return; // Make sure we are on correct input
+    suggest.innerHTML = value
+      ? `<ul><li><button>Searching for ${value}...</button></li></ul>`
+      : "";
+  });
+  document.addEventListener("suggest.ajax", (event) => {
+    const suggest = event.target;
+    const input = suggest.input;
 
-    if (input.id !== 'my-input-ajax') return // Make sure we are on correct input
-    const items = event.detail.responseJSON
-    suggest.innerHTML = `<ul>${items.length ? items.slice(0, 10)
-      .map((item) => { return `<li><button>${suggest.escapeHTML(item.name)}</button></li>` }) // Generate list
-      .join('') : '<li><button>No results</button></li>'}</ul>`
-  })
-  document.addEventListener('suggest.ajax.error', (event) => {
-    const suggest = event.target
-    const input = suggest.input
+    if (input.id !== "my-input-ajax") return; // Make sure we are on correct input
+    const items = event.detail.responseJSON;
+    suggest.innerHTML = `<ul>${
+      items.length
+        ? items
+            .slice(0, 10)
+            .map((item) => {
+              return `<li><button>${suggest.escapeHTML(
+                item.name
+              )}</button></li>`;
+            }) // Generate list
+            .join("")
+        : "<li><button>No results</button></li>"
+    }</ul>`;
+  });
+  document.addEventListener("suggest.ajax.error", (event) => {
+    const suggest = event.target;
+    const input = suggest.input;
 
-    if (input.id !== 'my-input-ajax') return // Make sure we are on correct input
-    console.log(event)
-    const items = event.detail.responseJSON
-    suggest.innerHTML = '<ul><li><button>No results</button></li></ul>'
-  })
+    if (input.id !== "my-input-ajax") return; // Make sure we are on correct input
+    console.log(event);
+    const items = event.detail.responseJSON;
+    suggest.innerHTML = "<ul><li><button>No results</button></li></ul>";
+  });
 </script>
 ```
+
 #### Lazy
 
 Hybrid solution; lazy load items, use `core-suggest` to handle filtering:
+
 ```html
 <!--demo-->
-<input id="my-input-lazy" placeholder="Filter lazy-loaded content">
+<input id="my-input-lazy" placeholder="Filter lazy-loaded content" />
 <core-suggest hidden></core-suggest>
 <script>
   window.getCountries = (callback) => {
-    const xhr = new XMLHttpRequest()
-    const url = 'https://restcountries.com/v3.1/all?fields=name'
+    const xhr = new XMLHttpRequest();
+    const url = "https://restcountries.com/v3.1/all?fields=name";
 
-    xhr.onload = () => callback(JSON.parse(xhr.responseText))
-    xhr.open('GET', url, true)
-    xhr.send()
-  }
+    xhr.onload = () => callback(JSON.parse(xhr.responseText));
+    xhr.open("GET", url, true);
+    xhr.send();
+  };
 
-  document.addEventListener('focus', (event) => {
-    if (event.target.id !== 'my-input-lazy') return // Make sure we are on correct input
-    const input = event.target
-    const suggest = input.nextElementSibling
+  document.addEventListener(
+    "focus",
+    (event) => {
+      if (event.target.id !== "my-input-lazy") return; // Make sure we are on correct input
+      const input = event.target;
+      const suggest = input.nextElementSibling;
 
-    input.id = '' // Prevent double execution
-    window.getCountries((items) => {
-      suggest.innerHTML = `<ul>${items.map((item) =>
-        '<li><button>' + suggest.escapeHTML(item.name?.common) + '</button></li>'
-      ).join('')}</ul>`
-    })
-  }, true)
+      input.id = ""; // Prevent double execution
+      window.getCountries((items) => {
+        suggest.innerHTML = `<ul>${items
+          .map(
+            (item) =>
+              "<li><button>" +
+              suggest.escapeHTML(item.name?.common) +
+              "</button></li>"
+          )
+          .join("")}</ul>`;
+      });
+    },
+    true
+  );
 </script>
 ```
 
-
 #### Dynamic
+
 Synchronous operation; dynamically populate items based on input value:
 
 ```html
 <!--demo-->
-<input id="my-input-dynamic" placeholder="Type to generate suggestions">
+<input id="my-input-dynamic" placeholder="Type to generate suggestions" />
 <core-suggest hidden></core-suggest>
 <script>
-  document.addEventListener('suggest.filter', (event) => {
-    const suggest = event.target
-    const input = suggest.input
-    const value = input.value.trim()
-    const mails = ['facebook.com', 'gmail.com', 'hotmail.com', 'mac.com', 'mail.com', 'msn.com', 'live.com']
+  document.addEventListener("suggest.filter", (event) => {
+    const suggest = event.target;
+    const input = suggest.input;
+    const value = input.value.trim();
+    const mails = [
+      "facebook.com",
+      "gmail.com",
+      "hotmail.com",
+      "mac.com",
+      "mail.com",
+      "msn.com",
+      "live.com",
+    ];
 
-    if (input.id !== 'my-input-dynamic') return // Make sure we are on correct input
-    event.preventDefault()
-    suggest.innerHTML = `<ul>${value ? mails.map((mail) => {
-      return '<li><button type="button">' + value.replace(/(@.*|$)/, '@' + mail) + '</button></li>'
-    }).join('') : ''}</ul>`
-  })
+    if (input.id !== "my-input-dynamic") return; // Make sure we are on correct input
+    event.preventDefault();
+    suggest.innerHTML = `<ul>${
+      value
+        ? mails
+            .map((mail) => {
+              return (
+                '<li><button type="button">' +
+                value.replace(/(@.*|$)/, "@" + mail) +
+                "</button></li>"
+              );
+            })
+            .join("")
+        : ""
+    }</ul>`;
+  });
 </script>
 ```
 
@@ -236,13 +292,14 @@ Synchronous operation; dynamically populate items based on input value:
   </div>, document.getElementById('jsx-input'))
 </script>
 ```
+
 #### Ajax
 
 Ajax requests can be stopped by calling `event.preventDefault()` on `'suggest.filter'`. Remember to always escape html and debounce requests when fetching data from external sources. The http request sent by `@nrk/core-suggest` will have header `X-Requested-With: XMLHttpRequest` for easier [server side detection and CSRF prevention](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html).
 
 Note: When using `@nrk/core-suggest` with the `ajax: https://search.com?q={{value}}` functionality, make sure to implement both a `Searching...` status (while fetching data from the server), and a `No hits` status (if server responds with no results). These status indicators are highly recommended, but not provided by default as the context of use will affect the optimal textual formulation. [See example implementation →](#example-ajax)
 
-If you need to alter default headers, request method or post data, use the [`suggest.ajax.beforeSend` event  →](#input-ajax-beforesend)
+If you need to alter default headers, request method or post data, use the [`suggest.ajax.beforeSend` event →](#input-ajax-beforesend)
 
 ```html
 <!--demo-->
@@ -291,7 +348,7 @@ If you need to alter default headers, request method or post data, use the [`sug
 </script>
 ```
 
-#### Lazy 
+#### Lazy
 
 Hybrid solution; lazy load items, but let `core-suggest` still handle filtering:
 
@@ -327,7 +384,6 @@ Hybrid solution; lazy load items, but let `core-suggest` still handle filtering:
 </script>
 ```
 
-
 #### Dynamic
 
 Synchronous operation; dynamically populate items based on input value:
@@ -337,35 +393,52 @@ Synchronous operation; dynamically populate items based on input value:
 <div id="jsx-input-dynamic"></div>
 <script>
   class DynamicInput extends React.Component {
-    constructor (props) {
-      super(props)
-      this.onFilter = this.onFilter.bind(this)
-      this.mails = ['facebook.com', 'gmail.com', 'hotmail.com', 'mac.com', 'mail.com', 'msn.com', 'live.com']
-      this.state = {items: []}
+    constructor(props) {
+      super(props);
+      this.onFilter = this.onFilter.bind(this);
+      this.mails = [
+        "facebook.com",
+        "gmail.com",
+        "hotmail.com",
+        "mac.com",
+        "mail.com",
+        "msn.com",
+        "live.com",
+      ];
+      this.state = { items: [] };
     }
-    onFilter (event) {
-      const suggest = event.target
-      const value = suggest.input.value.trim()
-      const items = value ? this.mails.map((mail) => value.replace(/(@.*|$)/, `@${mail}`)) : []
+    onFilter(event) {
+      const suggest = event.target;
+      const value = suggest.input.value.trim();
+      const items = value
+        ? this.mails.map((mail) => value.replace(/(@.*|$)/, `@${mail}`))
+        : [];
 
-      event.preventDefault()
-      this.setState({value, items})
+      event.preventDefault();
+      this.setState({ value, items });
     }
-    render () {
-      return <div>
-        <input type='text' placeholder='Type to generate suggestions' />
-        <CoreSuggest onSuggestFilter={this.onFilter}>
-          <ul className='my-dropdown'>
-            {this.state.items.map((text) =>
-              <li key={text}><button>{text}</button></li>
-            )}
-          </ul>
-        </CoreSuggest>
-      </div>
+    render() {
+      return (
+        <div>
+          <input type="text" placeholder="Type to generate suggestions" />
+          <CoreSuggest onSuggestFilter={this.onFilter}>
+            <ul className="my-dropdown">
+              {this.state.items.map((text) => (
+                <li key={text}>
+                  <button>{text}</button>
+                </li>
+              ))}
+            </ul>
+          </CoreSuggest>
+        </div>
+      );
     }
   }
 
-  ReactDOM.render(<DynamicInput />, document.getElementById('jsx-input-dynamic'))
+  ReactDOM.render(
+    <DynamicInput />,
+    document.getElementById("jsx-input-dynamic")
+  );
 </script>
 ```
 
@@ -381,15 +454,15 @@ npm install @nrk/core-suggest  # Using NPM
 Using static registers the custom element with default name automatically:
 
 ```html
-<script src="https://static.nrk.no/core-components/major/9/core-suggest/core-suggest.min.js"></script>  <!-- Using static -->
+<script src="https://static.nrk.no/core-components/major/9/core-suggest/core-suggest.min.js"></script>
+<!-- Using static -->
 ```
 
 Remember to [polyfill](https://github.com/webcomponents/polyfills/tree/master/packages/custom-elements) custom elements if needed.
 
-
 ## Usage
 
-Typing into the input toggles the [hidden attribute](https://developer.mozilla.org/en/docs/Web/HTML/Global_attributes/hidden) on items of type `<button>` and `<a>`, based on matching [textContent](https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent) inside `<core-suggest>`. Focusing the input unhides the following element. The default filtering behavior can easily be altered through the `'suggest.select'`, `'suggest.filter'`, `'suggest.ajax'` and  `'suggest.ajax.beforeSend'` [events](#events).
+Typing into the input toggles the [hidden attribute](https://developer.mozilla.org/en/docs/Web/HTML/Global_attributes/hidden) on items of type `<button>` and `<a>`, based on matching [textContent](https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent) inside `<core-suggest>`. Focusing the input unhides the following element. The default filtering behavior can easily be altered through the `'suggest.select'`, `'suggest.filter'`, `'suggest.ajax'` and `'suggest.ajax.beforeSend'` [events](#events).
 
 ### Security
 
@@ -402,11 +475,11 @@ The `highlight`-attribute accepts `'on', 'off', 'keep'`, defaults to `'on'`.
 Optional attribute to override how core-suggest handles `<mark>`-tags in results.
 Highlighting is disabled for IE11 due to errant behavior.
 
-VALUE | BEHAVIOUR
-:-- | :--
-`'on'` (default) | Strips existing `<mark>`-tags and wraps new matches in `<mark>`-tags
-`'off'` | Strips existing `<mark>`-tags, but does not wrap matches
-`'keep'` | Does not noting with `<mark>`-tags - existing tags are not stripped and no new matches are added
+| VALUE            | BEHAVIOUR                                                                                        |
+| :--------------- | :----------------------------------------------------------------------------------------------- |
+| `'on'` (default) | Strips existing `<mark>`-tags and wraps new matches in `<mark>`-tags                             |
+| `'off'`          | Strips existing `<mark>`-tags, but does not wrap matches                                         |
+| `'keep'`         | Does not noting with `<mark>`-tags - existing tags are not stripped and no new matches are added |
 
 ### Aria-live
 
@@ -415,53 +488,57 @@ Core-suggest notifies screen readers using a polite aria-live region when sugges
 To do this, we append a `<span>` with `aria-live="polite"` and hide it from view. When something is notified, we set and subsequently clear the `textContent` of this span.
 
 Text sent to screen readers can be adjusted by setting the following attributes on the `core-suggest` element:
- * `data-sr-shown-message="Forslag vises"`
- * `data-sr-empty-message="Ingen forslag"`
- * `data-sr-count-message="{{value}} forslag"`
+
+- `data-sr-shown-message="Forslag vises"`
+- `data-sr-empty-message="Ingen forslag"`
+- `data-sr-count-message="{{value}} forslag"`
 
 **NB!** When updating contents of a `<core-suggest>` element, avoid replacing the `innerHTML` (and thus removing the aria-live region) of the suggest. By updating the contents of a child element, e.g a `<ul>`, the aria-live region is present and will be able to announce that suggestions are shown.
 
 ### HTML / JavaScript
 
-
-```html
-<input type="text"                                      <!-- Must be a textual input element -->
-       list="{String}">                                 <!-- Optional. Specify id of suggest element -->
-<core-suggest limit="{Number}"                          <!-- Optional. Limit maxium number of result items. Defaults to Infinity -->
-              ajax="{String}"                           <!-- Optional. Fetches external data. See event 'suggest.ajax'. Example: 'https://search.com?q={{value}}' -->
-              highlight="{'on' | 'off' | 'keep'}"       <!-- Optional override of highlighting matches in results. Defaults to 'on'. -->
-              data-sr-shown-message                     <!-- Optional. Override text sent to aria-live region when suggestions are shown -->
-              data-sr-empty-message                     <!-- Optional. Override text sent to aria-live region when suggestions are empty due to filter -->
-              data-sr-count-message                     <!-- Optional. Override text sent to aria-live region when suggestions are counted as part of filtering -->
-              hidden>                                   <!-- Use hidden to toggle visibility -->
-  <ul>                                                  <!-- Can be any tag, but items should be inside <li> -->
-    <li><button>Item 1</button></li>                    <!-- Items must be <button> or <a> -->
-    <li><button value="Suprise!">Item 2</button></li>   <!-- Alternative value can be defined -->
-    <li><a href="https://www.nrk.no/">NRK.no</a></li>   <!-- Actual links are recommended when applicable -->
+```jsx
+<input
+ type="text" <!-- Must be a textual input element -->
+ list="{String}" <!-- Optional. Specify id of suggest element -->
+/>
+<core-suggest
+  limit="{Number}" <!-- Optional. Limit maxium number of result items. Defaults to Infinity -->
+  ajax="{String}" <!-- Optional. Fetches external data. See event 'suggest.ajax'. Example: 'https://search.com?q={{value}}' -->
+  highlight="{'on' | 'off' | 'keep'}" <!-- Optional. Override highlighting matches in results. Defaults to 'on'. -->
+  data-sr-shown-message="Forslag vises" <!-- Optional. Override text sent to aria-live region when suggestions are shown -->
+  data-sr-empty-message="Ingen forslag" <!-- Optional. Override text sent to aria-live region when suggestions are empty due to filter -->
+  data-sr-count-message="{{value}} forslag" <!-- Optional. Override text sent to aria-live region when suggestions are counted as part of filtering -->
+  hidden <!-- Use hidden to toggle visibility -->
+>
+  <ul>  <!-- Can be any tag, but items should be inside <li> -->
+    <li><button>Item 1</button></li>  <!-- Items must be <button> or <a> -->
+    <li><button value="Suprise!">Item 2</button></li> <!-- Alternative value can be defined -->
+    <li><a href="https://www.nrk.no/">NRK.no</a></li> <!-- Actual links are recommended when applicable -->
   </ul>
 </core-suggest>
 ```
 
 ```js
-import CoreSuggest from '@nrk/core-suggest'                 // Using NPM
-window.customElements.define('core-suggest', CoreSuggest)   // Using NPM. Replace 'core-suggest' with 'my-suggest' to namespace
+import CoreSuggest from "@nrk/core-suggest"; // Using NPM
+window.customElements.define("core-suggest", CoreSuggest); // Using NPM. Replace 'core-suggest' with e.g 'my-suggest' to namespace
 
-const mySuggest = document.querySelector('core-suggest')
+const mySuggest = document.querySelector("core-suggest");
 
 // Getters
-mySuggest.ajax       // Get ajax URL value
-mySuggest.limit      // Get limit
-mySuggest.highlight  // Get highlight
-mySuggest.hidden     // Get hidden
-mySuggest.input      // Get input for suggest
+mySuggest.ajax; // Get ajax URL value
+mySuggest.limit; // Get limit
+mySuggest.highlight; // Get highlight
+mySuggest.hidden; // Get hidden
+mySuggest.input; // Get input for suggest
 // Setters
-mySuggest.ajax = "https://search.com?q={{value}}"    // Set ajax endpoint URL for fetching external data.
-mySuggest.limit = 5                                  // Set limit for results
-mySuggest.highlight = 'on' | 'off' | 'keep'          // Set highlight strategy
-mySuggest.hidden = false                             // Set hidden value
+mySuggest.ajax = "https://search.com?q={{value}}"; // Set ajax endpoint URL for fetching external data.
+mySuggest.limit = 5; // Set limit for results
+mySuggest.highlight = "on" | "off" | "keep"; // Set highlight strategy
+mySuggest.hidden = false; // Set hidden value
 // Methods
-mySuggest.escapeHTML('<span>...</span>')             // Utility function for escaping HTML string
-mySuggest.pushToLiveRegion('Message to be read')     // Sends string content to aria-live region to notify screen readers
+mySuggest.escapeHTML("<span>...</span>"); // Utility function for escaping HTML string
+mySuggest.pushToLiveRegion("Message to be read"); // Sends string content to aria-live region to notify screen readers
 ```
 
 ### React / Preact
@@ -498,113 +575,117 @@ Putting the input directly before the suggestion list is highly recommended, as 
 
 ```html
 <label>
-  <input list="my-list" type="text" placeholder="...">
+  <input list="my-list" type="text" placeholder="..." />
 </label>
-<core-suggest id="my-list" hidden>
-  ...
-</core-suggest>
+<core-suggest id="my-list" hidden> ... </core-suggest>
 ```
-
 
 ## Events
 
 ### suggest.filter
+
 Fired before a default filtering occurs. If you wish to handle filtering yourself, e.g fuzzy search or similar, use `event.preventDefault()` to disable the default filtering.
 
 ```js
-document.addEventListener('suggest.filter', (event) => {
-  event.target      // The core-suggest element
-})
+document.addEventListener("suggest.filter", (event) => {
+  event.target; // The core-suggest element
+});
 ```
 
 ### suggest.select
+
 Fired when an item is clicked/selected:
 
 ```js
-document.addEventListener('suggest.select', (event) => {
-  event.target        // The core-suggest element
-  event.target.value  // The selected data
-  event.detail        // The selected element
-})
+document.addEventListener("suggest.select", (event) => {
+  event.target; // The core-suggest element
+  event.target.value; // The selected data
+  event.detail; // The selected element
+});
 ```
 
 ### suggest.ajax.beforeSend
+
 Fired before sending debounced ajax requests. If you wish to alter the [XMLHttpRequest](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest), use `event.preventDefault()` and then execute [XHR methods](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest#Methods) on the `event.detail`. If not prevented, requests are sent using the `GET` method and the header `'X-Requested-With': 'XMLHttpRequest'`.
 
 ```js
-document.addEventListener('suggest.ajax.beforeSend', (event) => {
-  event.target  // The core-suggest element
-  event.detail  // The XMLHttpRequest object
-})
+document.addEventListener("suggest.ajax.beforeSend", (event) => {
+  event.target; // The core-suggest element
+  event.detail; // The XMLHttpRequest object
+});
 ```
 
 ```js
 // Example
-document.addEventListener('suggest.ajax.beforeSend', (event) => {
-  const xhr = event.detail
-  event.preventDefault() // Stop default behaviour
-  xhr.open('POST', 'https://example.com')
-  xhr.setRequestHeader('Content-Type', 'application/json')
-  xhr.setRequestHeader('my-custom-header', 'my-custom-value')
-  xhr.send(JSON.stringify({query: event.target.input.value}))
-})
+document.addEventListener("suggest.ajax.beforeSend", (event) => {
+  const xhr = event.detail;
+  event.preventDefault(); // Stop default behaviour
+  xhr.open("POST", "https://example.com");
+  xhr.setRequestHeader("Content-Type", "application/json");
+  xhr.setRequestHeader("my-custom-header", "my-custom-value");
+  xhr.send(JSON.stringify({ query: event.target.input.value }));
+});
 ```
 
 ### suggest.ajax
+
 Fired when the input field receives data from ajax:
 
 ```js
-document.addEventListener('suggest.ajax', (event) => {
-  event.target  // The core-suggest element
-  event.detail  // The XMLHttpRequest object
-  event.detail.responseText  // The response body text
-  event.detail.responseJSON  // The response json. Defaults to false if no valid JSON found
-})
+document.addEventListener("suggest.ajax", (event) => {
+  event.target; // The core-suggest element
+  event.detail; // The XMLHttpRequest object
+  event.detail.responseText; // The response body text
+  event.detail.responseJSON; // The response json. Defaults to false if no valid JSON found
+});
 ```
 
 ### suggest.ajax.error
+
 Fired when the request fails either due to a bad request (bad URL, non-200 response), an network error or a JSON parse error. Inspect `xhr.status` and `xhr.statusText` for bad requests and `xhr.responseError` for other errors:
 
 ```js
-document.addEventListener('suggest.ajax.error', (event) => {
-  event.target  // The core-suggest element
-  event.detail  // The XMLHttpRequest object
-  event.detail.status         // The response status code
-  event.detail.statusText     // The response status text
-  event.detail.responseError  // The error message for ajax errors/json parse errors
-})
+document.addEventListener("suggest.ajax.error", (event) => {
+  event.target; // The core-suggest element
+  event.detail; // The XMLHttpRequest object
+  event.detail.status; // The response status code
+  event.detail.statusText; // The response status text
+  event.detail.responseError; // The error message for ajax errors/json parse errors
+});
 ```
 
 ```js
 // Example
-document.addEventListener('suggest.ajax.error', (event) => {
-  const xhr = event.detail
+document.addEventListener("suggest.ajax.error", (event) => {
+  const xhr = event.detail;
   if (xhr.status !== 200) {
-    if (xhr.responseError) {             // Network error / JSON parse error
-      console.log(xhr.responseError)     // Log error message
-    } else {                             // Bad request
-      console.log(xhr.statusText)        // Log status text
-      console.log(xhr.responseText)      // Log response text
+    if (xhr.responseError) {
+      // Network error / JSON parse error
+      console.log(xhr.responseError); // Log error message
+    } else {
+      // Bad request
+      console.log(xhr.statusText); // Log status text
+      console.log(xhr.responseText); // Log response text
     }
   }
-})
+});
 ```
 
-
 ## Styling
+
 All styling in documentation is example only. Both the `<button>` and content element receive attributes reflecting the current toggle state:
 
 ```css
-.my-input {}                          /* Target input in any state */
-.my-input[aria-expanded="true"] {}    /* Target only open button */
-.my-input[aria-expanded="false"] {}   /* Target only closed button */
+.my-input {} // Target input in any state
+.my-input[aria-expanded="true"] {} // Target only open button
+.my-input[aria-expanded="false"] {} // Target only closed button
 
-.my-input-content {}                  /* Target content element in any state */
-.my-input-content:not([hidden]) {}    /* Target only open content */
-.my-input-content[hidden] {}          /* Target only closed content */
+.my-input-content {} // Target content element in any state
+.my-input-content:not([hidden]) {} // Target only open content
+.my-input-content[hidden] {} // Target only closed content
 
-.my-input-content :focus {}           /* Target focused item */
-.my-input-content mark {}             /* Target highlighted text (use `highlight='off'` to disable highlighting) */
+.my-input-content :focus {} // Target focused item
+.my-input-content mark {} // Target highlighted text (use `highlight='off'` to disable highlighting)
 ```
 
 ## Notes on accessibility
@@ -612,9 +693,10 @@ All styling in documentation is example only. Both the `<button>` and content el
 ### Screen reader notifications
 
 Release 1.3.0 introduced screen reader notifications for the following scenarios:
- - Suggestions become visible to the user, message defaults to `Forslag vises`.
- - The number of suggestions are announced when it changes, message defaults to `{{value}} forslag`.
- - When no suggestions remain, message defaults to `Ingen forslag`.
+
+- Suggestions become visible to the user, message defaults to `Forslag vises`.
+- The number of suggestions are announced when it changes, message defaults to `{{value}} forslag`.
+- When no suggestions remain, message defaults to `Ingen forslag`.
 
 Norwegian language is used by default, but the content can be changed by setting the appropriate [attributes](#aria-live)
 
@@ -622,12 +704,11 @@ These notifications have been added to improve the user experience when using sc
 
 As part of verifying compatibility with various screen-readers we made the following observations:
 
-* When using NVDA, JAWS or Narrator on Windows, notification when visible (`Forslag vises`) is superfluous as `aria-expanded` conveyes that the content is expanded. It is kept in for broader support across platforms.
-* 
+- When using NVDA, JAWS or Narrator on Windows, notification when visible (`Forslag vises`) is superfluous as `aria-expanded` conveyes that the content is expanded. It is kept in for broader support across platforms.
 
-Using JAWS version 2022-04 on windows 10, NVDA version 2021.3.5 on windows 10, Narrator on windows 10, TalkBack on EMUI 100
-Testing resuls as of `2022-05-10`:
+Using JAWS version 2022-04 on windows 10, NVDA version 2021.3.5 on windows 10, Narrator on windows 10, TalkBack on EMUI 12.
 
+Testing results as of `2022-05-10`:
 
 <div class="table-wrapper" tabindex="0">
 <table>
@@ -806,9 +887,11 @@ Testing resuls as of `2022-05-10`:
 ## FAQ
 
 ### Why not use `<datalist>` instead?
+
 Despite having a native [`<datalist>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/datalist) element for autocomplete lists, there are several issues regarding [browser support](https://caniuse.com/#feat=details), varying [accessibility](http://accessibleculture.org/articles/2012/03/screen-readers-and-details-summary/) support as well as no ability for custom styling or custom behavior.
 
 ### Why is there only a subset of aria attributes in use?
+
 Despite well documented [examples in the aria 1.1 spesification](https://www.w3.org/TR/2017/NOTE-wai-aria-practices-1.1-20171214/examples/combobox/aria1.1pattern/listbox-combo.html), "best practice" simply becomes unusable in several screen reader due to implementation differences. `core-suggest` aims to provide a equally good user experience regardless if a screen reader passes events to browser or not (events are often hijacked for quick-navigation). Several techniques and attributes have been thoroughly tested:
 
 - `aria-activedescendant`/`aria-selected` - ignored in Android, lacks indication of list length in JAWS</li>
@@ -820,4 +903,5 @@ Despite well documented [examples in the aria 1.1 spesification](https://www.w3.
 - `aria-controls` - Reads 'tilgjengelig forslag' on windows Narrator on focus
 
 ### How do I use core-suggest with multiple tags/output values?
+
 Tagging and screen readers is a complex matter, requiring more than comma separated values. Currently, tagging is just a part of the wishlist for core-suggest. If tagging functionality is of interest for your project, please add a +1 to the [tagging task](https://github.com/nrkno/core-components/issues/9), describe your needs in a comment, and you'll be updated about progress.
