@@ -57,9 +57,7 @@ export default class CoreSuggest extends HTMLElement {
 
   attributeChangedCallback (name) {
     if (!this._observer) return
-    if (name === 'hidden') {
-      this.input.setAttribute('aria-expanded', !this.hidden)
-    }
+    if (name === 'hidden') this.input.setAttribute('aria-expanded', !this.hidden)
     if (name === 'highlight') onMutation(this)
   }
 
@@ -86,6 +84,7 @@ export default class CoreSuggest extends HTMLElement {
    * @returns {void}
    */
   pushToLiveRegion (label) {
+    if (!this._observer || !this._ariaLiveSpan) return // Abort if disconnectedCallback has been called or no _ariaLiveSpan
     clearTimeout(this._ariaLiveTimeout) // Clear existing timeout
     this._ariaLiveSpan.textContent = label
     this._ariaLiveTimeout = setTimeout(() => (this._clearLiveRegion()), ARIA_LIVE_DELAY)
@@ -156,7 +155,6 @@ function notifyTextContent (self, textContent) {
  * @returns {void}
  */
 function notifyResultCount (self, items) {
-  if (!self._observer) return // Abort if disconnectedCallback has been called
   const label = self.getAttribute('data-sr-count-message')
   if (label === '') return // Abort if label is set to explicit empty string
   self.pushToLiveRegion((label || ARIA_LIVE_COUNT).replace('{{value}}', items))
@@ -170,7 +168,6 @@ function notifyResultCount (self, items) {
  * @returns {void}
  */
 function notifyResultsEmpty (self) {
-  if (!self._observer) return // Abort if disconnectedCallback has been called
   const label = self.getAttribute('data-sr-empty-message')
   if (label === '') return // Abort if label is set to explicit empty string
   self.pushToLiveRegion(label || ARIA_LIVE_FILTERED)
