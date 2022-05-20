@@ -15,7 +15,6 @@ const KEY = {
 }
 const AJAX_DEBOUNCE = 500
 const ARIA_LIVE_DELAY = 200 // 200 ms established as sufficient, through testing, to not be invasive of expected screen-reader behavior
-const ARIA_LIVE_VISIBLE = 'Forslag vises'
 const ARIA_LIVE_FILTERED = 'Ingen forslag'
 const ARIA_LIVE_COUNT = '{{value}} forslag'
 
@@ -23,7 +22,7 @@ export default class CoreSuggest extends HTMLElement {
   static get observedAttributes () { return ['hidden', 'highlight'] }
 
   connectedCallback () {
-    this._observer = new window.MutationObserver(mutationsList => onMutation(this, mutationsList))
+    this._observer = new window.MutationObserver(() => onMutation(this))
     this._observer.observe(this, { subtree: true, childList: true, attributes: true, attributeFilter: ['hidden'] })
     this._xhr = new window.XMLHttpRequest()
     this.id = this.id || getUUID()
@@ -135,18 +134,16 @@ function appendResultsNotificationSpan (self) {
 }
 
 /**
- * Notify screen readers when results are visible
- * textContent uses attribute `'data-sr-shown-message'`
+ * Send textContent to be read by screen readers only if attribute to opt-in is present
+ * Uses attribute `'data-sr-read-text-content'`
  *
  * @param {CoreSuggest} self Core suggest element
- * @param {Number} items Number of visible items
+ * @param {String} textContent label to be read
  * @returns {void}
  */
-function notifyResultsVisible (self, items) {
-  if (!self._observer) return // Abort if disconnectedCallback has been called
-  const label = self.getAttribute('data-sr-shown-message')
-  if (label === '') return // Abort if label is set to explicit empty string
-  self.pushToLiveRegion((label || ARIA_LIVE_VISIBLE).replace('{{value}}', items))
+function notifyTextContent (self, textContent) {
+  if (!self.hasAttribute('data-sr-read-text-content')) return // Abort if not present
+  self.pushToLiveRegion(textContent)
 }
 
 /**
@@ -197,10 +194,9 @@ function toggleItem (item, show) {
  * Trigger messages for screen-readers
  * This can happen quite frequently so make it fast
  * @param {CoreSuggest} self Core suggest element
- * @param {MutationRecord[]?} mutations Optional. List of MutationRecords
  * @returns {void}
  */
-function onMutation (self, mutations) {
+function onMutation (self) {
   if (!self._observer) return // Abort if disconnectedCallback has been called (this/self._observer is null)
 
   const needle = self.input.value.toLowerCase().trim()
@@ -255,37 +251,14 @@ function onMutation (self, mutations) {
   }
 
   // Send messages for screen readers
-  if (mutations) {
-    for (const mutation of mutations) {
-      if (mutation.attributeName === 'hidden') {
-        if (mutation.target === self) {
-          if (!self.hidden && !self._empty) {
-            // Notify screen readers when visible and list has content
-            clearTimeout(self._ariaLiveDelay) // Clear existing delay
-            self._ariaLiveDelay = setTimeout(() => notifyResultsVisible(self, items.length), ARIA_LIVE_DELAY)
-            break // Avoid duplicate messages
-          }
-        } else {
-          if (self._empty) {
-            // Notify screen readers when suggestions are completely hidden by filter
-            notifyResultsEmpty(self)
-            break // Avoid duplicate messages
-          } else {
-            // Notify screen readers when number of suggestions are modified by filter
-            notifyResultCount(self, items.length)
-            break // Avoid duplicate messages
-          }
-        }
-      } else if (mutation.type === 'childList') {
-        if (!self.hidden && !self._empty) {
-          // Notify screen readers when visible and list has inserted content
-          clearTimeout(self._ariaLiveDelay) // Clear existing delay
-          self._ariaLiveDelay = setTimeout(() => notifyResultsVisible(self, items.length), ARIA_LIVE_DELAY)
-          break // Avoid duplicate messages
-        }
-      }
-    }
-  }
+  const hasNoInteractibleItems = !self.querySelector('a,button')
+  const isNoSearchYet = hasNoInteractibleItems && !self.input.value
+  const textContent = hasNoInteractibleItems && self.textContent.trim()
+
+  if (self.hidden || isNoSearchYet) self._clearLiveRegion()
+  else if (textContent) notifyTextContent(self, textContent)
+  else if (items.length) notifyResultCount(self, items.length)
+  else notifyResultsEmpty(self)
 
   self._observer.takeRecords() // Empty mutation queue to skip mutations done by highlighting
 }
@@ -400,7 +373,6 @@ function onAjaxSend (self) {
         dispatchEvent(self, 'suggest.ajax.error', self._xhr)
       }
       // Data successfully received
-      notifyResultsVisible(self)
       dispatchEvent(self, 'suggest.ajax', self._xhr)
     }
     self._xhr.open('GET', self.ajax.replace('{{value}}', window.encodeURIComponent(self.input.value)), true)
