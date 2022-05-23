@@ -194,7 +194,7 @@ function toggleItem (item, show) {
  * Enhances items with aria-label, tabindex and type="button"
  * Respects limit attribute
  * Updates <mark> tags for highlighting according to attribute
- * Trigger messages for screen-readers
+ * Trigger messages for screen readers
  * This can happen quite frequently so make it fast
  * @param {CoreSuggest} self Core suggest element
  * @returns {void}
