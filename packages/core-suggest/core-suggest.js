@@ -254,11 +254,11 @@ function onMutation (self) {
   }
 
   // Send messages for screen readers
-  const hasNoInteractibleItems = !self.querySelector('a,button')
-  const isNoSearchYet = hasNoInteractibleItems && !self.input.value
-  const textContent = hasNoInteractibleItems && self.textContent.trim()
+  const hasNoItems = !self.querySelector('a,button') // Accounts for hidden as well
+  const hasNotSearchedYet = hasNoItems && !self.input.value
+  const textContent = hasNoItems && self.textContent.trim()
 
-  if (self.hidden || isNoSearchYet) self._clearLiveRegion()
+  if (self.hidden || hasNotSearchedYet) self._clearLiveRegion()
   else if (textContent) notifyTextContent(self, textContent)
   else if (items.length) notifyResultCount(self, items.length)
   else notifyResultsEmpty(self)
