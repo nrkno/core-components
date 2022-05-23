@@ -85,9 +85,15 @@ export default class CoreSuggest extends HTMLElement {
    */
   pushToLiveRegion (label) {
     if (!this._observer || !this._ariaLiveSpan) return // Abort if disconnectedCallback has been called or no _ariaLiveSpan
-    clearTimeout(this._ariaLiveTimeout) // Clear existing timeout
-    this._ariaLiveSpan.textContent = label
-    this._ariaLiveTimeout = setTimeout(() => (this._clearLiveRegion()), ARIA_LIVE_DELAY)
+    clearTimeout(this._ariaLiveDebounce) // Debounce multiple calls in the delay-interval
+
+    // Delaying the update of textContent is necesary for consistent behavior in NVDA
+    this._ariaLiveDebounce = setTimeout(() => {
+      clearTimeout(this._ariaLiveTimeout) // Clear existing timeout
+      this._ariaLiveSpan.textContent = label
+      // Delay clearing to successfully register change in textContent with screen readers
+      this._ariaLiveTimeout = setTimeout(() => (this._clearLiveRegion()), ARIA_LIVE_DELAY)
+    }, ARIA_LIVE_DELAY)
   }
 
   /**
