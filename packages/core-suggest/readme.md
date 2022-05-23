@@ -127,28 +127,34 @@ Modify the default notifications announced to screen readers when suggestions ar
 
 #### Ajax
 
-Ajax requests can be stopped by calling `event.preventDefault()` on `'suggest.filter'`. Remember to always escape html and debounce requests when fetching data from external sources. The http request sent by `@nrk/core-suggest` will have header `X-Requested-With: XMLHttpRequest` for easier [server side detection and CSRF prevention](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html).
+Ajax requests can be stopped by calling `event.preventDefault()` on the [`suggest.filter` event](#suggest-filter).
 
-Note: When using `@nrk/core-suggest` with the `ajax: https://search.com?q={{value}}` functionality, make sure to implement both a `Searching...` status (while fetching data from the server), and a `No hits` status (if server responds with no results). These status indicators are highly recommended, but not provided by default as the context of use will affect the optimal textual formulation. [See example implementation →](#example-ajax)
+If you need to alter default headers, request method or post data, use the [`suggest.ajax.beforeSend` event](#input-ajax-beforesend)
 
-If you need to alter default headers, request method or post data, use the [`suggest.ajax.beforeSend` event →](#input-ajax-beforesend)
+Always [escape html](#security) and debounce requests when fetching data from external sources. The http request sent by `@nrk/core-suggest` will have header `X-Requested-With: XMLHttpRequest` for easier [server side detection and CSRF prevention](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html).
+
+When using `@nrk/core-suggest` with the `ajax` functionality, make sure to implement both a "pending" (e.g. `Searching...`) and "nothing found" (e.g. `No results`) status. Use `data-sr-read-text-content` and wrap the message with `span tabindex="-1"` instead of `button`/`a` for users to be able to interact using keyboard, but not be announced as a result to screen readers
+
+Note: These status indicators are highly recommended, but are not provided by default as the context will affect the optimal textual formulation.
 
 ```html
 <!--demo-->
 <input id="my-input-ajax" placeholder="Country..." />
 <core-suggest
   ajax="https://restcountries.com/v2/name/{{value}}?fields=name"
+  data-sr-read-text-content
   hidden
 ></core-suggest>
-<script>
+<script type="text/javascript">
   document.addEventListener("suggest.filter", (event) => {
     const suggest = event.target;
     const input = suggest.input;
     const value = input.value.trim();
 
     if (input.id !== "my-input-ajax") return; // Make sure we are on correct input
+    // Use tabindex for users to be able to reach with keyboard, but not be announced as a result to screen readers
     suggest.innerHTML = value
-      ? `<ul><li><button>Searching for ${value}...</button></li></ul>`
+      ? `<ul><li><span tabindex="-1">Searching for ${value}...</span></li></ul>`
       : "";
   });
   document.addEventListener("suggest.ajax", (event) => {
@@ -167,7 +173,7 @@ If you need to alter default headers, request method or post data, use the [`sug
               )}</button></li>`;
             }) // Generate list
             .join("")
-        : "<li><button>No results</button></li>"
+        : '<li><span tabindex="-1">No results</span></li>'
     }</ul>`;
   });
   document.addEventListener("suggest.ajax.error", (event) => {
@@ -175,9 +181,9 @@ If you need to alter default headers, request method or post data, use the [`sug
     const input = suggest.input;
 
     if (input.id !== "my-input-ajax") return; // Make sure we are on correct input
-    console.log(event);
+
     const items = event.detail.responseJSON;
-    suggest.innerHTML = "<ul><li><button>No results</button></li></ul>";
+    suggest.innerHTML = '<ul><li><span tabindex="-1">No results</span></li></ul>';
   });
 </script>
 ```
@@ -295,16 +301,20 @@ Synchronous operation; dynamically populate items based on input value:
 
 #### Ajax
 
-Ajax requests can be stopped by calling `event.preventDefault()` on `'suggest.filter'`. Remember to always escape html and debounce requests when fetching data from external sources. The http request sent by `@nrk/core-suggest` will have header `X-Requested-With: XMLHttpRequest` for easier [server side detection and CSRF prevention](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html).
+Ajax requests can be stopped by calling `event.preventDefault()` on the [`onSuggestFilter` event](#suggest-filter).
 
-Note: When using `@nrk/core-suggest` with the `ajax: https://search.com?q={{value}}` functionality, make sure to implement both a `Searching...` status (while fetching data from the server), and a `No hits` status (if server responds with no results). These status indicators are highly recommended, but not provided by default as the context of use will affect the optimal textual formulation. [See example implementation →](#example-ajax)
+If you need to alter default headers, request method or post data, use the [`onSuggestAjaxBeforeSend` event](#input-ajax-beforesend)
 
-If you need to alter default headers, request method or post data, use the [`suggest.ajax.beforeSend` event →](#input-ajax-beforesend)
+Always [escape html](#security) and debounce requests when fetching data from external sources. The http request sent by `@nrk/core-suggest` will have header `X-Requested-With: XMLHttpRequest` for easier [server side detection and CSRF prevention](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html).
+
+When using `@nrk/core-suggest` with the `ajax` functionality, make sure to implement both a "pending" (e.g. `Searching...`) and "nothing found" (e.g. `No results`) status. Use `data-sr-read-text-content={true}` and wrap the message with `span tabindex="-1"` instead of `button`/`a` for users to be able to interact using keyboard, but not be announced as a result to screen readers
+
+Note: These status indicators are highly recommended, but are not provided by default as the context will affect the optimal textual formulation.
 
 ```html
 <!--demo-->
 <div id="jsx-input-ajax"></div>
-<script type="text/jsx">
+<script type="text/javascript">
   class AjaxInput extends React.Component {
     constructor (props) {
       super(props)
@@ -331,6 +341,7 @@ If you need to alter default headers, request method or post data, use the [`sug
             ajax="https://restcountries.com/v3.1/name/{{value}}?fields=name"
             onSuggestFilter={this.onFilter}
             onSuggestAjax={this.onAjax}
+            data-sr-read-text-content={true}
           >
             <ul>
               {this.state.items.slice(0, 10).map((item) =>
