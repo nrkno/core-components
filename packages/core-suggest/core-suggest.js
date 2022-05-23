@@ -14,7 +14,7 @@ const KEY = {
   PAGEUP: 'PageUp'
 }
 const AJAX_DEBOUNCE = 500
-const ARIA_LIVE_DELAY = 200 // 200 ms established as sufficient, through testing, to not be invasive of expected screen-reader behavior
+const ARIA_LIVE_DELAY = 100 // 100 ms established as sufficient, through testing.
 const ARIA_LIVE_FILTERED = 'Ingen forslag'
 const ARIA_LIVE_COUNT = '{{value}} forslag'
 
