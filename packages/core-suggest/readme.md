@@ -2,7 +2,7 @@
 
 <!-- <script src="https://unpkg.com/preact"></script>
 <script src="https://unpkg.com/preact-compat"></script>
-<script>
+<script type="text/javascript">
   window.React = preactCompat
   window.ReactDOM = preactCompat
 </script> -->
@@ -196,7 +196,7 @@ Hybrid solution; lazy load items, use `core-suggest` to handle filtering:
 <!--demo-->
 <input id="my-input-lazy" placeholder="Filter lazy-loaded content" />
 <core-suggest hidden></core-suggest>
-<script>
+<script type="text/javascript">
   window.getCountries = (callback) => {
     const xhr = new XMLHttpRequest();
     const url = "https://restcountries.com/v3.1/all?fields=name";
@@ -238,7 +238,7 @@ Synchronous operation; dynamically populate items based on input value:
 <!--demo-->
 <input id="my-input-dynamic" placeholder="Type to generate suggestions" />
 <core-suggest hidden></core-suggest>
-<script>
+<script type="text/javascript">
   document.addEventListener("suggest.filter", (event) => {
     const suggest = event.target;
     const input = suggest.input;
@@ -279,7 +279,7 @@ Synchronous operation; dynamically populate items based on input value:
 ```html
 <!--demo-->
 <div id="jsx-input"></div>
-<script type="text/jsx">
+<script type="text/javascript">
   ReactDOM.render(<div>
     <label for="my-input-jsx">Search JSX</label>
     <input id='my-input-jsx' type='text' placeholder='Type something...' />
@@ -366,7 +366,7 @@ Hybrid solution; lazy load items, but let `core-suggest` still handle filtering:
 ```html
 <!--demo-->
 <div id="jsx-input-lazy"></div>
-<script type="text/jsx">
+<script type="text/javascript">
   class LazyInput extends React.Component {
     constructor (props) {
       super(props)
@@ -402,7 +402,7 @@ Synchronous operation; dynamically populate items based on input value:
 ```html
 <!--demo-->
 <div id="jsx-input-dynamic"></div>
-<script>
+<script type="text/javascript">
   class DynamicInput extends React.Component {
     constructor(props) {
       super(props);
