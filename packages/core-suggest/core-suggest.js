@@ -14,8 +14,8 @@ const KEY = {
   PAGEUP: 'PageUp'
 }
 const AJAX_DEBOUNCE = 500
-const ARIA_LIVE_DELAY = 100 // 100 ms established as sufficient, through testing.
-const ARIA_LIVE_FILTERED = 'Ingen forslag'
+const ARIA_LIVE_DELAY = 300 // 300 ms established as sufficient, through testing, for messages to register properly in sr-queue and also support longer label/placeholder-combos.
+const ARIA_LIVE_FILTERED = 'Ingen forslag vises'
 const ARIA_LIVE_COUNT = '{{value}} forslag vises'
 
 export default class CoreSuggest extends HTMLElement {
