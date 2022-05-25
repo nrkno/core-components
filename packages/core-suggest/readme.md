@@ -38,9 +38,8 @@ Use core-suggest to filter static markup
   id="my-input"
   type="text"
   placeholder="Type something..."
-  list="live-suggest"
 />
-<core-suggest id="live-suggest" hidden>
+<core-suggest hidden>
   <ul>
     <li>
       <button>Chro<b>me</b></button>
@@ -53,66 +52,16 @@ Use core-suggest to filter static markup
 </core-suggest>
 ```
 
-#### Live-region
-
-Modify the default notifications announced to screen readers when suggestions are visible, empty and filtered
+You can modify the default notifications announced to screen readers when suggestions are visible, empty and filtered using the `data-sr`-attributes
 
 ```html
 <!--demo-->
 
-<p>Custom label values</p>
-<label for="my-live-region-input">Search</label>
+<label for="my-live-region-input">Search with english screen reader-messages</label>
 <input id="my-live-region-input" type="text" placeholder="Type to filter" />
 <core-suggest
-  data-sr-shown-message="{{value}} suggestions shown"
-  data-sr-empty-message="No suggestions"
-  data-sr-count-message="Showing {{value}} suggestions"
-  hidden
->
-  <ul>
-    <li><button>Chrome</button></li>
-    <li><button>Firefox</button></li>
-    <li><button>Opera</button></li>
-    <li><button>Safari</button></li>
-    <li><button>Microsoft Edge</button></li>
-  </ul>
-</core-suggest>
-
-<p>Only notify when suggestions are shown</p>
-
-<label for="my-live-region-shown-input">Search</label>
-<input
-  id="my-live-region-shown-input"
-  type="text"
-  placeholder="Type to filter"
-/>
-<core-suggest
-  data-sr-shown-message="Suggestions are shown"
-  data-sr-empty-message=""
-  data-sr-count-message=""
-  hidden
->
-  <ul>
-    <li><button>Chrome</button></li>
-    <li><button>Firefox</button></li>
-    <li><button>Opera</button></li>
-    <li><button>Safari</button></li>
-    <li><button>Microsoft Edge</button></li>
-  </ul>
-</core-suggest>
-
-<p>Only notify when suggestions are removed by filter</p>
-
-<label for="my-live-region-filtered-input">Search</label>
-<input
-  id="my-live-region-filtered-input"
-  type="text"
-  placeholder="Type to filter"
-/>
-<core-suggest
-  data-sr-shown-message=""
-  data-sr-empty-message="No suggestions"
-  data-sr-count-message=""
+  data-sr-empty-message="No suggestions shown"
+  data-sr-count-message="{{value}} suggestions shown"
   hidden
 >
   <ul>
@@ -139,6 +88,7 @@ Note: These status indicators are highly recommended, but are not provided by de
 
 ```html
 <!--demo-->
+<label for="my-input-ajax">Search with remotesuggestions</label>
 <input id="my-input-ajax" placeholder="Country..." />
 <core-suggest
   ajax="https://restcountries.com/v2/name/{{value}}?fields=name"
@@ -194,6 +144,7 @@ Hybrid solution; lazy load items, use `core-suggest` to handle filtering:
 
 ```html
 <!--demo-->
+<label for="my-input-lazy">Search with lazy suggestions</label>
 <input id="my-input-lazy" placeholder="Filter lazy-loaded content" />
 <core-suggest hidden></core-suggest>
 <script type="text/javascript">
@@ -236,6 +187,7 @@ Synchronous operation; dynamically populate items based on input value:
 
 ```html
 <!--demo-->
+<label for="my-input-dynamic">Search with generated suggestions</label>
 <input id="my-input-dynamic" placeholder="Type to generate suggestions" />
 <core-suggest hidden></core-suggest>
 <script type="text/javascript">
@@ -281,7 +233,7 @@ Synchronous operation; dynamically populate items based on input value:
 <div id="jsx-input"></div>
 <script type="text/javascript">
   ReactDOM.render(<div>
-    <label for="my-input-jsx">Search JSX</label>
+    <label for="my-input-jsx">Search med lang label</label>
     <input id='my-input-jsx' type='text' placeholder='Type something...' />
     <CoreSuggest
       className='my-dropdown'
@@ -496,15 +448,13 @@ Highlighting is disabled for IE11 due to errant behavior.
 
 Core-suggest notifies screen readers using a polite aria-live region when suggestions are shown and status of filter changes; number of suggestions and when there are no suggestions, by default.
 
-To do this, we append a `<span>` with `aria-live="polite"` and hide it from view. When something is notified, we set and subsequently clear the `textContent` of this span.
+To do this, we append a `<span>` with `aria-live="polite"` to the document body and hide it from view. When something is notified, we set and subsequently clear the `textContent` of this span.
 
 Text sent to screen readers can be adjusted by setting the following attributes on the `core-suggest` element:
 
-- `data-sr-shown-message="Forslag vises"`
-- `data-sr-empty-message="Ingen forslag"`
-- `data-sr-count-message="{{value}} forslag"`
-
-**NB!** When updating contents of a `<core-suggest>` element, avoid replacing the `innerHTML` (and thus removing the aria-live region) of the suggest. By updating the contents of a child element, e.g a `<ul>`, the aria-live region is present and will be able to announce that suggestions are shown.
+- `data-sr-empty-message="Ingen forslag vises"`
+- `data-sr-count-message="{{value}} forslag vises"`
+- `data-sr-read-text-content`
 
 ### HTML / JavaScript
 
@@ -517,9 +467,9 @@ Text sent to screen readers can be adjusted by setting the following attributes 
   limit="{Number}" <!-- Optional. Limit maxium number of result items. Defaults to Infinity -->
   ajax="{String}" <!-- Optional. Fetches external data. See event 'suggest.ajax'. Example: 'https://search.com?q={{value}}' -->
   highlight="{'on' | 'off' | 'keep'}" <!-- Optional. Override highlighting matches in results. Defaults to 'on'. -->
-  data-sr-shown-message="Forslag vises" <!-- Optional. Override text sent to aria-live region when suggestions are shown -->
-  data-sr-empty-message="Ingen forslag" <!-- Optional. Override text sent to aria-live region when suggestions are empty due to filter -->
-  data-sr-count-message="{{value}} forslag" <!-- Optional. Override text sent to aria-live region when suggestions are counted as part of filtering -->
+  data-sr-empty-message="Ingen forslag vises" <!-- Optional. Override text sent to aria-live region when suggestions are empty due to filter -->
+  data-sr-count-message="{{value}} forslag vises" <!-- Optional. Override text sent to aria-live region when (the number of) suggestions changes -->
+  data-sr-read-text-content <!-- Optional. When present, `textContent` will be sent to screen reader when no buttons or links are present -->
   hidden <!-- Use hidden to toggle visibility -->
 >
   <ul>  <!-- Can be any tag, but items should be inside <li> -->
@@ -580,16 +530,8 @@ import CoreSuggest from '@nrk/core-suggest/jsx'
 
 ## Markup
 
-### With list
+Putting the input directly before the suggestion list is highly recommended, as this fulfills all accessibility requirements by default. There may be scenarios, where styling makes this DOM structure impractical. In such cases, give the `<input>` a `list` attribute, and the `<core-suggest>` an `id` with corresponding value. Make sure there is no text between the input and the suggestion list, as this will break the experience for screen reader users.
 
-Putting the input directly before the suggestion list is highly recommended, as this fulfills all accessibility requirements by default. There might be scenarios though, where styling makes this DOM structure impractical. In such cases, give the `<input>` a `list` attribute, and the `<core-suggest>` an `id` with corresponding value. Make sure there is no text between the input and the suggestion list, as this will break the experience for screen reader users:
-
-```html
-<label>
-  <input list="my-list" type="text" placeholder="..." />
-</label>
-<core-suggest id="my-list" hidden> ... </core-suggest>
-```
 
 ## Events
 
@@ -705,9 +647,10 @@ All styling in documentation is example only. Both the `<button>` and content el
 
 Release 1.3.0 introduced screen reader notifications for the following scenarios:
 
-- Suggestions become visible to the user, message defaults to `Forslag vises`.
-- The number of suggestions are announced when it changes, message defaults to `{{value}} forslag`.
-- When no suggestions remain, message defaults to `Ingen forslag`.
+- Suggestions become visible to the user, e.g. input is focused or selected input receives lazy-loaded items. Message defaults to `{{value}} Forslag vises`.
+- The number of suggestions are announced when it changes, e.g. when filtering or async update. Message defaults to `{{value}} forslag vises`.
+- When no suggestions remain due to filtering. Message defaults to `Ingen forslag vises`.
+- `textContent` is displayed, e.g. load/error state in [ajax example](#examples-plain-js--ajax). `textContent` within core-suggest element is trimmed and sent to screen reader when `data-sr-read-text-content`-attribute is present
 
 Norwegian language is used by default, but the content can be changed by setting the appropriate [attributes](#aria-live)
 
@@ -715,110 +658,100 @@ These notifications have been added to improve the user experience when using sc
 
 As part of verifying compatibility with various screen-readers we made the following observations:
 
-- When using NVDA, JAWS or Narrator on Windows, notification when visible (`Forslag vises`) is superfluous as `aria-expanded` conveyes that the content is expanded. It is kept in for broader support across platforms.
+- We found it necessary to apply a delay when sending messages to the screen reader. Without it, messages sometimes failed to register properly or were ignored completely where the length of label was more than one word.
+- When using NVDA, JAWS or Narrator on Windows, notification when visible (`n Forslag vises`) is superfluous as `aria-expanded` conveyes that the content is expanded. It is kept in for broader support across platforms.
 
-Using JAWS version 2022-04 on windows 10, NVDA version 2021.3.5 on windows 10, Narrator on windows 10, TalkBack on EMUI 12.
-
-Testing results as of `2022-05-10`:
-
-<div class="table-wrapper" tabindex="0">
-<table>
-  <caption>Screen reader is notified when suggestions become visible to the user</caption>
-  <colgroup span="3"></colgroup>
-  <colgroup span="2"></colgroup>
-  <colgroup span="3"></colgroup>
-  <colgroup span="1"></colgroup>
-  <colgroup span="1"></colgroup>
-  <colgroup span="2"></colgroup>
-  <colgroup span="2"></colgroup>
-  <tbody>
-    <tr>
-      <th colspan="3" scope="colgroup">JAWS</th>
-      <th colspan="2" scope="colgroup">Narrator</th>
-      <th colspan="3" scope="colgroup">NVDA</th>
-      <th colspan="1" scope="colgroup">Orca</th>
-      <th colspan="1" scope="colgroup">TalkBack</th>
-      <th colspan="2" scope="colgroup">VoiceOver (iOS)</th>
-      <th colspan="2" scope="colgroup">VoiceOver (macOS)</th>
-    </tr>
-    <tr>
-      <th scope="col">Chrome</th>
-      <th scope="col">Edge</th>
-      <th scope="col">Firefox</th>
-      <th scope="col">Chrome</th>
-      <th scope="col">Edge</th>
-      <th scope="col">Chrome</th>
-      <th scope="col">Edge</th>
-      <th scope="col">Firefox</th>
-      <th scope="col">Firefox</th>
-      <th scope="col">Chrome</th>
-      <th scope="col">Safari</th>
-      <th scope="col">Chrome</th>
-      <th scope="col">Safari</th>
-      <th scope="col">Chrome</th>
-    </tr>
-    <tr>
-      <td>Supported</td>
-      <td>Supported</td>
-      <td>Partial *</td>
-      <td>Supported</td>
-      <td>Supported</td>
-      <td>Supported</td>
-      <td>Supported</td>
-      <td>Supported</td>
-      <td>Partial *</td>
-      <td>Supported</td>
-      <td>Supported</td>
-      <td>Supported</td>
-      <td>Supported</td>
-      <td>Supported</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-
-`*` JAWS and Orca on Firefox will not always relay visible suggestions, but is covered by `aria-expanded`.
+Using JAWS version 2022-04 on windows 10, NVDA version 2021.3.5 on windows 10, Narrator on windows 10, Orca 3.36.2, TalkBack on EMUI 12 and Android 9, VoiceOver on iOS 15.4.1 and macOS Big Sur and Monterey.
 
 <div class="table-wrapper" tabindex="0">
 <table>
-  <caption>Screen reader is notified when the number of suggestions changes</caption>
+  <caption>Screen reader testing results as of <date>2022-05-25</date></caption>
+  <colgroup span="1"></colgroup>
   <colgroup span="3"></colgroup>
-  <colgroup span="2"></colgroup>
+  <colgroup span="3"></colgroup>
   <colgroup span="3"></colgroup>
   <colgroup span="1"></colgroup>
-  <colgroup span="1"></colgroup>
   <colgroup span="2"></colgroup>
   <colgroup span="2"></colgroup>
+  <colgroup span="2"></colgroup>
+  <thead>
+    <tr>
+      <th colspan="1" scope="colgroup">Situation</th>
+      <th colspan="3" scope="colgroup"><a href="https://www.freedomscientific.com/products/software/jaws/">JAWS</a></th>
+      <th colspan="3" scope="colgroup"><a href="https://support.microsoft.com/en-us/windows/complete-guide-to-narrator-e4397a0d-ef4f-b386-d8ae-c172f109bdb1">Narrator</a></th>
+      <th colspan="3" scope="colgroup"><a href="https://www.nvaccess.org/">NVDA</a></th>
+      <th colspan="1" scope="colgroup"><a href="https://help.gnome.org/users/orca/stable/">Orca</a></th>
+      <th colspan="2" scope="colgroup"><a href="https://support.google.com/accessibility/android/answer/6283677?hl=en">TalkBack</a></th>
+      <th colspan="2" scope="colgroup"><a href="https://support.apple.com/en-gb/guide/iphone/iph3e2e415f/ios">VoiceOver (iOS)</a></th>
+      <th colspan="2" scope="colgroup"><a href="https://support.apple.com/en-gb/guide/voiceover/welcome/mac">VoiceOver (macOS)</a></th>
+    </tr>
+    <tr>
+      <th scope="col"></th>
+      <th scope="col">Chrome</th>
+      <th scope="col">Edge</th>
+      <th scope="col">Firefox</th>
+      <th scope="col">Chrome</th>
+      <th scope="col">Edge</th>
+      <th scope="col">Firefox</th>
+      <th scope="col">Chrome</th>
+      <th scope="col">Edge</th>
+      <th scope="col">Firefox</th>
+      <th scope="col">Firefox</th>
+      <th scope="col">Chrome</th>
+      <th scope="col">Samsung Internet</th>
+      <th scope="col">Safari</th>
+      <th scope="col">Chrome</th>
+      <th scope="col">Safari</th>
+      <th scope="col">Chrome</th>
+    </tr>
+  </thead>
   <tbody>
     <tr>
-      <th colspan="3" scope="colgroup">JAWS</th>
-      <th colspan="2" scope="colgroup">Narrator</th>
-      <th colspan="3" scope="colgroup">NVDA</th>
-      <th colspan="1" scope="colgroup">Orca</th>
-      <th colspan="1" scope="colgroup">TalkBack</th>
-      <th colspan="2" scope="colgroup">VoiceOver (iOS)</th>
-      <th colspan="2" scope="colgroup">VoiceOver (macOS)</th>
+      <th>Suggestions visible on focus or lazy load</th>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Not supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
     </tr>
     <tr>
-      <th scope="col">Chrome</th>
-      <th scope="col">Edge</th>
-      <th scope="col">Firefox</th>
-      <th scope="col">Chrome</th>
-      <th scope="col">Edge</th>
-      <th scope="col">Chrome</th>
-      <th scope="col">Edge</th>
-      <th scope="col">Firefox</th>
-      <th scope="col">Firefox</th>
-      <th scope="col">Chrome</th>
-      <th scope="col">Safari</th>
-      <th scope="col">Chrome</th>
-      <th scope="col">Safari</th>
-      <th scope="col">Chrome</th>
+      <th>Suggestions visible on reopen after close</th>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Not supported</td>
+      <td>Not supported</td>
+      <td>Not supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
     </tr>
     <tr>
+      <th>Suggestions visible on filter by input</th>
       <td>Supported</td>
       <td>Supported</td>
-      <td>Partial *</td>
+      <td>Partial: first letter entered does not always trigger</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Not supported</td>
       <td>Supported</td>
       <td>Supported</td>
       <td>Supported</td>
@@ -828,58 +761,35 @@ Testing results as of `2022-05-10`:
       <td>Supported</td>
       <td>Supported</td>
       <td>Supported</td>
-      <td>Partial **</td>
       <td>Supported</td>
     </tr>
-  </tbody>
-</table>
-</div>
-
-`*` JAWS on Firefox will sometimes not read number of suggestions until you remove characters
-
-`**` Voiceover on Safari will sometimes stop relaying updates to number of suggestions.
-
-<div class="table-wrapper" tabindex="0">
-<table>
-  <caption>Screen reader is notified when no suggestions remain</caption>
-  <colgroup span="3"></colgroup>
-  <colgroup span="2"></colgroup>
-  <colgroup span="3"></colgroup>
-  <colgroup span="1"></colgroup>
-  <colgroup span="1"></colgroup>
-  <colgroup span="2"></colgroup>
-  <colgroup span="2"></colgroup>
-  <tbody>
     <tr>
-      <th colspan="3" scope="colgroup">JAWS</th>
-      <th colspan="2" scope="colgroup">Narrator</th>
-      <th colspan="3" scope="colgroup">NVDA</th>
-      <th colspan="1" scope="colgroup">Orca</th>
-      <th colspan="1" scope="colgroup">TalkBack</th>
-      <th colspan="2" scope="colgroup">VoiceOver (iOS)</th>
-      <th colspan="2" scope="colgroup">VoiceOver (macOS)</th>
+      <th>All suggestions are hidden by filter</th>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Not supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
+      <td>Supported</td>
     </tr>
     <tr>
-      <th scope="col">Chrome</th>
-      <th scope="col">Edge</th>
-      <th scope="col">Firefox</th>
-      <th scope="col">Chrome</th>
-      <th scope="col">Edge</th>
-      <th scope="col">Chrome</th>
-      <th scope="col">Edge</th>
-      <th scope="col">Firefox</th>
-      <th scope="col">Firefox</th>
-      <th scope="col">Chrome</th>
-      <th scope="col">Safari</th>
-      <th scope="col">Chrome</th>
-      <th scope="col">Safari</th>
-      <th scope="col">Chrome</th>
-    </tr>
-    <tr>
+      <th><pre>textContent</pre> is displayed</th>
       <td>Supported</td>
       <td>Supported</td>
+      <td>Partial: first letter entered does not always trigger load-state</td>
       <td>Supported</td>
       <td>Supported</td>
+      <td>Not supported</td>
       <td>Supported</td>
       <td>Supported</td>
       <td>Supported</td>
