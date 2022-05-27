@@ -323,7 +323,7 @@ describe('core-suggest', () => {
 
     it('exposes internal function pushToLiveRegion to append, then clear textContent of aria-live region', async () => {
       const testLabel = 'TEST'
-      const ARIA_LIVE_DELAY = 200 // Mirror ARIA_LIVE_DELAY of 200 ms
+      const ARIA_LIVE_DELAY = 300 // Mirror ARIA_LIVE_DELAY of 300 ms
       await browser.executeScript((label) => {
         document.body.innerHTML = `
           <input type="text">
@@ -331,8 +331,9 @@ describe('core-suggest', () => {
         `
         document.querySelector('core-suggest').pushToLiveRegion(label)
       }, testLabel)
+      await browser.sleep(ARIA_LIVE_DELAY) // Wait out delay for textContent to be updated
       await expect(browser.executeScript(() => document.querySelector('body > span').textContent)).toEqual(testLabel)
-      await browser.sleep(ARIA_LIVE_DELAY)
+      await browser.sleep(ARIA_LIVE_DELAY) // Wait out delay for textContent to be cleared
       await expect(browser.executeScript(() => document.querySelector('body > span').textContent)).toEqual('')
     })
 
