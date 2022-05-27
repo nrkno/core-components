@@ -267,47 +267,56 @@ Note: These status indicators are highly recommended, but are not provided by de
 <!--demo-->
 <div id="jsx-input-ajax"></div>
 <script type="text/javascript">
-  class AjaxInput extends React.Component {
-    constructor (props) {
-      super(props)
-      this.onFilter = this.onFilter.bind(this)
-      this.onAjax = this.onAjax.bind(this)
-      this.state = { items: [], value: '' }
+  const CoreSuggestAjax = () => {
+    const suggestEl = React.useRef(null)
+    const [loadingValue, setLoadingValue] = React.useState('')
+    const [errorValue, setErrorValue] = React.useState('')
+    const [items, setItems] = React.useState([])
+
+    const handleAjax = (event) => {
+      setLoadingValue('') // Clear loading-state
+      const serverItems = event.detail.responseJSON
+      setItems(serverItems.length ? serverItems : [])
     }
-    onFilter (event) {
+    const handleAjaxError = (event) => {
+      setLoadingValue('') // Clear loading-state
+      setErrorValue('Ingen resultat')
+    }
+    const handleFilter = (event) => {
+      setErrorValue('') // Clear error
+      setItems([]) // Clear items
       const suggest = event.target
       const value = suggest.input.value
-      const items = value ? [{name: `Searching for ${value}...`}] : []
+      setLoadingValue(value ? `Searching for ${value}...` : '') // Clear to avoid dangling load-state when clearing input
+    }
 
-      this.setState({value, items}) // Store value for rendering
-    }
-    onAjax (event) {
-      const items = event.detail.responseJSON
-      this.setState({items: items.length ? items : [{name: 'No results'}]})
-    }
-    render () {
-      return (
-        <div>
-          <input type='text' placeholder='Country... (JSX)' />
-          <CoreSuggest
-            ajax="https://restcountries.com/v3.1/name/{{value}}?fields=name"
-            onSuggestFilter={this.onFilter}
-            onSuggestAjax={this.onAjax}
-            data-sr-read-text-content={true}
-          >
-            <ul>
-              {this.state.items.slice(0, 10).map((item) =>
-                <li key={item.name.official}>
-                  <button>{item.name.common}</button>
-                </li>
-              )}
-            </ul>
-          </CoreSuggest>
-        </div>
-      )
-    }
+    const isLoading = !items.length && loadingValue
+    const hasError = !items.length && errorValue
+    return (
+      <>
+        <input type='text' placeholder='Country...' />
+        <CoreSuggest
+          forwardRef={suggestEl}
+          ajax="https://restcountries.com/v3.1/name/{{value}}?fields=name"
+          onSuggestFilter={handleFilter}
+          onSuggestAjax={handleAjax}
+          onSuggestAjaxError={handleAjaxError}
+          data-sr-read-text-content={true}
+        >
+          <ul>
+            {isLoading && (<span tabIndex="-1">{loadingValue}</span>)}
+            {hasError && (<span tabIndex="-1">{errorValue}</span>)}
+            {items.slice(0, 10).map((item) =>
+              <li key={suggestEl.current.escapeHTML(item.name.official)}>
+                <button>{suggestEl.current.escapeHTML(item.name.common)}</button>
+              </li>
+            )}
+          </ul>
+        </CoreSuggest>
+      </>
+    )
   }
-  ReactDOM.render(<AjaxInput />, document.getElementById('jsx-input-ajax'))
+  ReactDOM.render(<CoreSuggestAjax />, document.getElementById('jsx-input-ajax'))
 </script>
 ```
 
