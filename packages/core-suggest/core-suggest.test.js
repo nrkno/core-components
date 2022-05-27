@@ -336,18 +336,5 @@ describe('core-suggest', () => {
       await browser.sleep(ARIA_LIVE_DELAY) // Wait out delay for textContent to be cleared
       await expect(browser.executeScript(() => document.querySelector('body > span').textContent)).toEqual('')
     })
-
-    it('exposes internal function _clearLiveRegion to clear textContent of aria-live region', async () => {
-      const testLabel = 'TEST'
-      await browser.executeScript((label) => {
-        document.body.innerHTML = `
-          <input type="text">
-          <core-suggest hidden></core-suggest>
-        `
-        document.querySelector('core-suggest').pushToLiveRegion(label)
-        document.querySelector('core-suggest')._clearLiveRegion()
-      }, testLabel)
-      await expect(browser.executeScript(() => document.querySelector('body > span').textContent)).toEqual('')
-    })
   })
 })
