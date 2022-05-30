@@ -309,4 +309,32 @@ describe('core-suggest', () => {
     const text = await browser.wait(() => browser.executeScript(() => window.response))
     await expect(text).toEqual(TEST_BAD_JSON_RESPONSE)
   })
+
+  describe('aria-live', () => {
+    it('creates an empty span on body with aria-live="polite"', async () => {
+      await browser.executeScript(() => {
+        document.body.innerHTML = `
+          <input type="text">
+          <core-suggest hidden></core-suggest>
+        `
+      })
+      await expect(attr('body > span', 'aria-live')).toEqual('polite')
+    })
+
+    it('exposes internal function pushToLiveRegion to append, then clear textContent of aria-live region', async () => {
+      const testLabel = 'TEST'
+      const ARIA_LIVE_DELAY = 300 // Mirror ARIA_LIVE_DELAY of 300 ms
+      await browser.executeScript((label) => {
+        document.body.innerHTML = `
+          <input type="text">
+          <core-suggest hidden></core-suggest>
+        `
+        document.querySelector('core-suggest').pushToLiveRegion(label)
+      }, testLabel)
+      await browser.sleep(ARIA_LIVE_DELAY) // Wait out delay for textContent to be updated
+      await expect(browser.executeScript(() => document.querySelector('body > span').textContent)).toEqual(testLabel)
+      await browser.sleep(ARIA_LIVE_DELAY) // Wait out delay for textContent to be cleared
+      await expect(browser.executeScript(() => document.querySelector('body > span').textContent)).toEqual('')
+    })
+  })
 })
