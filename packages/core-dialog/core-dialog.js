@@ -56,7 +56,7 @@ export default class CoreDialog extends HTMLElement {
           this.style.zIndex = zIndex + 2
         }
         this._focus = document.activeElement || document.body // Remember last focused element
-        setTimeout(() => setFocus(this)) // Move focus after paint (helps iOS and react portals)
+        setTimeout(() => setInitialFocus(this)) // Move focus after paint (helps iOS and react portals)
       }
       // React might re-mount the DOM, so make sure prev and next did actually change
       if (attr === 'hidden' && next !== prev) dispatchEvent(this, 'dialog.toggle')
@@ -67,7 +67,7 @@ export default class CoreDialog extends HTMLElement {
     if (event.defaultPrevented) return
     const { type, key, target } = event
 
-    if (type === 'transitionend' && target === this && !this.hidden) setFocus(this) // Move focus after transition
+    if (type === 'transitionend' && target === this && !this.hidden) setInitialFocus(this) // Move focus after transition
     else if (type === 'click') {
       if (target === this.backdrop && !this.strict) return this.close() // Click on backdrop
       const button = closest(target, 'button')
@@ -143,7 +143,7 @@ function reFocus (el) {
   })
 }
 
-function setFocus (el) {
+function setInitialFocus (el) {
   if (el.contains(document.activeElement) || !isVisible(el)) return // Do not move if focus is already inside
   const focusable = queryAll('[autofocus]', el).concat(queryAll(PROGRAMATIC_FOCUSABLE, el)).filter(isVisible)[0]
   try { focusable.focus() } catch (err) { console.warn(el, 'is initialized without focusable elements. Please add [tabindex="-1"] the main element (for instance a <h1>)') }
