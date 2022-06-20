@@ -1,6 +1,10 @@
 import { closest, dispatchEvent, toggleAttribute, queryAll } from '../utils'
 
-const FOCUSABLE = '[tabindex],a,button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled])'
+const NATIVE_FOCUSABLE = 'a,button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),summary,audio,video,iframe,area,[contenteditable],[draggable]'
+// All native focusable plus tabindex with ordered values
+const KEYBOARD_FOCUSABLE = `[tabindex]:not([tabindex^="-"]),${NATIVE_FOCUSABLE}`
+// All native and programatic
+const PROGRAMATIC_FOCUSABLE = `[tabindex],${NATIVE_FOCUSABLE}`
 const BACKDROP_OFF = 'off'
 const BACKDROP_ON = 'on'
 const KEY = {
@@ -141,12 +145,12 @@ function reFocus (el) {
 
 function setFocus (el) {
   if (el.contains(document.activeElement) || !isVisible(el)) return // Do not move if focus is already inside
-  const focusable = queryAll('[autofocus]', el).concat(queryAll(FOCUSABLE, el)).filter(isVisible)[0]
+  const focusable = queryAll('[autofocus]', el).concat(queryAll(PROGRAMATIC_FOCUSABLE, el)).filter(isVisible)[0]
   try { focusable.focus() } catch (err) { console.warn(el, 'is initialized without focusable elements. Please add [tabindex="-1"] the main element (for instance a <h1>)') }
 }
 
 function keepFocus (el, event) {
-  const focusable = queryAll(FOCUSABLE, el).filter(isVisible)
+  const focusable = queryAll(KEYBOARD_FOCUSABLE, el).filter(isVisible)
   const onEdge = focusable[event.shiftKey ? 0 : focusable.length - 1]
 
   // If focus moves us outside the dialog, we need to refocus to inside the dialog
