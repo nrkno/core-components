@@ -3,6 +3,11 @@ import { closest, dispatchEvent, toggleAttribute, queryAll } from '../utils'
 const FOCUSABLE = '[tabindex],a,button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled])'
 const BACKDROP_OFF = 'off'
 const BACKDROP_ON = 'on'
+const KEY = {
+  TAB: 'Tab',
+  ESC_IE: 'Esc',
+  ESC: 'Escape'
+}
 
 export default class CoreDialog extends HTMLElement {
   static get observedAttributes () { return ['hidden', 'backdrop'] }
@@ -56,21 +61,24 @@ export default class CoreDialog extends HTMLElement {
 
   handleEvent (event) {
     if (event.defaultPrevented) return
-    if (event.type === 'transitionend' && event.target === this && !this.hidden) setFocus(this) // Move focus after transition
-    else if (event.type === 'click') {
-      if (event.target === this.backdrop && !this.strict) return this.close() // Click on backdrop
-      const button = closest(event.target, 'button')
+    const { type, key, target } = event
+
+    if (type === 'transitionend' && target === this && !this.hidden) setFocus(this) // Move focus after transition
+    else if (type === 'click') {
+      if (target === this.backdrop && !this.strict) return this.close() // Click on backdrop
+      const button = closest(target, 'button')
       const action = button && (button.getAttribute('data-for') || button.getAttribute('for'))
 
-      if (action === 'close' && closest(event.target, this.nodeName) === this) this.close()
-      else if (action === this.id) {
+      if (action === 'close' && closest(target, this.nodeName) === this) {
+        this.close()
+      } else if (action === this.id) {
         this.show()
       }
-    } else if (event.type === 'keydown' && (event.keyCode === 9 || event.keyCode === 27) && !this.hidden) {
+    } else if (type === 'keydown' && (key === KEY.TAB || key === KEY.ESC || key === KEY.ESC_IE) && !this.hidden) {
       const topDialog = queryAll(`${this.nodeName}:not([hidden])`).sort((a, b) => getZIndex(a) - getZIndex(b)).pop()
-      if (topDialog !== this) return // event.target can be <body> when dialog has no focused element
-      if (event.keyCode === 9) keepFocus(this, event) // TAB
-      if (event.keyCode === 27 && !this.strict) { // ESC
+      if (topDialog !== this) return // Event target can be <body> when dialog has no focused element
+      if (key === KEY.TAB) keepFocus(this, event) // TAB
+      if ((key === KEY.ESC || key === KEY.ESC_IE) && !this.strict) { // ESC
         event.preventDefault() // Prevent leaving maximized window in Safari
         this.close()
       }
