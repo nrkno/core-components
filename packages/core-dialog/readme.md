@@ -355,8 +355,7 @@ import CoreDialog from '@nrk/core-dialog/jsx'
 
 ### Required focusable element
 
-Your dialog must contain `<input>`, `<button>`, `<select>`, `<textarea>`, `<a>`
-or element with `tabindex="-1"` to ensure the user is navigated into the `<core-dialog>`.
+Your dialog must contain a tabbable element (e.g. visible `<input>`, `<button>`, `<select>`, `<textarea>`, `<a>`, `<summary>`, `<audio>`, `<video>`, `<iframe>`, `<area>` or with the `contenteditable` or `draggable` attributes) or a focusable element (with `tabindex="-1"`) to ensure the users focus is navigated into the `<core-dialog>`.
 As a best practice; if your dialog contains a form element, use `autofocus`.
 If you dialog is without form elements, start your dialog
 content with `<h1 tabindex="-1">Dialog title</h1>`.
