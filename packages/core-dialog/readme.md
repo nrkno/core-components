@@ -139,7 +139,7 @@ Read [this](https://ishadeed.com/article/prevent-scroll-chaining-overscroll-beha
 ```html
 <!--demo-->
 <div id="jsx-dialog"></div>
-<script type="text/jsx">
+<script type="text/javascript">
   class DialogContainerDemo extends React.Component {
     constructor (props) {
       super(props)
@@ -186,7 +186,7 @@ Read [this](https://ishadeed.com/article/prevent-scroll-chaining-overscroll-beha
 ```html
 <!--demo-->
 <div id="jsx-dialog-strict"></div>
-<script type="text/jsx">
+<script type="text/javascript">
   ReactDOM.render(
     <>
       <button data-for="dialog-strict-jsx" type="button">Open strict React dialog</button>
@@ -214,7 +214,7 @@ Read [this](https://ishadeed.com/article/prevent-scroll-chaining-overscroll-beha
 ```html
 <!--demo-->
 <div id="jsx-dialog-no-backdrop"></div>
-<script type="text/jsx">
+<script type="text/javascript">
   ReactDOM.render(
     <>
       <button data-for="dialog-no-back-jsx" type="button">Open React dialog without backdrop</button>
@@ -243,7 +243,7 @@ Read [this](https://ishadeed.com/article/prevent-scroll-chaining-overscroll-beha
 ```html
 <!--demo-->
 <div id="jsx-dialog-custom"></div>
-<script type="text/jsx">
+<script type="text/javascript">
   ReactDOM.render(
     <div>
       <button data-for="dialog-cust-jsx" type="button">Open React dialog with custom backdrop</button>
