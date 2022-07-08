@@ -147,7 +147,7 @@ function setInitialFocus (el) {
 
 function keepFocus (el, event) {
   // Filter from focusable selection to avoid selecting hidden or tabindex="-1", getting tabbable elements
-  const focusable = queryAll(FOCUSABLE, el).filter(el => el.tabindex >= 0 && isVisible(el))
+  const focusable = queryAll(FOCUSABLE, el).filter(el => el.tabIndex >= 0 && isVisible(el))
   const onEdge = focusable[event.shiftKey ? 0 : focusable.length - 1]
 
   // If focus moves us outside the dialog, we need to refocus to inside the dialog
