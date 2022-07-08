@@ -14,3 +14,4 @@ yarn-error*
 **/*.js.map
 **/jsx.js
 *.log
+axe-linter.yml
