@@ -195,7 +195,7 @@ myScroll.items                        // Set to String to specify scroll childre
 myScroll.scroll('left')                             // Scroll in specified direction
 myScroll.scroll({x: 0, y: 10})                      // Scroll to exact position
 myScroll.scroll({x: 0, move: 'down'})               // Scroll with position and direction
-myScroll.scroll(document.getElementById('childId')) // Scroll to child element
+myScroll.scroll(document.getElementById('childId')) // Scroll to child element, centered inside scroll-area
 ```
 
 ### React / Preact
