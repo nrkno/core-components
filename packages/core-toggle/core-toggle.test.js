@@ -214,20 +214,23 @@ describe('core-toggle', () => {
   })
 
   it('updates aria-label on select when event value is set to event detail', async () => {
-    await browser.executeScript(() => {
+    const toggleButtonLabel = 'Toggle'
+    const popupLabel = 'Choose wisely'
+    const itemButtonLabel = 'Select me'
+    await browser.executeScript((toggleButtonLabel, popupLabel, itemButtonLabel) => {
       document.body.innerHTML = `
-        <button id="toggleBtn">Toggle</button>
-        <core-toggle hidden popup="Choose wisely">
-          <button id="my-item">Select me</button>
+        <button id="toggleBtn">${toggleButtonLabel}</button>
+        <core-toggle hidden popup="${popupLabel}">
+          <button id="my-item">${itemButtonLabel}</button>
         </core-toggle>
       `
       document.addEventListener('toggle.select', (event) => (event.target.value = event.detail))
-    })
-    await browser.wait(ExpectedConditions.presenceOf($('#toggleBtn[aria-label="Toggle,Choose wisely"]')))
+    }, toggleButtonLabel, popupLabel, itemButtonLabel)
+    await browser.wait(ExpectedConditions.presenceOf($(`#toggleBtn[aria-label="${toggleButtonLabel},${popupLabel}"]`)))
     await $('#toggleBtn').click()
     await $('#my-item').click()
 
     // aria-label always ends with popup-attribute
-    await expect(attr('#toggleBtn', 'aria-label')).toEqual('Select me,Choose wisely')
+    await expect(attr('#toggleBtn', 'aria-label')).toEqual(`${itemButtonLabel},${popupLabel}`)
   })
 })
