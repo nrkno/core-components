@@ -85,14 +85,15 @@ export default class CoreToggle extends HTMLElement {
 
   // aria-haspopup triggers forms mode in JAWS, therefore store as custom attr
   get popup () {
-    const hasDeprecatedPopup = this.getAttribute('popup') === 'true' || this.getAttribute('popup') || this.hasAttribute('popup')
+    const hasDeprecatedPopup = this.hasAttribute('popup')
     if (hasDeprecatedPopup) {
       console.warn(
         this,
         'uses deprecated `popup` attribute. Please use `data-popup` as specified in the docs (https://static.nrk.no/core-components/latest/index.html?core-toggle/readme.md). Note that old attribute name has been deprecated to avoid confusion with the `popup` attribute used by OpenUI pop-up API'
       )
     }
-    return hasDeprecatedPopup || this.getAttribute('data-popup') === 'true' || this.getAttribute('data-popup') || this.hasAttribute('data-popup')
+    const key = hasDeprecatedPopup ? 'popup' : 'data-popup'
+    return this.getAttribute(key) === 'true' || this.getAttribute(key) || this.hasAttribute(key)
   }
 
   set popup (val) { this[val === false ? 'removeAttribute' : 'setAttribute']('popup', val) }
