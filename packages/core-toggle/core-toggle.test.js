@@ -80,83 +80,110 @@ describe('core-toggle', () => {
     })
     await $('button#outer').click()
     await $('button#inner').click()
-    await expect(prop('button#outer + core-toggle', 'hidden')).toMatch(/(null|false)/i)
-    await expect(prop('button#outer + core-toggle', 'hidden')).toMatch(/(null|false)/i)
+    await expect(prop('button#outer + core-toggle', 'hidden')).toMatch(/false/i)
+    await expect(prop('button#outer + core-toggle', 'hidden')).toMatch(/false/i)
     await $('button#inner').sendKeys(protractor.Key.ESCAPE)
     await expect(prop('button#inner + core-toggle', 'hidden')).toMatch(/true/i)
-    await expect(prop('button#outer + core-toggle', 'hidden')).toMatch(/(null|false)/i)
+    await expect(prop('button#outer + core-toggle', 'hidden')).toMatch(/false/i)
     await $('button#inner').sendKeys(protractor.Key.ESCAPE)
     await expect(prop('button#outer + core-toggle', 'hidden')).toMatch(/true/i)
   })
 
-  it('closes popup on click outside', async () => {
-    await browser.executeScript(() => {
-      document.body.innerHTML = `
-        <button>Toggle</button>
-        <core-toggle popup hidden></core-toggle>
-      `
+  describe('data-for attribute', () => {
+    it('respects deprecated "for" attribute', async () => {
+      await browser.executeScript(() => {
+        document.body.innerHTML = `
+          <div><button for="content">Toggle</button></div>
+          <core-toggle id="content" hidden></core-toggle>
+        `
+      })
+      const toggleId = await attr('core-toggle', 'id')
+      await $('button').click()
+      await expect(attr('button', 'for')).toEqual(toggleId)
+      await expect(attr('button', 'aria-controls')).toEqual(toggleId)
+      await expect(prop('core-toggle', 'hidden')).toMatch(/false/i)
     })
-    await $('button').click()
-    await expect(prop('core-toggle', 'hidden')).toMatch(/(null|false)/i)
-    await $('body').click()
-    await expect(prop('core-toggle', 'hidden')).toMatch(/true/i)
+
+    it('respects "data-for" attribute', async () => {
+      await browser.executeScript(() => {
+        document.body.innerHTML = `
+          <div><button data-for="content">Toggle</button></div>
+          <core-toggle id="content" hidden></core-toggle>
+        `
+      })
+      const toggleId = await attr('core-toggle', 'id')
+      await $('button').click()
+      await expect(attr('button', 'data-for')).toEqual(toggleId)
+      await expect(attr('button', 'aria-controls')).toEqual(toggleId)
+      await expect(prop('core-toggle', 'hidden')).toMatch(/false/i)
+    })
+  })
+  describe('data-popup attribute', () => {
+    it('closes open toggle on click outside, when data-popup attribute is present', async () => {
+      await browser.executeScript(() => {
+        document.body.innerHTML = `
+          <button>Toggle</button>
+          <core-toggle data-popup hidden></core-toggle>
+        `
+      })
+      await $('button').click()
+      await expect(prop('core-toggle', 'hidden')).toMatch(/false/i)
+      await $('body').click()
+      await expect(prop('core-toggle', 'hidden')).toMatch(/true/i)
+    })
+    it('will not close open toggle on click outside, without data-popup attribute', async () => {
+      await browser.executeScript(() => {
+        document.body.innerHTML = `
+          <button>Toggle</button>
+          <core-toggle hidden></core-toggle>
+        `
+      })
+      await $('button').click()
+      await expect(prop('core-toggle', 'hidden')).toMatch(/false/i)
+      await $('body').click()
+      await expect(prop('core-toggle', 'hidden')).toMatch(/false/i)
+    })
+    it('respects deprecated popup attribute', async () => {
+      await browser.executeScript(() => {
+        document.body.innerHTML = `
+          <button>Toggle</button>
+          <core-toggle popup hidden></core-toggle>
+        `
+      })
+      await $('button').click()
+      await expect(prop('core-toggle', 'hidden')).toMatch(/false/i)
+      await $('body').click()
+      await expect(prop('core-toggle', 'hidden')).toMatch(/true/i)
+    })
+
+    it('respects exisiting aria-label with data-popup attribute and value', async () => {
+      await browser.executeScript(() => {
+        document.body.innerHTML = `
+          <button aria-label="Label">Toggle</button>
+          <core-toggle data-popup="Another label" hidden></core-toggle>
+        `
+      })
+      await browser.executeScript(() => (document.querySelector('core-toggle').value = 'Button text'))
+      const toggleValue = await prop('core-toggle', 'value')
+      await expect(prop('button', 'textContent')).toEqual(toggleValue)
+      await expect(attr('button', 'aria-label')).toEqual('Label')
+    })
+
+    it('sets aria-label with data-popup attr and value', async () => {
+      await browser.executeScript(() => {
+        document.body.innerHTML = `
+          <button>Toggle</button>
+          <core-toggle data-popup="Some label" hidden></core-toggle>
+        `
+      })
+      await browser.executeScript(() => (document.querySelector('core-toggle').value = 'Button text'))
+      const toggleValue = await prop('core-toggle', 'value')
+      await expect(prop('button', 'textContent')).toEqual(toggleValue)
+      await expect(attr('button', 'aria-label')).toEqual('Button text,Some label')
+    })
   })
 
-  it('respects deprecated "for" attribute', async () => {
-    await browser.executeScript(() => {
-      document.body.innerHTML = `
-        <div><button for="content">Toggle</button></div>
-        <core-toggle id="content" hidden></core-toggle>
-      `
-    })
-    const toggleId = await attr('core-toggle', 'id')
-    await $('button').click()
-    await expect(attr('button', 'for')).toEqual(toggleId)
-    await expect(attr('button', 'aria-controls')).toEqual(toggleId)
-    await expect(prop('core-toggle', 'hidden')).toMatch(/false/i)
-  })
-
-  it('respects "data-for" attribute', async () => {
-    await browser.executeScript(() => {
-      document.body.innerHTML = `
-        <div><button data-for="content">Toggle</button></div>
-        <core-toggle id="content" hidden></core-toggle>
-      `
-    })
-    const toggleId = await attr('core-toggle', 'id')
-    await $('button').click()
-    await expect(attr('button', 'data-for')).toEqual(toggleId)
-    await expect(attr('button', 'aria-controls')).toEqual(toggleId)
-    await expect(prop('core-toggle', 'hidden')).toMatch(/false/i)
-  })
-
-  it('respects exisiting aria-label with popup and value', async () => {
-    await browser.executeScript(() => {
-      document.body.innerHTML = `
-        <button aria-label="Label">Toggle</button>
-        <core-toggle popup="Another label" hidden></core-toggle>
-      `
-    })
-    await browser.executeScript(() => (document.querySelector('core-toggle').value = 'Button text'))
-    const toggleValue = await prop('core-toggle', 'value')
-    await expect(prop('button', 'textContent')).toEqual(toggleValue)
-    await expect(attr('button', 'aria-label')).toEqual('Label')
-  })
-
-  it('sets aria-label with popup attr and value', async () => {
-    await browser.executeScript(() => {
-      document.body.innerHTML = `
-        <button>Toggle</button>
-        <core-toggle popup="Some label" hidden></core-toggle>
-      `
-    })
-    await browser.executeScript(() => (document.querySelector('core-toggle').value = 'Button text'))
-    const toggleValue = await prop('core-toggle', 'value')
-    await expect(prop('button', 'textContent')).toEqual(toggleValue)
-    await expect(attr('button', 'aria-label')).toEqual('Button text,Some label')
-  })
-
-  it('sets aria-label with popup prop and value', async () => {
+  it('sets aria-label with data-popup prop and value', async () => {
     await browser.executeScript(() => {
       document.body.innerHTML = `
         <button>Toggle</button>
@@ -220,7 +247,7 @@ describe('core-toggle', () => {
     await browser.executeScript((toggleButtonLabel, popupLabel, itemButtonLabel) => {
       document.body.innerHTML = `
         <button id="toggleBtn">${toggleButtonLabel}</button>
-        <core-toggle hidden popup="${popupLabel}">
+        <core-toggle hidden data-popup="${popupLabel}">
           <button id="my-item">${itemButtonLabel}</button>
         </core-toggle>
       `
@@ -230,7 +257,7 @@ describe('core-toggle', () => {
     await $('#toggleBtn').click()
     await $('#my-item').click()
 
-    // aria-label always ends with popup-attribute
+    // aria-label always ends with data-popup-attribute
     await expect(attr('#toggleBtn', 'aria-label')).toEqual(`${itemButtonLabel},${popupLabel}`)
   })
 })
