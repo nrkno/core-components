@@ -143,18 +143,6 @@ describe('core-toggle', () => {
       await $('body').click()
       await expect(prop('core-toggle', 'hidden')).toMatch(/false/i)
     })
-    it('respects deprecated popup attribute', async () => {
-      await browser.executeScript(() => {
-        document.body.innerHTML = `
-          <button>Toggle</button>
-          <core-toggle popup hidden></core-toggle>
-        `
-      })
-      await $('button').click()
-      await expect(prop('core-toggle', 'hidden')).toMatch(/false/i)
-      await $('body').click()
-      await expect(prop('core-toggle', 'hidden')).toMatch(/true/i)
-    })
 
     it('respects exisiting aria-label with data-popup attribute and value', async () => {
       await browser.executeScript(() => {
