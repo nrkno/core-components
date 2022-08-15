@@ -96,7 +96,7 @@ export default class CoreToggle extends HTMLElement {
     return this.getAttribute(key) === 'true' || this.getAttribute(key) || this.hasAttribute(key)
   }
 
-  set popup (val) { this[val === false ? 'removeAttribute' : 'setAttribute']('popup', val) }
+  set popup (val) { this[val === false ? 'removeAttribute' : 'setAttribute']('data-popup', val) }
 
   get autoposition () { return this.hasAttribute('autoposition') }
 
