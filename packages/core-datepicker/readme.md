@@ -284,7 +284,7 @@ npm install @nrk/core-datepicker  # Using NPM
 Using static registers the custom element with default name automatically:
 
 ```html
-<script src="https://static.nrk.no/core-components/major/9/core-datepicker/core-datepicker.min.js"></script>  <!-- Using static -->
+<script src="https://static.nrk.no/core-components/major/10/core-datepicker/core-datepicker.min.js"></script>  <!-- Using static -->
 ```
 
 Remember to [polyfill](https://github.com/webcomponents/polyfills/tree/master/packages/custom-elements) custom elements if needed.
