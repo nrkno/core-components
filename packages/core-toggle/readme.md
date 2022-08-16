@@ -100,7 +100,7 @@ const myToggle = document.querySelector('core-toggle')
 
 // Getters
 myToggle.button         // Get toggle button element
-myToggle.popup          // Get popup value
+myToggle.popup          // Get data-popup value
 myToggle.hidden         // Get hidden value
 myToggle.value          // Get toggle button text
 

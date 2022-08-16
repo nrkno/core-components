@@ -35,7 +35,7 @@ Note: We add event listeners to both, `datepicker.change` as well as `datepicker
 <!-- demo -->
 <input type="text" placeholder="No date selected" id="toggled-datepicker-output">
 <button type="button">Show calendar</button>
-<core-toggle id="calendar-toggle" popup hidden class="my-popup">
+<core-toggle id="calendar-toggle" data-popup hidden class="my-popup">
   <core-datepicker
     id="toggled-datepicker"
     days="Mon,Tue,Wed,Thu,Fri,Sat,Sun"
@@ -90,7 +90,7 @@ Extravagantly featured implementation to showcase most of what you can do out of
 ```html
 <!-- demo -->
 <button type="button" class="my-toggle">Choose date</button>
-<core-toggle popup hidden class="my-popup">
+<core-toggle data-popup hidden class="my-popup">
   <core-datepicker
     id="my-datepicker"
     days="Mon,Tue,Wed,Thu,Fri,Sat,Sun"
@@ -205,7 +205,7 @@ Toggled datepicker ([using core-toggle](/?core-toggle/readme.md)) with calendar 
           className="my-popup"
           hidden={hiddenVal}
           onToggle={handleToggle}
-          popup
+          data-popup
         >
           <CoreDatepicker
             date={dateVal}
@@ -229,7 +229,7 @@ Toggled datepicker ([using core-toggle](/?core-toggle/readme.md)) with calendar 
 ```html
 <!-- demo -->
 <div id="jsx-datepicker"></div>
-<script type="text/jsx">
+<script type="text/javascript">
   class MyDate extends React.Component {
     constructor (props) {
       super(props)
@@ -249,7 +249,7 @@ Toggled datepicker ([using core-toggle](/?core-toggle/readme.md)) with calendar 
     render () {
       return <>
         <button type="button">Choose date</button>
-        <CoreToggle hidden popup className="my-popup">
+        <CoreToggle hidden data-popup className="my-popup">
           <CoreDatepicker
             date={this.state.date}
             disabled={(date) => date <= this.today}
