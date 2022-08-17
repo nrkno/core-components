@@ -1,5 +1,24 @@
 import { closest, dispatchEvent, escapeHTML, getUUID, IS_IE11, queryAll, toggleAttribute } from '../utils'
 
+/*!
+Polyfilling Node.getRootNode() to preserve browser support
+https://developer.mozilla.org/en-US/docs/Web/API/Node/getRootNode
+*/
+(function (c) {
+  function d (a) {
+    a = b(a)
+    return a && a.nodeType === 11 ? d(a.host) : a
+  }
+
+  function b (a) {
+    return a && a.parentNode ? b(a.parentNode) : a
+  }
+
+  typeof c.getRootNode !== 'function' && (c.getRootNode = function (a) {
+    return a && a.composed ? d(this) : b(this)
+  })
+})(Node.prototype)
+
 const KEY = {
   DOWN_IE: 'Down',
   DOWN: 'ArrowDown',
@@ -22,6 +41,8 @@ export default class CoreSuggest extends HTMLElement {
   static get observedAttributes () { return ['hidden', 'highlight'] }
 
   connectedCallback () {
+    this._rootNode = this.getRootNode()
+
     this._observer = new window.MutationObserver(() => onMutation(this))
     this._observer.observe(this, { subtree: true, childList: true, attributes: true, attributeFilter: ['hidden'] })
     this._xhr = new window.XMLHttpRequest()
@@ -35,19 +56,19 @@ export default class CoreSuggest extends HTMLElement {
 
     this._ariaLiveSpan = appendResultsNotificationSpan(this)
 
-    document.addEventListener('click', this)
-    document.addEventListener('input', this)
-    document.addEventListener('keydown', this)
-    document.addEventListener('focusin', this)
+    this._rootNode.addEventListener('click', this)
+    this._rootNode.addEventListener('input', this)
+    this._rootNode.addEventListener('keydown', this)
+    this._rootNode.addEventListener('focusin', this)
     setTimeout(() => onMutation(this)) // Ensure limit is respected
-    if (document.activeElement === this.input) this.hidden = false // Open if active
+    if (this._rootNode.activeElement === this.input) this.hidden = false // Open if active
   }
 
   disconnectedCallback () {
-    document.removeEventListener('click', this)
-    document.removeEventListener('input', this)
-    document.removeEventListener('keydown', this)
-    document.removeEventListener('focusin', this)
+    this._rootNode.removeEventListener('click', this)
+    this._rootNode.removeEventListener('input', this)
+    this._rootNode.removeEventListener('keydown', this)
+    this._rootNode.removeEventListener('focusin', this)
     // Clear internals to aid garbage collection
     this._observer.disconnect()
     clearTimeout(this._ariaLiveTimeout) // Clear existing timeout
@@ -101,7 +122,7 @@ export default class CoreSuggest extends HTMLElement {
    */
   get input () {
     if (this._input && this._input.getAttribute('list') === this.id) return this._input // Speed up
-    return (this._input = this.id && document.querySelector(`input[list=${this.id}]`)) || this.previousElementSibling
+    return (this._input = this.id && this._rootNode.querySelector(`input[list=${this.id}]`)) || this.previousElementSibling
   }
 
   // Always return string consistent with .value or .className

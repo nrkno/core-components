@@ -64,7 +64,11 @@
       "beforeAll",
       "afterEach",
       "afterAll",
-      "ExpectedConditions"
+      "ExpectedConditions",
+      "Node"
+    ],
+    "ignore": [
+      "**/shadow-root-web-component.js"
     ]
   }
 }
