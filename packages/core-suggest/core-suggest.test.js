@@ -1,9 +1,10 @@
 import fs from 'fs'
 import path from 'path'
-import { prop, attr } from '../test-utils'
+import { prop, attr, getElementFromShadowRoot } from '../test-utils'
 
 const coreSuggest = fs.readFileSync(path.resolve(__dirname, 'core-suggest.min.js'), 'utf-8')
 const customElements = fs.readFileSync(require.resolve('@webcomponents/custom-elements'), 'utf-8')
+const shadowRoot = fs.readFileSync(require.resolve('../shadow-root-web-component.js'), 'utf-8')
 const TEST_URL = '/some/cool/url'
 const TEST_EMPTY_RESPONSE = '{"results": []}'
 const TEST_ERROR_RESPONSE = '{"error": "Go away"}'
@@ -38,6 +39,27 @@ describe('core-suggest', () => {
     await $('input').click()
     await expect(attr('input', 'aria-expanded')).toMatch(/true/i)
     await expect(prop('core-suggest', 'hidden')).toMatch(/(null|false)/i)
+  })
+
+  it('opens suggestions on input focus [shadow-root]', async () => {
+    await browser.executeScript(shadowRoot)
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <shadow-root-web-component id="shadow-root">
+          <input type="text" id="test-input">
+          <core-suggest id="core-suggest" hidden></core-suggest>
+        </shadow-root-web-component>
+      `
+    })
+
+    const coreSuggest = await getElementFromShadowRoot('shadow-root', 'core-suggest')
+    await expect(coreSuggest.getAttribute('hidden')).toMatch(/(true)/i)
+    const input = await getElementFromShadowRoot('shadow-root', 'input')
+    await expect(input.getAttribute('aria-expanded')).toMatch(/false/i)
+    input.click()
+
+    await expect(input.getAttribute('aria-expanded')).toMatch(/true/i)
+    await expect(coreSuggest.getAttribute('hidden')).toMatch(/(null|false)/i)
   })
 
   it('closes suggestions on click outside', async () => {

@@ -9,3 +9,10 @@ export function attr (selector, name) {
     return String(document.querySelector(selector).getAttribute(name))
   }, selector, name)
 }
+
+export function getElementFromShadowRoot (shadowRootId, selector) {
+  return browser.executeScript((shadowRootId, selector) => {
+    const rootContainer = document.getElementById(shadowRootId)
+    return rootContainer.shadowRoot.querySelector(selector)
+  }, shadowRootId, selector)
+}

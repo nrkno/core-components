@@ -224,6 +224,43 @@ Synchronous operation; dynamically populate items based on input value:
 </script>
 ```
 
+#### Events within shadow root
+
+It also handles events within shadow root
+
+```html
+<!--demo-->
+<script type="text/javascript">
+  class ShadowComponent extends HTMLElement {
+    connectedCallback() {
+      const children = this.children;
+      const shadowRoot = this.attachShadow({ mode: "open" });
+
+      while (children.length > 0) {
+        shadowRoot.appendChild(children[0]);
+      }
+    }
+  }
+
+  window.customElements.define("shadow-component", ShadowComponent);
+</script>
+<shadow-component>
+  <label for="my-input">Search</label>
+  <input id="my-input" type="text" placeholder="Type something..." />
+  <core-suggest hidden>
+    <ul>
+      <li>
+        <button>Chro<b>me</b></button>
+      </li>
+      <li><button>Firefox</button></li>
+      <li><button>Opera</button></li>
+      <li><button>Safari</button></li>
+      <li><button>Microsoft Edge</button></li>
+    </ul>
+  </core-suggest>
+</shadow-component>
+```
+
 ## Examples (React)
 
 #### Static content
