@@ -145,44 +145,66 @@ describe('core-toggle', () => {
     })
 
     it('respects exisiting aria-label with data-popup attribute and value', async () => {
-      await browser.executeScript(() => {
+      const ariaLabel = 'Label'
+
+      await browser.executeScript((aria) => {
         document.body.innerHTML = `
-          <button aria-label="Label">Toggle</button>
-          <core-toggle data-popup="Another label" hidden></core-toggle>
+          <button aria-label="${aria}">Toggle</button>
+          <core-toggle data-popup="Popup-label" hidden></core-toggle>
         `
-      })
+      }, ariaLabel)
       await browser.executeScript(() => (document.querySelector('core-toggle').value = 'Button text'))
       const toggleValue = await prop('core-toggle', 'value')
       await expect(prop('button', 'textContent')).toEqual(toggleValue)
-      await expect(attr('button', 'aria-label')).toEqual('Label')
+      await expect(attr('button', 'aria-label')).toEqual(ariaLabel)
     })
 
     it('sets aria-label with data-popup attr and value', async () => {
-      await browser.executeScript(() => {
+      const popupLabel = 'Popup label'
+      const btnLabel = 'Button text'
+
+      await browser.executeScript((label) => {
         document.body.innerHTML = `
           <button>Toggle</button>
-          <core-toggle data-popup="Some label" hidden></core-toggle>
+          <core-toggle data-popup="${label}" hidden></core-toggle>
         `
-      })
-      await browser.executeScript(() => (document.querySelector('core-toggle').value = 'Button text'))
+      }, popupLabel)
+      await browser.executeScript((label) => (document.querySelector('core-toggle').value = label), btnLabel)
       const toggleValue = await prop('core-toggle', 'value')
       await expect(prop('button', 'textContent')).toEqual(toggleValue)
-      await expect(attr('button', 'aria-label')).toEqual('Button text,Some label')
+      await expect(attr('button', 'aria-label')).toEqual(`${btnLabel},${popupLabel}`)
     })
   })
 
-  it('sets aria-label with data-popup prop and value', async () => {
+  it('sets data-popup attribute when assigned value to popup prop', async () => {
+    const popupLabel = 'Popup label'
+
     await browser.executeScript(() => {
       document.body.innerHTML = `
         <button>Toggle</button>
         <core-toggle hidden></core-toggle>
       `
     })
-    await browser.executeScript(() => (document.querySelector('core-toggle').popup = 'Some label'))
-    await browser.executeScript(() => (document.querySelector('core-toggle').value = 'Button text'))
+    await browser.executeScript((label) => (document.querySelector('core-toggle').popup = label), popupLabel)
+    await expect(attr('core-toggle', 'data-popup')).toEqual(popupLabel)
+    await expect(attr('core-toggle', 'popup')).toEqual('null')
+  })
+
+  it('sets aria-label with data-popup prop and value', async () => {
+    const popupLabel = 'Popup label'
+    const btnText = 'Button text'
+
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <button>Toggle</button>
+        <core-toggle hidden></core-toggle>
+      `
+    })
+    await browser.executeScript((label) => (document.querySelector('core-toggle').popup = label), popupLabel)
+    await browser.executeScript((label) => (document.querySelector('core-toggle').value = label), btnText)
     const toggleValue = await prop('core-toggle', 'value')
     await expect(prop('button', 'textContent')).toEqual(toggleValue)
-    await expect(attr('button', 'aria-label')).toEqual('Button text,Some label')
+    await expect(attr('button', 'aria-label')).toEqual(`${btnText},${popupLabel}`)
   })
 
   it('triggers toggle event', async () => {
