@@ -65,14 +65,24 @@ export default class CoreToggle extends HTMLElement {
     const contentRect = this.getBoundingClientRect()
 
     const hasSpaceRight = triggerRect.left + contentRect.width < window.innerWidth
+    const hasSpaceLeft = triggerRect.right - contentRect.width >= 0
     const hasSpaceUnder = triggerRect.bottom + contentRect.height < window.innerHeight
     const hasSpaceOver = triggerRect.top - contentRect.height > 0
+
+    let leftVal = Math.round((window.innerWidth - contentRect.width) / 2) // Center on screen
+    if (contentRect.width > window.innerWidth) {
+      leftVal = 0 // Content wider than screen. Anchor to left screen edge to show as much as possible
+    } else if (hasSpaceRight) {
+      leftVal = triggerRect.left // Anchor to left side
+    } else if (hasSpaceLeft) {
+      leftVal = triggerRect.right - contentRect.width // Anchor to right side
+    }
 
     // Always place under when no hasSpaceOver, as no OS can scroll further up than window.scrollY = 0
     const placeUnder = hasSpaceUnder || !hasSpaceOver
     const scroll = placeUnder ? window.pageYOffset + triggerRect.bottom + contentRect.height + 30 : 0
 
-    this.style.left = `${Math.round(hasSpaceRight ? triggerRect.left : triggerRect.right - contentRect.width)}px`
+    this.style.left = `${leftVal}px`
     this.style.top = `${Math.round(placeUnder ? triggerRect.bottom : triggerRect.top - contentRect.height)}px`
     SCROLLER.style.cssText = `position:absolute;padding:1px;top:${Math.round(scroll)}px`
     setTimeout(() => (this._skipPosition = null)) // Timeout to flush event queue before we can resume acting on mutations
