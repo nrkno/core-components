@@ -39,7 +39,7 @@ demo-->
 ```html
 <!--demo-->
 <div id="jsx-toggle-popup"></div>
-<script type="text/jsx">
+<script type="text/javascript">
   ReactDOM.render(<>
     <button type="button">Popup JSX</button>
     <CoreToggle className='my-dropdown' hidden data-popup onToggleSelect={console.warn}>
@@ -160,22 +160,13 @@ If you have form elements inside a `<core-toggle>`, you can optionally add a `au
 
 ### Autoposition
 
-When using core-toggle near the screen edges, the `autoposition` attribute positions the toggled content where there is visual room around the button, using `position:fixed`.
-This enables core-toggle to be used inside scrollable areas.
+When using core-toggle near the screen edges, the `autoposition` attribute positions the toggled content where there is visual room around the toggle, using `position:fixed`, relative to the screen edges.
+This can be useful when core-toggle is used inside narrow and/or scrollable areas.
 
 ```html
 <!--demo-->
-<div style="overflow:auto; height:70px; width:200px; border:2px dashed #ccc;">
-  <button type="button">Toggle is autopositioned</button>
-  <core-toggle class="my-dropdown" autoposition hidden>
-    <ul>
-      <li><a>Link</a></li>
-      <li><a>Another link</a></li>
-      <li><a>Linking is life</a></li>
-    </ul>
-  </core-toggle>
-  <p>Scroll me to the edge!</p>
-</div>
+<p>This example illustrates how core-toggle with <code style="font-size: 16px">autoposition</code> draws relative to the screen edge marked by the red frame</p>
+<iframe src="core-toggle/autoposition.html" width="300" height="400" style="border: 2px solid red;"></iframe>
 ```
 ## Events
 
@@ -270,7 +261,7 @@ to create a component that behaves like a `<select>`:
 ```html
 <!--demo-->
 <div id="jsx-toggle-select"></div>
-<script type="text/jsx">
+<script type="text/javascript">
   class MyToggleSelect extends React.Component {
     constructor (props) {
       super(props)
