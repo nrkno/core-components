@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<head>
+  <link rel="stylesheet" href="https://static.nrk.no/nrk-sans/latest/nrk-sans.min.css">
+</head>
+<script src="https://unpkg.com/@webcomponents/custom-elements"></script>
+<script src="core-toggle.min.js"></script>
+<!-- <script src="core-toggle.jsx.js"></script> -->
+<style>
+  
+  html { height: 400px; }
+  html * {
+    font-family: 'NRK Sans Variable', sans-serif;    
+  }
+  h1 {
+    font-size: 1em;
+    text-decoration: none;
+  }
+  .left-right {
+    display: flex;
+  }
+  .centered {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .my-dropdown {
+    background-color: aliceblue;
+    border: 1px solid darkblue;
+    border-radius: 5px;
+    white-space: nowrap;
+  }
+  core-toggle {
+    padding-right: 10px;
+  }
+</style>
+
+<div class="container">
+  <h1>Toggled content is anchored left or right if there is room to draw</h1>
+  <div class="left-right">
+    <button type="button">Autopositioned toggle</button>
+    <core-toggle class="my-dropdown" data-popup autoposition hidden>
+      <ul>
+        <li>
+          Fits inside window
+        </li>
+        <li>
+          Has room to the right
+        </li>
+        <li>
+          Anchored left of button
+        </li>
+      </ul>
+    </core-toggle>
+    <button type="button">Autopositioned toggle</button>
+    <core-toggle class="my-dropdown" data-popup autoposition hidden>
+      <ul>
+        <li>
+          Fits inside window
+        </li>
+        <li>
+          Has room to the left
+        </li>
+        <li>
+          Anchored right of button
+        </li>
+      </ul>
+    </core-toggle>
+  </div>
+  <div class="centered">
+    <h1>Toggled content is centered if there is no room to either side</h1>
+    <button type="button">Autoposition toggle</button>
+    <core-toggle class="my-dropdown" data-popup autoposition hidden>
+      <ul>
+        <li>
+          Fits inside window
+        </li>
+        <li>
+          Can't fully draw left or right
+        </li>
+        <li>
+          Centered on screen
+        </li>
+      </ul>
+    </core-toggle>
+  </div>
+  <h1>Toggled content wider than screen width</h1>
+  <button type="button">Autoposition toggle</button>
+  <core-toggle class="my-dropdown" data-popup autoposition hidden>
+    <ul>
+      <li>
+        Too looooooooooooooooooooooooonooooooooooooooooooooooooong
+      </li>
+      <li>
+        Anchored to left screen side
+      </li>
+      <li>
+        Try to display as much as possible
+      </li>
+    </ul>
+  </core-toggle>
+  <h1>Toggled content too close to bottom of screen</h1>
+  <div class="left-right">
+    <button type="button">Autopositioned toggle</button>
+    <core-toggle class="my-dropdown" data-popup autoposition hidden>
+      <ul>
+        <li>
+          Fits inside window
+        </li>
+        <li>
+          Has room to the right
+        </li>
+        <li>
+          Has room above
+        </li>
+        <li>
+          Anchored left of button
+        </li>
+        <li>
+          Drawn above toggle
+        </li>
+      </ul>
+    </core-toggle>
+    <button type="button">Autopositioned toggle</button>
+    <core-toggle class="my-dropdown" data-popup autoposition hidden>
+      <ul>
+        <li>
+          Fits inside window
+        </li>
+        <li>
+          Has room to the left
+        </li>
+        <li>
+          Has room above
+        </li>
+        <li>
+          Anchored right of button
+        </li>
+        <li>
+          Drawn above toggle
+        </li>
+      </ul>
+    </core-toggle>
+  </div>
+</div>
