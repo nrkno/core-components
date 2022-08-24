@@ -202,7 +202,7 @@ function toggleItem (item, show) {
 function onMutation (self) {
   if (!self._observer) return // Abort if disconnectedCallback has been called (this/self._observer is null)
 
-  const needle = self.input.value.toLowerCase().trim()
+  const needle = (self.input && self.input.value) ? self.input.value.toLowerCase().trim() : null
   const items = self.querySelectorAll('a:not([hidden]),button:not([hidden])')
   const limit = Math.min(items.length, self.limit)
 
