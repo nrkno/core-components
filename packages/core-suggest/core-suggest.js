@@ -268,12 +268,14 @@ function onMutation (self) {
 
 /**
  * Handle input event in connected input
+ * Triggers built-in ajax functionality if `ajax`-attribute is set
+ *  * Suggestions will not be filtered by input if this is the case
  * @param {CoreSuggest} self Core suggest element
  * @param {InputEvent} event
  * @returns {void}
  */
 function onInput (self, event) {
-  if (event.target !== self.input) return
+  if (event.target !== self.input || onAjax(self)) return
   filterItemsByInput(self)
 }
 
@@ -283,12 +285,11 @@ function onInput (self, event) {
  *  * `suggest.filter`
  * Filtering is aborted if
  *  * event.preventDefault() is called on on `suggest.filter` event
- *  * core-suggest element has attribute `ajax`
  * @param {CoreSuggest} self Core suggest element
  * @fires `suggest.filter`
  */
 function filterItemsByInput (self) {
-  if (!dispatchEvent(self, 'suggest.filter') || onAjax(self)) return
+  if (!dispatchEvent(self, 'suggest.filter')) return
   const value = self.input.value.toLowerCase()
   const items = self.querySelectorAll('a,button')
 
