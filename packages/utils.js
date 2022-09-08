@@ -64,10 +64,10 @@ export const closest = (() => {
 
 /**
 * dispatchEvent - with infinite loop prevention
-* @param {Element} elem The target object
-* @param {String} name The source object(s)
+* @param {Element} element The target object
+* @param {String} name The event name
 * @param {Object} detail Detail object (bubbles and cancelable is set to true)
-* @return {Boolean} Whether the event was canceled
+* @return {Boolean} Whether the event was canceled. Returns true if either event's cancelable attribute value is false or its preventDefault() method was not invoked, and false otherwise.
 */
 export function dispatchEvent (element, name, detail = {}) {
   const ignore = `prevent_recursive_dispatch_maximum_callstack${name}`
