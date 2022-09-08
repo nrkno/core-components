@@ -341,6 +341,7 @@ function onClick (self, event) {
 
   if (item && dispatchEvent(self, 'suggest.select', item)) {
     self.input.value = item.value || item.textContent.trim()
+    filterItemsByInput(self)
     self.input.focus()
   }
 

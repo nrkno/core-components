@@ -89,6 +89,25 @@ describe('core-suggest', () => {
     await expect(prop('button#three', 'hidden')).toMatch(/true/i)
   })
 
+  it('filters suggestions from input value when selecting suggestion', async () => {
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <input type="text">
+        <core-suggest hidden>
+          <ul>
+            <li><button id="one">Suggest 1</button></li>
+            <li><button id="two">Suggest 2</button></li>
+          </ul>
+        </core-suggest>
+      `
+    })
+    await $('input').click()
+    await $('button#two').click()
+    await expect(prop('input', 'value')).toEqual('Suggest 2')
+    await expect(prop('button#one', 'hidden')).toMatch(/true/i)
+    await expect(prop('button#two', 'hidden')).toMatch(/(null|false)/i)
+  })
+
   it('sets type="button" on all suggestion buttons', async () => {
     await browser.executeScript(() => {
       document.body.innerHTML = `
