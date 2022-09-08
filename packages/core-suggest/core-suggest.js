@@ -352,7 +352,7 @@ function onClick (self, event) {
 /**
  * Handle ajax event using ajax attribute
  * @param {CoreSuggest} self Core suggest element
- * @returns {true}
+ * @returns {Boolean} Returns true if Core Suggest element has `ajax` attribute value, false if not
  */
 function onAjax (self) {
   if (!self.ajax) return
