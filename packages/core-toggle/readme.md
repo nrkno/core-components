@@ -166,7 +166,7 @@ This can be useful when core-toggle is used inside narrow and/or scrollable area
 ```html
 <!--demo-->
 <p>This example illustrates how core-toggle with <code style="font-size: 16px">autoposition</code> draws relative to the screen edge marked by the red frame</p>
-<iframe src="core-toggle/autoposition.html" width="300" height="400" style="border: 2px solid red;"></iframe>
+<iframe title="Examples for use of autoposition" src="core-toggle/autoposition.html" width="300" height="400" style="border: 2px solid red;"></iframe>
 ```
 ## Events
 
