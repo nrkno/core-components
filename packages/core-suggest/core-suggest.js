@@ -340,14 +340,19 @@ function onClick (self, event) {
   const item = event.type === 'click' && self.contains(event.target) && closest(event.target, 'a,button')
   const show = !item && (self.contains(event.target) || self.input === event.target)
 
+  let delayedFilter = false
   if (item && dispatchEvent(self, 'suggest.select', item)) {
     self.input.value = item.value || item.textContent.trim()
-    filterItemsByInput(self)
     self.input.focus()
+    delayedFilter = true
   }
 
   // setTimeout: fix VoiceOver Safari moving focus to parentElement and let focus bubbe first
-  setTimeout(() => (self.hidden = !show))
+  setTimeout(() => {
+    self.hidden = !show
+    // Filter after hidden to avoid announcing to liveRegion in mutationObserver
+    if (delayedFilter) filterItemsByInput(self)
+  })
 }
 
 /**
