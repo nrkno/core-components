@@ -285,11 +285,12 @@ function onInput (self, event) {
  *  * `suggest.filter`
  * Filtering is aborted if
  *  * event.preventDefault() is called on on `suggest.filter` event
+ *  * input has no value
  * @param {CoreSuggest} self Core suggest element
  * @fires `suggest.filter`
  */
 function filterItemsByInput (self) {
-  if (!dispatchEvent(self, 'suggest.filter')) return
+  if (!dispatchEvent(self, 'suggest.filter') || !(self.input && self.input.value)) return
   const value = self.input.value.toLowerCase()
   const items = self.querySelectorAll('a,button')
 
