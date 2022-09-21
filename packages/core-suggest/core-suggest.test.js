@@ -40,6 +40,18 @@ describe('core-suggest', () => {
     await expect(prop('core-suggest', 'hidden')).toMatch(/(null|false)/i)
   })
 
+  it('does not open suggestions on clicking a disabled input', async () => {
+    await browser.executeScript(() => {
+      document.body.innerHTML = `
+        <input type="text" disabled>
+        <core-suggest hidden></core-suggest>
+      `
+    })
+    await $('input').click()
+    await expect(attr('input', 'aria-expanded')).toEqual('false')
+    await expect(prop('core-suggest', 'hidden')).toMatch(/true/i)
+  })
+
   it('closes suggestions on click outside', async () => {
     await browser.executeScript(() => {
       document.body.innerHTML = `
