@@ -28,7 +28,7 @@ describe('core-suggest', () => {
     await expect(attr('input', 'aria-expanded')).toEqual('false')
   })
 
-  it('opens suggestions on input focus', async () => {
+  it('opens suggestions on input click', async () => {
     await browser.executeScript(() => {
       document.body.innerHTML = `
         <input type="text">
