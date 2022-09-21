@@ -339,7 +339,7 @@ function onKey (self, event) {
  */
 function onClick (self, event) {
   const item = event.type === 'click' && self.contains(event.target) && closest(event.target, 'a,button')
-  const show = !item && (self.contains(event.target) || self.input === event.target)
+  const show = !item && (self.contains(event.target) || (self.input === event.target && !self.input.disabled))
 
   let delayedFilter = false
   if (item && dispatchEvent(self, 'suggest.select', item)) {
