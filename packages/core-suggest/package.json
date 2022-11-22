@@ -2,7 +2,7 @@
   "name": "@nrk/core-suggest",
   "homepage": "https://static.nrk.no/core-components/latest/",
   "author": "NRK <opensource@nrk.no> (https://www.nrk.no/)",
-  "version": "1.3.5",
+  "version": "1.3.6",
   "license": "MIT",
   "main": "core-suggest.cjs.js",
   "repository": {
