@@ -78,15 +78,16 @@ export default class CoreScroll extends HTMLElement {
     document.addEventListener('click', this)
     setTimeout(() => this.handleEvent()) // Initialize buttons after children is parsed
     
-    // Trigger init when childList is changed - important for jsx in regards to scroll buttons
-    this._childListObserver = new MutationObserver((mutations) => {
+    // Initialize buttons when children change
+    // - jsx relies on onScrollChange triggering to update button states
+    this._childListObserver = new MutationObserver((mutationList) => {
       for (const mutation of mutationList) {
         if (mutation.type === 'childList') {
           this.handleEvent();
         }
       }
     })
-    this._childListObserver.observe(this, { childList: true })
+    this._childListObserver.observe(this, { childList: true, subtree: true })
   }
 
   disconnectedCallback () {
