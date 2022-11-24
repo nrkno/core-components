@@ -77,10 +77,21 @@ export default class CoreScroll extends HTMLElement {
     window.addEventListener('load', this) // Update state when we are sure all CSS is loaded
     document.addEventListener('click', this)
     setTimeout(() => this.handleEvent()) // Initialize buttons after children is parsed
+    
+    // Trigger init when childList is changed - important for jsx in regards to scroll buttons
+    this._childListObserver = new MutationObserver((mutations) => {
+      for (const mutation of mutationList) {
+        if (mutation.type === 'childList') {
+          this.handleEvent();
+        }
+      }
+    })
+    this._childListObserver.observe(this, { childList: true })
   }
 
   disconnectedCallback () {
     this._throttledEvent = null // Garbage collection
+    this._childListObserver.disconnect();
     this.removeEventListener('mousedown', this)
     this.removeEventListener('wheel', this, EVENT_PASSIVE)
     this.removeEventListener('scroll', this._throttledEvent, EVENT_PASSIVE)
