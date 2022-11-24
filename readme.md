@@ -50,11 +50,11 @@ After having applied changes, remember to build before pushing the changes upstr
 ```bash
 git checkout -b feature/my-changes
 # update the source code
-npm run build # Builds all the packages
-git commit -am "Add my changes"
-git push origin feature/my-changes
-# then make a PR to the master branch,
-# and assign another developer to review your code
+npm run build
+git commit -am "<prefix>: Add my changes"
+git push --set-upstream origin feature/my-changes
+# then make PR to the master branch,
+# and assign a developer to review your code
 ```
 
 ## Publishing
