@@ -86,8 +86,7 @@ export default class CoreScroll extends HTMLElement {
 
   disconnectedCallback () {
     if (this._childListObserver) this._childListObserver.disconnect()
-    this._childListObserver = null // Garbage collection
-    this._throttledEvent = null
+    this._childListObserver = this._throttledEvent = null // Garbage collection
     this.removeEventListener('mousedown', this)
     this.removeEventListener('wheel', this, EVENT_PASSIVE)
     this.removeEventListener('scroll', this._throttledEvent, EVENT_PASSIVE)
