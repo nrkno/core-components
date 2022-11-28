@@ -76,12 +76,13 @@ export default class CoreScroll extends HTMLElement {
     window.addEventListener('resize', this._throttledEvent, EVENT_PASSIVE)
     window.addEventListener('load', this) // Update state when we are sure all CSS is loaded
     document.addEventListener('click', this)
-    setTimeout(() => this.handleEvent()) // Initialize buttons after children is parsed
 
-    // Initialize buttons when children change
-    // - jsx relies on onScrollChange triggering to update button states
+    // Observe children for changes and run this.handleEvent()
+    // - jsx in particular relies on onScrollChange triggering to update button states
     if (!this._childListObserver && window.MutationObserver) this._childListObserver = new window.MutationObserver(onDOMchange.bind(this))
     if (this._childListObserver) this._childListObserver.observe(this, { childList: true, subtree: true })
+
+    setTimeout(() => this.handleEvent()) // Initialize buttons after children is parsed
   }
 
   disconnectedCallback () {
