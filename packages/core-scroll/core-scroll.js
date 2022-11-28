@@ -80,16 +80,8 @@ export default class CoreScroll extends HTMLElement {
 
     // Initialize buttons when children change
     // - jsx relies on onScrollChange triggering to update button states
-    if (!this._childListObserver && window.MutationObserver) {
-      this._childListObserver = new window.MutationObserver((mutationList) => {
-        for (const mutation of mutationList) {
-          if (mutation.type === 'childList') {
-            this.handleEvent()
-          }
-        }
-      })
-    }
-    this._childListObserver.observe(this, { childList: true, subtree: true })
+    if (!this._childListObserver && window.MutationObserver) this._childListObserver = new window.MutationObserver(onDOMchange.bind(this))
+    if (this._childListObserver) this._childListObserver.observe(this, { childList: true, subtree: true })
   }
 
   disconnectedCallback () {
@@ -270,5 +262,15 @@ function parsePoint (self, move) {
   return {
     x: Math.max(0, Math.min(point.x, self.scrollWidth - self.clientWidth)),
     y: Math.max(0, Math.min(point.y, self.scrollHeight - self.clientHeight))
+  }
+}
+
+function onDOMchange (mutationList) {
+  if (!this.parentNode) return // Abort if removed from DOM
+
+  for (const mutation of mutationList) {
+    if (mutation.type === 'childList') {
+      this.handleEvent()
+    }
   }
 }
