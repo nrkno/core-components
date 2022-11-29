@@ -75,7 +75,7 @@ demo-->
 ```html
 <!--demo-->
 <div id="jsx-scroll"></div>
-<script type="text/jsx">
+<script type="text/JavaScript">
   class MyScroll extends React.Component {
     constructor (props) {
       super(props)
@@ -112,7 +112,7 @@ demo-->
 
 `core-scroll` calculates scroll distance based on currently visible direct children. When using substructures like `<ul><li>...` you, must tell `core-scroll` what elements are considered items, by using the `items` attribute/property:
 
-```
+```html
 <core-scroll items="li">
   <ul>
     <li>List-item 1</li>
@@ -135,6 +135,50 @@ demo-->
     </ul>
   </core-scroll>
 </div>
+```
+
+### Example: changes in DOM
+
+Core scroll uses a [MutationObserver](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver) to monitor changes to childnodes.
+Connected buttons are updated (disabled or not) if their viability changes as a result of the DOM-change
+
+
+```html
+<!--demo-->
+<div id="jsx-dynamic-content"></div>
+<script type="text/JavaScript">
+  const Dynamic = () => {
+      const [DOMChanges, setDOMChanges] = React.useState(0)
+      const [elements, setElements] = React.useState([...Array(10).keys()])
+      const content = elements.map(item => <div> Element {item + 1}</div>);
+
+      const handleDOMChange = ({detail: {addedNodes, removedNodes}}) => (setDOMChanges(DOMChanges + addedNodes.length + removedNodes.length))
+      return (
+        <>
+          Children have been updated {DOMChanges} times
+          <br />
+          <button type="button" onClick={() => setElements([...elements, elements.length])}>
+            Add extra child
+          </button>
+          <button type="button" onClick={() => setElements([...Array(10).keys()])}>
+            Set to ten children
+          </button>
+          <button type="button" onClick={() => setElements([])}>
+            Remove all children
+          </button>
+          <br />
+          <button type="button" data-for="scroll-dynamic-content" value="left" aria-label="Rull til venstre">&larr;</button>
+          <button type="button" data-for="scroll-dynamic-content" value="right" aria-label="Rull til høyre">&rarr;</button>
+          <div className="my-wrap">
+            <CoreScroll id="scroll-dynamic-content" className="my-scroll" onScrollDOMChange={handleDOMChange}>
+              {content}
+            </CoreScroll>
+          </div>
+        </>
+      )
+    }
+  ReactDOM.render(<Dynamic />, document.getElementById('jsx-dynamic-content'))
+</script>
 ```
 
 ## Installation
@@ -202,11 +246,13 @@ myScroll.scroll(document.getElementById('childId')) // Scroll to child element, 
 ```jsx
 import CoreScroll from '@nrk/core-scroll/jsx'
 
-<CoreScroll friction={Number}         // Optional. Default 0.8. Controls scroll speed
-            ref={(comp) => {}}        // Optional. Get reference to React component
-            forwardRef={(el) => {}}   // Optional. Get reference to underlying DOM custom element
-            onScrollChange={Function} // Optional. Scroll change event handler
-            onScrollClick={Function}> // Optional. Scroll click event handler
+<CoreScroll friction={Number}             // Optional. Default 0.8. Controls scroll speed
+            ref={(comp) => {}}            // Optional. Get reference to React component
+            forwardRef={(el) => {}}       // Optional. Get reference to underlying DOM custom element
+            onScrollChange={Function}     // Optional. Scroll change event handler
+            onScrollClick={Function}      // Optional. Scroll click event handler
+            onScrollDOMChange={Function}  // Optional. Scroll DOM change event handler
+>
   {/* elements */}
 </CoreScroll>
 
@@ -237,6 +283,18 @@ Fired when clicking a button controlling `core-scroll`:
 document.addEventListener('scroll.click', (event) => {
   event.target        // The scroll element
   event.detail.move   // Direction to move (left, right, up, down)
+})
+```
+
+### scroll.DOMChange
+
+Fired when MutationObserver sees a childlist change within the `core-scroll` element:
+
+```js
+document.addEventListener('scroll.click', (event) => {
+  event.target              // The scroll element
+  event.detail.addedNodes   // Nodes added from the MutationRecord
+  event.detail.removedNodes // Nodes removed from the MutationRecord
 })
 ```
 
