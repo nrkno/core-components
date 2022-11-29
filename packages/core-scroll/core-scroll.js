@@ -293,10 +293,7 @@ function onDOMchange (mutationList) {
     if (mutation.type === 'childList') {
       const scrollStatus = getScrollStatus(this)
       updateButtons(this, scrollStatus)
-      dispatchEvent(this, 'scroll.DOMChange', {
-        addedNodes: mutation.addedNodes,
-        removedNodes: mutation.removedNodes
-      })
+      dispatchEvent(this, 'scroll.change')
     }
   }
 }

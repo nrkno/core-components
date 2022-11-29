@@ -3,6 +3,6 @@ import { version } from './package.json'
 import customElementToReact from '@nrk/custom-element-to-react'
 
 export default customElementToReact(CoreScroll, {
-  customEvents: ['scroll.change', 'scroll.click', 'scroll.DOMChange'],
+  customEvents: ['scroll.change', 'scroll.click'],
   suffix: version
 })
