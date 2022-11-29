@@ -267,12 +267,36 @@ function parsePoint (self, move) {
   }
 }
 
+/**
+ * scroll.DOMChange
+ *
+ * fired when MutationObserver in CoreScroll detects a change in child nodes
+ *
+ * @event scroll.DOMChange
+ * @type {object}
+ * @param {NodeList} addedNodes
+ * @param {NodeList} removedNodes
+ */
+
+/**
+ * Handle DOM changes in childlist observed with MutationObserver in CoreScroll
+ *
+ * @this {CoreScroll} CoreScroll HTMLElement
+ * @param {MutationRecord[]} mutationList
+ * @fires scroll.DOMChange when a MutationRecord has type childList
+ */
 function onDOMchange (mutationList) {
   if (!this.parentNode) return // Abort if removed from DOM
 
   for (const mutation of mutationList) {
+    /* One or more children have been added to and/or removed from the tree. */
     if (mutation.type === 'childList') {
-      this.handleEvent()
+      const scrollStatus = getScrollStatus(this)
+      updateButtons(this, scrollStatus)
+      dispatchEvent(this, 'scroll.DOMChange', {
+        addedNodes: mutation.addedNodes,
+        removedNodes: mutation.removedNodes
+      })
     }
   }
 }
