@@ -132,7 +132,7 @@ describe('core-scroll', () => {
       await expect(browser.executeScript(() => document.getElementById('scroller').friction)).toEqual(0.1)
     })
 
-    it('dispatches "scroll.change" onConnected and when children are added/removed', async () => {
+    it('dispatches "scroll.change" onConnected', async () => {
       await browser.executeScript(() => {
         window.scrollEvents = []
         document.body.innerHTML = '<core-scroll id="scroller"></core-scroll>'
@@ -140,6 +140,16 @@ describe('core-scroll', () => {
       })
       // Assert single event dispatched onConnected
       await expect(browser.executeScript(() => window.scrollEvents.length)).toEqual(1)
+    })
+
+    it('dispatches "scroll.DOMChange" when children are added/removed', async () => {
+      await browser.executeScript(() => {
+        window.domChangeEvents = []
+        document.body.innerHTML = '<core-scroll id="scroller"></core-scroll>'
+        document.addEventListener('scroll.DOMChange', (event) => (window.domChangeEvents.push(event)))
+      })
+      // Assert no event dispatched onConnected
+      await expect(browser.executeScript(() => window.domChangeEvents.length)).toEqual(0)
       // Add children
       await browser.executeScript(() => {
         document.getElementById('scroller').insertAdjacentHTML('beforeend', `
@@ -150,11 +160,11 @@ describe('core-scroll', () => {
       })
 
       // Assert event dispatched for adding children
-      await expect(browser.executeScript(() => window.scrollEvents.length)).toEqual(2)
+      await expect(browser.executeScript(() => window.domChangeEvents.length)).toEqual(1)
 
       // Assert event dispatched for removing children
       await browser.executeScript(() => document.getElementById('scroller').children[0].remove())
-      await expect(browser.executeScript(() => window.scrollEvents.length)).toEqual(3)
+      await expect(browser.executeScript(() => window.domChangeEvents.length)).toEqual(2)
     })
   })
 
