@@ -255,7 +255,7 @@ import CoreScroll from '@nrk/core-scroll/jsx'
 
 ## Events
 
-*Note: Starting a `core-scroll` mousemove inside a iframe, and releasing the mouse outside, will fail to end movement. This is due to `mouseup` not bubbling though iframes. Please avoid iframes.*
+_Note: Starting a `core-scroll` mousemove inside a iframe, and releasing the mouse outside, will result in an incomplete action and fail to end movement. This is due to `mouseup` not bubbling though iframes. Please avoid iframes._
 
 ### scroll.change
 
