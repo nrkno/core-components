@@ -131,6 +131,31 @@ describe('core-scroll', () => {
       })
       await expect(browser.executeScript(() => document.getElementById('scroller').friction)).toEqual(0.1)
     })
+
+    it('dispatches "scroll.change" onConnected and when children are added/removed', async () => {
+      await browser.executeScript(() => {
+        window.scrollEvents = []
+        document.body.innerHTML = '<core-scroll id="scroller"></core-scroll>'
+        document.addEventListener('scroll.change', (event) => (window.scrollEvents.push(event)))
+      })
+      // Assert single event dispatched onConnected
+      await expect(browser.executeScript(() => window.scrollEvents.length)).toEqual(1)
+      // Add children
+      await browser.executeScript(() => {
+        document.getElementById('scroller').insertAdjacentHTML('beforeend', `
+          <div>This is overflowing content</div>
+          <div>This is overflowing content</div>
+          <div>This is overflowing content</div>
+        `)
+      })
+
+      // Assert event dispatched for adding children
+      await expect(browser.executeScript(() => window.scrollEvents.length)).toEqual(2)
+
+      // Assert event dispatched for removing children
+      await browser.executeScript(() => document.getElementById('scroller').children[0].remove())
+      await expect(browser.executeScript(() => window.scrollEvents.length)).toEqual(3)
+    })
   })
 
   describe('scroll-function', () => {

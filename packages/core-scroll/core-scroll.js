@@ -16,6 +16,14 @@ import { IS_BROWSER, addStyle, closest, dispatchEvent, throttle, getUUID, queryA
  */
 
 /**
+ * @typedef {Object} scrollStatus
+ * @property {Number} up distance above to bounding element
+ * @property {Number} right distance right to bounding element
+ * @property {Number} down distance below to bounding element
+ * @property {Number} left distance left to bounding element
+ */
+
+/**
  * @typedef {scrollDirection | scrollPoint | Element} scrollTarget
  */
 
@@ -76,11 +84,18 @@ export default class CoreScroll extends HTMLElement {
     window.addEventListener('resize', this._throttledEvent, EVENT_PASSIVE)
     window.addEventListener('load', this) // Update state when we are sure all CSS is loaded
     document.addEventListener('click', this)
+
+    // Observe children for changes and run this.handleEvent()
+    // - jsx in particular relies on onScrollChange triggering to update button states
+    if (!this._childListObserver && window.MutationObserver) this._childListObserver = new window.MutationObserver(onDOMchange.bind(this))
+    if (this._childListObserver) this._childListObserver.observe(this, { childList: true, subtree: true })
+
     setTimeout(() => this.handleEvent()) // Initialize buttons after children is parsed
   }
 
   disconnectedCallback () {
-    this._throttledEvent = null // Garbage collection
+    if (this._childListObserver) this._childListObserver.disconnect()
+    this._childListObserver = this._throttledEvent = null // Garbage collection
     this.removeEventListener('mousedown', this)
     this.removeEventListener('wheel', this, EVENT_PASSIVE)
     this.removeEventListener('scroll', this._throttledEvent, EVENT_PASSIVE)
@@ -101,17 +116,11 @@ export default class CoreScroll extends HTMLElement {
       const btn = this.id && closest(event.target, `[for="${this.id}"],[data-for="${this.id}"]`)
       if (btn && dispatchEvent(this, 'scroll.click', { move: btn.value })) this.scroll(btn.value)
     } else {
-      // We floor all values to handle potential decimal leftovers if browser is zoomed in or out
-      const scroll = {
-        up: Math.floor(this.scrollTop),
-        right: Math.floor(this.scrollRight),
-        down: Math.floor(this.scrollBottom),
-        left: Math.floor(this.scrollLeft)
-      }
-      const cursor = (scroll.left || scroll.right || scroll.up || scroll.down) ? 'grab' : ''
-      queryAll(this.id && `[for="${this.id}"],[data-for="${this.id}"]`).forEach((el) => (el.disabled = !scroll[el.value]))
+      const scrollStatus = getScrollStatus(this)
+      updateButtons(this, scrollStatus)
       dispatchEvent(this, 'scroll.change')
 
+      const cursor = (scrollStatus.left || scrollStatus.right || scrollStatus.up || scrollStatus.down) ? 'grab' : ''
       if (!event.type) { // Do not change cursor while dragging
         this.style.cursor = `-webkit-${cursor}`
         this.style.cursor = cursor
@@ -256,4 +265,59 @@ function parsePoint (self, move) {
     x: Math.max(0, Math.min(point.x, self.scrollWidth - self.clientWidth)),
     y: Math.max(0, Math.min(point.y, self.scrollHeight - self.clientHeight))
   }
+}
+
+/**
+ * scroll.DOMChange
+ *
+ * fired when MutationObserver in CoreScroll detects a change in child nodes
+ *
+ * @event scroll.DOMChange
+ * @type {object}
+ * @param {NodeList} addedNodes
+ * @param {NodeList} removedNodes
+ */
+
+/**
+ * Handle DOM changes in childlist observed with MutationObserver in CoreScroll
+ *
+ * @this {CoreScroll} CoreScroll HTMLElement
+ * @param {MutationRecord[]} mutationList
+ * @fires scroll.DOMChange when a MutationRecord has type childList
+ */
+function onDOMchange (mutationList) {
+  if (!this.parentNode) return // Abort if removed from DOM
+
+  for (const mutation of mutationList) {
+    /* One or more children have been added to and/or removed from the tree. */
+    if (mutation.type === 'childList') {
+      const scrollStatus = getScrollStatus(this)
+      updateButtons(this, scrollStatus)
+      dispatchEvent(this, 'scroll.change')
+    }
+  }
+}
+
+/**
+ * getScrollStatus
+ * We floor all values to handle potential decimal leftovers if browser is zoomed in or out
+ * @param {CoreScroll} self CoreScroll HTMLElement
+ * @returns {scrollStatus} Object with values for distance to bounding element in cardinal directions
+ */
+function getScrollStatus (self) {
+  return {
+    up: Math.floor(self.scrollTop),
+    right: Math.floor(self.scrollRight),
+    down: Math.floor(self.scrollBottom),
+    left: Math.floor(self.scrollLeft)
+  }
+}
+
+/**
+ * Updates disabled attribute on all connected buttons with value set as a scrollDirection
+ * @param {CoreScroll} self CoreScroll HTMLElement
+ * @param {scrollStatus} scrollStatus
+ */
+function updateButtons (self, scrollStatus) {
+  queryAll(self.id && `[for="${self.id}"],[data-for="${self.id}"]`).forEach((el) => (el.disabled = !scrollStatus[el.value]))
 }
