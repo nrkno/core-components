@@ -3,7 +3,6 @@
 > `@nrk/core-scroll` enhances any tag with content to be scrollable with mouse interaction on non-touch-devices.
 > It also hides the scrollbars and automatically disables animation for users who prefers [reduced motion](https://css-tricks.com/introduction-reduced-motion-media-query/).
 
-
 <!-- <script src="https://unpkg.com/preact"></script>
 <script src="https://unpkg.com/preact-compat"></script>
 <script>
@@ -142,7 +141,6 @@ demo-->
 Core scroll uses a [MutationObserver](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver) to monitor changes to childnodes.
 Connected buttons are updated (disabled or not) if their viability changes as a result of the DOM-change
 
-
 ```html
 <!--demo-->
 <div id="jsx-dynamic-content"></div>
@@ -261,18 +259,15 @@ _Note: Starting a `core-scroll` mousemove inside a iframe, and releasing the mou
 
 Fired regularly during a scroll. The event is [throttled](https://css-tricks.com/the-difference-between-throttling-and-debouncing/) to run every 500ms and ensure better performance:
 
-
 ```js
 document.addEventListener('scroll.change', (event) => {
   event.target   // The scroll element
 })
 ```
 
-
 ### scroll.click
 
 Fired when clicking a button controlling `core-scroll`:
-
 
 ```js
 document.addEventListener('scroll.click', (event) => {
@@ -295,8 +290,6 @@ document.addEventListener('scroll', (event) => {
   }
 }, true) // Note the true parameter, activating capture listening
 ```
-
-
 
 ## Styling
 
@@ -330,4 +323,5 @@ The `<button>` elements receive `disabled` attributes reflecting the current scr
 If you are creating a horizontal layout, you might experience unwanted vertical scrolling in Safari. This happens when children of <code>@nrk/core-scroll</code> have half-pixel height values (due to images/videos/elements with aspect-ratio sizing). Avoid the vertical scrolling by setting  <code>padding-bottom: 1px</code> on the <code>@nrk/core-scroll</code> element.
 
 ### NB: iOS 12.2+ bug
+
 `core-scroll` automatically adds `-webkit-overflow-scrolling: touch` as this is required by iOS to enable momentum scrolling. An unfortunate side effect (introduced in iOS 12.2) is that the scrollable area is rendered on the GPU, which breaks `position: fixed` on child elements. Please place elements with `position: fixed` (i.e. a `<core-dialog>`) outside the markup of `<core-scroll>`.
