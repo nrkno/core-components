@@ -121,6 +121,7 @@ import CoreToggle from '@nrk/core-toggle/jsx'
   data-popup={Boolean|String}    // Optional. If true, clicking outside open toggle will close it. Providing a string also enables select-behavior, by replacing value inside button with selected value, and suffixes provided string to aria-label on button
   ref={(comp) => {}}             // Optional. Get reference to React component
   forwardRef={(el) => {}}        // Optional. Get reference to underlying DOM custom element
+  value={String}                 // Optional. Set selected value in order to get correct aria-label. See "Example: Select"
   onToggle={Function}            // Optional. Toggle event listener. See event 'toggle'
   onToggleSelect={Function}      // Optional. Toggle select event listener. See event 'toggle.select'
 >
@@ -275,7 +276,7 @@ to create a component that behaves like a `<select>`:
     render () {
       return <>
         <button type="button">{this.state.value}</button>
-        <CoreToggle className='my-dropdown' data-popup='Example picker' hidden onToggleSelect={this.onSelect}>
+        <CoreToggle className='my-dropdown' data-popup='Example picker' hidden onToggleSelect={this.onSelect} value={this.state.value}>
           <ul>
             <li><button type="button">One</button></li>
             <li><button type="button">Two</button></li>
