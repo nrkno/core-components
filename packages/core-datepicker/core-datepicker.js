@@ -191,11 +191,16 @@ function setupTable (self, table) {
   })
 }
 
+/**
+ *
+ * @param {CoreDatepicker} self
+ * @param {HTMLSelectElement} select
+ */
 function setupSelect (self, select) {
   if (!select.firstElementChild) {
     select._autofill = true
     select.setAttribute('data-fill', 'month')
-    select.innerHTML = self.months.map((name, month) =>
+    select.innerHTML = self.months.map((_, month) =>
       `<option value="y-${month + 1}-d"></option>`
     ).join('')
   }
@@ -207,6 +212,11 @@ function setupSelect (self, select) {
   })
 }
 
+/**
+ * Returns array of days in the month containing the dateInMonth param
+ * @param {Date} dateInMonth
+ * @returns {Date[]} Array of days in the month in question
+ */
 function daysInMonth (dateInMonth) {
   const date = new Date(dateInMonth)
   date.setDate(1)
