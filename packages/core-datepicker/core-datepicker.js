@@ -19,7 +19,11 @@ const FILL = {
  * e.g. resolve if a month can be selected or is disabled
  */
 const DISABLED = {
-  month: (self, value) => daysInMonth(self.parse(value)).map((day) => self.disabled(day)).reduce((a, b) => a && b),
+  month: (self, value) => {
+    const allDays = daysInMonth(self.parse(value))
+    const allDaysDisabled = allDays.map(day => self.disabled(day)).reduce((a, b) => a && b)
+    return allDaysDisabled
+  },
   null: (self, value) => self.disabled(value)
 }
 const MASK = { year: '*-m-d', month: 'y-*-d', day: 'y-m-*', hour: '*:m', minute: 'h:*', second: 'h:m:*', timestamp: '*', null: '*' }
