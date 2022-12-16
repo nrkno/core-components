@@ -1,10 +1,19 @@
 import { addStyle, closest, dispatchEvent, toggleAttribute, queryAll } from '../utils'
 import parse from '@nrk/simple-date-parse'
 
+/**
+ * Handlers to fill in date value depending on type of value (as key) selected
+ * e.g. resolve if same day in month can be filled when selecting next month
+ */
 const FILL = {
   month: (self, value) => daysInMonth(self.parse(value)).filter(day => !self.disabled(day))[0] || value,
   null: (_self, value) => value
 }
+
+/**
+ * Handlers to resolve if entity with type of value (as key) is disabled
+ * e.g. resolve if a month can be selected or is disabled
+ */
 const DISABLED = {
   month: (self, value) => daysInMonth(self.parse(value)).map((day) => self.disabled(day)).reduce((a, b) => a && b),
   null: (self, value) => self.disabled(value)
