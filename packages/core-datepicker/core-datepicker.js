@@ -6,7 +6,11 @@ import parse from '@nrk/simple-date-parse'
  * e.g. resolve if same day in month can be filled when selecting next month
  */
 const FILL = {
-  month: (self, value) => daysInMonth(self.parse(value)).filter(day => !self.disabled(day))[0] || value,
+  month: (self, value) => {
+    if (!self.disabled(value)) return value
+    const firstAvailableDate = daysInMonth(self.parse(value)).filter(day => !self.disabled(day))[0]
+    return firstAvailableDate || value
+  },
   null: (_self, value) => value
 }
 
