@@ -239,9 +239,11 @@ Content is only toggled when clicking the button. Great for accordions and expan
 Listen to the `toggle.select` event and update the button's value from the selected item
 to create a component that behaves like a `<select>`:
 
+### HTML and JavaScript
+
 ```html
 <!--demo-->
-<button type="button">Episode 1</button>
+<button type="button">Select one</button>
 <core-toggle class="my-select my-dropdown" hidden data-popup="Choose episode">
   <ul>
     <li><button type="button">Episode 1</button></li>
@@ -259,6 +261,8 @@ to create a component that behaves like a `<select>`:
 </script>
 ```
 
+### React class component
+
 ```html
 <!--demo-->
 <div id="jsx-toggle-select"></div>
@@ -266,7 +270,7 @@ to create a component that behaves like a `<select>`:
   class MyToggleSelect extends React.Component {
     constructor (props) {
       super(props)
-      this.state = { value: 'Select number' }
+      this.state = { value: 'Select one' }
       this.onSelect = this.onSelect.bind(this)
     }
     onSelect (event) {
@@ -276,17 +280,52 @@ to create a component that behaves like a `<select>`:
     render () {
       return <>
         <button type="button">{this.state.value}</button>
-        <CoreToggle className='my-dropdown' data-popup='Example picker' hidden onToggleSelect={this.onSelect} value={this.state.value}>
+        <CoreToggle className='my-dropdown' data-popup='Choose episode' hidden onToggleSelect={this.onSelect} value={this.state.value}>
           <ul>
-            <li><button type="button">One</button></li>
-            <li><button type="button">Two</button></li>
-            <li><button type="button">Three</button></li>
+            <li><button type="button">Episode 1</button></li>
+            <li><button type="button">Episode 2</button></li>
+            <li><button type="button">Episode 3</button></li>
           </ul>
         </CoreToggle>
       </>
     }
   }
   ReactDOM.render(<MyToggleSelect/>, document.getElementById('jsx-toggle-select'))
+</script>
+```
+
+### React function component
+
+```html
+<!--demo-->
+<div id="react-func-toggle-select"></div>
+<script type="text/javascript">
+  const FuncToggle = () => {
+    const [selectVal, setSelectVal] = React.useState('Select one')
+    const handleSelect = (event) => {
+      event.target.hidden = true
+      setSelectVal(event.detail.textContent)
+    }
+    return (
+      <>
+        <button type="button">{selectVal}</button>
+        <CoreToggle
+          className='my-dropdown'
+          data-popup='Choose episode'
+          onToggleSelect={handleSelect}
+          value={selectVal}
+          hidden
+        >
+          <ul>
+            <li><button type="button">Episode 1</button></li>
+            <li><button type="button">Episode 2</button></li>
+            <li><button type="button">Episode 3</button></li>
+          </ul>
+        </CoreToggle>
+      </>
+    )
+  }
+  ReactDOM.render(<FuncToggle/>, document.getElementById('react-func-toggle-select'))
 </script>
 ```
 
