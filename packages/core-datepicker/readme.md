@@ -166,7 +166,8 @@ Extravagantly featured implementation to showcase most of what you can do out of
 <script>
   // Disable dates past one week from now
   document.getElementById('my-datepicker').disabled = (date) => {
-    var oneWeekFromNow = (new Date()).setDate(new Date().getDate() + 7)
+    var oneWeekFromNow = new Date()
+    oneWeekFromNow.setDate(new Date().getDate() + 7)
     return date > oneWeekFromNow
   }
 

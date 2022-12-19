@@ -1,6 +1,31 @@
 import { addStyle, closest, dispatchEvent, toggleAttribute, queryAll } from '../utils'
 import parse from '@nrk/simple-date-parse'
 
+/**
+ * Handlers to fill in date value depending on type of value (as key) selected
+ * e.g. resolve if same day in month can be filled when selecting next month
+ */
+const FILL = {
+  month: (self, value) => {
+    if (!self.disabled(value)) return value
+    const firstAvailableDate = daysInMonth(self.parse(value)).filter(day => !self.disabled(day))[0]
+    return firstAvailableDate || value
+  },
+  null: (_self, value) => value
+}
+
+/**
+ * Handlers to resolve if entity with type of value (as key) is disabled
+ * e.g. resolve if a month can be selected or is disabled
+ */
+const DISABLED = {
+  month: (self, value) => {
+    const allDays = daysInMonth(self.parse(value))
+    const allDaysDisabled = allDays.map(day => self.disabled(day)).reduce((a, b) => a && b)
+    return allDaysDisabled
+  },
+  null: (self, value) => self.disabled(value)
+}
 const MASK = { year: '*-m-d', month: 'y-*-d', day: 'y-m-*', hour: '*:m', minute: 'h:*', second: 'h:m:*', timestamp: '*', null: '*' }
 const KEYS = { 33: '-1month', 34: '+1month', 35: 'y-m-99', 36: 'y-m-1', 37: '-1day', 38: '-1week', 39: '+1day', 40: '+1week' }
 const MONTHS = 'januar,februar,mars,april,mai,juni,juli,august,september,oktober,november,desember'
@@ -43,7 +68,8 @@ export default class CoreDatepicker extends HTMLElement {
     if (!this.contains(event.target) && !closest(event.target, `[for="${this.id}"],[data-for="${this.id}"]`)) return
 
     if (event.type === 'change') {
-      this.date = MASK[event.target.getAttribute('data-type')].replace('*', event.target.value)
+      const changeMask = MASK[event.target.getAttribute('data-type')].replace('*', event.target.value)
+      this.date = FILL[event.target.getAttribute('data-fill')](this, changeMask)
     } else if (event.type === 'click') {
       const button = closest(event.target, 'button[value]')
       const table = closest(event.target, 'table')
@@ -165,17 +191,41 @@ function setupTable (self, table) {
   })
 }
 
+/**
+ *
+ * @param {CoreDatepicker} self
+ * @param {HTMLSelectElement} select
+ */
 function setupSelect (self, select) {
   if (!select.firstElementChild) {
     select._autofill = true
-    select.innerHTML = self.months.map((name, month) =>
+    select.setAttribute('data-fill', 'month')
+    select.innerHTML = self.months.map((_, month) =>
       `<option value="y-${month + 1}-d"></option>`
     ).join('')
   }
-
+  const disabled = DISABLED[select.getAttribute('data-fill')]
   queryAll(select.children).forEach((option, month) => {
     if (select._autofill) option.textContent = self.months[month]
-    option.disabled = self.disabled(option.value)
+    option.disabled = disabled(self, option.value)
     option.selected = !self.diff(option.value)
   })
+}
+
+/**
+ * Returns array of days in the month containing the dateInMonth param
+ * @param {Date} dateInMonth
+ * @returns {Date[]} Array of days in the month in question
+ */
+function daysInMonth (dateInMonth) {
+  const date = new Date(dateInMonth)
+  date.setDate(1)
+
+  const month = date.getMonth()
+  const days = []
+  while (date.getMonth() === month) {
+    days.push(new Date(date))
+    date.setDate(date.getDate() + 1)
+  }
+  return days
 }
