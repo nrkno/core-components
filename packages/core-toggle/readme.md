@@ -243,7 +243,7 @@ to create a component that behaves like a `<select>`:
 
 ```html
 <!--demo-->
-<button type="button">Select one</button>
+<button type="button">Episode 1</button>
 <core-toggle class="my-select my-dropdown" hidden data-popup="Choose episode">
   <ul>
     <li><button type="button">Episode 1</button></li>
@@ -270,7 +270,7 @@ to create a component that behaves like a `<select>`:
   class MyToggleSelect extends React.Component {
     constructor (props) {
       super(props)
-      this.state = { value: 'Select one' }
+      this.state = { value: 'Episode 1' }
       this.onSelect = this.onSelect.bind(this)
     }
     onSelect (event) {
@@ -301,7 +301,7 @@ to create a component that behaves like a `<select>`:
 <div id="react-func-toggle-select"></div>
 <script type="text/javascript">
   const FuncToggle = () => {
-    const [selectVal, setSelectVal] = React.useState('Select one')
+    const [selectVal, setSelectVal] = React.useState('Episode 1')
     const handleSelect = (event) => {
       event.target.hidden = true
       setSelectVal(event.detail.textContent)
