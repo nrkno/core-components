@@ -68,8 +68,8 @@ export default class CoreDatepicker extends HTMLElement {
     if (!this.contains(event.target) && !closest(event.target, `[for="${this.id}"],[data-for="${this.id}"]`)) return
 
     if (event.type === 'change') {
-      const date = MASK[event.target.getAttribute('data-type')].replace('*', event.target.value)
-      this.date = FILL[event.target.getAttribute('data-fill')](this, date)
+      const changeMask = MASK[event.target.getAttribute('data-type')].replace('*', event.target.value)
+      this.date = FILL[event.target.getAttribute('data-fill')](this, changeMask)
     } else if (event.type === 'click') {
       const button = closest(event.target, 'button[value]')
       const table = closest(event.target, 'table')
