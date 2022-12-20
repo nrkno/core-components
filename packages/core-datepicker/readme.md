@@ -27,7 +27,7 @@ demo-->
 ## Examples (Plain JS)
 
 #### Toggled calendar
-Toggled datepicker ([using core-toggle](/?core-toggle/readme.md)) with calendar to update value of input
+Toggled datepicker ([using core-toggle](?core-toggle/readme.md)) with calendar to update value of input
 
 Note: We add event listeners to both, `datepicker.change` as well as `datepicker.click.day`, events to only close the `core-toggle` on the latter of the two.
 
@@ -181,7 +181,7 @@ Extravagantly featured implementation to showcase most of what you can do out of
 ## Examples (React)
 #### Toggled calendar
 
-Toggled datepicker ([using core-toggle](/?core-toggle/readme.md)) with calendar to update value of input
+Toggled datepicker ([using core-toggle](?core-toggle/readme.md)) with calendar to update value of input
 
 ```html
 <!-- demo -->
