@@ -26,7 +26,7 @@
     padding: 2em;
     width: 100%;
     max-width: 300px;
-    background: #fff;
+    background: var(--docs-color-background);
     transition: .2s;
   }
 
