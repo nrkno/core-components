@@ -78,8 +78,10 @@ export function dispatchEvent (element, name, detail = {}) {
   else element[ignore] = true // Add name to dispatching ignore
 
   if (typeof window.CustomEvent === 'function') {
+    // TODO: Consider adding {composed: true} for shadow-dom support https://developer.mozilla.org/en-US/docs/Web/API/Event/composed
     event = new window.CustomEvent(name, { bubbles: true, cancelable: true, detail })
   } else {
+    // TODO: Consider removing this as CustomEvent() constructor, above, is widely supported https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/initCustomEvent
     event = document.createEvent('CustomEvent')
     event.initCustomEvent(name, true, true, detail)
   }

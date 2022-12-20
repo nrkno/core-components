@@ -8,6 +8,7 @@ const FROM = IS_ANDROID ? 'data-labelledby' : 'aria-labelledby' // Android has a
 const KEYS = { SPACE: 32, END: 35, HOME: 36, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40 }
 
 export default class CoreTabs extends HTMLElement {
+  // TODO: data-
   static get observedAttributes () { return ['tab'] }
 
   connectedCallback () {
@@ -66,6 +67,7 @@ export default class CoreTabs extends HTMLElement {
    * @returns {TabElement}
    */
   get tab () {
+    // TODO: data-
     const tabAttr = this.getAttribute('tab')
     const allTabs = this.tabs
 

@@ -10,6 +10,7 @@ const KEY = {
 }
 
 export default class CoreDialog extends HTMLElement {
+  // TODO: data-backdrop
   static get observedAttributes () { return ['hidden', 'backdrop'] }
 
   connectedCallback () {
@@ -31,6 +32,7 @@ export default class CoreDialog extends HTMLElement {
 
   attributeChangedCallback (attr, prev, next) {
     if (this._focus) { // Only trigger after connectedCallback
+      // TODO: data-backdrop
       const prevBack = attr === 'backdrop' && getBackdrop(this, prev)
       const nextBack = this.backdrop
 
@@ -93,6 +95,9 @@ export default class CoreDialog extends HTMLElement {
 
   set open (val) { this.hidden = !val }
 
+  // Consider replace with data-close-on-backdrop data-close-esc
+  // Alternatively append info to toggle-event to allow implementation to decide what goes
+  // TODO: data-
   get strict () { return this.hasAttribute('strict') }
 
   set strict (val) { toggleAttribute(this, 'strict', val) }
@@ -102,6 +107,7 @@ export default class CoreDialog extends HTMLElement {
 
   set hidden (val) { toggleAttribute(this, 'hidden', val) }
 
+  // TODO: data-
   get backdrop () { return getBackdrop(this, this.getAttribute('backdrop')) }
 
   set backdrop (val) { typeof val === 'string' ? this.setAttribute('backdrop', val) : this.removeAttribute('backdrop') }

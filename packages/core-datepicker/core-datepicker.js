@@ -32,6 +32,7 @@ const MONTHS = 'januar,februar,mars,april,mai,juni,juli,august,september,oktober
 const DAYS = 'man,tirs,ons,tors,fre,lør,søn'
 
 export default class CoreDatepicker extends HTMLElement {
+  // TODO: data-months // TODO: data-days // TODO: data-date
   static get observedAttributes () { return ['date', 'months', 'days'] }
 
   connectedCallback () {
@@ -114,6 +115,7 @@ export default class CoreDatepicker extends HTMLElement {
 
   get date () {
     let dateAttr = this.getAttribute('date')
+    // TODO: Remove deprecation support
     if (!dateAttr) {
       dateAttr = this.getAttribute('timestamp')
       if (!dateAttr) return null
@@ -123,14 +125,17 @@ export default class CoreDatepicker extends HTMLElement {
     return this.parse(dateAttr)
   }
 
+  // TODO: data-
   set date (val) {
     return val === null ? this.removeAttribute('date') : this.setAttribute('date', this.parse(val).getTime())
   }
 
+  // TODO: data-
   set months (val) { this.setAttribute('months', [].concat(val).join(',')) }
 
   get months () { return (this.getAttribute('months') || MONTHS).split(/\s*,\s*/) }
 
+  // TODO: data-
   set days (val) { this.setAttribute('days', [].concat(val).join(',')) }
 
   get days () { return (this.getAttribute('days') || DAYS).split(/\s*,\s*/) }

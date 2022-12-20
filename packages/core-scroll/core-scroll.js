@@ -1,5 +1,7 @@
 import { IS_BROWSER, addStyle, closest, dispatchEvent, throttle, getUUID, queryAll } from '../utils'
 
+// sjekk getComputedStyle etter scroll-snap og slutt å brick
+// Regel: <button> har value ut av boksen, stol på at den er ok å bruke både innen- og utenfor custom elements
 /**
  * @typedef {{ x: number, y: number }} scrollCoords
  */
@@ -155,6 +157,7 @@ export default class CoreScroll extends HTMLElement {
     })
   }
 
+  // TODO: data-
   get items () { return queryAll(this.getAttribute('items') || this.children, this) }
 
   // Ensure falsy values becomes ''
@@ -167,6 +170,7 @@ export default class CoreScroll extends HTMLElement {
   get scrollBottom () { return Math.max(0, this.scrollHeight - this.clientHeight - this.scrollTop) }
 
   // Avoid friction 1 (infinite)
+  // TODO: data-
   get friction () { return Math.min(0.99, this.getAttribute('friction')) || 0.8 }
 
   set friction (val) { this.setAttribute('friction', val) }

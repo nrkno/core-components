@@ -3,6 +3,7 @@ import { closest, dispatchEvent, getUUID, IS_ANDROID, IS_BROWSER, IS_IOS, toggle
 // Element to ensure overflowing content can be reached by scrolling
 const SCROLLER = IS_BROWSER && document.createElement('div')
 export default class CoreToggle extends HTMLElement {
+  // TODO: data-autoposition
   static get observedAttributes () { return ['hidden', 'autoposition'] }
 
   connectedCallback () {
@@ -100,8 +101,10 @@ export default class CoreToggle extends HTMLElement {
 
   set popup (val) { this[val === false ? 'removeAttribute' : 'setAttribute']('data-popup', val) }
 
+  // FIXME: data-
   get autoposition () { return this.hasAttribute('autoposition') }
 
+  // FIXME: data-
   set autoposition (val) { toggleAttribute(this, 'autoposition', val) }
 
   // Must set attribute for IE11

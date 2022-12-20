@@ -19,6 +19,7 @@ const ARIA_LIVE_FILTERED = 'Ingen forslag vises'
 const ARIA_LIVE_COUNT = '{{value}} forslag vises'
 
 export default class CoreSuggest extends HTMLElement {
+  // TODO: data-highlight
   static get observedAttributes () { return ['hidden', 'highlight'] }
 
   connectedCallback () {
@@ -58,6 +59,7 @@ export default class CoreSuggest extends HTMLElement {
   attributeChangedCallback (name) {
     if (!this._observer) return
     if (name === 'hidden') this.input.setAttribute('aria-expanded', !this.hidden)
+    // TODO: data-
     if (name === 'highlight') onMutation(this)
   }
 
@@ -104,11 +106,13 @@ export default class CoreSuggest extends HTMLElement {
     return (this._input = this.id && document.querySelector(`input[list=${this.id}]`)) || this.previousElementSibling
   }
 
+  // TODO: Remove! Replace with a nice example for vanilla js with debounce&friends
   // Always return string consistent with .value or .className
   get ajax () { return this.getAttribute('ajax') || '' }
 
   set ajax (url) { this.setAttribute('ajax', url) }
 
+  // TODO: data-
   get limit () { return Math.max(0, this.getAttribute('limit')) || Infinity }
 
   set limit (int) { this.setAttribute('limit', int) }
@@ -116,12 +120,14 @@ export default class CoreSuggest extends HTMLElement {
   /**
    * @returns {'on' | 'off' | 'keep'} defaults to `'on'`
    */
+  // TODO: data-
   get highlight () {
     return String(/^on|off|keep$/i.exec(this.getAttribute('highlight')) || 'on').toLowerCase()
   }
 
   set highlight (str) { this.setAttribute('highlight', str) }
 
+  // Suggest dropping this for _everyone_
   // Must set attribute for IE11
   get hidden () { return this.hasAttribute('hidden') }
 

@@ -1,8 +1,10 @@
 /* eslint no-self-assign: 0 */
 
+// TODO: Firstly: depreceate, defering to native progress element? -> krilium
 import { addStyle, dispatchEvent, toggleAttribute } from '../utils'
 
 export default class CoreProgress extends HTMLElement {
+  // TODO: data-
   static get observedAttributes () { return ['type', 'value', 'max'] }
 
   connectedCallback () {
@@ -17,6 +19,7 @@ export default class CoreProgress extends HTMLElement {
     const percentage = this.indeterminate ? 100 : this.percentage
 
     this.setAttribute('aria-label', this.indeterminate || `${percentage}%`)
+    // TODO: data-
     toggleAttribute(this, 'indeterminate', this.indeterminate)
 
     if (this.type === 'linear') this.style.width = `${percentage}%`
@@ -25,16 +28,22 @@ export default class CoreProgress extends HTMLElement {
     if (name === 'value' && Number(next) !== Number(prev)) dispatchEvent(this, 'change') // Only trigger event on actual change
   }
 
+  // TODO: data-
+  // FIXME: Clarify docs
   get indeterminate () { return isNaN(parseFloat(this.getAttribute('value'))) && this.getAttribute('value') }
 
   get percentage () { return Math.round(this.value / this.max * 100) || 0 }
 
+  // TODO: data-
   get value () { return this.indeterminate || Number(this.getAttribute('value')) }
 
+  // TODO: data-
   set value (val) { this.setAttribute('value', val) }
 
+  // TODO: data-
   get max () { return Number(this.getAttribute('max')) || 1 }
 
+  // TODO: data-
   set max (val) { this.setAttribute('max', val) }
 
   get type () { return this.getAttribute('type') || 'linear' }
