@@ -14,7 +14,7 @@
 <script src="core-tabs/core-tabs.min.js"></script>
 <script src="core-tabs/core-tabs.jsx.js"></script>
 <style>
-  [role="tabpanel"] padding: 10px }
+  [role="tabpanel"] { padding: 10px }
   [aria-selected="true"] { border: 2px solid }
 
   .my-vertical-tabs [role="tablist"] { float: left; width: 150px }
