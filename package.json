@@ -41,7 +41,7 @@
     "fast-glob": "3.2.11",
     "jasmine-spec-reporter": "7.0.0",
     "protractor": "7.0.0",
-    "regenerator-runtime": "0.13.9",
+    "regenerator-runtime": "0.13.11",
     "rollup": "2.78.0",
     "rollup-plugin-serve": "2.0.1",
     "rollup-plugin-terser": "7.0.2",
