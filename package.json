@@ -33,7 +33,7 @@
     "@rollup/plugin-babel": "6.0.3",
     "@rollup/plugin-commonjs": "22.0.2",
     "@rollup/plugin-json": "4.1.0",
-    "@rollup/plugin-node-resolve": "13.3.0",
+    "@rollup/plugin-node-resolve": "15.0.1",
     "@webcomponents/custom-elements": "1.5.0",
     "axios": "0.27.2",
     "dotenv": "16.0.1",
