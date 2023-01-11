@@ -31,7 +31,7 @@
     "@babel/preset-env": "7.18.10",
     "@nrk/custom-element-to-react": "1.1.1",
     "@rollup/plugin-babel": "6.0.3",
-    "@rollup/plugin-commonjs": "22.0.2",
+    "@rollup/plugin-commonjs": "24.0.0",
     "@rollup/plugin-json": "4.1.0",
     "@rollup/plugin-node-resolve": "15.0.1",
     "@webcomponents/custom-elements": "1.5.0",
