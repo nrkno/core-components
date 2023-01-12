@@ -3,7 +3,6 @@ import path from 'path'
 import dotenv from 'dotenv'
 import { SpecReporter } from 'jasmine-spec-reporter'
 import { getUUID } from '../packages/utils'
-import Axios from 'axios'
 
 dotenv.config()
 const isLocal = process.env.NODE_ENV === 'test'
@@ -94,26 +93,6 @@ function config () {
     },
     onComplete: async (passed) => {
       console.log('Test passed?', passed)
-      if (isLocal) return // Break early to limit logging for local testing.
-
-      const session = await browser.getSession()
-      console.log('session:', session)
-      console.log('sessionId:', session.id_)
-      await browser.waitForAngularEnabled(false)
-      const passedText = passed ? 'pass' : 'fail'
-      Axios.put(`https://crossbrowsertesting.com/api/v3/selenium/${session.id_}`, {
-        action: 'set_score',
-        score: passedText,
-        json: true,
-        resolveWithFullResponse: false
-      }, {
-        auth: {
-          username,
-          password: authKey
-        }
-      })
-        .then(_ => console.log('Score set successfully with response: '))
-        .catch(err => console.error('Setting score failed with error: ', err))
     }
   }
 }
