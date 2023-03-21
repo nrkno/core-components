@@ -37,7 +37,7 @@
     "@webcomponents/custom-elements": "1.5.1",
     "dotenv": "16.0.3",
     "esm": "3.2.25",
-    "fast-glob": "3.2.11",
+    "fast-glob": "3.2.12",
     "jasmine-spec-reporter": "7.0.0",
     "protractor": "7.0.0",
     "regenerator-runtime": "0.13.11",
