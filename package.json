@@ -23,6 +23,7 @@
     "test": "npm run build && npm run protractor && npm run lint",
     "test-remote": "npm run build && npm run test-remote-run && npm run lint",
     "test-remote-run": "export NODE_ENV=test-remote; npm run protractor",
+    "test-server": "npm run build && http-server ./packages -p 10003",
     "lint": "standard -v",
     "protractor": "node -r esm node_modules/.bin/protractor bin/test.js"
   },
@@ -30,6 +31,7 @@
     "@babel/core": "7.21.4",
     "@babel/preset-env": "7.21.4",
     "@nrk/custom-element-to-react": "1.1.1",
+    "@playwright/test": "1.36.0",
     "@rollup/plugin-babel": "6.0.3",
     "@rollup/plugin-commonjs": "24.0.1",
     "@rollup/plugin-json": "6.0.0",
@@ -38,6 +40,7 @@
     "dotenv": "16.0.3",
     "esm": "3.2.25",
     "fast-glob": "3.2.12",
+    "http-server": "14.1.1",
     "jasmine-spec-reporter": "7.0.0",
     "protractor": "7.0.0",
     "regenerator-runtime": "0.13.11",

@@ -15,3 +15,6 @@ yarn-error*
 **/jsx.js
 *.log
 axe-linter.yml
+/test-results/
+/playwright-report/
+/playwright/.cache/
