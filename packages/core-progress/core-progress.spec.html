@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Core Progress Test Page</title>
+  <link rel="stylesheet" href="core-progress.spec.css">
+  <script src="core-progress.min.js"></script>
+</head>
+<body>
+  <label>
+    Linear Progress
+    <span class="my-track">
+      <core-progress data-testid="linear-progress-bar"></core-progress>
+    </span>
+  </label>
+  <label>
+    Radial Progress
+    <span style="display: block; width: 40px">
+      <core-progress class="my-radial" data-testid="radial-progress-bar" type="radial"></core-progress>
+    </span>
+  </label>
+  <span data-testid="change-event-result"></span>
+  <script>
+    document.querySelector("core-progress[data-testid='linear-progress-bar']").addEventListener('change', event => {
+      document.querySelector("span[data-testid='change-event-result']").textContent = 'triggered'
+    })
+  </script>
+</body>
+</html>
