@@ -1,0 +1,19 @@
+.content-container {
+  height: 200px;
+  width: 400px;
+  white-space: nowrap;
+  overflow: hidden;
+  border: 1px solid;
+}
+
+.content-item {
+  box-sizing: border-box;
+  white-space: normal;
+  display: inline-block;
+  vertical-align: top;
+  width: 30%;
+  height: 90px;
+  padding: 10px;
+  border: 1px solid;
+  margin: 10px;
+}

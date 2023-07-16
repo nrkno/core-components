@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Core Scroll Test Environment</title>
+  <script src="core-scroll.min.js"></script>
+  <link rel="stylesheet" href="core-scroll.spec.css">
+</head>
+<body>
+  <button data-for="scroller" value="down">Down</button>
+  <div class="content-container">
+    <core-scroll id="scroller" data-testid="core-scroll"></core-scroll>
+  </div>
+  <template data-testid="default-template">
+    <div class="content-item">This is overflowing content</div>
+    <div class="content-item">This is overflowing content</div>
+    <div class="content-item">This is overflowing content</div>
+    <div class="content-item" id="fourth">This is overflowing content</div>
+    <br>
+    <div class="content-item">This is overflowing content</div>
+    <div class="content-item">This is overflowing content</div>
+    <div class="content-item">This is overflowing content</div>
+    <div class="content-item" id="eight">This is overflowing content</div>
+    <br>
+    <div class="content-item">This is overflowing content</div>
+    <div class="content-item">This is overflowing content</div>
+    <div class="content-item">This is overflowing content</div>
+    <div class="content-item">This is overflowing content</div>
+  </template>
+  <template data-testid="mixed-elements-template">
+    <div>This is overflowing content</div>
+    <span>This is overflowing content</span>
+    <div>This is overflowing content</div>
+  </template>
+  <template data-testid="scroll-promise-template">
+    <div class="content-item">This is overflowing content</div>
+    <br>
+    <div class="content-item">This is overflowing content</div>
+    <br>
+    <div class="content-item" id="targetEl">This is overflowing content</div>
+  </template>
+  <span>Scroll Events: </span>
+  <span data-testid="change-event-result">0</span>
+  <script>
+    document.querySelector("core-scroll[data-testid='core-scroll']").addEventListener('scroll.change', event => {
+      const valueElement = document.querySelector("span[data-testid='change-event-result']")
+      valueElement.textContent = (parseInt(valueElement.textContent) + 1)
+    })
+  </script>
+</body>
+</html>
