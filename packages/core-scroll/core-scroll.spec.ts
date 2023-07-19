@@ -24,7 +24,7 @@ test.describe('initialization', () => {
     await page.goto('./core-scroll/core-scroll.spec.html')
     await page.evaluate(setComponentTemplate, ({ componentId: 'core-scroll',  templateId: 'default-template' }))
     const coreScroll = page.getByTestId('core-scroll')
-    expect(coreScroll).toHaveCSS('overflow', 'scroll')
+    await expect(coreScroll).toHaveCSS('overflow', 'scroll')
   })
   
   test('has getters for scroll-distances', async ({ page }) => {
@@ -32,10 +32,10 @@ test.describe('initialization', () => {
     await page.evaluate(setComponentTemplate, ({ componentId: 'core-scroll',  templateId: 'default-template' }))
     const coreScroll = page.locator('core-scroll')
     await coreScroll.evaluate(node => node.setAttribute('friction', '0.001'))
-    expect(coreScroll).toHaveJSProperty('scrollLeft', 0)
-    expect(coreScroll).toHaveJSProperty('scrollRight', 172)
-    expect(coreScroll).toHaveJSProperty('scrollTop', 0)
-    expect(coreScroll).toHaveJSProperty('scrollBottom', 130)
+    await expect(coreScroll).toHaveJSProperty('scrollLeft', 0)
+    await expect(coreScroll).toHaveJSProperty('scrollRight', 172)
+    await expect(coreScroll).toHaveJSProperty('scrollTop', 0)
+    await expect(coreScroll).toHaveJSProperty('scrollBottom', 130)
   })
   
   test('has getter for items in scroller', async ({ page }) => {
@@ -44,7 +44,7 @@ test.describe('initialization', () => {
     const coreScroll = page.getByTestId('core-scroll')
     await coreScroll.evaluate(node => node.setAttribute('items', 'div'))
     // Length is 12 (not 14) as only elements matching items-attribute are counted
-    expect(coreScroll).toHaveAttribute('items', 'div')
+    await expect(coreScroll).toHaveAttribute('items', 'div')
     expect(await coreScroll.evaluate(node => node.items.length)).toEqual(12)
   })
   
@@ -61,7 +61,7 @@ test.describe('initialization', () => {
     await page.goto('./core-scroll/core-scroll.spec.html')
     const coreScroll = page.getByTestId('core-scroll')
     await coreScroll.evaluate(node => node.setAttribute('friction', '0.1'))
-    expect(coreScroll).toHaveJSProperty('friction', 0.1)
+    await expect(coreScroll).toHaveJSProperty('friction', 0.1)
   })
   
   test.fixme('dispatches "scroll.change" onConnected and when children are added/removed', async ({ page }) => {
@@ -84,43 +84,43 @@ test.describe('scroll-function', () => {
     await page.goto('./core-scroll/core-scroll.spec.html')
     await page.evaluate(setComponentTemplate, ({ componentId: 'core-scroll',  templateId: 'default-template' }))
     const coreScroll = await page.getByTestId('core-scroll')
-    expect(coreScroll).toHaveJSProperty('scrollRight', 172)
-    expect(coreScroll).toHaveJSProperty('scrollBottom', 130)
+    await expect(coreScroll).toHaveJSProperty('scrollRight', 172)
+    await expect(coreScroll).toHaveJSProperty('scrollBottom', 130)
 
     await coreScroll.evaluate(node => node.scroll('right'))
-    expect(coreScroll).toHaveJSProperty('scrollLeft', 172)
-    expect(coreScroll).toHaveJSProperty('scrollRight', 0)
-    expect(coreScroll).toHaveJSProperty('scrollBottom', 130)
+    await expect(coreScroll).toHaveJSProperty('scrollLeft', 172)
+    await expect(coreScroll).toHaveJSProperty('scrollRight', 0)
+    await expect(coreScroll).toHaveJSProperty('scrollBottom', 130)
   })
 
   test('works with x,y coordinates', async ({ page }) => {
     await page.goto('./core-scroll/core-scroll.spec.html')
     await page.evaluate(setComponentTemplate, ({ componentId: 'core-scroll',  templateId: 'default-template' }))
     const coreScroll = await page.getByTestId('core-scroll')
-    expect(coreScroll).toHaveJSProperty('scrollRight', 172)
-    expect(coreScroll).toHaveJSProperty('scrollBottom', 130)
+    await expect(coreScroll).toHaveJSProperty('scrollRight', 172)
+    await expect(coreScroll).toHaveJSProperty('scrollBottom', 130)
 
     await coreScroll.evaluate(node => node.scroll({ x: 2, y: 30 }))
     
-    expect(coreScroll).toHaveJSProperty('scrollLeft', 2)
-    expect(coreScroll).toHaveJSProperty('scrollRight', 170)
-    expect(coreScroll).toHaveJSProperty('scrollTop', 30)
-    expect(coreScroll).toHaveJSProperty('scrollBottom', 100)
+    await expect(coreScroll).toHaveJSProperty('scrollLeft', 2)
+    await expect(coreScroll).toHaveJSProperty('scrollRight', 170)
+    await expect(coreScroll).toHaveJSProperty('scrollTop', 30)
+    await expect(coreScroll).toHaveJSProperty('scrollBottom', 100)
   })
 
   test('works with an element', async ({ page }) => {
     await page.goto('./core-scroll/core-scroll.spec.html')
     await page.evaluate(setComponentTemplate, ({ componentId: 'core-scroll',  templateId: 'default-template' }))
     const coreScroll = await page.getByTestId('core-scroll')
-    expect(coreScroll).toHaveJSProperty('scrollRight', 172)
-    expect(coreScroll).toHaveJSProperty('scrollBottom', 130)
+    await expect(coreScroll).toHaveJSProperty('scrollRight', 172)
+    await expect(coreScroll).toHaveJSProperty('scrollBottom', 130)
 
     await coreScroll.evaluate(node => node.scroll(document.getElementById('eight')))
 
-    expect(coreScroll).toHaveJSProperty('scrollLeft', 172)
-    expect(coreScroll).toHaveJSProperty('scrollRight', 0)
-    expect(coreScroll).toHaveJSProperty('scrollTop', 65)
-    expect(coreScroll).toHaveJSProperty('scrollBottom', 65)
+    await expect(coreScroll).toHaveJSProperty('scrollLeft', 172)
+    await expect(coreScroll).toHaveJSProperty('scrollRight', 0)
+    await expect(coreScroll).toHaveJSProperty('scrollTop', 65)
+    await expect(coreScroll).toHaveJSProperty('scrollBottom', 65)
   })
   
   test('returns a promise when scrolling is complete', async ({ page }) => {
