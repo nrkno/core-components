@@ -69,7 +69,7 @@ test.describe('core-datepicker', () => {
     const now = new Date()
     await expect(coreDatepicker).toHaveJSProperty('year', now.getUTCFullYear().toString())
     await expect(coreDatepicker).toHaveJSProperty('month', pad(now.getUTCMonth() + 1))
-    await expect(coreDatepicker).toHaveJSProperty('day', now.getUTCDate().toString())
+    await expect(coreDatepicker).toHaveJSProperty('day', pad(now.getUTCDate().toString()))
     await expect(coreDatepicker).toHaveJSProperty('hour', pad(now.getUTCHours().toString()))
     await expect(coreDatepicker).toHaveJSProperty('minute', pad(now.getUTCMinutes()))
     await expect(coreDatepicker).toHaveJSProperty('second', pad(now.getUTCSeconds()))
