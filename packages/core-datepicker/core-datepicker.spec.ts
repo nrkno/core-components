@@ -36,7 +36,7 @@ test.describe('core-datepicker', () => {
 
   test.beforeEach(async ({ page }) => {
     await page.goto('./core-datepicker/core-datepicker.spec.html')
-    coreDatepicker = await page.getByTestId('core-datepicker')
+    coreDatepicker = page.getByTestId('core-datepicker')
   })
   
   
