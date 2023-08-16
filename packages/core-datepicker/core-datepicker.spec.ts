@@ -306,7 +306,7 @@ test.describe('core-datepicker', () => {
     let datePickerChanged = false
     await page.exposeFunction('captureDatepickerChange', () => datePickerChanged = true)
     await page.setContent(`
-      <core-datepicker date='${String(new Date('2019-01-01T12:00:00Z').getTime())}' data-testid="core-datepicker">
+      <core-datepicker data-testid="core-datepicker">
         <table></table>
       </core-datepicker>
     `)
