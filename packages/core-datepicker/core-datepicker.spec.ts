@@ -298,7 +298,7 @@ test.describe('core-datepicker', () => {
       document.addEventListener('datepicker.change', window.captureDatepickerChange)
     `})
     await coreDatepicker.locator('button[autofocus]').click()
-    page.waitForFunction('window.captureDatepickerChange')
+    await page.waitForFunction('window.captureDatepickerChange')
     expect(datePickerChanged).toBe(false)
   })
   
@@ -314,7 +314,7 @@ test.describe('core-datepicker', () => {
       document.addEventListener('datepicker.change', window.captureDatepickerChange)
     `})
     await coreDatepicker.locator('button[tabindex="0"]').click()
-    page.waitForFunction('window.captureDatepickerChange')
+    await page.waitForFunction('window.captureDatepickerChange')
     expect(datePickerChanged).toBe(true)
   })
   

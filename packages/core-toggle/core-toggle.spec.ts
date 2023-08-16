@@ -156,7 +156,7 @@ test.describe('core-toggle', () => {
       `)
       expect(coreToggleButton).toBeDefined()
       await coreToggle.evaluate((node, newValue) => node.value = newValue, btnLabel)
-      expect(coreToggleButton).toHaveAttribute('aria-label', `${btnLabel},${popupLabel}`)
+      await expect(coreToggleButton).toHaveAttribute('aria-label', `${btnLabel},${popupLabel}`)
     })
   })
 
