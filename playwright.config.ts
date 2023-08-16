@@ -1,4 +1,4 @@
-import { defineConfig, devices } from '@playwright/test';
+import { defineConfig, devices } from '@playwright/test'
 
 /**
  * Read environment variables from file.
@@ -20,19 +20,19 @@ export default defineConfig({
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: process.env.CI ? [['github'],['html']] : [['line'], ['html']],
+  reporter: process.env.CI ? [['github'], ['html']] : [['line'], ['html']],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: "http://127.0.0.1:10003",
+    baseURL: 'http://127.0.0.1:10003',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
-    
+
     /* Avoid any time-zone shift when testing Zulu dates */
     timezoneId: 'GMT'
   },
-  testMatch: "*.spec.ts",
+  testMatch: '*.spec.ts',
 
   /* Configure projects for major browsers */
   projects: [
