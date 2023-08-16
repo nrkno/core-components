@@ -38,17 +38,17 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: { ...devices['Desktop Chrome'] }
     },
     {
       name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
+      use: { ...devices['Desktop Firefox'] }
     },
 
     {
       name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-    },
+      use: { ...devices['Desktop Safari'] }
+    }
 
     /* Test against mobile viewports. */
     // {
@@ -75,6 +75,6 @@ export default defineConfig({
   webServer: {
     command: 'npm run test-server',
     url: 'http://127.0.0.1:10003',
-    reuseExistingServer: !process.env.CI,
-  },
-});
+    reuseExistingServer: !process.env.CI
+  }
+})
