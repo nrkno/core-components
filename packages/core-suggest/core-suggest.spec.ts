@@ -9,7 +9,7 @@ test.describe('core-suggest', () => {
   const CAPTURE_SUCCESS_EVENT_FUNCTION = 'captureSuccessEvent'
   const CAPTURE_ERROR_EVENT_FUNCTION = 'captureErrorEvent'
   const TEST_URL = '/random/search'
-  const TEST_BAD_URL = 'http://foo/'
+  const TEST_BAD_URL = 'https://foo/'
   const TEST_ERROR_RESPONSE = '{"error": "Go away"}'
   const TEST_JSON_RESPONSE = { results: [] }
   const TEST_BAD_JSON_RESPONSE = '{"I am bad JSON"}'
@@ -251,7 +251,7 @@ test.describe('core-suggest', () => {
       <core-suggest data-testid="core-suggest" ajax="${TEST_BAD_URL}" hidden></core-suggest>
     `)
     await page.addScriptTag({ content: `
-      document.addEventListener('suggest.ajax.error', event => window.captureErrorEvent(event))
+      document.addEventListener('suggest.ajax.error', window.captureErrorEvent)
     `})
     await page.route(TEST_BAD_URL, async route => {
       await route.abort('blockedbyresponse')
