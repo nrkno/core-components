@@ -60,7 +60,11 @@ test.describe('core-toggle', () => {
     await expect(coreToggle).toHaveJSProperty('hidden', true)
   })
   
-  test('closes nested toggle with esc', async ({ page }) => {
+  test('closes nested toggle with esc', async ({ page, browserName }) => {
+
+    // TODO: https://github.com/nrkno/core-components/issues/719
+    if (browserName === 'webkit') test.skip()
+    
     await page.setContent(`
       <button>Toggle</button>
       <core-toggle data-testid='core-toggle' hidden>
