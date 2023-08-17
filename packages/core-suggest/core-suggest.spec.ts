@@ -60,7 +60,7 @@ test.describe('core-suggest', () => {
   test('does not open suggestions on clicking a disabled input', async ({ page }) => {
     await page.setContent(`
       <input data-testid="core-suggest-input" type="text" disabled>
-      <core-suggest data-testid="core-suggest">
+      <core-suggest data-testid="core-suggest" hidden>
         <ul>
           <li><button id="one">Suggest 1</button></li>
           <li><button id="two">Suggest 2</button></li>
