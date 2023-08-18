@@ -139,8 +139,10 @@ test.describe('initialization', () => {
       <div>This is overflowing content</div>
       <div>This is overflowing content</div>
     `))
+    await page.waitForFunction('window.captureChangeEvent')
     expect(numChangeEvents).toBe(1)
     await coreScroll.evaluate(node => node.children[0].remove())
+    await page.waitForFunction('window.captureChangeEvent')
     expect(numChangeEvents).toBe(2)
   })
   
