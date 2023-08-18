@@ -1,10 +1,34 @@
 import { test, expect, Locator } from '@playwright/test';
 
+const defaultStyle = `
+  .my-track {
+    display: block;
+    background: #ccc;
+    border-radius: 3px;
+    overflow: hidden;
+    font: 700 12px/1 sans-serif;
+  }
+
+  .my-track [value] {
+    background: #16f;
+    color: #fff;
+    padding: 3px 6px;
+    transition: 1s;
+  }
+
+  .my-radial {
+    color: #16f;
+    stroke: #ccc;
+    transition: stroke-dashoffset 1s;
+  }
+`
+
 test.describe('core-progress', () => {
   let coreProgress: Locator
 
   test.beforeEach(async ({ page }) => {
     await page.goto('./core-progress/core-progress.spec.html')
+    await page.addStyleTag({ content: defaultStyle })
     coreProgress = page.getByTestId('core-progress')
   })
   

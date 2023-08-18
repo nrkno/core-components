@@ -10,6 +10,11 @@ test.describe('core-tabs', () => {
     toggleEvents = 0
     await page.exposeFunction(INCREMENT_TOGGLE_EVENTS_FUNC, incrementToggleEvents)
     await page.goto(`./core-tabs/core-tabs.spec.html`)
+    await page.addStyleTag({ content: `
+      div[hidden] {
+        display: none;
+      }
+    `})
     coreTabs = page.locator('core-tabs')
   })
 
