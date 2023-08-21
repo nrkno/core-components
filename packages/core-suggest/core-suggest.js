@@ -109,6 +109,10 @@ export default class CoreSuggest extends HTMLElement {
 
   set ajax (url) { this.setAttribute('ajax', url) }
 
+  /**
+   * @type {number}
+   */
+
   get limit () { return Math.max(0, this.getAttribute('limit')) || Infinity }
 
   set limit (int) { this.setAttribute('limit', int) }

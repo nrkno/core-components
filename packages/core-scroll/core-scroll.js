@@ -24,7 +24,7 @@ import { IS_BROWSER, addStyle, closest, dispatchEvent, throttle, getUUID, queryA
  */
 
 /**
- * @typedef {scrollDirection | scrollPoint | Element} scrollTarget
+ * @typedef {scrollDirection | scrollPoint | HTMLElement} scrollTarget
  */
 
 /**

@@ -63,7 +63,7 @@ export default class CoreTabs extends HTMLElement {
   get tabs () { return queryAll('button,a', this) }
 
   /**
-   * @returns {TabElement}
+   * @type {string | number | TabElement}
    */
   get tab () {
     const tabAttr = this.getAttribute('tab')
@@ -87,10 +87,6 @@ export default class CoreTabs extends HTMLElement {
     return tab || allTabs[0]
   }
 
-  /**
-   * @param {string | number | TabElement} value
-   * @returns {void}
-   */
   set tab (value) {
     if (!value && value !== 0) return
     const allTabs = this.tabs
