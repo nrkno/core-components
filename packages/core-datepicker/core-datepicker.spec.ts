@@ -1,4 +1,5 @@
 import { test, expect, Locator } from '@playwright/test';
+import CoreDatepicker from './core-datepicker';
 
 declare global {
   interface Window { time: Date, triggered: Boolean }
@@ -84,7 +85,7 @@ test.describe('core-datepicker', () => {
     await expect(coreDatepicker).toHaveJSProperty('year', now.getUTCFullYear().toString())
     await expect(coreDatepicker.getByRole('button')).toHaveCount(42)
 
-    await coreDatepicker.evaluate((node) => node.removeAttribute('date'))
+    await coreDatepicker.evaluate((node: CoreDatepicker) => node.removeAttribute('date'))
     await expect(coreDatepicker).not.toHaveAttribute('date', 'now')
     await expect(coreDatepicker).toHaveJSProperty('year', null)
     await expect(coreDatepicker).toHaveJSProperty('month', null)
@@ -247,7 +248,7 @@ test.describe('core-datepicker', () => {
         <table></table>
       </core-datepicker>
     `)
-    await coreDatepicker.evaluate(node => node.disabled = (date) => {
+    await coreDatepicker.evaluate((node: CoreDatepicker) => node.disabled = (date) => {
       return date > new Date('2019-01-01T12:00:00Z')
     })
     await expect(coreDatepicker.getByLabel('1. januar', { exact: true })).toBeEnabled()
@@ -264,7 +265,7 @@ test.describe('core-datepicker', () => {
     await page.addScriptTag({ content: `
       document.addEventListener('datepicker.change', (event) => (window.time = event.detail.getTime()))
     `})
-    await coreDatepicker.evaluate(node => {
+    await coreDatepicker.evaluate((node: CoreDatepicker) => {
       node.setAttribute('date', String(new Date('2019-01-02T12:00:00Z').getTime()))
     })
     expect(await page.evaluate(() => window.time)).toEqual(new Date('2019-01-02T12:00:00Z').getTime())
@@ -325,7 +326,7 @@ test.describe('core-datepicker', () => {
       </core-datepicker>
     `)
     const disabledDate = new Date('2019-09-06')
-    await coreDatepicker.evaluate((node, disabledDate) => node.disabled = (date) => {
+    await coreDatepicker.evaluate((node: CoreDatepicker, disabledDate) => node.disabled = (date) => {
       return date.valueOf() === disabledDate.valueOf()
     }, disabledDate)
     await coreDatepicker.getByRole('combobox').selectOption('september')
@@ -338,7 +339,7 @@ test.describe('core-datepicker', () => {
         <select></select>
       </core-datepicker>
     `)
-    await coreDatepicker.evaluate(node => node.disabled = (date) => {
+    await coreDatepicker.evaluate((node: CoreDatepicker) => node.disabled = (date) => {
       return date.getMonth() === 8
     })
     await expect(coreDatepicker.locator('option[value="y-9-d"]')).toBeDisabled()
@@ -351,7 +352,7 @@ test.describe('core-datepicker', () => {
         <table></table>
       </core-datepicker>
     `)
-    await coreDatepicker.evaluate(node => node.disabled = (date) => {
+    await coreDatepicker.evaluate((node: CoreDatepicker) => node.disabled = (date) => {
       return date.getMonth() === 10 && !(date < new Date('2019-11-06') && date > new Date('2019-11-03'))
     })
     await coreDatepicker.getByRole('combobox').selectOption('november')
