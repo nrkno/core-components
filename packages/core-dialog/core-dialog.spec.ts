@@ -1,4 +1,5 @@
 import { test, expect, Locator } from '@playwright/test';
+import CoreDialog from './core-dialog';
 
 const defaultStyle = `
   core-dialog:not([hidden]) {
@@ -66,11 +67,11 @@ test.describe('core-dialog', () => {
 
     // component property change
 
-    await coreDialog.evaluate(node => node.hidden = false)
+    await coreDialog.evaluate((node: CoreDialog) => node.hidden = false)
     await expect(coreDialog).toBeVisible()
     await expect(page.locator('backdrop')).toBeVisible()
     
-    await coreDialog.evaluate(node => node.hidden = true)
+    await coreDialog.evaluate((node: CoreDialog) => node.hidden = true)
     await expect(coreDialog).toBeHidden()
     await expect(page.locator('backdrop')).toBeHidden()
   })
