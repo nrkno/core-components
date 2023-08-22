@@ -1,5 +1,4 @@
 import { test, expect, Locator, Page } from '@playwright/test';
-import CoreSuggest from './core-suggest';
 
 test.describe('core-suggest', () => {
   let coreSuggest: Locator
@@ -131,42 +130,40 @@ test.describe('core-suggest', () => {
     await coreSuggestInput.click()
     await expect(coreSuggest.locator('li:visible')).toHaveCount(4)
     
-    await coreSuggest.evaluate((node: CoreSuggest) => node.limit = 2)
+    await coreSuggest.evaluate(node => node.limit = 2)
     await reloadLimit()
     await expect(coreSuggest.locator('li:visible')).toHaveCount(2)
 
-    await coreSuggest.evaluate((node: CoreSuggest) => node.limit = -2)
+    await coreSuggest.evaluate(node => node.limit = -2)
     await reloadLimit()
     await expect(coreSuggest.locator('li:visible')).toHaveCount(4)
 
-    await coreSuggest.evaluate((node: CoreSuggest) => node.limit = 1)
+    await coreSuggest.evaluate(node => node.limit = 1)
     await reloadLimit()
     await expect(coreSuggest.locator('li:visible')).toHaveCount(1)
     
-    // @ts-expect-error: might not be valid test case
-    await coreSuggest.evaluate((node: CoreSuggest) => node.limit = null)
+    await coreSuggest.evaluate(node => node.limit = null)
     await reloadLimit()
     await expect(coreSuggest.locator('li:visible')).toHaveCount(4)
 
-    await coreSuggest.evaluate((node: CoreSuggest) => node.limit = 3)
+    await coreSuggest.evaluate(node => node.limit = 3)
     await reloadLimit()
     await expect(coreSuggest.locator('li:visible')).toHaveCount(3)
     
-    // @ts-expect-error: might not be valid test case
-    await coreSuggest.evaluate((node: CoreSuggest) => node.limit = undefined)
+    await coreSuggest.evaluate(node => node.limit = undefined)
     await reloadLimit()
     await expect(coreSuggest.locator('li:visible')).toHaveCount(4)
   })
   
   test('filters suggestions from limit option', async ({ page }) => {
     await defaultTemplate(page)
-    await coreSuggest.evaluate((node: CoreSuggest) => node.limit = 2)
+    await coreSuggest.evaluate(node => node.limit = 2)
     await coreSuggestInput.click()
     await expect(coreSuggest.getByText('Suggest 1')).toBeVisible()
     await expect(coreSuggest.getByText('Suggest 2')).toBeVisible()
     await expect(coreSuggest.getByText('Suggest 3')).toBeHidden()
     await expect(coreSuggest.getByText('Suggest 4')).toBeHidden()
-    await coreSuggest.evaluate((node: CoreSuggest) => node.limit = 3)
+    await coreSuggest.evaluate(node => node.limit = 3)
     await coreSuggestInput.fill('s')
     await expect(coreSuggest.getByText('Suggest 1')).toBeVisible()
     await expect(coreSuggest.getByText('Suggest 2')).toBeVisible()
@@ -186,10 +183,8 @@ test.describe('core-suggest', () => {
       </core-suggest>
     `)
     await coreSuggestInput.click()
-    // @ts-ignore
     await expect(coreSuggest.getByRole('mark')).toHaveCount(0)
     await coreSuggestInput.fill('2')
-    // @ts-ignore
     await expect(coreSuggest.getByRole('mark')).toHaveText('2')
   })
   
@@ -204,11 +199,9 @@ test.describe('core-suggest', () => {
       </core-suggest>
     `)
     await coreSuggestInput.click()
-    // @ts-ignore
     await expect(coreSuggest.getByRole('mark')).toHaveText('1')
     await coreSuggestInput.fill('2')
     // TODO: Peer review validity / deviates from previous test file
-    // @ts-ignore
     await expect(coreSuggest.getByRole('mark')).toHaveCount(0)
   })
   
@@ -223,11 +216,9 @@ test.describe('core-suggest', () => {
       </core-suggest>
     `)
     await coreSuggestInput.click()
-    // @ts-ignore
     await expect(coreSuggest.getByRole('mark')).toHaveCount(0)
     await coreSuggestInput.fill('2')
     // TODO: Peer review validity / deviates from previous test file
-    // @ts-ignore
     await expect(coreSuggest.getByRole('mark')).toHaveCount(0)
   })
   
@@ -267,7 +258,7 @@ test.describe('core-suggest', () => {
     })
     await coreSuggestInput.fill('abc')
     await page.waitForRequest(TEST_BAD_URL)
-    await page.waitForFunction('window.captureErrorEvent')
+    await page.waitForFunction(() => window.captureErrorEvent)
     await expect(ajaxErrorEvents).toHaveLength(1)
     // TODO: Assert errorResponse message
     // Cross Origin Issue; Event is always {isTrusted: false}
@@ -287,7 +278,7 @@ test.describe('core-suggest', () => {
     })
     await coreSuggestInput.fill('abc')
     await page.waitForRequest(TEST_URL)
-    await page.waitForFunction('window.captureErrorEvent')
+    await page.waitForFunction(() => window.captureErrorEvent)
     await expect(ajaxErrorEvents).toHaveLength(1)
     // TODO: Assert errorResponse message
     // Cross Origin Issue; Event is always {isTrusted: false}
@@ -309,7 +300,7 @@ test.describe('core-suggest', () => {
     })
     await coreSuggestInput.fill('abc')
     await page.waitForRequest(TEST_URL)
-    await page.waitForFunction('window.captureErrorEvent')
+    await page.waitForFunction(() => window.captureErrorEvent)
     await expect(ajaxErrorEvents).toHaveLength(1)
     // TODO: Assert errorResponse message
     // Cross Origin Issue; Event is always {isTrusted: false}
@@ -326,7 +317,7 @@ test.describe('core-suggest', () => {
     test('exposes internal function pushToLiveRegion to append, then clear textContent of aria-live region', async ({ page }) => {
       const LIVE_REGION_TEXT = 'TEST'
       await defaultTemplate(page)
-      await coreSuggest.evaluate((node: CoreSuggest, text) => node.pushToLiveRegion(text), LIVE_REGION_TEXT)
+      await coreSuggest.evaluate((node, text) => node.pushToLiveRegion(text), LIVE_REGION_TEXT)
       await expect(page.locator('body > span', { hasNotText: 'outside' })).toHaveText(LIVE_REGION_TEXT)
       await expect(page.locator('body > span', { hasNotText: 'outside' })).toHaveText('')
     })

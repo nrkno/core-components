@@ -1,5 +1,4 @@
 import { expect, test, Locator } from "@playwright/test"
-import CoreToggle from "./core-toggle"
 
 test.describe('core-toggle', () => {
   let coreToggleButton: Locator
@@ -19,7 +18,7 @@ test.describe('core-toggle', () => {
       <core-toggle data-testid='core-toggle' hidden></core-toggle>
     `)
     await expect(coreToggleButton).toHaveAttribute('aria-expanded', 'false')
-    expect(await coreToggleButton.getAttribute('aria-controls')).toEqual(await coreToggle.evaluate((node: CoreToggle) => node.id))
+    expect(await coreToggleButton.getAttribute('aria-controls')).toEqual(await coreToggle.evaluate(node => node.id))
     await expect(coreToggle).toHaveJSProperty('hidden', true)
     await expect(coreToggle).toHaveJSProperty('autoposition', false)
     expect(await coreToggle.getAttribute('aria-labelledby')).toEqual(await coreToggleButton.evaluate(node => node.id))
@@ -146,8 +145,8 @@ test.describe('core-toggle', () => {
         <button data-testid='core-toggle-button' aria-label='${labelText}'>Toggle</button>
         <core-toggle data-testid='core-toggle' data-popup="Popup-label" hidden></core-toggle>
       `)
-      await coreToggle.evaluate((node: CoreToggle) => node.value = 'button text')
-      const toggleValue = await coreToggle.evaluate((node: CoreToggle) => node.value)
+      await coreToggle.evaluate(node => node.value = 'button text')
+      const toggleValue = await coreToggle.evaluate(node => node.value)
       await expect(coreToggleButton).toHaveText(toggleValue)
       await expect(coreToggleButton).toHaveAttribute('aria-label', labelText)
     })
@@ -160,7 +159,7 @@ test.describe('core-toggle', () => {
         <core-toggle data-testid='core-toggle' data-popup='${popupLabel}' hidden></core-toggle>
       `)
       expect(coreToggleButton).toBeDefined()
-      await coreToggle.evaluate((node: CoreToggle, newValue) => node.value = newValue, btnLabel)
+      await coreToggle.evaluate((node, newValue) => node.value = newValue, btnLabel)
       await expect(coreToggleButton).toHaveAttribute('aria-label', `${btnLabel},${popupLabel}`)
     })
   })
@@ -171,7 +170,7 @@ test.describe('core-toggle', () => {
       <button>Toggle</button>
       <core-toggle data-testid='core-toggle' hidden></core-toggle>
     `)
-    await coreToggle.evaluate((node: CoreToggle, labelText) => node.popup = labelText, labelText)
+    await coreToggle.evaluate((node, labelText) => node.popup = labelText, labelText)
     await expect(coreToggle).toHaveAttribute('data-popup', labelText)
     expect(await coreToggle.getAttribute('popup')).toBeNull()
   })
@@ -183,8 +182,8 @@ test.describe('core-toggle', () => {
       <button>Toggle</button>
       <core-toggle data-testid='core-toggle' hidden></core-toggle>
     `)
-    await coreToggle.evaluate((node: CoreToggle, labelText) => node.popup = labelText, labelText)
-    await coreToggle.evaluate((node: CoreToggle, buttonText) => node.value = buttonText, buttonText)
+    await coreToggle.evaluate((node, labelText) => node.popup = labelText, labelText)
+    await coreToggle.evaluate((node, buttonText) => node.value = buttonText, buttonText)
     await expect(page.getByRole('button', { name: buttonText })).toBeVisible()
     await expect(page.getByRole('button', { name: buttonText })).toHaveAttribute('aria-label', `${buttonText},${labelText}`)
   })

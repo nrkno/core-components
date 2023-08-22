@@ -1,5 +1,4 @@
 import { test, expect, Locator } from '@playwright/test';
-import CoreProgress from './core-progress';
 
 const defaultStyle = `
   .my-track {
@@ -61,11 +60,11 @@ test.describe('core-progress', () => {
     await expect(coreProgress).toHaveAttribute('aria-label', '0%')
   
     // Update to 50% and assert
-    await coreProgress.evaluate((node: CoreProgress) => node.setAttribute('value', '.5'))
+    await coreProgress.evaluate(node => node.setAttribute('value', '.5'))
     await expect(coreProgress).toHaveAttribute('aria-label', '50%')
   
     // Update to 100% and assert
-    await coreProgress.evaluate((node: CoreProgress) => node.setAttribute('value', '1'))
+    await coreProgress.evaluate(node => node.setAttribute('value', '1'))
     await expect(coreProgress).toHaveAttribute('aria-label', '100%')
   })
   
@@ -82,11 +81,11 @@ test.describe('core-progress', () => {
     await expect(coreProgress).toHaveAttribute('aria-label', '0%')
   
     // Update to 50% and assert
-    await coreProgress.evaluate((node: CoreProgress) => node.setAttribute('value', '.5'))
+    await coreProgress.evaluate(node => node.setAttribute('value', '.5'))
     await expect(coreProgress).toHaveAttribute('aria-label', '50%')
   
     // Update to 100% and assert
-    await coreProgress.evaluate((node: CoreProgress) => node.setAttribute('value', '1'))
+    await coreProgress.evaluate(node => node.setAttribute('value', '1'))
     await expect(coreProgress).toHaveAttribute('aria-label', '100%')
   })
   
@@ -100,7 +99,7 @@ test.describe('core-progress', () => {
         </span>
       </label>
     `)
-    await coreProgress.evaluate((node: CoreProgress) => node.setAttribute("value", "Loading..."))
+    await coreProgress.evaluate(node => node.setAttribute("value", "Loading..."))
     await expect(coreProgress).toHaveAttribute('aria-label', 'Loading...')
   
     await page.setContent(`
@@ -111,7 +110,7 @@ test.describe('core-progress', () => {
         </span>
       </label>
     `)
-    await coreProgress.evaluate((node: CoreProgress) => node.setAttribute("value", "Loading..."))
+    await coreProgress.evaluate(node => node.setAttribute("value", "Loading..."))
     await expect(coreProgress).toHaveAttribute('aria-label', 'Loading...')
   })
   
@@ -126,13 +125,13 @@ test.describe('core-progress', () => {
       </label>
     `)
     
-    await coreProgress.evaluate((node: CoreProgress) => node.setAttribute('value', '0.5'))
+    await coreProgress.evaluate(node => node.setAttribute('value', '0.5'))
     await expect(coreProgress).toHaveAttribute('aria-label', '50%')
   
-    await coreProgress.evaluate((node: CoreProgress) => node.setAttribute('max', '10'))
+    await coreProgress.evaluate(node => node.setAttribute('max', '10'))
     await expect(coreProgress).toHaveAttribute('aria-label', '5%')
   
-    await coreProgress.evaluate((node: CoreProgress) => node.setAttribute('max', '100'))
+    await coreProgress.evaluate(node => node.setAttribute('max', '100'))
     await expect(coreProgress).toHaveAttribute('aria-label', '1%')
   })
 
@@ -155,7 +154,7 @@ test.describe('core-progress', () => {
       await page.addScriptTag({ content: `
         document.getElementById("core-progress").addEventListener('change', window.captureChangeEvent)
       `})
-      await coreProgress.evaluate((node: CoreProgress) => node.setAttribute('max', '10'))
+      await coreProgress.evaluate(node => node.setAttribute('max', '10'))
       expect(numChangeEvents).toBe(0)
     })
     
@@ -171,7 +170,7 @@ test.describe('core-progress', () => {
       await page.addScriptTag({ content: `
         document.getElementById("core-progress").addEventListener('change', window.captureChangeEvent)
       `})
-      await coreProgress.evaluate((node: CoreProgress) => node.setAttribute('value', '.5'))
+      await coreProgress.evaluate(node => node.setAttribute('value', '.5'))
       expect(numChangeEvents).toBe(1)
     })
     
@@ -187,7 +186,7 @@ test.describe('core-progress', () => {
       await page.addScriptTag({ content: `
         document.getElementById("core-progress").addEventListener('change', window.captureChangeEvent)
       `})
-      await coreProgress.evaluate((node: CoreProgress) => node.setAttribute('value', 'Loading...'))
+      await coreProgress.evaluate(node => node.setAttribute('value', 'Loading...'))
       expect(numChangeEvents).toBe(1)
     })
   })
