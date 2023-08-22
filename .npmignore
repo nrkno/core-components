@@ -1,0 +1,13 @@
+# glob patterns
+**/*.d.ts
+**/*.d.ts.map
+**/*.spec.ts
+**/*.spec.html
+
+# dir
+playwright-report
+
+# files
+tsconfig.json
+jsconfig.json
+playwright.config.ts
