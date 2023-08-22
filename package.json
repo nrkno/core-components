@@ -9,7 +9,7 @@
     "url": "git+https://github.com/nrkno/core-components.git"
   },
   "scripts": {
-    "build": "rollup --config",
+    "build": "rollup --config && npx -p typescript tsc",
     "install": "node -r esm bin/index.js --install",
     "outdated": "node -r esm bin/index.js --outdated",
     "publish:preminor": "node -r esm bin/index.js --publish=preminor",
