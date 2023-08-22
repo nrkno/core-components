@@ -133,6 +133,7 @@ export default class CoreScroll extends HTMLElement {
    * @param {scrollTarget} point Element, {x, y} pixel distance from top/left or cardinal direction ['up', 'down', 'left', 'right']
    * @returns {Promise<scrollPoint>} scrollPoint
    */
+  /** @ts-ignore: overloaded function has different signature */
   scroll (point) {
     const endPoint = parsePoint(this, point)
     const { x, y } = endPoint
