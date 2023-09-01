@@ -31,12 +31,16 @@ test.describe('core-toggle', () => {
       <button>Toggle</button>
       <core-toggle data-testid='core-toggle' hidden></core-toggle>
     `)
-    await coreToggleButton.click()
-    await expect(coreToggleButton).toHaveAttribute('aria-expanded', 'true')
-    await expect(coreToggle).toHaveJSProperty('hidden', false)
-    await coreToggleButton.click()
-    await expect(coreToggleButton).toHaveAttribute('aria-expanded', 'false')
-    await expect(coreToggle).toHaveJSProperty('hidden', true)
+    await test.step('open', async () => {
+      await coreToggleButton.click()
+      await expect(coreToggleButton).toHaveAttribute('aria-expanded', 'true')
+      await expect(coreToggle).toHaveJSProperty('hidden', false)
+    })
+    await test.step('close', async () => {
+      await coreToggleButton.click()
+      await expect(coreToggleButton).toHaveAttribute('aria-expanded', 'false')
+      await expect(coreToggle).toHaveJSProperty('hidden', true)
+    })
   })
   
   test('opens and closes nested toggle', async ({ page }) => {
@@ -49,16 +53,23 @@ test.describe('core-toggle', () => {
         </core-toggle>
       </core-toggle>
     `)
-
-    await coreToggleButton.click()
-    await coreToggle.getByRole('button', { name: 'Nested Toggle' }).click()
-    await expect(coreToggle).toHaveJSProperty('hidden', false)
-    await expect(coreToggle.locator('core-toggle')).toHaveJSProperty('hidden', false)
-    await coreToggle.getByRole('button', { name: 'Nested Toggle' }).click()
-    await expect(coreToggle).toHaveJSProperty('hidden', false)
-    await expect(coreToggle.locator('core-toggle')).toHaveJSProperty('hidden', true)
-    await coreToggleButton.click()
-    await expect(coreToggle).toHaveJSProperty('hidden', true)
+    await test.step('open host toggle', async () => {
+      await coreToggleButton.click()
+      await expect(coreToggle).toHaveJSProperty('hidden', false)
+    })
+    await test.step('open nested toggle', async () => {
+      await coreToggle.getByRole('button', { name: 'Nested Toggle' }).click()
+      await expect(coreToggle.locator('core-toggle')).toHaveJSProperty('hidden', false)
+    })
+    await test.step('close nested toggle, but not host', async () => {
+      await coreToggle.getByRole('button', { name: 'Nested Toggle' }).click()
+      await expect(coreToggle.locator('core-toggle')).toHaveJSProperty('hidden', true)
+      await expect(coreToggle).toHaveJSProperty('hidden', false)
+    })
+    await test.step('close host toggle', async () => {
+      await coreToggleButton.click()
+      await expect(coreToggle).toHaveJSProperty('hidden', true)
+    })
   })
   
   test('closes nested toggle with esc', async ({ page, browserName }) => {
@@ -75,16 +86,21 @@ test.describe('core-toggle', () => {
         </core-toggle>
       </core-toggle>
     `)
-
-    await coreToggleButton.click()
-    await coreToggle.getByRole('button', { name: 'Nested Toggle' }).click()
-    await expect(coreToggle).toHaveJSProperty('hidden', false)
-    await expect(coreToggle.locator('core-toggle')).toHaveJSProperty('hidden', false)
-    await page.keyboard.press('Escape')
-    await expect(coreToggle).toHaveJSProperty('hidden', false)
-    await expect(coreToggle.locator('core-toggle')).toHaveJSProperty('hidden', true)
-    await page.keyboard.press('Escape')
-    await expect(coreToggle).toHaveJSProperty('hidden', true)
+    await test.step('open all toggles', async () => {
+      await coreToggleButton.click()
+      await coreToggle.getByRole('button', { name: 'Nested Toggle' }).click()
+      await expect(coreToggle).toHaveJSProperty('hidden', false)
+      await expect(coreToggle.locator('core-toggle')).toHaveJSProperty('hidden', false)
+    })
+    await test.step('close nested toggle, but not host', async () => {
+      await page.keyboard.press('Escape')
+      await expect(coreToggle.locator('core-toggle')).toHaveJSProperty('hidden', true)
+      await expect(coreToggle).toHaveJSProperty('hidden', false)
+    })
+    await test.step('close host toggle', async () => {
+      await page.keyboard.press('Escape')
+      await expect(coreToggle).toHaveJSProperty('hidden', true)
+    })
   })
   
   test.describe('data-for attribute', () => {
@@ -122,10 +138,14 @@ test.describe('core-toggle', () => {
         <core-toggle data-testid='core-toggle' data-popup hidden></core-toggle>
         <span>outside</span>
       `)
-      await coreToggleButton.click()
-      await expect(coreToggle).toHaveJSProperty('hidden', false)
-      await page.getByText('outside').click()
-      await expect(coreToggle).toHaveJSProperty('hidden', true)
+      await test.step('open', async () => {
+        await coreToggleButton.click()
+        await expect(coreToggle).toHaveJSProperty('hidden', false)
+      })
+      await test.step('close', async () => {
+        await page.getByText('outside').click()
+        await expect(coreToggle).toHaveJSProperty('hidden', true)
+      })
     })
     
     test('will not close open toggle on click outside, without data-popup attribute', async ({ page }) => {
@@ -134,22 +154,28 @@ test.describe('core-toggle', () => {
         <core-toggle data-testid='core-toggle' hidden></core-toggle>
         <span>outside</span>
       `)
-      await coreToggleButton.click()
-      await expect(coreToggle).toHaveJSProperty('hidden', false)
-      await page.getByText('outside').click()
-      await expect(coreToggle).toHaveJSProperty('hidden', false)
+      await test.step('open', async () => {
+        await coreToggleButton.click()
+        await expect(coreToggle).toHaveJSProperty('hidden', false)
+      })
+      await test.step('try to close', async () => {
+        await page.getByText('outside').click()
+        await expect(coreToggle).toHaveJSProperty('hidden', false)
+      })
     })
     
     test('respects exisiting aria-label with data-popup attribute and value', async ({ page }) => {
-      const labelText = 'label'
+      const initialAriaLabel = 'label'
       await page.setContent(`
-        <button data-testid='core-toggle-button' aria-label='${labelText}'>Toggle</button>
+        <button data-testid='core-toggle-button' aria-label='${initialAriaLabel}'>Toggle</button>
         <core-toggle data-testid='core-toggle' data-popup="Popup-label" hidden></core-toggle>
       `)
-      await coreToggle.evaluate((node: CoreToggle) => node.value = 'button text')
-      const toggleValue = await coreToggle.evaluate((node: CoreToggle) => node.value)
-      await expect(coreToggleButton).toHaveText(toggleValue)
-      await expect(coreToggleButton).toHaveAttribute('aria-label', labelText)
+      await test.step('set core toggle value', async () => {
+        await coreToggle.evaluate((node: CoreToggle) => node.value = 'button text')
+        const toggleValue = await coreToggle.evaluate((node: CoreToggle) => node.value)
+        await test.step('button text changed', async () => await expect(coreToggleButton).toHaveText(toggleValue))
+        await test.step('aria-label not changed', async () => await expect(coreToggleButton).toHaveAttribute('aria-label', initialAriaLabel))
+      })
     })
     
     test('sets aria-label with data-popup attr and value', async ({ page }) => {

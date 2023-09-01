@@ -77,23 +77,27 @@ test.describe('core-datepicker', () => {
         <table></table>
       </core-datepicker>
     `)
-    const now = new Date()
-    await expect(coreDatepicker).toHaveJSProperty('year', now.getUTCFullYear().toString())
-    await expect(coreDatepicker.getByRole('button')).toHaveCount(42)
-
-    await coreDatepicker.evaluate((node: CoreDatepicker) => node.removeAttribute('date'))
-    await expect(coreDatepicker).not.toHaveAttribute('date', 'now')
-    await expect(coreDatepicker).toHaveJSProperty('year', null)
-    await expect(coreDatepicker).toHaveJSProperty('month', null)
-    await expect(coreDatepicker).toHaveJSProperty('day', null)
-    await expect(coreDatepicker).toHaveJSProperty('hour', null)
-    await expect(coreDatepicker).toHaveJSProperty('minute', null)
-    await expect(coreDatepicker).toHaveJSProperty('second', null)
-    await expect(coreDatepicker).toHaveJSProperty('timestamp', null)
-    await expect(coreDatepicker).toHaveJSProperty('date', null)
+    await test.step('init state', async () => {
+      const now = new Date()
+      await expect(coreDatepicker).toHaveJSProperty('year', now.getUTCFullYear().toString())
+      await expect(coreDatepicker.getByRole('button')).toHaveCount(42)
+    })
+    await test.step('remove data attr', async () => {      
+      await coreDatepicker.evaluate((node: CoreDatepicker) => node.removeAttribute('date'))
+      await expect(coreDatepicker).not.toHaveAttribute('date', 'now')
+      await expect(coreDatepicker).toHaveJSProperty('year', null)
+      await expect(coreDatepicker).toHaveJSProperty('month', null)
+      await expect(coreDatepicker).toHaveJSProperty('day', null)
+      await expect(coreDatepicker).toHaveJSProperty('hour', null)
+      await expect(coreDatepicker).toHaveJSProperty('minute', null)
+      await expect(coreDatepicker).toHaveJSProperty('second', null)
+      await expect(coreDatepicker).toHaveJSProperty('timestamp', null)
+      await expect(coreDatepicker).toHaveJSProperty('date', null)
+    })
   })
   
   test('sets input values from date-attribute', async ({ page }) => {
+    const dataType = (type: string) => `input[data-type="${type}"]`
     await page.setContent(`
       <core-datepicker date='${new Date(TIMESTAMP).getTime().toString()}' data-testid="core-datepicker">
         <input type="year">
@@ -105,20 +109,20 @@ test.describe('core-datepicker', () => {
         <input type="timestamp">
       </core-datepicker>
     `)
-    await expect(coreDatepicker.locator('input[data-type="year"]')).toHaveJSProperty('value', YEAR)
-    await expect(coreDatepicker.locator('input[data-type="year"]')).toHaveJSProperty('type', 'number')
-    await expect(coreDatepicker.locator('input[data-type="month"]')).toHaveJSProperty('value', MONTH)
-    await expect(coreDatepicker.locator('input[data-type="month"]')).toHaveJSProperty('type', 'number')
-    await expect(coreDatepicker.locator('input[data-type="day"]')).toHaveJSProperty('value', DAY)
-    await expect(coreDatepicker.locator('input[data-type="day"]')).toHaveJSProperty('type', 'number')
-    await expect(coreDatepicker.locator('input[data-type="hour"]')).toHaveJSProperty('value', HOUR)
-    await expect(coreDatepicker.locator('input[data-type="hour"]')).toHaveJSProperty('type', 'number')
-    await expect(coreDatepicker.locator('input[data-type="minute"]')).toHaveJSProperty('value', MINUTES)
-    await expect(coreDatepicker.locator('input[data-type="minute"]')).toHaveJSProperty('type', 'number')
-    await expect(coreDatepicker.locator('input[data-type="second"]')).toHaveJSProperty('value', SECONDS)
-    await expect(coreDatepicker.locator('input[data-type="second"]')).toHaveJSProperty('type', 'number')
-    await expect(coreDatepicker.locator('input[data-type="timestamp"]')).toHaveJSProperty('value', new Date(TIMESTAMP).valueOf().toString())
-    await expect(coreDatepicker.locator('input[data-type="timestamp"]')).toHaveJSProperty('type', 'number')
+    await expect(coreDatepicker.locator(dataType('year'))).toHaveJSProperty('value', YEAR)
+    await expect(coreDatepicker.locator(dataType('year'))).toHaveJSProperty('type', 'number')
+    await expect(coreDatepicker.locator(dataType('month'))).toHaveJSProperty('value', MONTH)
+    await expect(coreDatepicker.locator(dataType('month'))).toHaveJSProperty('type', 'number')
+    await expect(coreDatepicker.locator(dataType('day'))).toHaveJSProperty('value', DAY)
+    await expect(coreDatepicker.locator(dataType('day'))).toHaveJSProperty('type', 'number')
+    await expect(coreDatepicker.locator(dataType('hour'))).toHaveJSProperty('value', HOUR)
+    await expect(coreDatepicker.locator(dataType('hour'))).toHaveJSProperty('type', 'number')
+    await expect(coreDatepicker.locator(dataType('minute'))).toHaveJSProperty('value', MINUTES)
+    await expect(coreDatepicker.locator(dataType('minute'))).toHaveJSProperty('type', 'number')
+    await expect(coreDatepicker.locator(dataType('second'))).toHaveJSProperty('value', SECONDS)
+    await expect(coreDatepicker.locator(dataType('second'))).toHaveJSProperty('type', 'number')
+    await expect(coreDatepicker.locator(dataType('timestamp'))).toHaveJSProperty('value', new Date(TIMESTAMP).valueOf().toString())
+    await expect(coreDatepicker.locator(dataType('timestamp'))).toHaveJSProperty('type', 'number')
   })
   
   test('populates empty select with months', async ({ page }) => {
@@ -169,14 +173,22 @@ test.describe('core-datepicker', () => {
         <table></table>
       </core-datepicker>
     `)
-    await expect(coreDatepicker.getByRole('button')).toHaveCount(42)
-    for (const name of NAME_OF_DAYS) {
-      await expect(coreDatepicker.getByRole('cell', { name })).toBeVisible()
-    }
-    for (let i = 1; i <= 30; i++) {
-      await expect(coreDatepicker.getByLabel(`${i}. april`, { exact: true })).toBeVisible()
-    }
-    await expect(coreDatepicker.locator('button[autofocus]')).toBeVisible()
+    await test.step('shows 7 x 6 grid', async () => {
+      await expect(coreDatepicker.getByRole('button')).toHaveCount(42)
+    })
+    await test.step('shows day name labels', async () => {
+      for (const name of NAME_OF_DAYS) {
+        await expect(coreDatepicker.getByRole('cell', { name })).toBeVisible()
+      }
+    })
+    await test.step('shows all days in april', async () => {
+      for (let i = 1; i <= 30; i++) {
+        await expect(coreDatepicker.getByLabel(`${i}. april`, { exact: true })).toBeVisible()
+      }
+    })
+    await test.step('sets autofocus', async () => {
+      await expect(coreDatepicker.locator('button[autofocus]')).toBeVisible()
+    })  
   })
   
   test('marks today\'s date in table', async ({ page }) => {
@@ -207,10 +219,14 @@ test.describe('core-datepicker', () => {
         <table></table>
       </core-datepicker>
     `)
-    await coreDatepicker.locator('button[autofocus]').click()
-    await expect(coreDatepicker.locator('button[autofocus]')).toHaveText('1')
-    await page.keyboard.press('ArrowRight')
-    await expect(await coreDatepicker.evaluate(() => document.activeElement?.textContent)).toEqual('2')
+    await test.step('init focus state', async () => {
+      await coreDatepicker.locator('button[autofocus]').click()
+      await expect(coreDatepicker.locator('button[autofocus]')).toHaveText('1')
+    })
+    await test.step('change focus on arrow right', async () => {
+      await page.keyboard.press('ArrowRight')
+      expect(await coreDatepicker.evaluate(() => document.activeElement?.textContent)).toEqual('2')
+    })
   })
 
   test('changes month names', async ({ page }) => {

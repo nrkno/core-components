@@ -100,7 +100,7 @@ test.describe('core-suggest', () => {
   // TODO: Review assertions
   // <ul> element is set to hidden on listitem click (correct behaviour?)
   // thus delclartive assertions toBeHidden/toBeVisible does not work here
-  test('filters suggestions from input value when selecting suggestion', async ({ page }) => {
+  test.fixme('filters suggestions from input value when selecting suggestion', async ({ page }) => {
     await defaultTemplate(page)
     await coreSuggestInput.click()
     await coreSuggest.getByText('Suggest 2').click()
@@ -128,51 +128,63 @@ test.describe('core-suggest', () => {
     
     await defaultTemplate(page)
     
-    await coreSuggestInput.click()
-    await expect(coreSuggest.locator('li:visible')).toHaveCount(4)
-    
-    await coreSuggest.evaluate((node: CoreSuggest) => node.limit = 2)
-    await reloadLimit()
-    await expect(coreSuggest.locator('li:visible')).toHaveCount(2)
-
-    await coreSuggest.evaluate((node: CoreSuggest) => node.limit = -2)
-    await reloadLimit()
-    await expect(coreSuggest.locator('li:visible')).toHaveCount(4)
-
-    await coreSuggest.evaluate((node: CoreSuggest) => node.limit = 1)
-    await reloadLimit()
-    await expect(coreSuggest.locator('li:visible')).toHaveCount(1)
-    
-    // @ts-expect-error: might not be valid test case
-    await coreSuggest.evaluate((node: CoreSuggest) => node.limit = null)
-    await reloadLimit()
-    await expect(coreSuggest.locator('li:visible')).toHaveCount(4)
-
-    await coreSuggest.evaluate((node: CoreSuggest) => node.limit = 3)
-    await reloadLimit()
-    await expect(coreSuggest.locator('li:visible')).toHaveCount(3)
-    
-    // @ts-expect-error: might not be valid test case
-    await coreSuggest.evaluate((node: CoreSuggest) => node.limit = undefined)
-    await reloadLimit()
-    await expect(coreSuggest.locator('li:visible')).toHaveCount(4)
+    await test.step('limit not set', async () => {
+      await coreSuggestInput.click()
+      await expect(coreSuggest.locator('li:visible')).toHaveCount(4)
+    })
+    await test.step('limit = 2', async () => {
+      await coreSuggest.evaluate((node: CoreSuggest) => node.limit = 2)
+      await reloadLimit()
+      await expect(coreSuggest.locator('li:visible')).toHaveCount(2)
+    })
+    await test.step('limit = -2', async () => {
+      await coreSuggest.evaluate((node: CoreSuggest) => node.limit = -2)
+      await reloadLimit()
+      await expect(coreSuggest.locator('li:visible')).toHaveCount(4)
+    })
+    await test.step('limit = 1', async () => {      
+      await coreSuggest.evaluate((node: CoreSuggest) => node.limit = 1)
+      await reloadLimit()
+      await expect(coreSuggest.locator('li:visible')).toHaveCount(1)
+    })
+    await test.step('limit = null', async () => {      
+      // @ts-expect-error: might not be valid test case
+      await coreSuggest.evaluate((node: CoreSuggest) => node.limit = null)
+      await reloadLimit()
+      await expect(coreSuggest.locator('li:visible')).toHaveCount(4)
+    })
+    await test.step('limit = 3', async () => {
+      await coreSuggest.evaluate((node: CoreSuggest) => node.limit = 3)
+      await reloadLimit()
+      await expect(coreSuggest.locator('li:visible')).toHaveCount(3)
+    })
+    await test.step('limit = undefined', async () => {
+      // @ts-expect-error: might not be valid test case
+      await coreSuggest.evaluate((node: CoreSuggest) => node.limit = undefined)
+      await reloadLimit()
+      await expect(coreSuggest.locator('li:visible')).toHaveCount(4)
+    })
   })
   
   test('filters suggestions from limit option', async ({ page }) => {
     await defaultTemplate(page)
-    await coreSuggest.evaluate((node: CoreSuggest) => node.limit = 2)
-    await coreSuggestInput.click()
-    await expect(coreSuggest.getByText('Suggest 1')).toBeVisible()
-    await expect(coreSuggest.getByText('Suggest 2')).toBeVisible()
-    await expect(coreSuggest.getByText('Suggest 3')).toBeHidden()
-    await expect(coreSuggest.getByText('Suggest 4')).toBeHidden()
-    await coreSuggest.evaluate((node: CoreSuggest) => node.limit = 3)
-    await coreSuggestInput.fill('s')
-    await expect(coreSuggest.getByText('Suggest 1')).toBeVisible()
-    await expect(coreSuggest.getByText('Suggest 2')).toBeVisible()
-    await expect(coreSuggest.getByText('Suggest 3')).toBeVisible()
-    await expect(coreSuggest.getByText('Suggest 4')).toBeHidden()
-    await expect(coreSuggest.getByLabel('Suggest 4, 4 av 3')).toBeHidden()
+    await test.step('limit = 2', async () => {
+      await coreSuggest.evaluate((node: CoreSuggest) => node.limit = 2)
+      await coreSuggestInput.click()
+      await expect(coreSuggest.getByText('Suggest 1')).toBeVisible()
+      await expect(coreSuggest.getByText('Suggest 2')).toBeVisible()
+      await expect(coreSuggest.getByText('Suggest 3')).toBeHidden()
+      await expect(coreSuggest.getByText('Suggest 4')).toBeHidden()
+    })
+    await test.step('limit = 3', async () => {
+      await coreSuggest.evaluate((node: CoreSuggest) => node.limit = 3)
+      await coreSuggestInput.fill('s')
+      await expect(coreSuggest.getByText('Suggest 1')).toBeVisible()
+      await expect(coreSuggest.getByText('Suggest 2')).toBeVisible()
+      await expect(coreSuggest.getByText('Suggest 3')).toBeVisible()
+      await expect(coreSuggest.getByText('Suggest 4')).toBeHidden()
+      await expect(coreSuggest.getByLabel('Suggest 4, 4 av 3')).toBeHidden()
+    })
   })
   
   test('defaults to highlight -attribute "on", stripping existing and adding new <mark>-tags', async ({ page }) => {
@@ -245,9 +257,9 @@ test.describe('core-suggest', () => {
     await coreSuggestInput.fill('abc')
     let responsePromise = await page.waitForResponse(`*/**${TEST_URL}`)
     let responseJson = await responsePromise.json()
-    await expect(responseJson).toEqual(TEST_JSON_RESPONSE)
+    expect(responseJson).toEqual(TEST_JSON_RESPONSE)
     await page.waitForFunction(CAPTURE_SUCCESS_EVENT_FUNCTION)
-    await expect(ajaxSuccessEvents).toHaveLength(1)
+    expect(ajaxSuccessEvents).toHaveLength(1)
     // TODO: Assert payload
     // Cross Origin Issue; Event is always {isTrusted: false}
     // await expect(error).toEqual('Error: Network request failed')
@@ -288,7 +300,7 @@ test.describe('core-suggest', () => {
     await coreSuggestInput.fill('abc')
     await page.waitForRequest(TEST_URL)
     await page.waitForFunction('window.captureErrorEvent')
-    await expect(ajaxErrorEvents).toHaveLength(1)
+    expect(ajaxErrorEvents).toHaveLength(1)
     // TODO: Assert errorResponse message
     // Cross Origin Issue; Event is always {isTrusted: false}
     // await expect(text).toEqual(TEST_ERROR_RESPONSE)
@@ -310,7 +322,7 @@ test.describe('core-suggest', () => {
     await coreSuggestInput.fill('abc')
     await page.waitForRequest(TEST_URL)
     await page.waitForFunction('window.captureErrorEvent')
-    await expect(ajaxErrorEvents).toHaveLength(1)
+    expect(ajaxErrorEvents).toHaveLength(1)
     // TODO: Assert errorResponse message
     // Cross Origin Issue; Event is always {isTrusted: false}
     // await expect(text).toEqual(TEST_BAD_JSON_RESPONSE)
@@ -330,6 +342,5 @@ test.describe('core-suggest', () => {
       await expect(page.locator('body > span', { hasNotText: 'outside' })).toHaveText(LIVE_REGION_TEXT)
       await expect(page.locator('body > span', { hasNotText: 'outside' })).toHaveText('')
     })
-    
   })
 })

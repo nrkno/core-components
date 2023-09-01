@@ -205,7 +205,7 @@ test.describe('core-tabs', () => {
         document.addEventListener('tabs.toggle', window.incrementToggleEvents)
       `})
       await page.waitForLoadState()
-      await expect(toggleEvents).toBe(0)
+      expect(toggleEvents).toBe(0)
     })
 
     test('does not trigger toggle-event during setup with tab-attribute set using id', async ({ page }) => {
@@ -221,7 +221,7 @@ test.describe('core-tabs', () => {
         document.addEventListener('tabs.toggle', window.incrementToggleEvents)
       `})
       await page.waitForLoadState()
-      await expect(toggleEvents).toBe(0)
+      expect(toggleEvents).toBe(0)
     })
 
     test('does not trigger toggle-event during setup with tab-attribute set using index', async ({ page }) => {
@@ -236,7 +236,7 @@ test.describe('core-tabs', () => {
       await page.addScriptTag({ content: `
         document.addEventListener('tabs.toggle', window.incrementToggleEvents)
       `})
-      await expect(toggleEvents).toBe(0)
+      expect(toggleEvents).toBe(0)
     })
 
     test('triggers toggle event on tab change', async ({ page }) => {
@@ -301,11 +301,16 @@ test.describe('core-tabs', () => {
         <div id="panel-2">Text of tab 2</div>
         <div id="panel-3">Text of tab 3</div>
       `)
-      await expect(coreTabs).toHaveAttribute('tab', '2')
-      expect(await coreTabs.evaluate((node: CoreTabs) => (node.tab as TabElement).id)).toEqual('tab-3')
-      await coreTabs.getByRole('tab', { name: 'Second Tab' }).click()
-      await expect(coreTabs).toHaveAttribute('tab', '1')
-      expect(await coreTabs.evaluate((node: CoreTabs) => (node.tab as TabElement).id)).toEqual('tab-2')
+
+      await test.step('initilizes tab attr', async () => {
+        await expect(coreTabs).toHaveAttribute('tab', '2')
+        expect(await coreTabs.evaluate((node: CoreTabs) => (node.tab as TabElement).id)).toEqual('tab-3')
+      })
+      await test.step('updates tab attr', async () => {
+        await coreTabs.getByRole('tab', { name: 'Second Tab' }).click()
+        await expect(coreTabs).toHaveAttribute('tab', '1')
+        expect(await coreTabs.evaluate((node: CoreTabs) => (node.tab as TabElement).id)).toEqual('tab-2')
+      })
     })
 
     test('updates the attribute value on change, respecting index', async ({ page }) => {
@@ -319,11 +324,15 @@ test.describe('core-tabs', () => {
         <div id="panel-2">Text of tab 2</div>
         <div id="panel-3">Text of tab 3</div>
       `)
-      await expect(coreTabs).toHaveAttribute('tab', '0')
-      expect(await coreTabs.evaluate((node: CoreTabs) => (node.tab as TabElement).id)).toEqual('tab-1')
-      await coreTabs.getByRole('tab', { name: 'Second Tab' }).click()
-      await expect(coreTabs).toHaveAttribute('tab', '1')
-      expect(await coreTabs.evaluate((node: CoreTabs) => (node.tab as TabElement).id)).toEqual('tab-2')
+      await test.step('intializes tab attr', async () => {
+        await expect(coreTabs).toHaveAttribute('tab', '0')
+        expect(await coreTabs.evaluate((node: CoreTabs) => (node.tab as TabElement).id)).toEqual('tab-1')
+      })
+      await test.step('updates tab attr', async () => {        
+        await coreTabs.getByRole('tab', { name: 'Second Tab' }).click()
+        await expect(coreTabs).toHaveAttribute('tab', '1')
+        expect(await coreTabs.evaluate((node: CoreTabs) => (node.tab as TabElement).id)).toEqual('tab-2')
+      })
     })
 
     test('sets/updates attribute value even when not set initially', async ({ page }) => {
@@ -337,11 +346,15 @@ test.describe('core-tabs', () => {
         <div id="panel-2">Text of tab 2</div>
         <div id="panel-3">Text of tab 3</div>
       `)
-      await expect(coreTabs).toHaveAttribute('tab', '0')
-      expect(await coreTabs.evaluate((node: CoreTabs) => (node.tab as TabElement).id)).toEqual('tab-1')
-      await coreTabs.getByRole('tab', { name: 'Second Tab' }).click()
-      await expect(coreTabs).toHaveAttribute('tab', '1')
-      expect(await coreTabs.evaluate((node: CoreTabs) => (node.tab as TabElement).id)).toEqual('tab-2')
+      await test.step('initilizes tab attr', async () => {
+        await expect(coreTabs).toHaveAttribute('tab', '0')
+        expect(await coreTabs.evaluate((node: CoreTabs) => (node.tab as TabElement).id)).toEqual('tab-1')
+      })
+      await test.step('updates tab attr', async () => {        
+        await coreTabs.getByRole('tab', { name: 'Second Tab' }).click()
+        await expect(coreTabs).toHaveAttribute('tab', '1')
+        expect(await coreTabs.evaluate((node: CoreTabs) => (node.tab as TabElement).id)).toEqual('tab-2')
+      })
     })
     
     test('updates tab attribute to reflect index-change and keeps the correct active panel when preceding tabs are removed from the DOM', async ({ page }) => {
@@ -355,13 +368,18 @@ test.describe('core-tabs', () => {
         <div id="panel-2">Text of tab 2</div>
         <div id="panel-3">Text of tab 3</div>
       `)
-
-      await expect(coreTabs).toHaveAttribute('tab', '2')
-      expect(await coreTabs.evaluate((node: CoreTabs) => (node.tab as TabElement).id)).toEqual('tab-3')
-      await coreTabs.evaluate((node: CoreTabs) => node.removeChild(document.getElementById('tab-2') as TabElement))
-      await expect(coreTabs).toHaveAttribute('tab', '1')
-      expect(await coreTabs.evaluate((node: CoreTabs) => (node.tab as TabElement).id)).toEqual('tab-3')
-      await expect(page.getByText('Text of tab 3')).toBeVisible()
+      await test.step('initilizes tab attr', async () => {
+        await expect(coreTabs).toHaveAttribute('tab', '2')
+        expect(await coreTabs.evaluate((node: CoreTabs) => (node.tab as TabElement).id)).toEqual('tab-3')
+      })
+      await test.step('remove tab element node', async () => {
+        await coreTabs.evaluate((node: CoreTabs) => node.removeChild(document.getElementById('tab-2') as TabElement))
+      })
+      await test.step('updates tab attr', async () => {
+        await expect(coreTabs).toHaveAttribute('tab', '1')
+        expect(await coreTabs.evaluate((node: CoreTabs) => (node.tab as TabElement).id)).toEqual('tab-3')
+        await expect(page.getByText('Text of tab 3')).toBeVisible()
+      })
     })
   })
 
@@ -378,26 +396,35 @@ test.describe('core-tabs', () => {
         document.addEventListener('tabs.toggle', window.incrementToggleEvents)
       `})
       await page.waitForLoadState()
-      // Event is not triggered
-      expect(toggleEvents).toBe(0)
-      // Attributes are set as expected
-      await expect(coreTabs).toHaveAttribute('tab', '0')
-      await expect(coreTabs.getByRole('tab', { name: 'First tab'})).toHaveAttribute('aria-selected', 'true')
-      await expect(coreTabs.getByRole('tab', { name: 'Second tab'})).toHaveAttribute('aria-selected', 'false')
-      expect(await coreTabs.getByRole('tab', { name: 'First tab'}).getAttribute('aria-controls')).toBeNull()
-      expect(await coreTabs.getByRole('tab', { name: 'Second tab'}).getAttribute('aria-controls')).toBeNull()
-      // Panels length should have equal length to tabs, but entries should be empty
+      await test.step('no event event on initilization', async () => {
+        expect(toggleEvents).toBe(0)
+      })
+      await test.step('sets up attributes correctly', async () => {
+        await expect(coreTabs).toHaveAttribute('tab', '0')
+        await expect(coreTabs.getByRole('tab', { name: 'First tab'})).toHaveAttribute('aria-selected', 'true')
+        await expect(coreTabs.getByRole('tab', { name: 'Second tab'})).toHaveAttribute('aria-selected', 'false')
+        expect(await coreTabs.getByRole('tab', { name: 'First tab'}).getAttribute('aria-controls')).toBeNull()
+        expect(await coreTabs.getByRole('tab', { name: 'Second tab'}).getAttribute('aria-controls')).toBeNull()
+      })
       const { panels, tabs, panel, tab } = await coreTabs.evaluate(({ panels, tabs, panel, tab }: CoreTabs) => ({ panels, tabs, panel, tab: (tab as TabElement).id }))
-      expect(panels.length).toBe(tabs.length)
-      expect(panels[0]).toBeNull()
-      expect(panels[1]).toBeNull()
-      expect(panel).toBeNull()
-      expect(tabs.length).toBe(2)
-      expect(tab).toBe('tab-1')
-      await coreTabs.getByRole('tab', { name: 'Second tab' }).click()
-      await expect(coreTabs.getByRole('tab', { name: 'Second tab' })).toHaveAttribute('aria-selected', 'true')
-      await page.waitForFunction('window.incrementToggleEvents')
-      expect(toggleEvents).toBe(1)
+      await test.step('panels and tabs are 1:1', async () => {
+        expect(tabs.length).toBe(2)
+        expect(tabs.length).toBe(panels.length)
+        expect(tab).toBe('tab-1')
+      })
+      await test.step('panels contain null entries', async () => {
+        expect(panels[0]).toBeNull()
+        expect(panels[1]).toBeNull()
+        expect(panel).toBeNull()
+      })
+      await test.step('updates selected tab', async () => {
+        await coreTabs.getByRole('tab', { name: 'Second tab' }).click()
+        await expect(coreTabs.getByRole('tab', { name: 'Second tab' })).toHaveAttribute('aria-selected', 'true')
+      })
+      await test.step('fires toggle event', async () => {
+        await page.waitForFunction('window.incrementToggleEvents')
+        expect(toggleEvents).toBe(1)
+      })
     })
 
     test('defaults to aria-labelledBy to the first tab', async ({ page }) => {

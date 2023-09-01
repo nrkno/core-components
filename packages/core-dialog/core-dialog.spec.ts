@@ -54,26 +54,26 @@ test.describe('core-dialog', () => {
       </core-dialog>
     `)
     await page.addStyleTag({ content: defaultStyle })
-    
-    // click event
-    
-    await page.getByRole('button').and(page.getByText('Open')).click()
-    await expect(coreDialog).toBeVisible()
-    await expect(page.locator('backdrop')).toBeVisible()
-
-    await page.getByRole('button').and(page.getByText('Close')).click()
-    await expect(coreDialog).toBeHidden()
-    await expect(page.locator('backdrop')).toBeHidden()
-
-    // component property change
-
-    await coreDialog.evaluate((node: CoreDialog) => node.hidden = false)
-    await expect(coreDialog).toBeVisible()
-    await expect(page.locator('backdrop')).toBeVisible()
-    
-    await coreDialog.evaluate((node: CoreDialog) => node.hidden = true)
-    await expect(coreDialog).toBeHidden()
-    await expect(page.locator('backdrop')).toBeHidden()
+    await test.step('open on click', async () => {      
+      await page.getByRole('button').and(page.getByText('Open')).click()
+      await expect(coreDialog).toBeVisible()
+      await expect(page.locator('backdrop')).toBeVisible()
+    })
+    await test.step('close on click', async () => {
+      await page.getByRole('button').and(page.getByText('Close')).click()
+      await expect(coreDialog).toBeHidden()
+      await expect(page.locator('backdrop')).toBeHidden()
+    })
+    await test.step('set hidden false', async () => {      
+      await coreDialog.evaluate((node: CoreDialog) => node.hidden = false)
+      await expect(coreDialog).toBeVisible()
+      await expect(page.locator('backdrop')).toBeVisible()
+    })
+    await test.step('set hidden true', async () => {
+      await coreDialog.evaluate((node: CoreDialog) => node.hidden = true)
+      await expect(coreDialog).toBeHidden()
+      await expect(page.locator('backdrop')).toBeHidden()
+    })
   })
   
   test('respects deprecated "for" attribute', async ({ page }) => {
@@ -85,14 +85,16 @@ test.describe('core-dialog', () => {
       </core-dialog>
     `)
     await page.addStyleTag({ content: defaultStyle })
-    
-    await page.getByRole('button').and(page.getByText('Open')).click()
-    await expect(coreDialog).toBeVisible()
-    await expect(page.locator('backdrop')).toBeVisible()
-
-    await page.getByRole('button').and(page.getByText('Close')).click()
-    await expect(coreDialog).toBeHidden()
-    await expect(page.locator('backdrop')).toBeHidden()
+    await test.step('open', async () => {      
+      await page.getByRole('button').and(page.getByText('Open')).click()
+      await expect(coreDialog).toBeVisible()
+      await expect(page.locator('backdrop')).toBeVisible()
+    })
+    await test.step('close', async () => {
+      await page.getByRole('button').and(page.getByText('Close')).click()
+      await expect(coreDialog).toBeHidden()
+      await expect(page.locator('backdrop')).toBeHidden()
+    })
   })
   
   test('opens and closes nested', async ({ page }) => {
@@ -110,20 +112,26 @@ test.describe('core-dialog', () => {
       </core-dialog>
     `)
     await page.addStyleTag({ content: defaultStyle })
-
-    await page.getByRole('button').and(page.getByText('Open')).click()
-    await expect(coreDialog.getByText('Some content')).toBeVisible()
-    await coreDialog.getByRole('button').and(coreDialog.getByText('Open nested')).click()
-
-    await expect(page.locator('backdrop')).toHaveCount(2)
-    for (const backdrop of await page.locator('backdrop').all())
-      await expect(backdrop).toBeVisible()
-    
-    await page.getByRole('button').and(page.getByText('Close nested')).click()
-    await expect(coreDialog.getByText('Nested content')).toBeHidden()
-    await expect(coreDialog.locator('backdrop')).toBeHidden()
-    await expect(coreDialog.getByText('Some content')).toBeVisible()
-    await expect(page.locator('backdrop:not([hidden])')).toBeVisible()
+    await test.step('open host', async () => {
+      await page.getByRole('button').and(page.getByText('Open')).click()
+      await expect(coreDialog.getByText('Some content')).toBeVisible()
+    })
+    await test.step('open nested', async () => {
+      await coreDialog.getByRole('button').and(coreDialog.getByText('Open nested')).click()
+      await expect(coreDialog.getByText('Nested content')).toBeVisible()
+    })
+    await test.step('verify backdrops', async () => {      
+      await expect(page.locator('backdrop')).toHaveCount(2)
+      for (const backdrop of await page.locator('backdrop').all())
+        await expect(backdrop).toBeVisible()
+    })
+    await test.step('close nested', async () => {
+      await page.getByRole('button').and(page.getByText('Close nested')).click()
+      await expect(coreDialog.getByText('Nested content')).toBeHidden()
+      await expect(coreDialog.locator('backdrop')).toBeHidden()
+      await expect(coreDialog.getByText('Some content')).toBeVisible()
+      await expect(page.locator('backdrop:not([hidden])')).toBeVisible()
+    })
   })
   
   test('loses nested with pressed esc', async ({ page }) => {
@@ -141,18 +149,24 @@ test.describe('core-dialog', () => {
       </core-dialog>
     `)
     await page.addStyleTag({ content: defaultStyle })
-    
-    await page.getByRole('button').and(page.getByText('Open')).click()
-    await expect(coreDialog.getByText('Some content')).toBeVisible()
-    await coreDialog.getByRole('button').and(coreDialog.getByText('Open nested')).click()
-    await expect(coreDialog.getByText('Nested content')).toBeVisible()
-
-    await page.keyboard.press('Escape')
-    await expect(page.getByText('Nested content')).toBeHidden()
-    await expect(page.getByText('Some content')).toBeVisible()
-    await page.keyboard.press('Escape')
-    await expect(page.getByText('Nested content')).toBeHidden()
-    await expect(page.getByText('Some content')).toBeHidden()
+    await test.step('open host', async () => {
+      await page.getByRole('button').and(page.getByText('Open')).click()
+      await expect(coreDialog.getByText('Some content')).toBeVisible()
+    })
+    await test.step('open nested', async () => {
+      await coreDialog.getByRole('button').and(coreDialog.getByText('Open nested')).click()
+      await expect(coreDialog.getByText('Nested content')).toBeVisible()
+    })
+    await test.step('close nested', async () => {      
+      await page.keyboard.press('Escape')
+      await expect(page.getByText('Nested content')).toBeHidden()
+      await expect(page.getByText('Some content')).toBeVisible()
+    })
+    await test.step('close host', async () => {
+      await page.keyboard.press('Escape')
+      await expect(page.getByText('Nested content')).toBeHidden()
+      await expect(page.getByText('Some content')).toBeHidden()
+    })
   })
   
   test('defaults to backdrop="on" when not supplied', async ({ page }) => {
@@ -227,7 +241,7 @@ test.describe('core-dialog', () => {
   })
   
   test('displays no backdrop and logs warning when custom backdrop is provided and not found', async ({ page }) => {
-    let consoleMsg
+    let consoleMsg: string = ""
     page.once('console', msg => consoleMsg = msg.text())
     await page.setContent(`
       <button data-for="core-dialog">Open</button>
@@ -241,7 +255,7 @@ test.describe('core-dialog', () => {
     await expect(coreDialog).toBeVisible()
     await expect(page.getByTestId('custom-backdrop')).toBeHidden()
     await expect(page.locator('backdrop')).not.toBeAttached()
-    await expect(consoleMsg).toContain('cannot find backdrop element with id: invalid-reference-id')
+    expect(consoleMsg).toContain('cannot find backdrop element with id: invalid-reference-id')
   })
   
   test('respects strict option', async ({ page }) => {
@@ -272,12 +286,18 @@ test.describe('core-dialog', () => {
       document.addEventListener('dialog.toggle', window.captureToggleEvent)
     `})
     await page.addStyleTag({ content: defaultStyle })
-    expect(numToggleEvents).toBe(0)
-    await page.getByRole('button').and(page.getByText('Open')).click()
-    await page.waitForFunction('window.captureToggleEvent')
-    expect(numToggleEvents).toBe(1)
-    await page.getByRole('button').and(page.getByText('Close')).click()
-    await page.waitForFunction('window.captureToggleEvent')
-    expect(numToggleEvents).toBe(2)
+    await test.step('init', async () => {
+      expect(numToggleEvents).toBe(0)
+    })
+    await test.step('open', async () => {
+      await page.getByRole('button').and(page.getByText('Open')).click()
+      await page.waitForFunction('window.captureToggleEvent')
+      expect(numToggleEvents).toBe(1)
+    })
+    await test.step('', async () => {
+      await page.getByRole('button').and(page.getByText('Close')).click()
+      await page.waitForFunction('window.captureToggleEvent')
+      expect(numToggleEvents).toBe(2)
+    })
   })
 })

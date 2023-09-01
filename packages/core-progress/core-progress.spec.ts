@@ -57,16 +57,18 @@ test.describe('core-progress', () => {
         </span>
       </label>
     `)
-    await expect(coreProgress).toBeAttached()
-    await expect(coreProgress).toHaveAttribute('aria-label', '0%')
-  
-    // Update to 50% and assert
-    await coreProgress.evaluate((node: CoreProgress) => node.setAttribute('value', '.5'))
-    await expect(coreProgress).toHaveAttribute('aria-label', '50%')
-  
-    // Update to 100% and assert
-    await coreProgress.evaluate((node: CoreProgress) => node.setAttribute('value', '1'))
-    await expect(coreProgress).toHaveAttribute('aria-label', '100%')
+    await test.step('is 0%', async () => {
+      await expect(coreProgress).toBeAttached()
+      await expect(coreProgress).toHaveAttribute('aria-label', '0%')
+    })
+    await test.step('is 50%', async () => {      
+      await coreProgress.evaluate((node: CoreProgress) => node.setAttribute('value', '.5'))
+      await expect(coreProgress).toHaveAttribute('aria-label', '50%')
+    })
+    await test.step('is 100%', async () => {      
+      await coreProgress.evaluate((node: CoreProgress) => node.setAttribute('value', '1'))
+      await expect(coreProgress).toHaveAttribute('aria-label', '100%')
+    })
   })
   
   test('updates radial progress label correctly', async ({ page }) => {
@@ -78,45 +80,49 @@ test.describe('core-progress', () => {
         </span>
       </label>
     `)
-    await expect(coreProgress).toBeAttached()
-    await expect(coreProgress).toHaveAttribute('aria-label', '0%')
-  
-    // Update to 50% and assert
-    await coreProgress.evaluate((node: CoreProgress) => node.setAttribute('value', '.5'))
-    await expect(coreProgress).toHaveAttribute('aria-label', '50%')
-  
-    // Update to 100% and assert
-    await coreProgress.evaluate((node: CoreProgress) => node.setAttribute('value', '1'))
-    await expect(coreProgress).toHaveAttribute('aria-label', '100%')
+
+    await test.step('is 0%', async () => {      
+      await expect(coreProgress).toBeAttached()
+      await expect(coreProgress).toHaveAttribute('aria-label', '0%')
+    })
+    await test.step('is 50%', async () => {
+      await coreProgress.evaluate((node: CoreProgress) => node.setAttribute('value', '.5'))
+      await expect(coreProgress).toHaveAttribute('aria-label', '50%')
+    })
+    await test.step('is 100%', async () => {      
+      await coreProgress.evaluate((node: CoreProgress) => node.setAttribute('value', '1'))
+      await expect(coreProgress).toHaveAttribute('aria-label', '100%')
+    })
   })
   
   test('updates label from indeterminate value', async ({ page }) => {
-  
-    await page.setContent(`
-      <label>
-        Linear Progress
-        <span class="my-track">
-          <core-progress data-testid="core-progress"></core-progress>
-        </span>
-      </label>
-    `)
-    await coreProgress.evaluate((node: CoreProgress) => node.setAttribute("value", "Loading..."))
-    await expect(coreProgress).toHaveAttribute('aria-label', 'Loading...')
-  
-    await page.setContent(`
-      <label>
-        Radial Progress
-        <span style="display: block; width: 40px">
-          <core-progress class="my-radial" data-testid="core-progress" type="radial"></core-progress>
-        </span>
-      </label>
-    `)
-    await coreProgress.evaluate((node: CoreProgress) => node.setAttribute("value", "Loading..."))
-    await expect(coreProgress).toHaveAttribute('aria-label', 'Loading...')
+    await test.step('linear sets label', async () => {
+      await page.setContent(`
+        <label>
+          Linear Progress
+          <span class="my-track">
+            <core-progress data-testid="core-progress"></core-progress>
+          </span>
+        </label>
+      `)
+      await coreProgress.evaluate((node: CoreProgress) => node.setAttribute("value", "Loading..."))
+      await expect(coreProgress).toHaveAttribute('aria-label', 'Loading...')
+    })
+    await test.step('radial sets label', async () => {      
+      await page.setContent(`
+        <label>
+          Radial Progress
+          <span style="display: block; width: 40px">
+            <core-progress class="my-radial" data-testid="core-progress" type="radial"></core-progress>
+          </span>
+        </label>
+      `)
+      await coreProgress.evaluate((node: CoreProgress) => node.setAttribute("value", "Loading..."))
+      await expect(coreProgress).toHaveAttribute('aria-label', 'Loading...')
+    })
   })
   
   test('calculates percentage relative to max', async ({ page }) => {
-  
     await page.setContent(`
       <label>
         Linear Progress
@@ -125,15 +131,18 @@ test.describe('core-progress', () => {
         </span>
       </label>
     `)
-    
-    await coreProgress.evaluate((node: CoreProgress) => node.setAttribute('value', '0.5'))
-    await expect(coreProgress).toHaveAttribute('aria-label', '50%')
-  
-    await coreProgress.evaluate((node: CoreProgress) => node.setAttribute('max', '10'))
-    await expect(coreProgress).toHaveAttribute('aria-label', '5%')
-  
-    await coreProgress.evaluate((node: CoreProgress) => node.setAttribute('max', '100'))
-    await expect(coreProgress).toHaveAttribute('aria-label', '1%')
+    await test.step('50%', async () => {      
+      await coreProgress.evaluate((node: CoreProgress) => node.setAttribute('value', '0.5'))
+      await expect(coreProgress).toHaveAttribute('aria-label', '50%')
+    })
+    await test.step('5%', async () => {      
+      await coreProgress.evaluate((node: CoreProgress) => node.setAttribute('max', '10'))
+      await expect(coreProgress).toHaveAttribute('aria-label', '5%')
+    })
+    await test.step('1%', async () => {
+      await coreProgress.evaluate((node: CoreProgress) => node.setAttribute('max', '100'))
+      await expect(coreProgress).toHaveAttribute('aria-label', '1%')
+    })
   })
 
   test.describe('change event', () => {
