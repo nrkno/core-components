@@ -18,31 +18,31 @@ npm start # Your browser will open documentation with hot reloading
 ```
 
 
-## Testing
+## Testing with Playwright
 
-You can run the tests locally or remotely with CrossBrowserTesting.
+Tests in this project are written using Playwright and are executed against major browser engines including Chromium, WebKit, and Firefox.
 
-Run the tests locally:
+### Local Testing
 
-```sh
-npm test
-```
-
-Before running tests remotely you need a `.env` file providing credentials:
-
-User and authkey can be found in your user profile on [crossbrowsertesting](https://app.crossbrowsertesting.com/account)
+To run tests from the command line, use the following npm command:
 
 ```sh
-SMARTBEAR_USER=...
-SMARTBEAR_AUTHKEY=...
+npm run test
 ```
-Save it in the root directory.
 
-Run tests remotely against all targeted browsers:
+You can enhance your testing experience in VSCode by using the [Playwright Test for VSCode](https://marketplace.visualstudio.com/items?itemName=ms-playwright.playwright).
 
-```sh
-npm run test-remote
-```
+For added convenience, consider using the following VSCode extensions:
+
+* [Playwright Snippets](https://marketplace.visualstudio.com/items?itemName=nitayneeman.playwright-snippets): Provides useful code snippets for Playwright.
+* [Playwright Test Snippets](https://marketplace.visualstudio.com/items?itemName=mskelton.playwright-test-snippets): Offers additional code snippets specifically tailored for Playwright testing.
+
+### Continous Integration
+
+The GitHub Actions workflow has been configured to automatically execute Playwright tests in response to changes being pushed to the main or master branches, as well as when new pull requests are created.
+
+Additionally, it generates test reports and summaries, which are made available as artifacts for the purpose of reviewing and analyzing the test results. Artifacts have a retention period of 30 days.
+
 
 ## Building and committing
 After having applied changes, remember to build before pushing the changes upstream.
