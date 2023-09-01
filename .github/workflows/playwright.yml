@@ -25,3 +25,8 @@ jobs:
         name: playwright-report
         path: playwright-report/
         retention-days: 30
+    - name: Test summary
+      uses: test-summary/action@v2
+      with:
+        paths: results.xml
+      if: always()
