@@ -25,10 +25,6 @@ test.describe('core-datepicker', () => {
     await page.goto('./core-datepicker/core-datepicker.spec.html')
     coreDatepicker = page.getByTestId('core-datepicker')
   })
-
-  // test.afterEach(async ({ page }) => {
-  //   page.close()
-  // })  
   
   test('sets up properties from date-attribute', async ({ page }) => {
     await page.setContent(`
