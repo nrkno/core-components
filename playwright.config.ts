@@ -18,7 +18,7 @@ export default defineConfig({
     baseURL: 'http://127.0.0.1:10003',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: 'on-first-retry',
+    trace: 'retain-on-failure',
 
     /* Avoid any time-zone shift when testing Zulu dates */
     timezoneId: 'GMT'
