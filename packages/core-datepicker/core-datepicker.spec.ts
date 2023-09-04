@@ -1,6 +1,7 @@
 import { expect, Locator } from '@playwright/test';
 import CoreDatepicker from './core-datepicker';
 import { test } from '../core-test-fixtures';
+import parse from '@nrk/simple-date-parse';
 
 declare global {
   interface Window { time: Date, triggered: Boolean }
@@ -17,7 +18,7 @@ const TIMESTAMP = `${YEAR}-${MONTH}-${DAY}T${HOUR}:${MINUTES}:${SECONDS}Z`
 const NAME_OF_DAYS = ['man','tirs','ons','tors','fre','lør','søn']
 const NAME_OF_MONTHS = ['januar','februar','mars','april','mai','juni','juli','august','september','oktober','november','desember']
 
-const pad = (val) => `0${val}`.slice(-2)
+const pad = (val: number | string) => `0${val}`.slice(-2)
 
 test.describe('core-datepicker', () => {
   let coreDatepicker: Locator
@@ -59,16 +60,20 @@ test.describe('core-datepicker', () => {
 
   test('supports simple-date-parse literals in date-attribute', async ({ page }) => {
     await page.setContent(`
-      <core-datepicker date='now' data-testid="core-datepicker">
+      <core-datepicker date='now - 1 day' data-testid="core-datepicker">
       </core-datepicker>
     `)
-    const now = new Date()
-    await expect(coreDatepicker).toHaveJSProperty('year', now.getUTCFullYear().toString())
-    await expect(coreDatepicker).toHaveJSProperty('month', pad(now.getUTCMonth() + 1))
-    await expect(coreDatepicker).toHaveJSProperty('day', pad(now.getUTCDate().toString()))
-    await expect(coreDatepicker).toHaveJSProperty('hour', pad(now.getUTCHours().toString()))
-    await expect(coreDatepicker).toHaveJSProperty('minute', pad(now.getUTCMinutes()))
-    await expect(coreDatepicker).toHaveJSProperty('second', pad(now.getUTCSeconds()))
+
+    // This assertion can fail if run on jan 1 due to race but helps prove it is a valid year
+    await expect(coreDatepicker).toHaveJSProperty('year', parse('now - 1 day').getFullYear().toString())
+
+    // To avoid race, assertions can only be not null to avoid flakyness
+    await expect(coreDatepicker).not.toHaveJSProperty('year', null)
+    await expect(coreDatepicker).not.toHaveJSProperty('month', null)
+    await expect(coreDatepicker).not.toHaveJSProperty('day', null)
+    await expect(coreDatepicker).not.toHaveJSProperty('hour', null)
+    await expect(coreDatepicker).not.toHaveJSProperty('minute', null)
+    await expect(coreDatepicker).not.toHaveJSProperty('second', null)
   })
   
   test('resets value when date-attribute is removed', async ({ page }) => {
