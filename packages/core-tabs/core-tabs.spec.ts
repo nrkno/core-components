@@ -1,5 +1,6 @@
-import { test, expect, Locator } from '@playwright/test';
+import { expect, Locator } from '@playwright/test';
 import CoreTabs, { TabElement } from './core-tabs';
+import { test } from '../core-test-fixtures'
 
 test.describe('core-tabs', () => {
   let coreTabs: Locator
@@ -10,7 +11,6 @@ test.describe('core-tabs', () => {
   test.beforeEach(async ({ page }) => {
     toggleEvents = 0
     await page.exposeFunction(INCREMENT_TOGGLE_EVENTS_FUNC, incrementToggleEvents)
-    await page.goto(`./core-tabs/core-tabs.spec.html`)
     await page.addStyleTag({ content: `
       div[hidden] {
         display: none;

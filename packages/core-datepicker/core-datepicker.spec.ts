@@ -1,5 +1,6 @@
-import { test, expect, Locator } from '@playwright/test';
+import { expect, Locator } from '@playwright/test';
 import CoreDatepicker from './core-datepicker';
+import { test } from '../core-test-fixtures';
 
 declare global {
   interface Window { time: Date, triggered: Boolean }
@@ -22,7 +23,6 @@ test.describe('core-datepicker', () => {
   let coreDatepicker: Locator
 
   test.beforeEach(async ({ page }) => {
-    await page.goto('./core-datepicker/core-datepicker.spec.html')
     coreDatepicker = page.getByTestId('core-datepicker')
   })
   

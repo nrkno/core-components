@@ -2,10 +2,12 @@
 **/*.d.ts
 **/*.d.ts.map
 **/*.spec.ts
-**/*.spec.html
+**/core-test-page.html
+**/core-test-fixtures.ts
 
 # dir
 playwright-report
+test-results
 
 # files
 tsconfig.json

@@ -1,5 +1,6 @@
-import { test, expect, Locator, Page } from '@playwright/test'
+import { expect, Locator, Page } from '@playwright/test'
 import CoreScroll, { scrollPoint } from './core-scroll'
+import { test } from '../core-test-fixtures';
 
 const defaultHtml = `
   <button data-for="scroller" value="down">Down</button>
@@ -54,7 +55,6 @@ test.describe('initialization', () => {
   }
 
   test.beforeEach(async ({ page }) => {
-    await page.goto('./core-scroll/core-scroll.spec.html')
     coreScroll = page.getByTestId('core-scroll')
   })
 

@@ -1,5 +1,6 @@
-import { test, expect, Locator } from '@playwright/test';
+import { expect, Locator } from '@playwright/test';
 import CoreDialog from './core-dialog';
+import { test } from '../core-test-fixtures';
 
 const defaultStyle = `
   core-dialog:not([hidden]) {
@@ -27,7 +28,6 @@ test.describe('core-dialog', () => {
   let coreDialog: Locator;
 
   test.beforeEach(async ({ page }) => {
-    await page.goto('./core-dialog/core-dialog.spec.html')
     coreDialog = page.getByTestId('core-dialog')
   })
   

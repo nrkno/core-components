@@ -1,5 +1,6 @@
-import { test, expect, Locator } from '@playwright/test';
+import { expect, Locator } from '@playwright/test';
 import CoreProgress from './core-progress';
+import { test } from '../core-test-fixtures';
 
 const defaultStyle = `
   .my-track {
@@ -28,7 +29,6 @@ test.describe('core-progress', () => {
   let coreProgress: Locator
 
   test.beforeEach(async ({ page }) => {
-    await page.goto('./core-progress/core-progress.spec.html')
     await page.addStyleTag({ content: defaultStyle })
     coreProgress = page.getByTestId('core-progress')
   })

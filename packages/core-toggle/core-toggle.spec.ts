@@ -1,5 +1,6 @@
-import { expect, test, Locator } from "@playwright/test"
+import { expect, Locator } from "@playwright/test"
 import CoreToggle from "./core-toggle"
+import { test } from '../core-test-fixtures'
 
 test.describe('core-toggle', () => {
   let coreToggleButton: Locator
@@ -7,7 +8,6 @@ test.describe('core-toggle', () => {
   
 
   test.beforeEach(async ({ page }) => {
-    await page.goto('./core-toggle/core-toggle.spec.html')
     coreToggleButton = page.getByRole('button', { name: 'Toggle', exact: true }).or(page.getByTestId('core-toggle-button'))
     coreToggle = page.getByTestId('core-toggle')
   })

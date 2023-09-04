@@ -1,5 +1,6 @@
-import { test, expect, Locator, Page } from '@playwright/test';
+import { expect, Locator, Page } from '@playwright/test';
 import CoreSuggest from './core-suggest';
+import { test } from '../core-test-fixtures'
 
 test.describe('core-suggest', () => {
   let coreSuggest: Locator
@@ -18,7 +19,6 @@ test.describe('core-suggest', () => {
   test.beforeEach(async ({ page }) => {
     ajaxSuccessEvents = []
     ajaxErrorEvents = []
-    await page.goto('./core-suggest/core-suggest.spec.html')
     await page.exposeFunction(CAPTURE_SUCCESS_EVENT_FUNCTION, (event: CustomEvent) => ajaxSuccessEvents.push(event))
     await page.exposeFunction(CAPTURE_ERROR_EVENT_FUNCTION, (event: CustomEvent) => ajaxErrorEvents.push(event))
     coreSuggest = page.getByTestId('core-suggest')
