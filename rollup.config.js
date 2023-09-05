@@ -29,23 +29,6 @@ export default utils.pkgs.reduce((all, path) => {
   const bannerText = `/*! @nrk/${file} v${version} - Copyright (c) 2017-${new Date().getFullYear()} NRK */`
 
   return all.concat({
-    input: `${path}/${file}.test.js`, // JS CJS (used for testing)
-    output: {
-      format: 'cjs',
-      file: `${path}/${file}.test.cjs.js`,
-      exports: 'none', // Tests have no exports; set to 'auto' if this changes
-      banner: bannerText,
-      globals
-    },
-    treeshake,
-    external: ['fs', 'path', 'http'],
-    plugins: [
-      json(),
-      resolve({ preferBuiltins: true }),
-      commonjs(), // Must be above/before babelConfig
-      babelConfig
-    ]
-  }, {
     input: `${path}/${file}.js`, // JS CJS
     output: {
       format: 'cjs',

@@ -79,6 +79,13 @@ export default class CoreSuggest extends HTMLElement {
     this._ariaLiveSpan.textContent = null
   }
 
+  _setLiveRegion (label) {
+    clearTimeout(this._ariaLiveTimeout) // Clear existing timeout
+    this._ariaLiveSpan.textContent = label
+    // Delay clearing to successfully register change in textContent with screen readers
+    this._ariaLiveTimeout = setTimeout(() => (this._clearLiveRegion()), ARIA_LIVE_DELAY)
+  }
+
   /**
    * @param {String} label
    * @returns {void}
@@ -88,12 +95,7 @@ export default class CoreSuggest extends HTMLElement {
     clearTimeout(this._ariaLiveDebounce) // Debounce multiple calls in the delay-interval
 
     // Delaying the update of textContent is necesary for consistent behavior in NVDA
-    this._ariaLiveDebounce = setTimeout(() => {
-      clearTimeout(this._ariaLiveTimeout) // Clear existing timeout
-      this._ariaLiveSpan.textContent = label
-      // Delay clearing to successfully register change in textContent with screen readers
-      this._ariaLiveTimeout = setTimeout(() => (this._clearLiveRegion()), ARIA_LIVE_DELAY)
-    }, ARIA_LIVE_DELAY)
+    this._ariaLiveDebounce = setTimeout(this._setLiveRegion(label), ARIA_LIVE_DELAY)
   }
 
   /**
@@ -108,6 +110,10 @@ export default class CoreSuggest extends HTMLElement {
   get ajax () { return this.getAttribute('ajax') || '' }
 
   set ajax (url) { this.setAttribute('ajax', url) }
+
+  /**
+   * @type {number}
+   */
 
   get limit () { return Math.max(0, this.getAttribute('limit')) || Infinity }
 

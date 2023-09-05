@@ -1,0 +1,8 @@
+# Do not ship files used only for testing
+*.d.ts
+*.d.ts.map
+*.spec.ts
+*.test.cjs.js
+
+# Ignore docs-example file
+autoposition.html

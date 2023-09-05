@@ -1,13 +1,14 @@
 # @nrk/core-components
 
 > A kit of lightweight, unstyled and accessible [Javascript](https://stackoverflow.com/questions/20435653/what-is-vanillajs) and [React](https://reactjs.org/) / [Preact](https://github.com/developit/preact-compat) components.
-It provides effortless and flexible usage, while under the hood enhancing markup and functionality for best best user experience across all major browsers and screen readers.
+> It provides effortless and flexible usage, while under the hood enhancing markup and functionality for best best user experience across all major browsers and screen readers.
 
 ## Documentation
+
 https://static.nrk.no/core-components/latest/
 
-
 ## Local development
+
 First clone `@nrk/core-components` and install its dependencies:
 
 ```bash
@@ -17,34 +18,28 @@ npm install # Installs dependencies for all packages
 npm start # Your browser will open documentation with hot reloading
 ```
 
+## Testing with Playwright
 
-## Testing
+Tests in this project are written using Playwright and are executed against major browser engines including Chromium, WebKit, and Firefox.
 
-You can run the tests locally or remotely with CrossBrowserTesting.
+### Local Testing
 
-Run the tests locally:
-
-```sh
-npm test
-```
-
-Before running tests remotely you need a `.env` file providing credentials:
-
-User and authkey can be found in your user profile on [crossbrowsertesting](https://app.crossbrowsertesting.com/account)
+To run tests from the command line, use the following npm command:
 
 ```sh
-SMARTBEAR_USER=...
-SMARTBEAR_AUTHKEY=...
+npm run test
 ```
-Save it in the root directory.
 
-Run tests remotely against all targeted browsers:
+You can enhance your testing experience in VSCode by using the [Playwright Test for VSCode](https://marketplace.visualstudio.com/items?itemName=ms-playwright.playwright) plugin.
 
-```sh
-npm run test-remote
-```
+### Testing in GitHub Actions
+
+The GitHub Actions workflow has been configured to automatically execute Playwright tests in response to changes being pushed to the master branch, as well as when code is pushed upstream to pull requests.
+
+Additionally, it generates test reports and summaries, which are made available as artifacts for the purpose of reviewing and analyzing the test results. Artifacts have a retention period of 30 days.
 
 ## Building and committing
+
 After having applied changes, remember to build before pushing the changes upstream.
 
 ```bash
