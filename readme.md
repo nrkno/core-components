@@ -1,13 +1,14 @@
 # @nrk/core-components
 
 > A kit of lightweight, unstyled and accessible [Javascript](https://stackoverflow.com/questions/20435653/what-is-vanillajs) and [React](https://reactjs.org/) / [Preact](https://github.com/developit/preact-compat) components.
-It provides effortless and flexible usage, while under the hood enhancing markup and functionality for best best user experience across all major browsers and screen readers.
+> It provides effortless and flexible usage, while under the hood enhancing markup and functionality for best best user experience across all major browsers and screen readers.
 
 ## Documentation
+
 https://static.nrk.no/core-components/latest/
 
-
 ## Local development
+
 First clone `@nrk/core-components` and install its dependencies:
 
 ```bash
@@ -16,7 +17,6 @@ cd core-components
 npm install # Installs dependencies for all packages
 npm start # Your browser will open documentation with hot reloading
 ```
-
 
 ## Testing with Playwright
 
@@ -30,21 +30,16 @@ To run tests from the command line, use the following npm command:
 npm run test
 ```
 
-You can enhance your testing experience in VSCode by using the [Playwright Test for VSCode](https://marketplace.visualstudio.com/items?itemName=ms-playwright.playwright).
+You can enhance your testing experience in VSCode by using the [Playwright Test for VSCode](https://marketplace.visualstudio.com/items?itemName=ms-playwright.playwright) plugin.
 
-For added convenience, consider using the following VSCode extensions:
+### Testing in GitHub Actions
 
-* [Playwright Snippets](https://marketplace.visualstudio.com/items?itemName=nitayneeman.playwright-snippets): Provides useful code snippets for Playwright.
-* [Playwright Test Snippets](https://marketplace.visualstudio.com/items?itemName=mskelton.playwright-test-snippets): Offers additional code snippets specifically tailored for Playwright testing.
-
-### Continous Integration
-
-The GitHub Actions workflow has been configured to automatically execute Playwright tests in response to changes being pushed to the main or master branches, as well as when new pull requests are created.
+The GitHub Actions workflow has been configured to automatically execute Playwright tests in response to changes being pushed to the master branch, as well as when code is pushed upstream to pull requests.
 
 Additionally, it generates test reports and summaries, which are made available as artifacts for the purpose of reviewing and analyzing the test results. Artifacts have a retention period of 30 days.
 
-
 ## Building and committing
+
 After having applied changes, remember to build before pushing the changes upstream.
 
 ```bash
