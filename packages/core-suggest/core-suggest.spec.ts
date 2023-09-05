@@ -339,7 +339,9 @@ test.describe('core-suggest', () => {
       const LIVE_REGION_TEXT = 'TEST'
       await defaultTemplate(page)
       await coreSuggest.evaluate((node: CoreSuggest, text) => node.pushToLiveRegion(text), LIVE_REGION_TEXT)
+      await page.waitForFunction(`document.querySelector('core-suggest')._setLiveRegion`)
       await expect(page.locator('body > span', { hasNotText: 'outside' })).toHaveText(LIVE_REGION_TEXT)
+      await page.waitForFunction(`document.querySelector('core-suggest')._clearLiveRegion`)
       await expect(page.locator('body > span', { hasNotText: 'outside' })).toHaveText('')
     })
   })
