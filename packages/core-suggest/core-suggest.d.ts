@@ -18,6 +18,7 @@ export default class CoreSuggest extends HTMLElement {
     handleEvent(event: KeyboardEvent | FocusEvent | InputEvent | MouseEvent): void;
     escapeHTML(str: any): string;
     _clearLiveRegion(): void;
+    _setLiveRegion(label: any): void;
     /**
      * @param {String} label
      * @returns {void}
