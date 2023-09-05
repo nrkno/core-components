@@ -1,6 +1,6 @@
 import { expect, Locator, Page } from '@playwright/test';
 import CoreSuggest from './core-suggest';
-import { test } from '../core-test-fixtures'
+import { test } from '../test-fixtures'
 
 test.describe('core-suggest', () => {
   let coreSuggest: Locator

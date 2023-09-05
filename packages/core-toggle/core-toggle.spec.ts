@@ -1,6 +1,6 @@
 import { expect, Locator } from "@playwright/test"
 import CoreToggle from "./core-toggle"
-import { test } from '../core-test-fixtures'
+import { test } from '../test-fixtures'
 
 test.describe('core-toggle', () => {
   let coreToggleButton: Locator

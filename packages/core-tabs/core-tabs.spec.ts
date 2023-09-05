@@ -1,6 +1,6 @@
 import { expect, Locator } from '@playwright/test';
 import CoreTabs, { TabElement } from './core-tabs';
-import { test } from '../core-test-fixtures'
+import { test } from '../test-fixtures'
 
 test.describe('core-tabs', () => {
   let coreTabs: Locator

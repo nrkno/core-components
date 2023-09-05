@@ -11,11 +11,11 @@ export default defineConfig({
   /* Opt out of parallel tests on CI. */
   workers: undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: process.env.CI ? [['github'], ['junit', { outputFile: 'results.xml'}]] : [['line'], ['html']],
+  reporter: process.env.CI ? [['github'], ['junit', { outputFile: 'results.xml' }]] : [['line'], ['html']],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: 'http://127.0.0.1:10003/core-test-page.html',
+    baseURL: 'http://127.0.0.1:10003/test-page.html',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'retain-on-failure',
@@ -38,7 +38,7 @@ export default defineConfig({
     {
       name: 'webkit',
       use: { ...devices['Desktop Safari'] }
-    },
+    }
   ],
 
   /* Run your local dev server before starting the tests */

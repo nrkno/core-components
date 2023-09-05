@@ -4,7 +4,7 @@ export const test = base.extend({
   page: async ({ baseURL, page }, use) => {
     if (baseURL) {
       await page.goto(baseURL)
-      await use(page) 
+      await use(page)
     }
   }
 })

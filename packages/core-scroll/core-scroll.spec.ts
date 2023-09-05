@@ -1,6 +1,6 @@
 import { expect, Locator, Page } from '@playwright/test'
 import CoreScroll, { scrollPoint } from './core-scroll'
-import { test } from '../core-test-fixtures';
+import { test } from '../test-fixtures';
 
 const defaultHtml = `
   <button data-for="scroller" value="down">Down</button>

@@ -1,6 +1,6 @@
 import { expect, Locator } from '@playwright/test';
 import CoreDialog from './core-dialog';
-import { test } from '../core-test-fixtures';
+import { test } from '../test-fixtures';
 
 const defaultStyle = `
   core-dialog:not([hidden]) {

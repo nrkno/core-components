@@ -2,8 +2,8 @@
 **/*.d.ts
 **/*.d.ts.map
 **/*.spec.ts
-**/core-test-page.html
-**/core-test-fixtures.ts
+**/base-test-page.html
+**/base-test-fixtures.ts
 
 # dir
 playwright-report

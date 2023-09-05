@@ -1,6 +1,6 @@
 import { expect, Locator } from '@playwright/test';
 import CoreDatepicker from './core-datepicker';
-import { test } from '../core-test-fixtures';
+import { test } from '../test-fixtures';
 import parse from '@nrk/simple-date-parse';
 
 declare global {

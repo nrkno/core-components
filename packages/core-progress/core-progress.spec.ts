@@ -1,6 +1,6 @@
 import { expect, Locator } from '@playwright/test';
 import CoreProgress from './core-progress';
-import { test } from '../core-test-fixtures';
+import { test } from '../test-fixtures';
 
 const defaultStyle = `
   .my-track {
