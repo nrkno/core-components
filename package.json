@@ -34,7 +34,7 @@
     "@rollup/plugin-commonjs": "24.0.1",
     "@rollup/plugin-json": "6.0.0",
     "@rollup/plugin-node-resolve": "15.0.2",
-    "@types/node": "20.5.1",
+    "@types/node": "20.6.0",
     "dotenv": "16.0.3",
     "esm": "3.2.25",
     "fast-glob": "3.2.12",
