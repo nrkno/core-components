@@ -27,7 +27,7 @@
   },
   "devDependencies": {
     "@babel/core": "7.21.4",
-    "@babel/preset-env": "7.21.4",
+    "@babel/preset-env": "7.22.20",
     "@nrk/custom-element-to-react": "1.1.1",
     "@playwright/test": "1.37.1",
     "@rollup/plugin-babel": "6.0.3",
