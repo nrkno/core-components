@@ -33,7 +33,7 @@
     "@rollup/plugin-babel": "6.0.3",
     "@rollup/plugin-commonjs": "25.0.5",
     "@rollup/plugin-json": "6.0.0",
-    "@rollup/plugin-node-resolve": "15.0.2",
+    "@rollup/plugin-node-resolve": "15.2.3",
     "@types/node": "20.5.1",
     "dotenv": "16.3.1",
     "esm": "3.2.25",
