@@ -30,7 +30,7 @@
     "@babel/preset-env": "7.22.20",
     "@nrk/custom-element-to-react": "1.1.1",
     "@playwright/test": "1.38.1",
-    "@rollup/plugin-babel": "6.0.3",
+    "@rollup/plugin-babel": "6.0.4",
     "@rollup/plugin-commonjs": "25.0.5",
     "@rollup/plugin-json": "6.0.0",
     "@rollup/plugin-node-resolve": "15.0.2",
