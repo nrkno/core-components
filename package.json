@@ -21,9 +21,6 @@
     "start": "rollup --config --watch",
     "static-publish": "npm run build && static-publish --directory=packages --account=nrk-core --latest --major",
     "test": "npm run lint && npm run build && npx playwright test",
-    "test-remote": "npm run build && npm run test-remote-run && npm run lint",
-    "test-remote-run": "export NODE_ENV=test-remote; npm run protractor",
-    "test-server": "npm run build && http-server ./packages -p 10003",
     "lint": "standard -v"
   },
   "devDependencies": {
