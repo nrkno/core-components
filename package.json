@@ -27,6 +27,7 @@
   },
   "devDependencies": {
     "@babel/core": "7.23.0",
+    "@babel/eslint-parser": "7.22.15",
     "@babel/preset-env": "7.22.20",
     "@nrk/custom-element-to-react": "1.1.1",
     "@playwright/test": "1.38.1",
@@ -46,6 +47,7 @@
     "typescript": "5.2.2"
   },
   "standard": {
+    "parser": "@babel/eslint-parser",
     "globals": [
       "HTMLElement"
     ]

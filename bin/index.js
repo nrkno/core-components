@@ -1,8 +1,8 @@
 import { execSync } from 'child_process'
-import path from 'path'
 import glob from 'fast-glob'
-import pkg from '../package.json'
 import fs from 'fs'
+import path from 'path'
+import pkg from '../package.json' assert { type: 'json' }
 
 const args = getProcessArgs()
 const pkgs = getPackagePaths()
@@ -31,8 +31,8 @@ function getPackageName (packagePath) {
 
 function getPackagePaths () {
   const dir = path.join(process.cwd(), 'packages')
-  return fs.readdirSync(dir).reduce((packages, file) => {
-    const isPackage = fs.existsSync(path.join(dir, file, 'package.json'))
+  return fs.readdirSync(dir).reduce((/** @type string[] */ packages, file) => {
+    const isPackage = fs.existsSync(path.join(path.join(dir, file), 'package.json'))
     return packages.concat(isPackage ? path.join(dir, file) : [])
   }, [])
 }
