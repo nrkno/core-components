@@ -95,6 +95,18 @@ test.describe('core-suggest', () => {
     await expect(coreSuggest.getByText('Suggest 1')).toBeHidden()
     await expect(coreSuggest.getByText('Suggest 2')).toBeVisible()
     await expect(coreSuggest.getByText('Suggest 3')).toBeHidden()
+    await expect(coreSuggest.getByText('Suggest 4')).toBeHidden()
+  })
+
+  test('filter is reset on clearing input value', async ({ page }) => {
+    await defaultTemplate(page)
+    await coreSuggestInput.fill('2')
+    await expect(coreSuggest.getByText('Suggest 1')).toBeHidden()
+    await coreSuggestInput.clear()
+    await expect(coreSuggest.getByText('Suggest 1')).toBeVisible()
+    await expect(coreSuggest.getByText('Suggest 2')).toBeVisible()
+    await expect(coreSuggest.getByText('Suggest 3')).toBeVisible()
+    await expect(coreSuggest.getByText('Suggest 4')).toBeVisible()
   })
   
   // TODO: Review assertions
