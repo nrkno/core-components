@@ -296,7 +296,7 @@ function onInput (self, event) {
  * @fires `suggest.filter`
  */
 function filterItemsByInput (self) {
-  if (!dispatchEvent(self, 'suggest.filter') || !(self.input && self.input.value)) return
+  if (!dispatchEvent(self, 'suggest.filter') || !(self.input && self.input.value != null)) return
   const value = self.input.value.toLowerCase()
   const items = self.querySelectorAll('a,button')
 
