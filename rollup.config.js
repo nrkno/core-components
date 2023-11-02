@@ -12,12 +12,11 @@ const external = Object.keys(globals)
 const treeshake = { moduleSideEffects: 'no-external' } // Strip React require
 const babelConfig = babel({ presets: [['@babel/preset-env', { modules: false }]], babelHelpers: 'bundled' })
 const plugins = [
-  json(),
   resolve({ dedupe: external }),
-  commonjs(), // Must be above/before babelConfig
+  commonjs(), // Must be above/before babelConfig, required to consume @nrk/simple-date-parse
   babelConfig,
-  Boolean(process.env.ROLLUP_WATCH) && serve('packages')
-]
+  Boolean(process.env.ROLLUP_WATCH) && serve('packages'),
+];
 
 utils.buildDocs()
 
