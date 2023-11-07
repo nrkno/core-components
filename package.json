@@ -20,12 +20,10 @@
     "publish:major": "node bin/index.js --publish=major",
     "start": "rollup --config --watch",
     "static-publish": "npm run build && static-publish --directory=packages --account=nrk-core --latest --major",
-    "test": "npm run lint && npm run build && npx playwright test",
-    "lint": "standard -v"
+    "test": "npm run build && npx playwright test"
   },
   "devDependencies": {
     "@babel/core": "7.23.0",
-    "@babel/eslint-parser": "7.22.15",
     "@babel/plugin-syntax-import-attributes": "7.22.5",
     "@babel/preset-env": "7.22.20",
     "@nrk/custom-element-to-react": "1.1.1",
@@ -42,13 +40,6 @@
     "http-server": "14.1.1",
     "rollup": "4.1.4",
     "rollup-plugin-serve": "2.0.2",
-    "standard": "17.1.0",
     "typescript": "5.2.2"
-  },
-  "standard": {
-    "parser": "@babel/eslint-parser",
-    "globals": [
-      "HTMLElement"
-    ]
   }
 }

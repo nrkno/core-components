@@ -58,7 +58,7 @@ if (args.publish) {
   const action = args.publish.replace(/./, (m) => m.toUpperCase()) // Title case action
   const names = update.map(getPackageName).join(', ')
 
-  // Build, test and lint all packages
+  // Build and test all packages
   execSync('npm run test', { cwd: process.cwd(), stdio: 'inherit' })
 
   // Bump version in packages
