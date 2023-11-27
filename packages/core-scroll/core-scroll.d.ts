@@ -19,8 +19,8 @@ export default class CoreScroll extends HTMLElement {
     get items(): Element[];
     get scrollRight(): number;
     get scrollBottom(): number;
-    set friction(arg: number);
-    get friction(): number;
+    set duration(arg: number);
+    get duration(): number;
 }
 export type scrollCoords = {
     x: number;

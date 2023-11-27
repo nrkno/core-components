@@ -5,7 +5,7 @@ import { test } from '../test-fixtures';
 const defaultHtml = `
   <button data-for="scroller" value="down">Down</button>
   <div class="content-container">
-    <core-scroll id="scroller" data-testid="core-scroll" friction="0.001">
+    <core-scroll id="scroller" data-testid="core-scroll" duration="1">
       <div class="content-item">This is overflowing content</div>
       <div class="content-item">This is overflowing content</div>
       <div class="content-item">This is overflowing content</div>
@@ -96,10 +96,10 @@ test.describe('initialization', () => {
     expect(await coreScroll.evaluate((node: CoreScroll) => node.items.length)).toEqual(3)
   })
   
-  test('accepts float number to friction-attribute', async ({ page }) => {
+  test('accepts number to duration-attribute', async ({ page }) => {
     await defaultPage(page)
-    await coreScroll.evaluate((node: CoreScroll) => node.friction = 0.1)
-    await expect(coreScroll).toHaveJSProperty('friction', 0.1)
+    await coreScroll.evaluate((node: CoreScroll) => node.duration = 100)
+    await expect(coreScroll).toHaveJSProperty('duration', 100)
   })
   
   test('dispatches "scroll.change" onConnected and when children are added/removed', async ({ page }) => {
