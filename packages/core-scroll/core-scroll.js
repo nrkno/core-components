@@ -138,17 +138,29 @@ export default class CoreScroll extends HTMLElement {
     const endPoint = parsePoint(this, point)
     const { x, y } = endPoint
     const uuid = DRAG.animate = getUUID() // Giving the animation an ID to workaround IE timeout issues
-    const friction = this.friction
-    let moveX = requestJumps ? 1 : x - this.scrollLeft
-    let moveY = requestJumps ? 1 : y - this.scrollTop
+    const moveX = requestJumps ? 1 : x - this.scrollLeft
+    const moveY = requestJumps ? 1 : y - this.scrollTop
 
     return new Promise((resolve) => {
+      let previousFrameTime = Date.now()
+      let elapsed = 0
+
       const move = () => {
-        if (DRAG.animate === uuid && (Math.round(moveX) || Math.round(moveY))) {
-          this.scrollLeft = x - Math.round(moveX *= friction)
-          this.scrollTop = y - Math.round(moveY *= friction)
+        const deltaTime = (Date.now() - previousFrameTime)
+        previousFrameTime = Date.now()
+        elapsed += deltaTime
+        const t = elapsed / this.duration
+
+        if (DRAG.animate === uuid && t < 1) {
+          // easeOutExpo (https://easings.net/#easeOutExpo)
+          const value = Math.pow(2, -10 * t)
+          this.scrollTop = y - value * moveY
+          this.scrollLeft = x - value * moveX
+
           requestFrame(move)
         } else {
+          this.scrollTop = y
+          this.scrollLeft = x
           resolve(endPoint)
         }
       }
@@ -167,10 +179,10 @@ export default class CoreScroll extends HTMLElement {
   // Safeguard for negative due to decimals for scrollTop similar to scrollLeft above
   get scrollBottom () { return Math.max(0, this.scrollHeight - this.clientHeight - this.scrollTop) }
 
-  // Avoid friction 1 (infinite)
-  get friction () { return Math.min(0.99, this.getAttribute('friction')) || 0.8 }
+  // Scroll duration in milliseconds
+  get duration () { return Math.max(0, this.getAttribute('duration')) || 500 }
 
-  set friction (val) { this.setAttribute('friction', val) }
+  set duration (val) { this.setAttribute('duration', val) }
 }
 
 function onMousedown (event) {

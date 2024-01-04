@@ -92,7 +92,7 @@ demo-->
         <button disabled={!this.state.left} onClick={this.state.left}>Left JSX</button>
         <button disabled={!this.state.right} onClick={this.state.right}>Right JSX</button>
         <div className="my-wrap">
-          <CoreScroll className="my-scroll" onScrollChange={this.onScroll}>
+          <CoreScroll className="my-scroll" onScrollChange={this.onScroll} duration={120}>
             <div>1</div><div>2</div><div>3</div><div>4</div><a href="#">5</a>
             <div>6</div><div>7</div><div>8</div><div>9</div><div>10</div>
             <div>11</div><div>12</div><div>13</div><div>14</div><div>15</div>
@@ -206,7 +206,7 @@ _Note: `core-scroll` adds styling to hide scrollbars, [see how to work with marg
 </button>
 <core-scroll
   id="my-scroll-js"       <!-- {String} Id corresponding to for attribute of <button> -->
-  friction=".2">          <!-- {Number} Optional. Default 0.8. Controls scroll speed. Lower friction means higher speed -->
+  duration="200">          <!-- {Number} Optional. Default 500. Controls scroll duration in milliseconds. -->
   <div>1</div>            <!-- Direct children is used to calculate natural stop points for scroll -->
   <div>2</div>
   <div>3</div>
@@ -240,7 +240,7 @@ myScroll.scroll(document.getElementById('childId')) // Scroll to child element, 
 ```jsx
 import CoreScroll from '@nrk/core-scroll/jsx'
 
-<CoreScroll friction={Number}             // Optional. Default 0.8. Controls scroll speed
+<CoreScroll duration={Number}             // Optional. Default 500. Controls scroll duration
             ref={(comp) => {}}            // Optional. Get reference to React component
             forwardRef={(el) => {}}       // Optional. Get reference to underlying DOM custom element
             onScrollChange={Function}     // Optional. Scroll change event handler
