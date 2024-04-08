@@ -1,5 +1,19 @@
 # @nrk/core-components
 
+## Arkivert
+
+NRK har stoppet aktiv forvaltning og videreutvikling av Core-components. Eventuelle issues og pull-requests vil ikke bli besvart.
+
+Vi anbefaler å undersøke om for eksempel [u-elements](https://u-elements.github.io/u-elements/) kan benyttes som erstatning.
+
+## Archived
+
+NRK is no longer actively maintaining and developing Core-components. New issues or pull-requests will not be considered.
+
+We recommend looking into [u-elements](https://u-elements.github.io/u-elements/) as a possible replacement.
+
+---
+
 [![Playwright Tests](https://github.com/nrkno/core-components/actions/workflows/playwright.yml/badge.svg)](https://github.com/nrkno/core-components/actions/workflows/playwright.yml)
 
 > A kit of lightweight, unstyled and accessible [Javascript](https://stackoverflow.com/questions/20435653/what-is-vanillajs) and [React](https://reactjs.org/) / [Preact](https://github.com/developit/preact-compat) components.

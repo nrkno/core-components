@@ -1,5 +1,19 @@
 # Core Components
 
+## Arkivert
+
+NRK har stoppet aktiv forvaltning og videreutvikling av Core-components. Eventuelle issues og pull-requests vil ikke bli besvart.
+
+Vi anbefaler å undersøke om for eksempel [u-elements](https://u-elements.github.io/u-elements/) kan benyttes som erstatning.
+
+## Archived
+
+NRK is no longer actively maintaining and developing Core-components. New issues or pull-requests will not be considered.
+
+We recommend looking into [u-elements](https://u-elements.github.io/u-elements/) as a possible replacement.
+
+---
+
 > A kit of lightweight, unstyled and accessible [Javascript](https://stackoverflow.com/questions/20435653/what-is-vanillajs) and [React](https://reactjs.org/) / [Preact](https://github.com/developit/preact-compat) custom element based components. It provides effortless and flexible usage, while under the hood enhancing markup and functionality for best best user experience across all major browsers and screen readers.
 
 
